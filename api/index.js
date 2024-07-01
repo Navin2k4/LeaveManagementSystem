@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
-import departmentRoutes from './routes/department.route.js';
+// import departmentRoutes from './routes/department.route.js';
 
 // import path from 'path';
 
@@ -34,7 +34,7 @@ app.use(cookieParser());
 
 
 // Creating test API
-app.use('/api/departments', departmentRoutes);
+// app.use('/api/departments', departmentRoutes);
 
 
 // app.use(express.static(path.join(__dirname, '/client/dist')));

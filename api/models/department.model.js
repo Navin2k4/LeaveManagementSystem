@@ -1,18 +1,10 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const departmentSchema = new mongoose.Schema({
-    department_name: {
-        type: String,
-        required: true,
-    },
-    department_acronym: {
-        type: String,
-        required: true,
-    },
-    sections: [{
-        type: String,
-        required: true,
-    }],
+const { Schema } = mongoose;
+
+const departmentSchema = new Schema({
+  name: { type: String, required: true, unique: true },
+  // Add more fields as needed
 });
 
 const Department = mongoose.model('Department', departmentSchema);
