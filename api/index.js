@@ -3,23 +3,25 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
-// import userRoutes from './routes/user.route.js';
-// import authRoutes from './routes/auth.route.js';
-// import postRoutes from './routes/post.route.js';
-// import commentRoutes from './routes/comment.route.js';
+import departmentRoutes from './routes/department.route.js';
 
 // import path from 'path';
 
 dotenv.config();
 
-// Creating Database Connection
 mongoose
     .connect(process.env.MONGO)
-    .then(() => {
+    .then(async () => {
         console.log("MongoDb is connected");
+        const db = mongoose.connection.db;
+        const collections = await db.listCollections().toArray();
+        collections.forEach(collection => {
+            console.log(collection.name);
+        });
     }).catch(err => {
         console.log("MongoDb not connected");
     });
+
 
 // const __dirname = path.resolve();
 
@@ -29,11 +31,11 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+
+
 // Creating test API
-// app.use('/api/user', userRoutes);
-// app.use('/api/auth', authRoutes);
-// app.use('/api/post', postRoutes);
-// app.use('/api/comment', commentRoutes);
+app.use('/api/departments', departmentRoutes);
+
 
 // app.use(express.static(path.join(__dirname, '/client/dist')));
 
