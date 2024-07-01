@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import LeaveStatsCard from "../components/LeaveStatsCard";
 
 const SuperAdmin = () => {
   const departments = [
@@ -20,7 +21,6 @@ const SuperAdmin = () => {
     D: { mentors: ["Emma White"], classIncharge: "Mr. Wilson" },
   };
 
-  // Sample leave data (for illustration)
   const leaveRequests = [
     {
       id: 1,
@@ -53,7 +53,7 @@ const SuperAdmin = () => {
 
   const handleDepartmentSelect = (department) => {
     setSelectedDepartment(department);
-    setSelectedBatch(null);
+    setSelectedBatch(null); // Reset batch selection when department changes
   };
 
   const handleBatchSelect = (batch) => {
@@ -61,22 +61,22 @@ const SuperAdmin = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-200">
-      {/* Sidebar for departments and batches */}
-      <div className="w-1/4 bg-gray-800 text-white sticky top-0 h-screen overflow-y-auto">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-200">
+      {/* Sidebar for departments */}
+      <div className="md:w-[20%] p-1 bg-linkedin-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto ">
         <div className="p-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Departments</h2>
         </div>
-        <ul className="space-y-2">
+        <ul className="space-y-2 px-1">
           {departments.map((dept, index) => (
             <li
               key={index}
               onClick={() => handleDepartmentSelect(dept.name)}
-              className={`cursor-pointer py-2 px-4 
+              className={`cursor-pointer py-2 px-4 transition-all duration-300 rounded-md
                 ${
                   selectedDepartment === dept.name
-                    ? "bg-gray-700 text-white"
-                    : "hover:bg-gray-700 hover:text-white"
+                    ? "bg-white/60 text-black font-bold"
+                    : "hover:bg-white/20 text-white font-bold"
                 }
               `}
             >
@@ -84,173 +84,103 @@ const SuperAdmin = () => {
             </li>
           ))}
         </ul>
-        {selectedDepartment && (
-          <>
-            <div className="p-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Batches</h2>
-            </div>
-            <ul className="space-y-2">
-              {departments
-                .find((dep) => dep.name === selectedDepartment)
-                ?.batches.map((batch, index) => (
-                  <li
-                    key={index}
-                    onClick={() => handleBatchSelect(batch)}
-                    className={`cursor-pointer py-2 px-4 
-                    ${
-                      selectedBatch === batch
-                        ? "bg-gray-700 text-white"
-                        : "hover:bg-gray-700 hover:text-white"
-                    }
-                  `}
-                  >
-                    {batch}
-                  </li>
-                ))}
-            </ul>
-          </>
-        )}
       </div>
 
-      <div className="flex-1 p-8 overflow-y-auto">
-        {selectedBatch && (
+      {/* Main content area */}
+      <div className="flex-1 p-4 md:p-8 overflow-y-auto">
+        {selectedDepartment && (
           <>
-            <div className="mb-8">
-              <h2 className="text-3xl uppercase tracking-wider text-center font-semibold mb-6">Leave Statistics</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white shadow-md p-4 rounded-lg">
-                  <div className="mb-2">
-                    <span className="font-semibold">Total Requests:</span>{" "}
-                    {leaveRequests.length}
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-semibold">Pending:</span>{" "}
-                    {
-                      leaveRequests.filter((req) => req.status === "Pending")
-                        .length
-                    }
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-semibold">Approved:</span>{" "}
-                    {
-                      leaveRequests.filter((req) => req.status === "Approved")
-                        .length
-                    }
-                  </div>
-                  <div className="mb-2">
-                    <span className="font-semibold">Rejected:</span>{" "}
-                    {
-                      leaveRequests.filter((req) => req.status === "Rejected")
-                        .length
-                    }
-                  </div>
-                </div>
-                <div className="bg-white shadow-md p-4 rounded-lg">
-                      <h3 className="text-lg font-semibold mb-4">
-                        Policies and Balances
-                      </h3>{" "}
-                      <p className="text-gray-600">
-                        ** Policy change: <br /> Sick leave now requires medical
-                        certificate for leaves exceeding 3 days.
-                      </p>
-                </div>
-                <div className="bg-white shadow-md p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-4">
-                    Leave Approval Workflow
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <div className="h-8 w-8 bg-green-500 rounded-full flex items-center justify-center">
-                        <svg
-                          className="h-5 w-5 text-white"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 2a8 8 0 100 16 8 8 0 000-16zM5 10a5 5 0 1110 0 5 5 0 01-10 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                      <p className="font-semibold">
-                        John Doe requested Sick Leave - 2024-07-10 to 2024-07-12
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="h-8 w-8 bg-yellow-500 rounded-full flex items-center justify-center">
-                        <svg
-                          className="h-5 w-5 text-white"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 2a8 8 0 100 16 8 8 0 000-16zM5 10a5 5 0 1110 0 5 5 0 01-10 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                      <p className="font-semibold">
-                        Jane Smith requested Vacation - 2024-08-01 to 2024-08-15
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Batch selection */}
+            <div className="bg-linkedin-blue mb-4 md:mb-8 p-4 rounded-lg">
+              <h2 className="text-lg text-white font-semibold mb-2">
+                Batches for {selectedDepartment}
+              </h2>
+              <ul className="space-y-2">
+                {departments
+                  .find((dep) => dep.name === selectedDepartment)
+                  ?.batches.map((batch, index) => (
+                    <li
+                      key={index}
+                      onClick={() => handleBatchSelect(batch)}
+                      className={`cursor-pointer py-2 px-4 rounded-md transition-all duration-300
+                        ${
+                          selectedBatch === batch
+                            ? "bg-white/60 text-black font-bold"
+                            : "hover:bg-white/20 text-white font-bold"
+                        }
+                      `}
+                    >
+                      {batch}
+                    </li>
+                  ))}
+              </ul>
             </div>
 
+            {/* Selected Batch Details */}
+            {selectedBatch && (
+              <LeaveStatsCard
+                selectedDepartment={selectedDepartment}
+                selectedBatch={selectedBatch}
+                leaveRequests={leaveRequests}
+              />
+            )}
+
             {/* Section details */}
-            <div className="bg-slate-200 pb-6">
-              <h2 className="text-3xl text-center capitalize tracking-wider mb-6">
-                Sections for {selectedDepartment} {selectedBatch}
-              </h2>
-              <div className="grid grid-cols-2 gap-6">
-                {batches[selectedBatch].map((section, index) => (
-                  <div
-                    key={index}
-                    className="bg-white shadow-md p-4 rounded-lg border-l-4 border-gray-800"
-                  >
-                    <h3 className="text-lg font-semibold mb-2">
-                      Section {section}
-                    </h3>
-                    <div className="mb-4">
-                      <span className="font-semibold">Mentors:</span>{" "}
-                      {sections[section].mentors.length > 0
-                        ? sections[section].mentors.join(", ")
-                        : "No mentors assigned"}
-                    </div>
-                    <div className="mb-4">
-                      <span className="font-semibold">Class Incharge:</span>{" "}
-                      {sections[section].classIncharge ||
-                        "No class incharge assigned"}
-                    </div>
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <div>
-                        <span className="font-semibold">Students:</span> 30
+            {selectedBatch && (
+              <div className="bg-slate-200 my-4 md:my-8">
+                <h2 className="text-3xl text-center capitalize tracking-wider mb-6">
+                  Sections for {selectedDepartment} {selectedBatch}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                  {batches[selectedBatch].map((section, index) => (
+                    <div
+                      key={index}
+                      className="bg-white shadow-md px-6 py-4 rounded-lg border-l-4 border-gray-800"
+                    >
+                      <h3 className="text-lg font-semibold mb-2">
+                        Section {section}
+                      </h3>
+                      <div className="mb-4">
+                        <span className="font-semibold">Mentors:</span>{" "}
+                        {sections[section].mentors.length > 0
+                          ? sections[section].mentors.join(", ")
+                          : "No mentors assigned"}
                       </div>
-                      <div>
-                        <span className="font-semibold">Leave Requests:</span> 5
+                      <div className="mb-4">
+                        <span className="font-semibold">Class Incharge:</span>{" "}
+                        {sections[section].classIncharge ||
+                          "No class incharge assigned"}
                       </div>
-                      <div>
-                        <span className="font-semibold">Absentees:</span> 2
+                      <div className="flex items-center justify-between text-md text-gray-800">
+                        <div>
+                          <span className="font-semibold">Students:</span> 30
+                        </div>
+                        <div>
+                          <span className="font-semibold">Leave Requests:</span>{" "}
+                          5
+                        </div>
+                        <div>
+                          <span className="font-semibold">Absentees:</span> 2
+                        </div>
+                      </div>
+                      <div className="mt-4">
+                        <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+                          View Details
+                        </button>
                       </div>
                     </div>
-                    <div className="mt-4">
-                      <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Placeholder when no batch is selected */}
+            {selectedDepartment && !selectedBatch && (
+              <div className="mt-8 text-center text-gray-600">
+                Select a batch from {selectedDepartment} to view details.
+              </div>
+            )}
           </>
-        )}
-        {!selectedBatch && (
-          <div className="text-gray-600 text-center mt-8">
-            Select a batch to view sections and details.
-          </div>
         )}
       </div>
     </div>
@@ -258,4 +188,3 @@ const SuperAdmin = () => {
 };
 
 export default SuperAdmin;
-
