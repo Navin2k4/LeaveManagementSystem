@@ -29,6 +29,9 @@ const SuperAdmin = () => {
       startDate: "2024-07-10",
       endDate: "2024-07-12",
       status: "Pending",
+      department: "Computer Science",
+      batch: "2021-2025",
+      section: "A",
     },
     {
       id: 2,
@@ -37,6 +40,9 @@ const SuperAdmin = () => {
       startDate: "2024-08-01",
       endDate: "2024-08-15",
       status: "Approved",
+      department: "Computer Science",
+      batch: "2022-2026",
+      section: "A",
     },
     {
       id: 3,
@@ -45,6 +51,42 @@ const SuperAdmin = () => {
       startDate: "2024-09-05",
       endDate: "2024-09-06",
       status: "Rejected",
+      department: "Electrical Engineering",
+      batch: "2019-2023",
+      section: "B",
+    },
+    {
+      id: 4,
+      requester: "Alice Johnson",
+      type: "Sick Leave",
+      startDate: "2024-07-20",
+      endDate: "2024-07-25",
+      status: "Pending",
+      department: "Electrical Engineering",
+      batch: "2020-2024",
+      section: "A",
+    },
+    {
+      id: 5,
+      requester: "Bob Williams",
+      type: "Vacation",
+      startDate: "2024-08-10",
+      endDate: "2024-08-20",
+      status: "Pending",
+      department: "Computer Science",
+      batch: "2021-2025",
+      section: "C",
+    },
+    {
+      id: 6,
+      requester: "Emma White",
+      type: "Emergency Leave",
+      startDate: "2024-09-15",
+      endDate: "2024-09-16",
+      status: "Pending",
+      department: "Electrical Engineering",
+      batch: "2020-2024",
+      section: "D",
     },
   ];
 
@@ -170,6 +212,8 @@ const SuperAdmin = () => {
                       </div>
                     </div>
                   ))}
+
+
                 </div>
               </div>
             )}
@@ -181,6 +225,13 @@ const SuperAdmin = () => {
               </div>
             )}
           </>
+        )}
+        {!selectedDepartment && (
+          <LeaveStatsCard
+            selectedDepartment={selectedDepartment}
+            selectedBatch={selectedBatch}
+            leaveRequests={leaveRequests}
+          />
         )}
       </div>
     </div>

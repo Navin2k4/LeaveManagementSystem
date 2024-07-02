@@ -1,24 +1,11 @@
 import React, { useState } from "react";
+import LeaveStatsCard from "../components/LeaveStatsCard";
 
 const MentorApproval = () => {
   const departments = [
     { name: "Computer Science", batches: ["2021-2025", "2022-2026"] },
     { name: "Electrical Engineering", batches: ["2019-2023", "2020-2024"] },
   ];
-
-  const batches = {
-    "2021-2025": ["A", "B", "C", "D"],
-    "2022-2026": ["A", "B"],
-    "2019-2023": ["A", "B"],
-    "2020-2024": ["A", "B", "C"],
-  };
-
-  const sections = {
-    A: { mentors: ["John Doe", "Jane Smith"], classIncharge: "Prof. Johnson" },
-    B: { mentors: ["Alice Johnson"], classIncharge: "Dr. Brown" },
-    C: { mentors: ["Bob Williams"], classIncharge: "Ms. Davis" },
-    D: { mentors: ["Emma White"], classIncharge: "Mr. Wilson" },
-  };
 
   const leaveRequests = [
     {
@@ -71,7 +58,7 @@ const MentorApproval = () => {
       type: "Vacation",
       startDate: "2024-08-10",
       endDate: "2024-08-20",
-      status: "Pending",
+      status: "Approved",
       department: "Computer Science",
       batch: "2021-2025",
       section: "C",
@@ -121,10 +108,9 @@ const MentorApproval = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-200">
-      {/* Sidebar for departments */}
       <div className="md:w-[20%] p-1 bg-linkedin-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto ">
-        <div className="p-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Departments</h2>
+        <div className="p-4 flex items-center justify-between border-b-2 mb-3">
+          <h2 className="text-3xl tracking-wider ">Departments</h2>
         </div>
         <ul className="space-y-2 px-1">
           {departments.map((dept, index) => (
@@ -145,11 +131,9 @@ const MentorApproval = () => {
         </ul>
       </div>
 
-      {/* Main content area */}
       <div className="flex-1 p-4 md:p-8 overflow-y-auto">
         {selectedDepartment && (
           <>
-            {/* Batch selection */}
             <div className="bg-linkedin-blue mb-4 md:mb-8 p-4 rounded-lg">
               <h2 className="text-lg text-white font-semibold mb-2">
                 Batches for {selectedDepartment}
@@ -174,8 +158,6 @@ const MentorApproval = () => {
                   ))}
               </ul>
             </div>
-
-            {/* Selected Batch Details */}
             {selectedBatch && (
               <div className="bg-white shadow-md p-4 rounded-lg">
                 <h2 className="text-3xl uppercase tracking-wider text-center font-semibold mb-8">
@@ -234,9 +216,13 @@ const MentorApproval = () => {
                                   </button>
                                 </div>
                               ) : (
-                                <h2 className="bg-linkedin-blue p-1 text-white rounded-full">
-                                  Taken
-                                </h2>
+                                <div className="flex items-center justify-center gap-2 ">
+                                  <button
+                                    className="bg-linkedin-blue hover:bg-[#1c559b] text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
+                                  >
+                                    Taken
+                                  </button>
+                                </div>
                               )}
                             </td>
                           </tr>
@@ -246,14 +232,18 @@ const MentorApproval = () => {
                 </div>
               </div>
             )}
-
-            {/* Placeholder when no batch is selected */}
             {selectedDepartment && !selectedBatch && (
               <div className="mt-8 text-center text-gray-600">
                 Select a batch from {selectedDepartment} to view details.
               </div>
             )}
           </>
+        )}
+        {!selectedDepartment && (
+          <LeaveStatsCard
+            selectedBatch={selectedBatch}
+            leaveRequests={leaveRequests}
+          />
         )}
       </div>
     </div>

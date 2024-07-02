@@ -4,7 +4,7 @@ const LeaveStatsCard = ({ selectedDepartment, selectedBatch, leaveRequests }) =>
   return (
     <div className="bg-white shadow-md p-4 rounded-lg">
       <h2 className="text-3xl uppercase tracking-wider text-center font-semibold mb-8">
-        Leave Statistics for {selectedDepartment} {selectedBatch}
+        Leave Statistics {selectedDepartment} {selectedBatch}
       </h2>
       <div className="mb-8 ">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
