@@ -1,0 +1,90 @@
+//homepage.scss
+@import "../../Responsive.scss";
+
+.homePage {
+  display: flex;
+  justify-items: center;
+  margin: 30px 50px;
+  height: 100%;
+
+  .leftContainer {
+    flex: 3;
+
+    .wrapper {
+      padding-right: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 40px;
+      height: 100%;
+
+      @include lg{
+        padding-right: 50px;
+      }
+
+      @include md{
+        padding: 0;
+      }
+
+      @include sm{
+        margin: 5px 5px;
+        justify-content: flex-start;
+      }
+
+      .title {
+        font-size: 50px;
+
+        @include lg {
+          font-size: 48px;
+        }
+      }
+
+      .contentpara{
+        font-size: 20px;
+      }
+
+      .request-btn-div{
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        .request-leave-btn{
+            font-size: 20px;
+            font-weight: 400;
+            border-radius: 10px;
+            padding: 10px;
+            background-color: lightblue;
+            cursor: pointer;
+        }
+
+        .request-leave-btn:hover{
+            background-color: rgb(143, 205, 225);
+        }
+      }
+    }
+  }
+
+  .rightContainer {
+    flex: 2;
+    border-radius: 20px;
+    background-color: lightblue;
+    margin: 25px;
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    @include md {
+      display: none;
+    }
+
+    img {
+      width: 115%;
+      position: absolute;
+      right: 0;
+
+      @include lg {
+        width: 105%;
+      }
+    }
+  }
+}
