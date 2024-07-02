@@ -102,6 +102,8 @@ const SuperAdmin = () => {
     setSelectedBatch(batch === selectedBatch ? null : batch);
   };
 
+
+
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-200">
       {/* Sidebar for departments */}

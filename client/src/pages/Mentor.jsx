@@ -106,6 +106,9 @@ const MentorApproval = () => {
     // setLeaveRequests(updatedRequests);
   };
 
+  
+
+
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-200">
       <div className="md:w-[20%] p-1 bg-linkedin-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto ">

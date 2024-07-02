@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState,useEffect } from "react";
 
 export const useFetchDepartments = () => {
     const [departments, setDepartments] = useState([]);
@@ -19,4 +18,3 @@ export const useFetchDepartments = () => {
     }, []);
     return departments;
 };
-
