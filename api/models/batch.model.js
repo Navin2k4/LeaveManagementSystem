@@ -5,11 +5,6 @@ const BatchSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  dept_head: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "DeptHead",
-    required: true,
-  },
   sections: [
     {
         type: mongoose.Schema.Types.ObjectId,

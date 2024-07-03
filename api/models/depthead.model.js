@@ -17,8 +17,8 @@ const DeptHeadSchema = new mongoose.Schema({
     type: String,
   },
   staff_handle_dept: {
-    type: String,
-    required: true,
+    type: mongoose.Schema.Types.ObjectId,  // Ensure this references Departmentid
+    ref: 'Department',   
   },
 });
 

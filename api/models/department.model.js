@@ -10,6 +10,11 @@ const DepartmentSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  dept_head: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "DeptHead",
+    required: true,
+  },
   batches: [
     {
       type: mongoose.Schema.Types.ObjectId,

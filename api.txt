@@ -1,0 +1,5 @@
+localhost:3000/api/departments/getdepartmentsfromStudentDB
+
+localhost:3000/api/departments/getdepartments
+
+localhost:3000/api/auth/signin

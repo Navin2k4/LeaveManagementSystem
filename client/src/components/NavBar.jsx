@@ -1,10 +1,32 @@
-import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import SideMenu from "./SideMenu";
+import { signOutSuccess } from '../redux/user/userSlice';
+import { RiParentFill } from "react-icons/ri";
 
 function Navbar() {
   const [open, setOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { currentUser } = useSelector((state) => state.user);
+console.log(currentUser);
+  const handleSignout = async () => {
+    try {
+      const res = await fetch('/api/user/signout', {
+        method: 'POST',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(signOutSuccess());
+        navigate('/');
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -38,34 +60,51 @@ function Navbar() {
           </span>
         </a>
       </div>
-      <div className="hidden lg:flex gap-6 items-center justify-evenly text-lg text-gray-800 h-full">
+      <div className="hidden lg:flex gap-10 items-center justify-evenly text-lg text-gray-800 h-full">
         <a href="/" className="transition-all duration-200 hover:scale-105">
           Home
         </a>
-        <a
-          href="/studentdashboard"
-          className="transition-all duration-200 hover:scale-105"
-        >
+        {!currentUser && (
+      <div className="flex items-center">
+          <a href="/to-do" className="block active:underline">
+            Wards Detail
+          </a>
+          </div>
+        )}
+        {currentUser && (
+          <a href="/studentdashboard" className="transition-all duration-200 hover:scale-105">
           Dashboard
         </a>
-        {isLoggedIn ? (
-          <Link to="/studentdashboard" className="flex items-center font-bold">
+
+        )}
+  
+        {currentUser ? (
+          <Link to="/profile" className="flex items-center">
             <div className="flex items-center">
-              <img
-                src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                alt="User"
-                className="w-10 h-10 rounded-full object-cover mr-2"
-              />
-              <span>John Doe</span>
+
+                <span className="tracking-wider uppercase font-semibold">
+                  {" "}
+                  {currentUser.student.name.split(" ")[0]}
+                </span>
             </div>
           </Link>
         ) : (
-          <Link to="/login">
+          <Link to="/signin">
             <button className="px-6 py-2 rounded-md border border-gray-800 hover:scale-105 transition-all duration-200">
               Login
             </button>
           </Link>
         )}
+
+        {currentUser && (
+          <button
+            onClick={handleSignout}
+            className="px-6 py-2 rounded-md border border-gray-800 hover:scale-105 transition-all duration-200"
+          >
+            Logout
+          </button>
+        )}
+
       </div>
       <div className="lg:hidden">
         <button onClick={() => setOpen((prev) => !prev)} className="p-2">
@@ -86,7 +125,7 @@ function Navbar() {
         </button>
       </div>
       {open && <div className="backdrop fixed inset-0 bg-black bg-opacity-50 z-40"></div>}
-      <SideMenu open={open} isLoggedIn={isLoggedIn} />
+      <SideMenu open={open} />
     </nav>
   );
 }

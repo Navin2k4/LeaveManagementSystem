@@ -12,22 +12,23 @@ const StaffSchema = new mongoose.Schema({
   },
   staff_mail: {
     type: String,
- },
+  },
   staff_phone: {
     type: String,
   },
   staff_handle_dept: {
-    type: String,
-    required: true,
+    type: mongoose.Schema.Types.ObjectId,  // Ensure this references Department's _id
+    ref: 'Department',
   },
   staff_handle_batch: {
     type: String,
   },
   staff_handle_section: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,  // Ensure this references Section's _id
+    ref: 'Section',
   },
   staff_role: {
-    type: String, //Mentor ClassIncharge
+    type: String, // 'Mentor' or 'ClassIncharge'
     required: true,
   },
 });

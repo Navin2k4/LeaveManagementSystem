@@ -3,6 +3,9 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
+import authRoutes from './routes/auth.route.js';
+import userRoutes from './routes/user.route.js';
+import leaveRoutes from './routes/leave.route.js';
 import departmentRoutes from './routes/department.route.js';
 
 // import path from 'path';
@@ -33,8 +36,10 @@ app.use(cookieParser());
 
 
 // ! Place for the API Route
-app.use('/api/departments',departmentRoutes);
-
+app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api', leaveRoutes);
+app.use('/api', departmentRoutes);
 
 
 // app.use(express.static(path.join(__dirname, '/client/dist')));
