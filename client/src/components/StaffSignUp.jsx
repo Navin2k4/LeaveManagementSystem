@@ -10,83 +10,127 @@ import {
 } from "flowbite-react";
 
 export default function SignUp() {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    staff_name: "",
+    staff_id: "",
+    staff_email: "",
+    staff_phone: "",
+    staff_departmentId: "",
+    isClassIncharge: false,
+    classInchargeBatchId: "",
+    classInchargeSectionId: "",
+    isMentor: false,
+    numberOfClassesHandledAsMentor: 0,
+    mentorHandlingData: [],
+    password: "",
+    userType: "Staff",
+  });
+
+  const [departments, setDepartments] = useState([]);
+  const [batches, setBatches] = useState([]);
+  const [sections, setSections] = useState([]);
+  const [errors, setErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [isMentor, setIsMentor] = useState(false);
-  const [isClassIncharge, setIsClassIncharge] = useState(false);
   const navigate = useNavigate();
-  const currentYear = new Date().getFullYear();
-  const startYear = currentYear - 4;
-  const endYear = startYear + 4;
-  const [years, setYears] = useState([]);
-  const [numClassesHandled, setNumClassesHandled] = useState(0);
-  const [mentorBatchSections, setMentorBatchSections] = useState([]);
 
   useEffect(() => {
-    const yearOptions = [];
-    for (let year = startYear; year <= endYear; year++) {
-      yearOptions.push(year);
+    fetch("/api/departments")
+      .then((response) => response.json())
+      .then((data) => setDepartments(data))
+      .catch((error) => console.error(error));
+  }, []);
+
+  const handleDepartmentChange = async (e) => {
+    const deptId = e.target.value;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      staff_departmentId: deptId,
+    }));
+
+    try {
+      const res = await fetch(`/api/departments/${deptId}/batches`);
+      const data = await res.json();
+      setBatches(data);
+    } catch (error) {
+      console.error(error);
     }
-    setYears(yearOptions);
-  }, [startYear, endYear]);
-
-  const handleChange = (e) => {
-    let { id, value } = e.target;
-
-    if (
-      id === "name" ||
-      id === "roll_no" ||
-      id === "department" ||
-      id === "student_section"
-    ) {
-      value = value.toUpperCase();
-    }
-
-    setFormData({ ...formData, [id]: value.trim() });
   };
 
+  const handleBatchChange = async (e) => {
+    const batchId = e.target.value;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      classInchargeBatchId: batchId,
+    }));
+
+    try {
+      const res = await fetch(`/api/batches/${batchId}/sections`);
+      const data = await res.json();
+      setSections(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [id]: value,
+    }));
+  };
+  const handleClassInchargeSectionChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      classInchargeSectionId: value,
+    }));
+  };
   const handleRoleChange = (e) => {
     const { name, checked } = e.target;
-
-    if (name === "mentor") {
-      setIsMentor(checked);
-    } else if (name === "classIncharge") {
-      setIsClassIncharge(checked);
-    }
+    setFormData((prevFormData) => ({ ...prevFormData, [name]: checked }));
   };
 
   const handleNumClassesChange = (e) => {
-    const { value } = e.target;
-    setNumClassesHandled(parseInt(value));
-    const newBatchSections = [];
-    for (let i = 0; i < parseInt(value); i++) {
-      newBatchSections.push({ batch: "", section: "" });
+    const numClasses = parseInt(e.target.value);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      numberOfClassesHandledAsMentor: numClasses,
+    }));
+
+    const newMentorHandlingData = [];
+    for (let i = 0; i < numClasses; i++) {
+      newMentorHandlingData.push({
+        handlingbatcesid: "",
+        handlingsectionid: "",
+      });
     }
-    setMentorBatchSections(newBatchSections);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      mentorHandlingData: newMentorHandlingData,
+    }));
   };
 
   const handleBatchSectionChange = (e, index) => {
-    const { id, value } = e.target;
-    const updatedBatchSections = [...mentorBatchSections];
-    updatedBatchSections[index] = { ...updatedBatchSections[index], [id]: value };
-    setMentorBatchSections(updatedBatchSections);
+    const { name, value } = e.target;
+    const updatedMentorHandlingData = [...formData.mentorHandlingData];
+    const propName = name.split("-")[0]; // Extract 'handlingbatcesid' or 'handlingsectionid'
+    const dataIndex = parseInt(name.split("-")[1]); // Extract index from name
+
+    updatedMentorHandlingData[index] = {
+      ...updatedMentorHandlingData[index],
+      [propName]: value,
+    };
+
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      mentorHandlingData: updatedMentorHandlingData,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const {
-      staff_id,
-      staff_name,
-      staff_mail,
-      staff_phone,
-      staff_handle_dept,
-      password,
-      confirmpassword,
-    } = formData;
-
-    // Add your validation logic here
 
     try {
       setLoading(true);
@@ -100,17 +144,12 @@ export default function SignUp() {
 
       const data = await res.json();
 
-      if (data.success === false) {
-        // Handle errors
-        setErrorMessage(data.message || "Sign up failed");
-        setLoading(false);
-        return;
+      if (!res.ok) {
+        throw new Error(data.message || "Sign up failed");
       }
 
-      if (res.ok) {
-        setLoading(false);
-        navigate("/signin");
-      }
+      setLoading(false);
+      navigate("/signin");
     } catch (error) {
       setErrorMessage(
         "An error occurred while signing up. Please try again later."
@@ -118,6 +157,8 @@ export default function SignUp() {
       setLoading(false);
     }
   };
+
+  console.log(formData);
 
   return (
     <div className="flex justify-center my-8">
@@ -134,14 +175,14 @@ export default function SignUp() {
           <div className="space-y-4">
             <div>
               <label
-                htmlFor="name"
+                htmlFor="staff_name"
                 className="block text-sm font-medium text-gray-700"
               >
                 Name
               </label>
               <TextInput
                 type="text"
-                id="name"
+                id="staff_name"
                 placeholder="John Doe"
                 className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
                 onChange={handleChange}
@@ -165,14 +206,14 @@ export default function SignUp() {
               </div>
               <div>
                 <label
-                  htmlFor="staff_mail"
+                  htmlFor="staff_email"
                   className="block text-sm font-medium text-gray-700"
                 >
                   Email
                 </label>
                 <TextInput
                   type="email"
-                  id="staff_mail"
+                  id="staff_email"
                   placeholder="example@example.com"
                   className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
                   onChange={handleChange}
@@ -195,214 +236,279 @@ export default function SignUp() {
                   onChange={handleChange}
                 />
               </div>
-              <div>
-                <label
-                  htmlFor="staff_handle_dept"
-                  className="block text-sm font-medium text-gray-700"
+              <div className="flex flex-col">
+                <Label
+                  htmlFor="staff_department"
+                  className="mb-2 text-left font-bold tracking-wide"
                 >
                   Department
-                </label>
-                <TextInput
-                  type="text"
-                  id="staff_handle_dept"
-                  placeholder="Computer Science and Engineering"
-                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
-                  onChange={handleChange}
-                />
+                </Label>
+                <Select
+                  name="staff_department"
+                  value={formData.staff_departmentId}
+                  onChange={handleDepartmentChange}
+                  className={errors.staff_department ? "border-red-500" : ""}
+                >
+                  <option value="">Select Department</option>
+                  {departments.map((dept) => (
+                    <option key={dept._id} value={dept._id}>
+                      {dept.dept_name}
+                    </option>
+                  ))}
+                </Select>
+                {errors.staff_department && (
+                  <p className="text-red-500 text-xs italic">
+                    {errors.staff_department}
+                  </p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-1 gap-4">
               <div className="">
                 <Label>Are you a Class Incharge</Label>
                 <Checkbox
-                  name="classIncharge"
-                  id="classIncharge"
+                  name="isClassIncharge"
+                  id="isClassIncharge"
                   label="Class Incharge"
-                  checked={isClassIncharge}
+                  checked={formData.isClassIncharge}
                   onChange={handleRoleChange}
                   className="mx-2 border-black"
                 />
                 <Label>Are you a Mentor</Label>
                 <Checkbox
-                  name="mentor"
-                  id="mentor"
+                  name="isMentor"
+                  id="isMentor"
                   label="Mentor"
-                  checked={isMentor}
+                  checked={formData.isMentor}
                   onChange={handleRoleChange}
                   className="mx-2 border-black"
                 />
               </div>
             </div>
-            {isClassIncharge && (
+            {formData.isClassIncharge && (
               <>
-              <div>
-                <h2 className="text-linkedin-blue font-semibold">Class Incharge Detail</h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <h2 className="text-linkedin-blue font-semibold">
+                    Class Incharge Detail
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-3">
+                    <Label
+                      htmlFor="classInchargeBatchId"
+                      className="mb-2 text-left font-bold tracking-wide"
+                    >
+                      Batch
+                    </Label>
+                    <Select
+                      name="classInchargeBatchId"
+                      value={formData.classInchargeBatchId}
+                      onChange={handleBatchChange}
+                      className={
+                        errors.classInchargeBatchId ? "border-red-500" : ""
+                      }
+                    >
+                      <option value="">Select Batch</option>
+                      {batches.map((batch) => (
+                        <option key={batch._id} value={batch._id}>
+                          {batch.batch_name}
+                        </option>
+                      ))}
+                    </Select>
+                    {errors.classInchargeBatchId && (
+                      <p className="text-red-500 text-xs italic">
+                        {errors.classInchargeBatchId}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <Label
+                      htmlFor="classInchargeSectionId"
+                      className="mb-2 text-left font-bold tracking-wide"
+                    >
+                      Section
+                    </Label>
+                    <Select
+                      name="classInchargeSectionId"
+                      value={formData.classInchargeSectionId}
+                      onChange={handleClassInchargeSectionChange}
+                      className={
+                        errors.classInchargeSectionId ? "border-red-500" : ""
+                      }
+                    >
+                      <option value="">Select Section</option>
+                      {sections.map((section) => (
+                        <option key={section._id} value={section._id}>
+                          {section.section_name}
+                        </option>
+                      ))}
+                    </Select>
+
+                    {errors.classInchargeSectionId && (
+                      <p className="text-red-500 text-xs italic">
+                        {errors.classInchargeSectionId}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+            {formData.isMentor && (
+              <>
+                <div>
+                  <h2 className="text-linkedin-blue font-semibold">
+                    Mentor Details
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="flex flex-col gap-3">
+                    <Label
+                      htmlFor="numberOfClassesHandledAsMentor"
+                      className="mb-2 text-left font-bold tracking-wide"
+                    >
+                      Number of Classes Handled
+                    </Label>
+                    <TextInput
+                      type="number"
+                      id="numberOfClassesHandledAsMentor"
+                      placeholder="Enter number of classes"
+                      className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                      onChange={handleNumClassesChange}
+                    />
+                    {errors.numberOfClassesHandledAsMentor && (
+                      <p className="text-red-500 text-xs italic">
+                        {errors.numberOfClassesHandledAsMentor}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                {formData.numberOfClassesHandledAsMentor > 0 && (
+                  <div>
+                    <h2 className="text-linkedin-blue font-semibold">
+                      Batch and Section for Mentees
+                    </h2>
+                    {formData.mentorHandlingData.map((item, index) => (
+                      <div
+                        key={index}
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                      >
+                        <div className="flex flex-col gap-3">
+                          <Label
+                            htmlFor={`handlingbatcesid-${index}`}
+                            className="mb-2 text-left font-bold tracking-wide"
+                          >
+                            Batch
+                          </Label>
+                          <Select
+                            name={`handlingbatcesid-${index}`}
+                            value={item.handlingbatcesid}
+                            onChange={(e) => handleBatchSectionChange(e, index)}
+                            className={
+                              errors[`handlingbatcesid-${index}`]
+                                ? "border-red-500"
+                                : ""
+                            }
+                          >
+                            <option value="">Select Batch</option>
+                            {batches.map((batch) => (
+                              <option key={batch._id} value={batch._id}>
+                                {batch.batch_name}
+                              </option>
+                            ))}
+                          </Select>
+                          {errors[`handlingbatcesid-${index}`] && (
+                            <p className="text-red-500 text-xs italic">
+                              {errors[`handlingbatcesid-${index}`]}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex flex-col gap-3">
+                          <Label
+                            htmlFor={`handlingsectionid-${index}`}
+                            className="mb-2 text-left font-bold tracking-wide"
+                          >
+                            Section
+                          </Label>
+                          <Select
+                            name={`handlingsectionid-${index}`}
+                            value={item.handlingsectionid}
+                            onChange={(e) => handleBatchSectionChange(e, index)}
+                            className={
+                              errors[`handlingsectionid-${index}`]
+                                ? "border-red-500"
+                                : ""
+                            }
+                          >
+                            <option value="">Select Section</option>
+                            {sections.map((section) => (
+                              <option key={section._id} value={section._id}>
+                                {section.section_name}
+                              </option>
+                            ))}
+                          </Select>
+                          {errors[`handlingsectionid-${index}`] && (
+                            <p className="text-red-500 text-xs italic">
+                              {errors[`handlingsectionid-${index}`]}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+            <div>
+              <div className="grid grid-cols-2">
                 <div>
                   <label
-                    htmlFor="staff_handle_batch"
+                    htmlFor="password"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Handling Class Batch
+                    Password
                   </label>
-                  <Select
-                    name="staff_handle_batch"
-                    id="staff_handle_batch"
+                  <TextInput
+                    type="password"
+                    id="password"
+                    placeholder="********"
+                    className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
                     onChange={handleChange}
-                    required
-                    className="w-full tracking-wider mt-3"
-                  >
-                    <option value="">Select Batch</option>
-                    {years.map((year) => (
-                      <option key={year} value={`${year}-${year + 4}`}>
-                        {year}-{year + 4}
-                      </option>
-                    ))}
-                  </Select>
+                  />
                 </div>
                 <div>
                   <label
-                    htmlFor="staff_handle_section"
+                    htmlFor="confirmpassword"
                     className="block text-sm font-medium text-gray-700"
                   >
-                      Handling Class Section
+                    Confirm Password
                   </label>
                   <TextInput
-                    type="text"
-                    id="staff_handle_section"
-                    placeholder="A"
+                    type="confirmpassword"
+                    id="confirmpassword"
+                    placeholder="********"
                     className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
                     onChange={handleChange}
                   />
                 </div>
               </div>
-              </>
-            )}
-            {isMentor && (
-                            <>
-                            <div>
-                              <h2 className="text-linkedin-blue font-semibold">Mentor Detail</h2>
-                            </div>
-              <div>
-                <label
-                  htmlFor="numClassesHandled"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Number of Classes Handled as Mentor
-                </label>
-                <TextInput
-                  type="number"
-                  id="numClassesHandled"
-                  value={numClassesHandled}
-                  min="0"
-                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
-                  onChange={handleNumClassesChange}
-                />
-                {mentorBatchSections.map((batchSection, index) => (
-                  <div key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                    <div>
-                      <label
-                        htmlFor={`batch-${index}`}
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Mentee Batch {index + 1}
-                      </label>
-                      <Select
-                        name={`batch-${index}`}
-                        id={`batch-${index}`}
-                        onChange={(e) => handleBatchSectionChange(e, index)}
-                        required
-                        className="w-full tracking-wider mt-3"
-                      >
-                        <option value="">Select Batch</option>
-                        {years.map((year) => (
-                          <option key={year} value={`${year}-${year + 4}`}>
-                            {year}-{year + 4}
-                          </option>
-                        ))}
-                      </Select>
-                    </div>
-                    <div>
-                      <label
-                        htmlFor={`section-${index}`}
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Mentee Section {index + 1}
-                      </label>
-                      <TextInput
-                        type="text"
-                        id={`section-${index}`}
-                        placeholder="A"
-                        className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
-                        onChange={(e) => handleBatchSectionChange(e, index)}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              </>
-            )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Password
-                </label>
-                <TextInput
-                  type="password"
-                  id="password"
-                  placeholder="********"
-                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="confirmpassword"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Confirm Password
-                </label>
-                <TextInput
-                  type="password"
-                  id="confirmpassword"
-                  placeholder="********"
-                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
-                  onChange={handleChange}
-                />
-              </div>
+            </div>
+            {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+
+            <div>
+              <button
+                type="submit"
+                className="w-full py-3 mt-4 font-medium tracking-wider text-white uppercase bg-linkedin-blue border border-transparent rounded-lg focus:outline-none hover:bg-linkedin-light-blue"
+                disabled={loading}
+              >
+                {loading ? (
+                  <Spinner className="w-6 h-6 mr-4 border-white" />
+                ) : (
+                  "Sign Up"
+                )}
+              </button>
             </div>
           </div>
-
-          {errorMessage && (
-            <div className="mt-4 text-center text-red-600">
-              <p>{errorMessage}</p>
-            </div>
-          )}
-          <button
-            type="submit"
-            className="flex justify-center w-full py-2 text-sm font-medium text-white bg-linkedin-blue rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            disabled={loading}
-          >
-            {loading ? (
-              <div className="flex items-center">
-                <Spinner size="sm" className="mr-2" />
-                <span>Loading...</span>
-              </div>
-            ) : (
-              "Sign Up"
-            )}
-          </button>
         </form>
-        <div className="flex gap-2 text-sm mt-5 justify-center">
-          <span>Have an account?</span>
-          <Link to="/signin" className="text-linkedin-blue-300 underline">
-            Sign In
-          </Link>
-        </div>
       </section>
     </div>
   );

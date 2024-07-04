@@ -1,4 +1,3 @@
-// LeaveStatus.jsx
 import React, { useState } from 'react';
 import './LeaveStatus.scss';
 import StatusDot from './StatusDot';
@@ -23,9 +22,26 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
       case 'past1month':
         return toDate >= new Date(today.setMonth(today.getMonth() - 1));
       default:
-        return true; // 'all' filter or unexpected cases
+        return true;
     }
   });
+
+  const pendingRequests = filteredRequests.filter(
+    request =>
+      request.approvals.mentor.status === 'pending' ||
+      request.approvals.classIncharge.status === 'pending' ||
+      request.approvals.hod.status === 'pending'
+  );
+
+  const approvedRequests = filteredRequests.filter(
+    request =>
+      (request.approvals.mentor.status === 'approved' &&
+        request.approvals.classIncharge.status === 'approved' &&
+        request.approvals.hod.status === 'approved') ||
+      (request.approvals.mentor.status === 'rejected' &&
+        request.approvals.classIncharge.status === 'rejected' &&
+        request.approvals.hod.status === 'rejected')
+  );
 
   return (
     <div className="leave-status p-5">
@@ -49,8 +65,8 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
         </div>
         <br /><br />
 
-        {filteredRequests.map(request => (
-          (view === 'pending' && !request.status.mentor && !request.status.classIncharge && !request.status.hod) && (
+        {pendingRequests.length > 0 ? (
+          pendingRequests.map(request => (
             <div key={request._id} className="leave-status-item">
               <div className='grid grid-cols-2'>
                 <p className="p-3 border">Leave From: <br /> <span>{new Date(request.fromDate).toLocaleDateString()}</span></p>
@@ -62,17 +78,18 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
               </div>
 
               <div className="status-dots">
-                <StatusDot status={request.approvals.mentor.status} role="mentor" showLine={true} />
-                <StatusDot status={request.approvals.classIncharge.status} role="classIncharge" showLine={true} />
-                <StatusDot status={request.approvals.hod.status} role="hod" showLine={false} />
+                <StatusDot status={request.approvals.mentor.status} role="mentor" updateStatus={updateStatus} showLine={true} />
+                <StatusDot status={request.approvals.classIncharge.status} role="classIncharge" updateStatus={updateStatus} showLine={true} />
+                <StatusDot status={request.approvals.hod.status} role="hod" updateStatus={updateStatus} showLine={false} />
               </div>
               <div className="pending-status">
                 Pending
               </div>
-              
             </div>
-          )
-        ))}
+          ))
+        ) : (
+          <div>No pending requests found.</div>
+        )}
       </div>
 
       <div className={`container ${view === 'approved' ? 'active' : ''}`}>
@@ -86,8 +103,8 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
         </div>
         <br /><br />
 
-        {filteredRequests.map(request => (
-          (view === 'approved' && request.approvals.mentor.status === 'approved' && request.approvals.classIncharge.status === 'approved' && request.approvals.hod.status === 'approved') && (
+        {approvedRequests.length > 0 ? (
+          approvedRequests.map(request => (
             <div key={request._id} className="leave-status-item">
               <div className='grid grid-cols-2'>
                 <p className="p-3 border">Leave From: <br /> <span>{new Date(request.fromDate).toLocaleDateString()}</span></p>
@@ -104,12 +121,20 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
                 <StatusDot status={request.approvals.classIncharge.status} role="classIncharge" showLine={true} />
                 <StatusDot status={request.approvals.hod.status} role="hod" showLine={false} />
               </div>
-              <div className="accepted-status">
-                Accepted
-              </div>
+              {request.approvals.mentor.status === 'approved' && request.approvals.classIncharge.status === 'approved' && request.approvals.hod.status === 'approved' && (
+                <div className="accepted-status">Accepted</div>
+              )}
+              {request.approvals.mentor.status === 'pending' && request.approvals.classIncharge.status === 'pending' && request.approvals.hod.status === 'pending' && (
+                <div className="pending-status">Pending</div>
+              )}
+              {request.approvals.mentor.status === 'rejected' && request.approvals.classIncharge.status === 'rejected' && request.approvals.hod.status === 'rejected' && (
+                <div className="rejected-status">Rejected</div>
+              )}
             </div>
-          )
-        ))}
+          ))
+        ) : (
+          <div>No approved requests found.</div>
+        )}
       </div>
     </div>
   );

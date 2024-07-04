@@ -234,7 +234,7 @@ export default function LeaveRequestForm({ setTab }) {
     }
   };
 
-  console.log(formData);
+
 
 
   return (
