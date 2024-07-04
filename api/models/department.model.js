@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 const DepartmentSchema = new mongoose.Schema({
   dept_name: {
     type: String,
@@ -24,5 +25,4 @@ const DepartmentSchema = new mongoose.Schema({
 });
 
 const Department =  mongoose.model("Department", DepartmentSchema);
-
 export default Department;

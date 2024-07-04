@@ -132,6 +132,18 @@ const MentorApproval = () => {
             </li>
           ))}
         </ul>
+        <div>
+        <h1  className="text-white">My Leave </h1>
+        
+        </div>
+        <div>
+        <h1  className="text-white">As Mentor</h1>
+        
+        </div>
+        <div>
+        <h1  className="text-white">As Class Incharge</h1>
+        
+        </div>
       </div>
 
       <div className="flex-1 p-4 md:p-8 overflow-y-auto">

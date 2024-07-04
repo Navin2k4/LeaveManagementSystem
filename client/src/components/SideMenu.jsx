@@ -7,8 +7,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { signOutSuccess } from "../redux/user/userSlice";
 import { RiParentFill } from "react-icons/ri";
 
-import { current } from "@reduxjs/toolkit";
-
 const SideMenu = ({ open }) => {
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -45,7 +43,7 @@ const SideMenu = ({ open }) => {
                 Hello!
                 <span className="text-4xl font-semibold">
                   {" "}
-                  {currentUser.student.name.split(" ")[0]}
+                  {currentUser.name.split(" ")[0]}
                 </span>
               </h2>
             </div>
@@ -53,7 +51,7 @@ const SideMenu = ({ open }) => {
         ) : (
           <div className="flex items-center mb-4">
             <CiLogin className="mr-2" />
-            <Link to="/signin" className="block">
+            <Link to="/" className="block">
               Login
             </Link>
           </div>

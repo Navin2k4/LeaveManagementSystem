@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
-import leaveRoutes from './routes/leave.route.js';
+import leaveRequestRoutes from './routes/leave.route.js';
 import departmentRoutes from './routes/department.route.js';
 
 // import path from 'path';
@@ -16,11 +16,6 @@ mongoose
     .connect(process.env.MONGO)
     .then(async () => {
         console.log("MongoDb is connected");
-        const db = mongoose.connection.db;
-        const collections = await db.listCollections().toArray();
-        collections.forEach(collection => {
-            console.log(collection.name);
-        });
     }).catch(err => {
         console.log("MongoDb not connected");
     });
@@ -38,8 +33,9 @@ app.use(cookieParser());
 // ! Place for the API Route
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api', leaveRoutes);
+app.use("/api", leaveRequestRoutes);
 app.use('/api', departmentRoutes);
+
 
 
 // app.use(express.static(path.join(__dirname, '/client/dist')));

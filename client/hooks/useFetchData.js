@@ -18,3 +18,22 @@ export const useFetchDepartments = () => {
     }, []);
     return departments;
 };
+
+export const useFetchLeaveRequests = ({id}) => {
+    const [leavefromapi, setLeavefromapi] = useState([]);
+    useEffect(() => {
+        const fetchLeaveRequest = async () => {
+            try {
+                const res = await fetch(`/api/getleaverequest/${id}`);
+                const data = await res.json();
+                if (res.ok) {
+                  setLeavefromapi(data);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        fetchLeaveRequest();
+    }, []);
+    return leavefromapi;
+};

@@ -1,10 +1,21 @@
-import React, { useEffect } from "react";
-import { Alert, Label, Spinner, Select, TextInput } from "flowbite-react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { Spinner, TextInput, Select } from "flowbite-react";
 
 export default function SignUp() {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    roll_no: "",
+    register_no: "",
+    password: "",
+    confirmpassword: "",
+    name: "",
+    email: "",
+    phone: "",
+    department: "",
+    student_section: "",
+    batch: "",
+    userType: "Student", // Set default userType to Student
+  });
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -12,6 +23,7 @@ export default function SignUp() {
   const startYear = currentYear - 4;
   const endYear = startYear + 4;
   const [years, setYears] = useState([]);
+
   useEffect(() => {
     const yearOptions = [];
     for (let year = startYear; year <= endYear; year++) {
@@ -33,7 +45,6 @@ export default function SignUp() {
     }
 
     setFormData({ ...formData, [id]: value.trim() });
-    console.log(formData);
   };
 
   const handleSubmit = async (e) => {
@@ -50,6 +61,7 @@ export default function SignUp() {
       department,
       student_section,
       batch,
+      userType,
     } = formData;
 
     if (
@@ -103,8 +115,6 @@ export default function SignUp() {
       return setErrorMessage("Passwords do not match");
     }
 
-    let data;
-
     try {
       setLoading(true);
       setErrorMessage(null);
@@ -115,7 +125,7 @@ export default function SignUp() {
         body: JSON.stringify(formData),
       });
 
-      data = await res.json();
+      const data = await res.json();
 
       if (data.success === false) {
         if (data.message.includes("duplicate key error collection")) {
@@ -130,29 +140,29 @@ export default function SignUp() {
         setLoading(false);
         return;
       }
+
       if (res.ok) {
         setLoading(false);
         navigate("/signin");
       }
     } catch (error) {
-      if (data) {
-        setErrorMessage(data.message);
-      } else {
-        setErrorMessage(
-          "An error occurred while signing up. Please try again later."
-        );
-      }
+      setErrorMessage(
+        "An error occurred while signing up. Please try again later."
+      );
       setLoading(false);
     }
   };
-
   return (
     <div className="flex justify-center my-8">
       <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-white rounded-lg shadow-lg border-l-4 border-linkedin-blue">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-900">Student Sign Up</h2>
         </div>
-
+        <Link to="/staffsignup" className="text-center p-3">
+          <h2 className="font-medium text-linkedin-blue hover:tracking-wider transition-all duration-500">
+            Click here for Staff Sign Up
+          </h2>
+        </Link>
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-4">
             <div>
@@ -176,7 +186,8 @@ export default function SignUp() {
                   htmlFor="roll_no"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Roll Number<span className="text-red-600 font-bold"> *</span>
+                  Roll Number
+                  <span className="text-red-600 font-bold"> *</span>
                 </label>
                 <TextInput
                   type="text"

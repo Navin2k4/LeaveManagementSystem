@@ -13,8 +13,10 @@ export const signup = async (req, res, next) => {
     phone,
     department,
     student_section,
-    batch
+    batch,
+    userType
   } = req.body;
+
   if (
     !roll_no ||
     !register_no ||
@@ -23,12 +25,12 @@ export const signup = async (req, res, next) => {
     !email ||
     !phone ||
     !department ||
-    !student_section||
+    !student_section ||
     !batch
   ) {
     return next(errorHandler(400, "All Fields Are Required"));
   }
-  
+
   const hashedPassword = bcryptjs.hashSync(password, 10);
 
   const newStudent = new Student({
@@ -40,8 +42,10 @@ export const signup = async (req, res, next) => {
     phone,
     department,
     student_section,
-    batch
+    batch,
+    userType,
   });
+
   try {
     await newStudent.save();
     res.status(201).json({ message: "Student saved successfully" });
@@ -65,11 +69,14 @@ export const signin = async (req, res, next) => {
   if (!identifier || !password) {
     return res.status(400).json({ message: "All fields are required" });
   }
-identifier = identifier.toUpperCase();
+
+  identifier = identifier.toUpperCase();
+
   try {
     const student = await Student.findOne({
       $or: [{ roll_no: identifier }, { register_no: identifier }],
     });
+
     if (!student) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -79,10 +86,27 @@ identifier = identifier.toUpperCase();
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
+
     const token = jwt.sign({ id: student._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    res.status(200).json({ token, student });
+
+    // Spread student properties directly into the response
+    const { _id, name, roll_no, register_no, email, phone, department, student_section, batch, userType } = student;
+
+    res.status(200).json({
+      token,
+      id: _id,
+      name,
+      roll_no,
+      register_no,
+      email,
+      phone,
+      department,
+      student_section,
+      batch,
+      userType
+    });
   } catch (error) {
     next(error);
   }

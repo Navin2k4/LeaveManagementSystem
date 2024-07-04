@@ -1,69 +1,112 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
 
-const leaveRequestSchema = new Schema({
-  userid: {
-    type: String,
-    required: true,
-  },  
-  applyDate: {
-    type: Date,
-    required: true,
-  },
-  fromDate: {
-    type: Date,
-    required: true,
-  },
-  toDate: {
-    type: Date,
-    required: true,
-  },
-  noOfDays: {
-    type: Number,
-    required: true,
-  },
-  reason: {
-    type: String,
-    required: true,
-  },
-  status: {
-    type: String,
-    enum: ['Pending', 'Approved', 'Rejected'],
-    default: 'Pending',
-  },
-  approvals: {
-    mentor: {
-      status: {
-        type: String,
-        enum: ['Pending', 'Approved', 'Rejected'],
-        default: 'Pending',
-      },
-      date: Date,
+const leaveRequestSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
     },
-    classIncharge: {
-      status: {
-        type: String,
-        enum: ['Pending', 'Approved', 'Rejected'],
-        default: 'Pending',
-      },
-      date: Date,
+    userId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      refPath: 'userType', // Dynamic reference based on the value of userType field
     },
-    hod: {
-      status: {
-        type: String,
-        enum: ['Pending', 'Approved', 'Rejected'],
-        default: 'Pending',
+    userType: {
+      type: String,
+      required: true,
+      enum: ['Student', 'Staff'], // Possible values are 'Student' and 'Staff'
+    },
+    rollNo: {
+      type: String, 
+    },
+    regNo: {
+      type: String,
+    },
+    departmentId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Department',
+      required: true,
+    },
+    batchId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Batch',
+    },
+    sectionId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Section',
+    },
+    mentorId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Staff',
+    },
+    classInchargeId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Staff',
+    },
+    fromDate: {
+      type: Date,
+      required: true,
+    },
+    toDate: {
+      type: Date,
+    },
+    noOfDays: {
+      type: Number,
+      required: true,
+    },
+    forMedical:{
+      type: Boolean,
+      default: false,
+    },
+    reason: {
+      type: String,
+      required: true,
+    },
+    typeOfLeave: {
+      type: String,
+      enum: ["Casual Leave", "Sick Leave", "Earned Leave", "Maternity Leave", "Paternity Leave", "Study Leave", "Duty Leave", "Special Leave", "Sabbatical Leave"],
+    },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
+    approvals: {
+      mentor: {
+        status: {
+          type: String,
+          enum: ["pending", "approved", "rejected"],
+          default: "pending",
+        },
+        date: Date,
       },
-      date: Date,
+      classIncharge: {
+        status: {
+          type: String,
+          enum: ["pending", "approved", "rejected"],
+          default: "pending",
+        },
+        date: Date,
+      },
+      hod: {
+        status: {
+          type: String,
+          enum: ["pending", "approved", "rejected"],
+          default: "pending",
+        },
+        date: Date,
+      },
+    },
+    isStaff: {
+      type: Boolean,
+      required: true,
     },
   },
-  isStaff: {
-    type: Boolean,
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
-export default model('LeaveRequest', leaveRequestSchema);
+const LeaveRequest = model("LeaveRequest", leaveRequestSchema);
+
+export default LeaveRequest;

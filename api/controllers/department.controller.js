@@ -12,6 +12,20 @@ export const getDepartments = async (req, res, next) => {
   }
 };
 
+export const getDepartmentIdByName = async (req, res, next) => {
+  const { departmentName } = req.params;
+  try {
+    const department = await Department.findOne({ dept_name: departmentName });
+    if (!department) {
+      return res.status(404).json({ error: 'Department not found' });
+    }
+    res.json({ departmentId: department._id });
+  } catch (error) {
+    console.error('Error fetching department:', error);
+    next(error); 
+  }
+};
+
 export const getBatches = async (req, res, next) => {
   const { departmentId } = req.params;
   try {
@@ -22,6 +36,7 @@ export const getBatches = async (req, res, next) => {
   }
 };
 
+
 export const getSections = async (req, res, next) => {
   const { batchId } = req.params;
   try {
@@ -29,6 +44,23 @@ export const getSections = async (req, res, next) => {
     res.status(200).json(batch.sections);
   } catch (error) {
     next(error);
+  }
+};
+
+export const getSectionIdByBatchAndName = async (req, res) => {
+  const { batchId, sectionName } = req.params;
+  try {
+    const section = await Section.findOne({ section_name: sectionName, batch: batchId });
+    if (!section) {
+      return res.status(404).json({ error: 'Section not found' });
+    }
+    // Extract just the section ID
+    const { _id } = section;
+    // Send back only the section ID
+    res.json({ sectionId: _id });
+  } catch (error) {
+    console.error('Error fetching section:', error);
+    res.status(500).json({ error: 'Server error' });
   }
 };
 

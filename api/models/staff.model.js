@@ -30,6 +30,11 @@ const StaffSchema = new mongoose.Schema({
   staff_role: {
     type: String, // 'Mentor' or 'ClassIncharge'
     required: true,
+    default: 'Staff'
+  },
+  userType: {
+    type: String,
+    default: "Staff",
   },
 });
 

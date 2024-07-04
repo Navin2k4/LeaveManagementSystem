@@ -44,7 +44,7 @@ export default function SignIn() {
         dispatch(signInFailure('Invalid Username or Password'));
       } else {
         dispatch(signInSuccess(data));
-        navigate('/');
+        navigate('/profile');
       }
     } catch (error) {
       dispatch(signInFailure('OOPS! Something went wrong'));

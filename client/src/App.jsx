@@ -3,14 +3,15 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SuperAdmin from "./pages/SuperAdmin";
 import PageNotFound from "./pages/PageNotFound";
 import Mentor from "./pages/Mentor";
-import DashBoard from "./pages/StudentDashBoard/DashBoard";
 import HomePage from "./pages/HomePage/HomePage";
 import Navbar from "./components/NavBar";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
+import StaffSignUp from "./components/StaffSignUp"
 import PrivateRoute from "./components/PrivateRoute";
 import ProfilePage from "./pages/ProfilePage";
-import LeaveRequestForm from "./pages/LeaveRequestForm";
+import LeaveRequestForm from "./components/LeaveRequestForm";
+import DashBoard from "./pages/DashBoard";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route path='/' element={<HomePage />} />
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SignUp />} />
+        <Route path='/staffsignup' element={<StaffSignUp/>} />
         <Route path='*' element={<PageNotFound />} />
         {/* Pages that are only availabe to the users Signed in  */}
         <Route element={<PrivateRoute />} >

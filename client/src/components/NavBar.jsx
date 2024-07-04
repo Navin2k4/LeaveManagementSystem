@@ -10,7 +10,6 @@ function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
-console.log(currentUser);
   const handleSignout = async () => {
     try {
       const res = await fetch('/api/user/signout', {
@@ -71,12 +70,6 @@ console.log(currentUser);
           </a>
           </div>
         )}
-        {currentUser && (
-          <a href="/studentdashboard" className="transition-all duration-200 hover:scale-105">
-          Dashboard
-        </a>
-
-        )}
   
         {currentUser ? (
           <Link to="/profile" className="flex items-center">
@@ -84,7 +77,7 @@ console.log(currentUser);
 
                 <span className="tracking-wider uppercase font-semibold">
                   {" "}
-                  {currentUser.student.name.split(" ")[0]}
+                  {currentUser.name.split(" ")[0]}
                 </span>
             </div>
           </Link>

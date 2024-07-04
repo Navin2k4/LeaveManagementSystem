@@ -1,240 +1,102 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-// import { updateStart, updatePasswordStart } from '../redux/user/userSlice'; // Import your Redux actions
-import bcryptjs from 'bcryptjs';
-import { extractStudentDetails } from '../../../api/utils/utils';
+import React, { useState, useEffect } from "react";
+import EditProfile from "../components/EditProfile";
+import LeaveRequestForm from "../components/LeaveRequestForm";
+import DashBoard from "./DashBoard";
 
 const ProfilePage = () => {
-  const dispatch = useDispatch();
-  const { currentUser } = useSelector((state) => state.user);
+  const [tab, setTab] = useState("LeaveRequestForm");
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    rollNumber: '',
-    registerNumber: '',
-    phone: '',
-    department: '',
-    student_section: '',
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  });
+  const renderComponent = () => {
+    switch (tab) {
+      case "LeaveRequestForm":
+        return <LeaveRequestForm setTab={setTab} />;
+      case "EditProfile":
+        return <EditProfile />;
+      case "DashBoard":
+        return <DashBoard />;
+      default:
+        return <LeaveRequestForm setTab={setTab} />;
+    }
+  };
+
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen(!isProfileMenuOpen);
+  };
 
   useEffect(() => {
-    if (currentUser) {
-      const userDetail = extractStudentDetails(currentUser.student);
-      setFormData({
-        ...userDetail,
-        currentPassword: currentUser.student.password,
-        newPassword: '',
-        confirmPassword: '',
-      });
-    }
-  }, [currentUser]);
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Dispatch action to update profile
-    // dispatch(updateStart(formData)); // Replace with your actual Redux action
-    // Optionally, handle redirection or success message
-  };
-
-  const handlePasswordUpdate = async (e) => {
-    e.preventDefault();
-    // Ensure passwords match
-    if (formData.newPassword !== formData.confirmPassword) {
-      alert('Passwords do not match!');
-      return;
-    }
-
-    // Verify current password
-    try {
-      const isMatch = await bcryptjs.compare(formData.currentPassword, currentUser.student.password);
-
-      if (!isMatch) {
-        alert('Current password is incorrect!');
-        return;
-      }
-
-      // Dispatch action to update password
-      // dispatch(updatePasswordStart(formData.newPassword)); // Replace with your actual Redux action
-      // Clear password fields
-      setFormData({
-        ...formData,
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-      });
-
-      // Optionally, handle success message
-      alert('Password updated successfully!');
-      
-    } catch (error) {
-      console.error('Error comparing passwords:', error);
-      alert('An error occurred. Please try again.');
-    }
-  };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
-    <div className="container mx-auto mt-8">
-      <h2 className="text-2xl font-semibold mb-4">Edit Profile</h2>
-      <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-6">
-        <div className="mb-4">
-          <label htmlFor="name" className="block mb-1">
-            Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="border rounded-md p-2 w-full"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="email" className="block mb-1">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="border rounded-md p-2 w-full"
-            required
-          />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="mb-4">
-            <label htmlFor="rollNumber" className="block mb-1">
-              Roll Number
-            </label>
-            <input
-              type="text"
-              id="rollNumber"
-              name="rollNumber"
-              value={formData.rollNumber}
-              onChange={handleChange}
-              className="border rounded-md p-2 w-full"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="registerNumber" className="block mb-1">
-              Register Number
-            </label>
-            <input
-              type="text"
-              id="registerNumber"
-              name="registerNumber"
-              value={formData.registerNumber}
-              onChange={handleChange}
-              className="border rounded-md p-2 w-full"
-              required
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="mb-4">
-            <label htmlFor="department" className="block mb-1">
-              Department
-            </label>
-            <input
-              type="text"
-              id="department"
-              name="department"
-              value={formData.department}
-              onChange={handleChange}
-              className="border rounded-md p-2 w-full"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="student_section" className="block mb-1">
-              Section
-            </label>
-            <input
-              type="text"
-              id="student_section"
-              name="student_section"
-              value={formData.student_section}
-              onChange={handleChange}
-              className="border rounded-md p-2 w-full"
-              required
-            />
-          </div>
-        </div>
-        <div className="mb-4">
-          <label htmlFor="currentPassword" className="block mb-1">
-            Current Password
-          </label>
-          <input
-            type="password"
-            id="currentPassword"
-            name="currentPassword"
-            value={formData.currentPassword}
-            onChange={handleChange}
-            className="border rounded-md p-2 w-full"
-            required
-          />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="mb-4">
-            <label htmlFor="newPassword" className="block mb-1">
-              New Password
-            </label>
-            <input
-              type="password"
-              id="newPassword"
-              name="newPassword"
-              value={formData.newPassword}
-              onChange={handleChange}
-              className="border rounded-md p-2 w-full"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="confirmPassword" className="block mb-1">
-              Confirm New Password
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className="border rounded-md p-2 w-full"
-              required
-            />
-          </div>
-        </div>
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md mr-4"
+    <div className="flex flex-col md:flex-row h-screen bg-gray-200">
+      <div className="md:w-[20%]  px-1 bg-linkedin-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto">
+        <div className="p-4 flex items-center justify-between">
+          <h2
+            className={`text-3xl tracking-wider text-white`}
+            >
+            My Profile 
+          </h2>
+          {isMobileView &&
+          <div className={`bg-white/80 p-2 rounded-full ${
+            isMobileView ? "cursor-pointer"  : ""
+          } ${isProfileMenuOpen ? "rotate-180 transition-all duration-500" : "rotate-0 transition-all duration-500"} `} 
+          
+            onClick={isMobileView ? toggleProfileMenu : null}
           >
-            Update Profile
-          </button>
-          <button
-            type="button"
-            onClick={handlePasswordUpdate}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
-          >
-            Update Password
-          </button>
+            <svg stroke="currentColor" fill="black" strokeWidth="0" viewBox="0 0 448 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+              <path d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z"></path></svg>
+          </div>
+        }
         </div>
-      </form>
+        <ul
+          className={`space-y-2 px-1  mb-4 transition-all duration-300 overflow-hidden ${
+            isMobileView
+              ? isProfileMenuOpen
+                ? "max-h-96"
+                : "max-h-0"
+              : "max-h-full"
+          }`}
+        >
+          <li
+            onClick={() => setTab("LeaveRequestForm")}
+            className={`cursor-pointer py-2 px-4 transition-all duration-300 rounded-md ${
+              tab === "LeaveRequestForm"
+                ? "bg-white/60 text-black font-bold"
+                : "hover:bg-white/20 text-white font-bold"
+            }`}
+          >
+            Request Leave
+          </li>
+          <li
+            onClick={() => setTab("EditProfile")}
+            className={`cursor-pointer py-2 px-4 transition-all duration-300 rounded-md ${
+              tab === "EditProfile"
+                ? "bg-white/60 text-black font-bold"
+                : "hover:bg-white/20 text-white font-bold"
+            }`}
+          >
+            Edit Profile
+          </li>
+          <li
+            onClick={() => setTab("DashBoard")}
+            className={`cursor-pointer py-2 px-4 transition-all duration-300 rounded-md ${
+              tab === "DashBoard"
+                ? "bg-white/60 text-black font-bold"
+                : "hover:bg-white/20 text-white font-bold"
+            }`}
+          >
+            Show My DashBoard
+          </li>
+        </ul>
+      </div>
+      <div className="flex-1  overflow-y-auto">{renderComponent()}</div>
     </div>
   );
 };
