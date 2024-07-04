@@ -24,13 +24,21 @@ const StaffSchema = new mongoose.Schema({
     type: String,
   },
   staff_handle_section: {
-    type: mongoose.Schema.Types.ObjectId,  // Ensure this references Section's _id
+    type: mongoose.Schema.Types.ObjectId, 
     ref: 'Section',
   },
   staff_role: {
-    type: String, // 'Mentor' or 'ClassIncharge'
+    type: String, 
     required: true,
     default: 'Staff'
+  },
+  isMentor:{
+    type: Boolean,
+    default: false,
+  },
+  isClassIncharge:{
+    type: Boolean,
+    default: false,
   },
   userType: {
     type: String,
