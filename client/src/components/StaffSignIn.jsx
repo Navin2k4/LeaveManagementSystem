@@ -4,7 +4,7 @@ import { signInSuccess, signInStart, signInFailure } from '../redux/user/userSli
 import { Spinner } from 'flowbite-react';
 import { Link, useNavigate } from 'react-router-dom';
 
-export default function SignIn() {
+export default function StaffSignIn() {
   const [formData, setFormData] = useState({});
   const { loading, error: errorMessage } = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -17,21 +17,21 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    let { identifier, password } = formData;
+    let { staff_id, password } = formData;
 
-    if (!identifier || !password) {
+    if (!staff_id || !password) {
       return dispatch(signInFailure('Please fill all the fields'));
     }
 
     try {
       dispatch(signInStart());
 
-      const res = await fetch('/api/auth/studentsignin', {
+      const res = await fetch('/api/auth/staffsignin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ identifier, password }),
+        body: JSON.stringify({ staff_id, password }),
       });
 
       const data = await res.json();
@@ -44,7 +44,7 @@ export default function SignIn() {
         dispatch(signInFailure('Invalid Username or Password'));
       } else {
         dispatch(signInSuccess(data));
-        navigate('/profile');
+        navigate('/staffdashboard');
       }
     } catch (error) {
       dispatch(signInFailure('OOPS! Something went wrong'));
@@ -55,13 +55,7 @@ export default function SignIn() {
     <div className="flex justify-center mt-20">
       <section className="w-full max-w-md p-8 mx-auto h-auto bg-white rounded-lg shadow-lg border-l-4 border-linkedin-blue">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Sign In</h2>
-          <p className="mt-2 text-gray-600">Leave Applicant Login</p>
-        <Link to="/staffsignin" className="text-center p-3">
-          <h2 className="font-medium text-linkedin-blue hover:tracking-wider transition-all duration-500">
-            Click here for Staff Sign In
-          </h2>
-        </Link>
+          <h2 className="text-3xl font-bold text-gray-900">Staff Sign In</h2>
         </div>
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-4">
@@ -71,8 +65,8 @@ export default function SignIn() {
               </label>
               <input
                 type="text"
-                id="identifier"
-                placeholder="Roll Number / Register Number"
+                id="staff_id"
+                placeholder="Your Staff Id"
                 className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
                 onChange={handleChange}
               />
@@ -107,7 +101,7 @@ export default function SignIn() {
         </form>
         <div className="flex gap-2 text-sm mt-5 justify-center">
           <span>Create an Account?</span>
-          <Link to="/studentsignup" className="text-linkedin-blue-300 underline">
+          <Link to="/staffsignup" className="text-linkedin-blue-300 underline">
             Sign Up
           </Link>
         </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import SideMenu from "./SideMenu";
-import { signOutSuccess } from '../redux/user/userSlice';
+import { signOutSuccess } from "../redux/user/userSlice";
 import { RiParentFill } from "react-icons/ri";
 
 function Navbar() {
@@ -12,15 +12,15 @@ function Navbar() {
   const { currentUser } = useSelector((state) => state.user);
   const handleSignout = async () => {
     try {
-      const res = await fetch('/api/user/signout', {
-        method: 'POST',
+      const res = await fetch("/api/user/signout", {
+        method: "POST",
       });
       const data = await res.json();
       if (!res.ok) {
         console.log(data.message);
       } else {
         dispatch(signOutSuccess());
-        navigate('/');
+        navigate("/studentsignin");
       }
     } catch (error) {
       console.log(error.message);
@@ -64,25 +64,23 @@ function Navbar() {
           Home
         </a>
         {!currentUser && (
-      <div className="flex items-center">
-          <a href="/to-do" className="block active:underline">
-            Wards Detail
-          </a>
+          <div className="flex items-center">
+            <a href="/to-do" className="block active:underline">
+              Wards Detail
+            </a>
           </div>
         )}
-  
+
         {currentUser ? (
           <Link to="/profile" className="flex items-center">
             <div className="flex items-center">
-
-                <span className="tracking-wider uppercase font-semibold">
-                  {" "}
-                  {currentUser.name.split(" ")[0]}
-                </span>
+              <span className="tracking-wider uppercase font-semibold">
+                {currentUser.name.split(" ")[0]}
+              </span>
             </div>
           </Link>
         ) : (
-          <Link to="/signin">
+          <Link to="/studentsignin">
             <button className="px-6 py-2 rounded-md border border-gray-800 hover:scale-105 transition-all duration-200">
               Login
             </button>
@@ -97,7 +95,6 @@ function Navbar() {
             Logout
           </button>
         )}
-
       </div>
       <div className="lg:hidden">
         <button onClick={() => setOpen((prev) => !prev)} className="p-2">
@@ -117,7 +114,9 @@ function Navbar() {
           </svg>
         </button>
       </div>
-      {open && <div className="backdrop fixed inset-0 bg-black bg-opacity-50 z-40"></div>}
+      {open && (
+        <div className="backdrop fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+      )}
       <SideMenu open={open} />
     </nav>
   );

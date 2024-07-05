@@ -17,28 +17,56 @@ const StaffSchema = new mongoose.Schema({
     type: String,
   },
   staff_handle_dept: {
-    type: mongoose.Schema.Types.ObjectId,  // Ensure this references Department's _id
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Department',
   },
   staff_handle_batch: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Batch',
   },
   staff_handle_section: {
-    type: mongoose.Schema.Types.ObjectId, 
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Section',
   },
   staff_role: {
-    type: String, 
+    type: String,
     required: true,
     default: 'Staff'
   },
-  isMentor:{
+  isMentor: {
     type: Boolean,
     default: false,
   },
-  isClassIncharge:{
+  isClassIncharge: {
     type: Boolean,
     default: false,
+  },
+  classInchargeBatchId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Batch',
+    default:null,
+  },
+  classInchargeSectionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Section',
+    default:null,
+  },
+  numberOfClassesHandledAsMentor: {
+    type: Number,
+  },
+  mentorHandlingData: [{
+    handlingBatchId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Batch',
+    },
+    handlingSectionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Section',
+    }
+  }],
+  password: {
+    type: String,
+    required: true,
   },
   userType: {
     type: String,

@@ -4,12 +4,16 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom"; 
 
 export default function LeaveRequestForm({ setTab }) {
+  const { currentUser } = useSelector((state) => state.user);
+
+  const isStaff = currentUser.userType === 'Staff' || false;
+console.log(currentUser);
+
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [errors, setErrors] = useState({});
   const [batchs, setYears] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const { currentUser } = useSelector((state) => state.user);
   const [batches, setBatches] = useState([]);
   const [sections, setSections] = useState([]);
   const [mentors, setMentors] = useState([]);
@@ -44,7 +48,7 @@ export default function LeaveRequestForm({ setTab }) {
       const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
       setFormData({
         ...formData,
-        noOfDays: differenceInDays
+        noOfDays: differenceInDays+1
       });
     } else {
       setFormData({
@@ -268,16 +272,18 @@ export default function LeaveRequestForm({ setTab }) {
                 htmlFor="rollNo"
                 className="text-left font-bold tracking-wide"
               >
-                Roll No
+                {isStaff ? "Staff Id" : "Roll No"}
               </Label>
               <TextInput
                 type="text"
                 name="rollNo"
-                value={formData.rollNo}
-                placeholder="22CSEB35"
+                value={isStaff ? formData.userId : formData.rollNo}
+                placeholder={isStaff ? "Eg: CSE1010" : "Eg: 22CSEB01"}
                 onChange={handleChange}
               />
             </div>
+            {!isStaff && (
+
             <div className="flex flex-col gap-3">
               <Label
                 htmlFor="regNo"
@@ -293,9 +299,12 @@ export default function LeaveRequestForm({ setTab }) {
                 onChange={handleChange}
               />
             </div>
+            )}
           </div>
 
+            {!isStaff&& (
           <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
+
             <div className="flex flex-col">
               <Label
                 htmlFor="departmentId"
@@ -320,7 +329,6 @@ export default function LeaveRequestForm({ setTab }) {
                 <p className="text-red-500 text-xs italic">{errors.departmentId}</p>
               )}
             </div>
-
             <div className="flex flex-col gap-3">
               <Label
                 htmlFor="batchId"
@@ -372,6 +380,9 @@ export default function LeaveRequestForm({ setTab }) {
               )}
             </div>
           </div>
+            )}
+            {!isStaff && (
+
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-3">
               <Label
@@ -416,6 +427,8 @@ export default function LeaveRequestForm({ setTab }) {
               )}
             </div>
           </div>
+            )}
+
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-3">
               <Label
@@ -461,9 +474,57 @@ export default function LeaveRequestForm({ setTab }) {
               name="forOneDay"
               checked={forOneDay}
               onChange={handleForOneDayChange}
+              className="border border-black"
             />
-            <Label htmlFor="forOneDay">Apply leave for one day only</Label>
+            <Label htmlFor="forOneDay">Apply leave for one day only </Label>
+            
+            </div>
+            <div>
+            <Label htmlFor="forOneDay">Apply leave for Half Day </Label>
+            <Label htmlFor="halfDay">FN</Label>
+            <Checkbox
+              id="fn"
+              name="halfDay"
+              // checked={isHalfDay}
+              // onChange={handleForHaldDayChange}
+              className="border border-black" 
+            />
+        <Label htmlFor="halfDay">AN
+        </Label>
+
+            <Checkbox
+            id="an"
+            name="halfDay"
+              // checked={isHalfDay}
+              // onChange={handleForHaldDayChange}
+              className="border border-black"
+          />
           </div>
+
+              {isStaff ? 
+              (
+                <div className="flex flex-col gap-3">
+                <Label
+                  htmlFor="mentorId"
+                  className="text-left font-bold tracking-wide"
+                >
+                  Type of Leave
+                </Label>
+                <Select
+                  name=""
+                >
+
+                    <option>
+                      Medical
+                    </option>
+                    <option>
+                      Others
+                    </option>
+
+                </Select>
+              </div>
+              ) : 
+              (
 
           <div className="flex items-center gap-2">
             <Checkbox
@@ -471,9 +532,12 @@ export default function LeaveRequestForm({ setTab }) {
               name="forMedical"
               checked={forMedical}
               onChange={handleForMedicalChange}
-            />
+              className="border border-black"
+              />
             <Label htmlFor="forMedical">Is this for medical reason?</Label>
-            </div>
+          </div>
+              )}
+
 
           <div className="flex flex-col gap-3">
             <Label

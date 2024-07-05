@@ -22,7 +22,7 @@ const SideMenu = ({ open }) => {
         console.log(data.message);
       } else {
         dispatch(signOutSuccess());
-        navigate("/");
+        navigate("/studentsignin");
       }
     } catch (error) {
       console.log(error.message);
@@ -41,17 +41,17 @@ const SideMenu = ({ open }) => {
             <div className="flex items-center mb-4">
               <h2 className="text-3xl">
                 Hello!
-                <span className="text-4xl font-semibold">
-                  {" "}
-                  {currentUser.name.split(" ")[0]}
-                </span>
+                <span className="tracking-wider uppercase font-semibold">
+  {currentUser.name.split(" ")[0]}
+</span>
+
               </h2>
             </div>
           </>
         ) : (
           <div className="flex items-center mb-4">
             <CiLogin className="mr-2" />
-            <Link to="/" className="block">
+            <Link to="/studentsignin" className="block">
               Login
             </Link>
           </div>

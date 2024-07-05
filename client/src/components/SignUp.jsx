@@ -119,7 +119,7 @@ export default function SignUp() {
       setLoading(true);
       setErrorMessage(null);
 
-      const res = await fetch("/api/auth/signup", {
+      const res = await fetch("/api/auth/studentsignup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -127,16 +127,19 @@ export default function SignUp() {
 
       const data = await res.json();
 
-      if (data.success === false) {
-        if (data.message.includes("duplicate key error collection")) {
-          if (data.message.includes("email_1")) {
-            setErrorMessage("Email is already in use");
-          } else if (data.message.includes("username_1")) {
-            setErrorMessage("Username is already taken");
+        if (data.success === false) {
+          if (data.message.includes("duplicate key error collection")) {
+            if (data.message.includes("email_1")) {
+              setErrorMessage("Email is already in use");
+            } else if (data.message.includes("roll_no")) {
+              setErrorMessage("Roll Number is already in use");
+            } else if (data.message.includes("register_no")) {
+              setErrorMessage("Register Number is already in use");
+            }
+
+          } else {
+            setErrorMessage(data.message);
           }
-        } else {
-          setErrorMessage(data.message);
-        }
         setLoading(false);
         return;
       }
@@ -356,7 +359,7 @@ export default function SignUp() {
         </form>
         <div className="flex gap-2 text-sm mt-5 justify-center">
           <span>Have an account?</span>
-          <Link to="/signin" className="text-linkedin-blue-300 underline">
+          <Link to="/studentsignin" className="text-linkedin-blue-300 underline">
             Sign In
           </Link>
         </div>

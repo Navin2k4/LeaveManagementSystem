@@ -1,4 +1,5 @@
 import LeaveRequest from "../models/leave.model.js";
+import {errorHandler} from '../utils/error.js';
 
 export const createLeaveRequest = async (req, res) => {
   try {
@@ -76,10 +77,35 @@ export const createLeaveRequest = async (req, res) => {
 export const getleaverequestbyUserId = async (req,res,next) => {
   try {
     const { id } = req.params;
-    const data = await LeaveRequest.find({userId:id});
+    const data = await LeaveRequest.find({ userId: id }).sort({ createdAt: -1 }); 
     res.status(200).json(data);
   } catch (error) {
     const customError = errorHandler(500, "Internal Server Error");
     next(customError);  
   }
 };
+
+
+export const getleaverequestbyMentorId = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const data = await LeaveRequest.find({ mentorId: id });
+    res.status(200).json(data);
+  } catch (error) {
+    console.error('Error fetching leave requests:', error);
+    const customError = errorHandler(500, "Internal Server Error");
+    next(customError);
+  }
+}
+
+export const getleaverequestbyclassinchargeid = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const data = await LeaveRequest.find({ classInchargeId: id });
+    res.status(200).json(data);
+  } catch (error) {
+    console.error('Error fetching leave requests:', error);
+    const customError = errorHandler(500, "Internal Server Error");
+    next(customError);
+  }
+}

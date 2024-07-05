@@ -17,12 +17,13 @@ export default function SignUp() {
     staff_phone: "",
     staff_departmentId: "",
     isClassIncharge: false,
-    classInchargeBatchId: "",
-    classInchargeSectionId: "",
+    classInchargeBatchId: null, // Use null instead of empty string
+    classInchargeSectionId: null, // Use null instead of empty string
     isMentor: false,
     numberOfClassesHandledAsMentor: 0,
     mentorHandlingData: [],
     password: "",
+    confirmpassword: "",
     userType: "Staff",
   });
 
@@ -32,6 +33,7 @@ export default function SignUp() {
   const [errors, setErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [mentorSections, setMentorSections] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,9 +63,8 @@ export default function SignUp() {
     const batchId = e.target.value;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      classInchargeBatchId: batchId,
+      classInchargeBatchId: batchId === "" ? null : batchId, // Convert empty string to null
     }));
-
     try {
       const res = await fetch(`/api/batches/${batchId}/sections`);
       const data = await res.json();
@@ -75,88 +76,147 @@ export default function SignUp() {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
+    let newValue = value;
+    if (id === "staff_name" || id === "staff_id") {
+      newValue = value.toUpperCase();
+    }
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [id]: value,
+      [id]: newValue,
     }));
   };
+
   const handleClassInchargeSectionChange = (e) => {
     const { value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      classInchargeSectionId: value,
+      classInchargeSectionId: value === "" ? null : value, // Convert empty string to null
     }));
   };
+
   const handleRoleChange = (e) => {
     const { name, checked } = e.target;
     setFormData((prevFormData) => ({ ...prevFormData, [name]: checked }));
   };
 
   const handleNumClassesChange = (e) => {
-    const numClasses = parseInt(e.target.value);
+    const numClasses = parseInt(e.target.value, 10);
+    const newMentorHandlingData = Array.from(
+      { length: numClasses },
+      () => ({
+        handlingBatchId: null, // Use null instead of empty string
+        handlingSectionId: null, // Use null instead of empty string
+      })
+    );
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       numberOfClassesHandledAsMentor: numClasses,
-    }));
-
-    const newMentorHandlingData = [];
-    for (let i = 0; i < numClasses; i++) {
-      newMentorHandlingData.push({
-        handlingbatcesid: "",
-        handlingsectionid: "",
-      });
-    }
-    setFormData((prevFormData) => ({
-      ...prevFormData,
       mentorHandlingData: newMentorHandlingData,
     }));
   };
 
-  const handleBatchSectionChange = (e, index) => {
+  const handleBatchSectionChange = async (e, index) => {
     const { name, value } = e.target;
     const updatedMentorHandlingData = [...formData.mentorHandlingData];
-    const propName = name.split("-")[0]; // Extract 'handlingbatcesid' or 'handlingsectionid'
-    const dataIndex = parseInt(name.split("-")[1]); // Extract index from name
-
+    const propName = name.split("-")[0]; // Extract 'handlingBatchId' or 'handlingSectionId'
+  
+    // Ensure handlingBatchId and handlingSectionId are null if value is ""
+    const sanitizedValue = value === "" ? null : value;
+  
     updatedMentorHandlingData[index] = {
       ...updatedMentorHandlingData[index],
-      [propName]: value,
+      [propName]: sanitizedValue,
     };
-
+  
     setFormData((prevFormData) => ({
       ...prevFormData,
+              classInchargeBatchId: formData.classInchargeBatchId || null,
+        classInchargeSectionId: formData.classInchargeSectionId || null,
       mentorHandlingData: updatedMentorHandlingData,
     }));
+  
+    if (propName === "handlingBatchId" && value !== "") {
+      try {
+        const res = await fetch(`/api/batches/${value}/sections`);
+        const data = await res.json();
+  
+        const newMentorSections = [...mentorSections];
+        newMentorSections[index] = data;
+        setMentorSections(newMentorSections);
+      } catch (error) {
+        console.error(error);
+      }
+    }
   };
+  
+
+  const validateForm = () => {
+    const errors = {};
+    const { staff_name, staff_id, staff_email, staff_phone, password, confirmpassword } = formData;
+
+    if (!staff_name) errors.staff_name = "Name is required";
+    if (!/^[a-zA-Z\s]+$/.test(staff_name)) errors.staff_name = "Name should contain only letters and spaces";
+    if (!staff_id) errors.staff_id = "Staff ID is required";
+    if (!staff_email) errors.staff_email = "Email is required";
+    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(staff_email)) errors.staff_email = "Invalid email address";
+    if (!staff_phone) errors.staff_phone = "Phone number is required";
+    if (!/^[0-9]{10}$/.test(staff_phone)) errors.staff_phone = "Invalid phone number";
+    if (!password) errors.password = "Password is required";
+    if (!/^.{8,16}$/.test(password)) errors.password = "Password should be 8 to 16 characters long";
+    if (password !== confirmpassword) errors.confirmpassword = "Passwords do not match";
+
+    setErrors(errors);
+
+    return Object.keys(errors).length === 0;
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!validateForm()) return;
+  
+    // Format mentorHandlingData
+    const formattedMentorHandlingData = formData.mentorHandlingData.map(data => ({
+      handlingBatchId: data.handlingBatchId,
+      handlingSectionId: data.handlingSectionId,
+    }));
+  
     try {
       setLoading(true);
       setErrorMessage(null);
-
-      const res = await fetch("/api/auth/signup", {
+  
+      const res = await fetch("/api/auth/staffsignup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          mentorHandlingData: formattedMentorHandlingData,
+        }),
       });
-
+  
       const data = await res.json();
-
+  
+      if (data.success === false) {
+        // Handle error messages from backend if needed
+        setLoading(false);
+        return;
+      }
+  
       if (!res.ok) {
         throw new Error(data.message || "Sign up failed");
       }
-
+  
       setLoading(false);
-      navigate("/signin");
+      navigate("/staffsignin");
     } catch (error) {
       setErrorMessage(
-        "An error occurred while signing up. Please try again later."
+        error.message || "An error occurred while signing up. Please try again later."
       );
       setLoading(false);
     }
   };
+  
 
   console.log(formData);
 
@@ -187,6 +247,9 @@ export default function SignUp() {
                 className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
                 onChange={handleChange}
               />
+              {errors.staff_name && (
+                <p className="text-red-500 text-xs italic">{errors.staff_name}</p>
+              )}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -200,9 +263,14 @@ export default function SignUp() {
                   type="text"
                   id="staff_id"
                   placeholder="S001"
-                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline// ...continued from previous snippet
+
+.none focus:ring-1 focus:ring-black"
                   onChange={handleChange}
                 />
+                {errors.staff_id && (
+                  <p className="text-red-500 text-xs italic">{errors.staff_id}</p>
+                )}
               </div>
               <div>
                 <label
@@ -218,6 +286,9 @@ export default function SignUp() {
                   className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
                   onChange={handleChange}
                 />
+                {errors.staff_email && (
+                  <p className="text-red-500 text-xs italic">{errors.staff_email}</p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -235,6 +306,9 @@ export default function SignUp() {
                   className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
                   onChange={handleChange}
                 />
+                {errors.staff_phone && (
+                  <p className="text-red-500 text-xs italic">{errors.staff_phone}</p>
+                )}
               </div>
               <div className="flex flex-col">
                 <Label
@@ -385,28 +459,23 @@ export default function SignUp() {
                 {formData.numberOfClassesHandledAsMentor > 0 && (
                   <div>
                     <h2 className="text-linkedin-blue font-semibold">
-                      Batch and Section for Mentees
+                      Handling Details
                     </h2>
-                    {formData.mentorHandlingData.map((item, index) => (
-                      <div
-                        key={index}
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                      >
+                    {formData.mentorHandlingData.map((data, index) => (
+                      <div key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                         <div className="flex flex-col gap-3">
                           <Label
-                            htmlFor={`handlingbatcesid-${index}`}
+                            htmlFor={`handlingBatchId-${index}`}
                             className="mb-2 text-left font-bold tracking-wide"
                           >
                             Batch
                           </Label>
                           <Select
-                            name={`handlingbatcesid-${index}`}
-                            value={item.handlingbatcesid}
+                            name={`handlingBatchId-${index}`}
+                            value={data.handlingBatchId}
                             onChange={(e) => handleBatchSectionChange(e, index)}
                             className={
-                              errors[`handlingbatcesid-${index}`]
-                                ? "border-red-500"
-                                : ""
+                              errors[`handlingBatchId-${index}`] ? "border-red-500" : ""
                             }
                           >
                             <option value="">Select Batch</option>
@@ -416,39 +485,37 @@ export default function SignUp() {
                               </option>
                             ))}
                           </Select>
-                          {errors[`handlingbatcesid-${index}`] && (
+                          {errors[`handlingBatchId-${index}`] && (
                             <p className="text-red-500 text-xs italic">
-                              {errors[`handlingbatcesid-${index}`]}
+                              {errors[`handlingBatchId-${index}`]}
                             </p>
                           )}
                         </div>
                         <div className="flex flex-col gap-3">
                           <Label
-                            htmlFor={`handlingsectionid-${index}`}
+                            htmlFor={`handlingSectionId-${index}`}
                             className="mb-2 text-left font-bold tracking-wide"
                           >
                             Section
                           </Label>
                           <Select
-                            name={`handlingsectionid-${index}`}
-                            value={item.handlingsectionid}
+                            name={`handlingSectionId-${index}`}
+                            value={data.handlingSectionId}
                             onChange={(e) => handleBatchSectionChange(e, index)}
                             className={
-                              errors[`handlingsectionid-${index}`]
-                                ? "border-red-500"
-                                : ""
+                              errors[`handlingSectionId-${index}`] ? "border-red-500" : ""
                             }
                           >
                             <option value="">Select Section</option>
-                            {sections.map((section) => (
+                            {mentorSections[index]?.map((section) => (
                               <option key={section._id} value={section._id}>
                                 {section.section_name}
                               </option>
                             ))}
                           </Select>
-                          {errors[`handlingsectionid-${index}`] && (
+                          {errors[`handlingSectionId-${index}`] && (
                             <p className="text-red-500 text-xs italic">
-                              {errors[`handlingsectionid-${index}`]}
+                              {errors[`handlingSectionId-${index}`]}
                             </p>
                           )}
                         </div>
@@ -458,50 +525,54 @@ export default function SignUp() {
                 )}
               </>
             )}
-            <div>
-              <div className="grid grid-cols-2">
-                <div>
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Password
-                  </label>
-                  <TextInput
-                    type="password"
-                    id="password"
-                    placeholder="********"
-                    className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="confirmpassword"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Confirm Password
-                  </label>
-                  <TextInput
-                    type="confirmpassword"
-                    id="confirmpassword"
-                    placeholder="********"
-                    className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
-                    onChange={handleChange}
-                  />
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="password" className="mb-2 text-left font-bold tracking-wide">
+                  Password
+                </Label>
+                <TextInput
+                  type="password"
+                  id="password"
+                  placeholder="Enter password"
+                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                  onChange={handleChange}
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-xs italic">{errors.password}</p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="confirmpassword" className="mb-2 text-left font-bold tracking-wide">
+                  Confirm Password
+                </Label>
+                <TextInput
+                  type="password"
+                  id="confirmpassword"
+                  placeholder="Confirm password"
+                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                  onChange={handleChange}
+                />
+                {errors.confirmpassword && (
+                  <p className="text-red-500 text-xs italic">{errors.confirmpassword}</p>
+                )}
               </div>
             </div>
-            {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-
-            <div>
+            {errorMessage && (
+              <Alert type="danger" className="mt-4">
+                {errorMessage}
+              </Alert>
+            )}
+            <div className="flex items-center justify-between mt-8">
+              <Link to="/staffsignin" className="text-linkedin-blue font-medium hover:underline">
+                Already have an account? Sign in
+              </Link>
               <button
                 type="submit"
-                className="w-full py-3 mt-4 font-medium tracking-wider text-white uppercase bg-linkedin-blue border border-transparent rounded-lg focus:outline-none hover:bg-linkedin-light-blue"
+                className="px-6 py-2 text-white bg-linkedin-blue rounded-md shadow-sm hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
                 disabled={loading}
               >
                 {loading ? (
-                  <Spinner className="w-6 h-6 mr-4 border-white" />
+                  <Spinner className="w-5 h-5 mr-3 border-white border-2 border-opacity-25 animate-spin" />
                 ) : (
                   "Sign Up"
                 )}
@@ -513,3 +584,5 @@ export default function SignUp() {
     </div>
   );
 }
+
+

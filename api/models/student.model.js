@@ -9,6 +9,7 @@ const studentSchema = new mongoose.Schema(
     register_no: {
       type: String,
       required: true,
+      unique: true,
     },
     password: {
       type: String,

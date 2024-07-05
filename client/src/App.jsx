@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SuperAdmin from "./pages/SuperAdmin";
 import PageNotFound from "./pages/PageNotFound";
-import Mentor from "./pages/Mentor";
+import StaffDashBoard from "./pages/StaffDashBoard";
 import HomePage from "./pages/HomePage/HomePage";
 import Navbar from "./components/NavBar";
 import SignIn from "./components/SignIn";
@@ -12,6 +12,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import ProfilePage from "./pages/ProfilePage";
 import LeaveRequestForm from "./components/LeaveRequestForm";
 import DashBoard from "./pages/DashBoard";
+import StaffSignIn from "./components/StaffSignIn";
 
 export default function App() {
   return (
@@ -20,8 +21,9 @@ export default function App() {
       <Routes>
         {/* Pages that are Generally Availabe to Everyone */}
         <Route path='/' element={<HomePage />} />
-        <Route path='/signin' element={<SignIn />} />
-        <Route path='/signup' element={<SignUp />} />
+        <Route path='/studentsignin' element={<SignIn />} />
+        <Route path='/studentsignup' element={<SignUp />} />
+        <Route path='/staffsignin' element={<StaffSignIn/>} />
         <Route path='/staffsignup' element={<StaffSignUp/>} />
         <Route path='*' element={<PageNotFound />} />
         {/* Pages that are only availabe to the users Signed in  */}
@@ -29,10 +31,10 @@ export default function App() {
           <Route path='/studentdashboard' element={<DashBoard />} />
           <Route path='/profile' element={<ProfilePage/>} />
           <Route path='/leaverequest' element={<LeaveRequestForm />} />
+          <Route path='/staffdashboard' element={<StaffDashBoard/>} />
         </Route>
         
         <Route path='/superadmin' element={<SuperAdmin />} />
-        <Route path='/mentor' element={<Mentor/>} />
       </Routes>
 
       {/* <Routes>

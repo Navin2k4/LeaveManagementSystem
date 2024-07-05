@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
 import Student from "../models/student.model.js";
+import Staff from "../models/staff.model.js";
 import { errorHandler } from "../utils/error.js";
 
-export const signup = async (req, res, next) => {
+export const studentsignup = async (req, res, next) => {
   const {
     roll_no,
     register_no,
@@ -56,6 +57,9 @@ export const signup = async (req, res, next) => {
       if (field === "roll_no") {
         return next(errorHandler(400, "Roll Number is already in use"));
       }
+      if (field === "register_no") {
+        return next(errorHandler(400, "Refgister Number is already in use"));
+      }
       if (field === "email") {
         return next(errorHandler(400, "Email is already in use"));
       }
@@ -64,7 +68,7 @@ export const signup = async (req, res, next) => {
   }
 };
 
-export const signin = async (req, res, next) => {
+export const studentsignin = async (req, res, next) => {
   let { identifier, password } = req.body;
   if (!identifier || !password) {
     return res.status(400).json({ message: "All fields are required" });
@@ -105,6 +109,130 @@ export const signin = async (req, res, next) => {
       department,
       student_section,
       batch,
+      userType
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const staffsignup = async (req, res, next) => {
+  const {
+    staff_name,
+    staff_id,
+    staff_email,
+    staff_phone,
+    staff_departmentId,
+    isClassIncharge,
+    classInchargeBatchId,
+    classInchargeSectionId,
+    isMentor,
+    numberOfClassesHandledAsMentor,
+    mentorHandlingData,
+    password,
+    userType,
+  } = req.body;
+
+  try {
+    // Validate required fields
+    if (!staff_name || !staff_id || !staff_email || !staff_phone || !staff_departmentId || !password) {
+      return next(errorHandler(400, "All Fields Are Required"));
+    }
+
+    // Validate mentorHandlingData if present
+    if (mentorHandlingData && mentorHandlingData.length > 0) {
+      for (let i = 0; i < mentorHandlingData.length; i++) {
+        const data = mentorHandlingData[i];
+        if (!data.handlingBatchId || !data.handlingSectionId) {
+          return res.status(400).json({ message: 'Invalid mentorHandlingData structure' });
+        }
+        // Additional validation or processing logic if needed
+      }
+    }
+
+    // Hash the password
+    const hashedPassword = bcryptjs.hashSync(password, 10);
+
+    // Create new Staff instance
+    const newStaff = new Staff({
+      staff_name,
+      staff_id,
+      staff_mail: staff_email,
+      staff_phone,
+      staff_handle_dept: staff_departmentId,
+      isClassIncharge,
+      classInchargeBatchId,
+      classInchargeSectionId,
+      isMentor,
+      numberOfClassesHandledAsMentor,
+      mentorHandlingData,
+      password: hashedPassword,
+      userType,
+    });
+
+    // Save the new staff member to the database
+    await newStaff.save();
+
+    console.log("Staff Saved Successfully");
+    res.status(201).json({ message: "Staff saved successfully" });
+  } catch (error) {
+    // Handle duplicate key error (e.g., staff ID or email already exists)
+    if (error.code === 11000) {
+      let field = Object.keys(error.keyPattern)[0];
+      if (field === "staff_id") {
+        return next(errorHandler(400, "Staff ID is already in use"));
+      }
+      if (field === "staff_mail") {
+        return next(errorHandler(400, "Email is already in use"));
+      }
+    }
+    next(error); // Forward other errors to error handler middleware
+  }
+};
+
+export const staffsignin = async (req, res, next) => {
+  try {
+    let { staff_id, password } = req.body;
+
+    if (!staff_id || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    staff_id = staff_id.toUpperCase();
+
+    const staff = await Staff.findOne({ staff_id: staff_id });
+
+    if (!staff) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isMatch = await bcryptjs.compare(password, staff.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ id: staff._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    const { _id, staff_name, staff_mail, staff_phone, staff_handle_dept, isClassIncharge, classInchargeBatchId, classInchargeSectionId, isMentor, numberOfClassesHandledAsMentor, mentorHandlingData, userType } = staff;
+
+    res.status(200).json({
+      token,
+      _id,
+      name: staff_name,
+      id: staff_id,
+      mail: staff_mail,
+      phone : staff_phone,
+      departmentId: staff_handle_dept,
+      isClassIncharge,
+      isMentor,
+      classInchargeBatchId,
+      classInchargeSectionId,
+      numberOfClassesHandledAsMentor,
+      mentorHandlingData,
       userType
     });
   } catch (error) {
