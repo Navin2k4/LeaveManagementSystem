@@ -15,9 +15,11 @@ import { SiTicktick } from "react-icons/si";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdOutlineDownloadDone } from "react-icons/md";
 
-export default function MentorLeaveFromStudents({ leaveRequestsAsMentor }) {
-  const [modalType, setModalType] = useState(null); // 'approve', 'reject', or 'taken'
+export default function MentorLeaveFromStudent({ leaveRequestsAsMentor }) {
+  const [modalType, setModalType] = useState(null);
   const [currentRequestId, setCurrentRequestId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [requests, setRequests] = useState(leaveRequestsAsMentor);
 
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -25,31 +27,50 @@ export default function MentorLeaveFromStudents({ leaveRequestsAsMentor }) {
   };
 
   const handleRequest = (type, id) => {
-    console.log("Opening modal:", type, id); // Added console log
     setModalType(type);
     setCurrentRequestId(id);
   };
 
   const handleClose = () => {
-    console.log("Closing modal"); // Added console log
     setModalType(null);
     setCurrentRequestId(null);
   };
 
-  const confirmRequest = () => {
-    if (modalType === "approve") {
-      // Approval backend
-      alert(`Approve request with id ${currentRequestId}`);
-    } else if (modalType === "reject") {
-      // Reject backend
-      alert(`Reject request with id ${currentRequestId}`);
-    }
-    handleClose();
-  };
+  const confirmRequest = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/leave-requestsbymentorid/${currentRequestId}/status`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: modalType }),
+      });
+  
+      if (response.ok) {
+        setRequests((prevRequests) =>
+          prevRequests.map((req) =>
+            req._id === currentRequestId
+              ? { ...req, approvals: { ...req.approvals, mentor: { status: modalType } } }
+              : req
+          )
+        );
 
+      } else {
+        alert(`Failed to ${modalType} request`);
+      }
+    } catch (error) {
+      console.error("Error updating request:", error);
+      alert(`Failed to ${modalType} request`);
+    } finally {
+      setLoading(false);
+      handleClose();
+    }
+  };
+  
   return (
     <>
-      {leaveRequestsAsMentor.length > 0 ? (
+      {requests.length > 0 ? (
         <div>
           <div className="bg-white shadow-md p-4 rounded-lg mb-4">
             <h2 className="text-3xl uppercase tracking-wider text-center font-semibold">
@@ -69,7 +90,7 @@ export default function MentorLeaveFromStudents({ leaveRequestsAsMentor }) {
                 <TableHeadCell className="p-4 bg-linkedin-blue text-center text-white">Actions</TableHeadCell>
               </TableHead>
               <TableBody className="divide-y">
-                {leaveRequestsAsMentor.map((req) => {
+                {requests.map((req) => {
                   const { status } = req.approvals.mentor;
 
                   return (
@@ -85,14 +106,16 @@ export default function MentorLeaveFromStudents({ leaveRequestsAsMentor }) {
                         {status === "pending" ? (
                           <div className="flex items-center justify-center gap-2">
                             <button
-                              onClick={() => handleRequest("approve", req._id)}
+                              onClick={() => handleRequest("approved", req._id)}
                               className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
+                              disabled={loading}
                             >
                               Approve
                             </button>
                             <button
-                              onClick={() => handleRequest("reject", req._id)}
+                              onClick={() => handleRequest("rejected", req._id)}
                               className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
+                              disabled={loading}
                             >
                               Reject
                             </button>
@@ -122,34 +145,38 @@ export default function MentorLeaveFromStudents({ leaveRequestsAsMentor }) {
               <ModalHeader />
               <ModalBody>
                 <div className="text-center">
-                  {modalType === "approve" ? (
+                  {modalType === "approved" ? (
                     <SiTicktick className="mx-auto mb-4 h-14 w-14 text-green-400 dark:text-white" />
-                  ) : modalType === "reject" ? (
+                  ) : modalType === "rejected" ? (
                     <RxCrossCircled className="mx-auto mb-4 h-14 w-14 text-red-400 dark:text-white" />
                   ) : (
                     <MdOutlineDownloadDone className="mx-auto mb-4 h-14 w-14 text-linkedin-blue dark:text-white" />
                   )}
 
                   <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                    {modalType === "approve"
+                    {modalType === "approved"
                       ? "Are you sure you want to approve this request?"
-                      : modalType === "reject"
+                      : modalType === "rejected"
                       ? "Are you sure you want to reject this request?"
                       : "This action has already been taken."}
                   </h3>
                   {modalType !== "taken" && (
                     <div className="flex justify-center gap-4">
-                      <Button
-                        color={modalType === "approve" ? "success" : "failure"}
-                        onClick={confirmRequest}
-                      >
-                        <h1 className="text-white font-semibold">
-                          Yes, {modalType === "approve" ? "Approve" : "Reject"}
-                        </h1>
-                      </Button>
+{loading ? (
+                          <div className="flex items-center">
+                            <Spinner size="sm" className="mr-2" />
+                            <span className="text-white">Loading...</span>
+                          </div>
+                        ) : (
+                          <h1 className="text-white font-semibold">
+                            Yes,{" "}
+                            {modalType === "approved" ? "Approve" : "Reject"}
+                          </h1>
+                        )}
                       <Button
                         className="bg-linkedin-blue"
                         onClick={handleClose}
+                        disabled={loading}
                       >
                         <h1 className="text-white">Cancel</h1>
                       </Button>
@@ -171,9 +198,9 @@ export default function MentorLeaveFromStudents({ leaveRequestsAsMentor }) {
           </div>
         </div>
       ) : (
-        <div className="flex items-center justify-center h-screen">
+        <div className="flex items-center justify-center ">
           <h2 className="text-2xl uppercase tracking-wider text-center font-semibold">
-            You are not currently handling any classes as a mentor
+            No Leave Requests Yet
           </h2>
         </div>
       )}

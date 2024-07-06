@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import LeaveRequestForm from "../components/LeaveRequestForm";
 import LeaveReport from "../components/LeaveReport";
-import MentorLeaveFromStudents from "../components/MentorLeaveFromStudents";
-import ClassInchargeLeaveFromStudent from "../components/ClassInchargeLeaveFromStudent";
 import DashBoard from "./DashBoard";
 import { useSelector } from "react-redux";
 import { useFetchLeaveRequestForClassIncharge, useFetchLeaveRequestForMentor } from "../../hooks/useFetchData";
 import { FaArrowDown } from "react-icons/fa6";
+import MentorLeaveFromStudent from "../components/MentorLeaveFromStudent";
+import ClassInchargeLeaveFromStudent from "../components/ClassInchargeLeaveFromStudent";
 
 const StaffDashBoard = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -26,7 +26,7 @@ const StaffDashBoard = () => {
       case "Your Leave Requests":
         return <DashBoard />;
       case "As Mentor":
-        return <MentorLeaveFromStudents leaveRequestsAsMentor={mentorRequests} />
+        return <MentorLeaveFromStudent leaveRequestsAsMentor={mentorRequests} />
       case "As Class Incharge":
         return <ClassInchargeLeaveFromStudent leaveRequestsAsClassIncharge={classInchargeRequest} />
       default:

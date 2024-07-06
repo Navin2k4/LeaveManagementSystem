@@ -92,7 +92,7 @@ const ProfilePage = () => {
                 : "hover:bg-white/20 text-white font-bold"
             }`}
           >
-            Show My DashBoard
+            My Requests
           </li>
         </ul>
       </div>

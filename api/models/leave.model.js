@@ -43,12 +43,10 @@ const leaveRequestSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Staff',
     },
-    ishalfDayLeave: {
-      type: [{
-        type: String,
-        enum: ["FN", "AN"], // Allow only FN or AN in the array
-      }],
-      default: [], // Default value is an empty array
+    isHalfDay: {
+      type: String,
+      enum: ["FN", "AN"],
+      default: null,
     },
     fromDate: {
       type: Date,

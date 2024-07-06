@@ -19,7 +19,7 @@
         leaveStartDate,
         leaveEndDate,
         noOfDays,
-        forHalfDay, // Ensure these fields are extracted from req.body
+        isHalfDay, // Ensure these fields are extracted from req.body
         typeOfLeave, // Ensure these fields are extracted from req.body
       } = req.body;
 
@@ -45,18 +45,6 @@
         });
       }
       
-      let isHalfDayLeave = null;
-
-      if (forHalfDay && (forHalfDay.AN || forHalfDay.FN)) {
-        isHalfDayLeave = [];
-      
-        if (forHalfDay.AN) {
-          isHalfDayLeave.push("AN");
-        }
-        if (forHalfDay.FN) {
-          isHalfDayLeave.push("FN");
-        }
-      }
       // Create leave request based on userType
       if (userType === 'Staff') {
         const staffLeaveRequest = new LeaveRequest({
@@ -75,7 +63,7 @@
           fromDate: leaveStartDate,
           toDate: leaveEndDate,
           noOfDays,
-          forHalfDay: isHalfDayLeave,
+          isHalfDay,
           typeOfLeave, // Include these fields for staff leave request
           isStaff: true,
           approvals: {
@@ -114,12 +102,11 @@
           fromDate: leaveStartDate,
           toDate: leaveEndDate,
           noOfDays,
-          forHalfDay: isHalfDayLeave,
+          isHalfDay,
           isStaff: false,
         });
 
         await studentLeaveRequest.save();
-        console.log(studentLeaveRequest);
         res.status(201).json({ success: true, message: "Student leave request submitted successfully" });
       } else {
         return res.status(400).json({
@@ -134,8 +121,6 @@
     }
   };
 
-
-
   export const getleaverequestbyUserId = async (req,res,next) => {
     try {
       const { id } = req.params;
@@ -146,7 +131,6 @@
       next(customError);  
     }
   };
-
 
   export const getleaverequestbyMentorId = async (req, res, next) => {
     try {
@@ -171,3 +155,77 @@
       next(customError);
     }
   }
+
+  export const updateLeaveRequestStatusByMentorId = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const validStatuses = ["approved", "rejected"];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid status. Status must be 'approved' or 'rejected'.",
+        });
+      }
+      const leaveRequest = await LeaveRequest.findByIdAndUpdate(
+        id,
+        { "approvals.mentor.status": status },
+        { new: true }
+      );
+  
+      if (!leaveRequest) {
+        return res.status(404).json({
+          success: false,
+          message: "Leave request not found",
+        });
+      }
+  
+      res.status(200).json({
+        success: true,
+        message: `Leave request ${status} successfully`,
+        leaveRequest,
+      });
+    } catch (error) {
+      console.error("Error updating leave request status:", error);
+      const customError = errorHandler(500, "Internal Server Error");
+      next(customError);
+    }
+  };
+  
+  export const updateLeaveRequestStatusByClassInchargeId = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const validStatuses = ["approved", "rejected"];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid status. Status must be 'approved' or 'rejected'.",
+        });
+      }
+      const leaveRequest = await LeaveRequest.findByIdAndUpdate(
+        id,
+        { "approvals.classIncharge.status": status },
+        { new: true }
+      );
+  
+      if (!leaveRequest) {
+        return res.status(404).json({
+          success: false,
+          message: "Leave request not found",
+        });
+      }
+  
+      res.status(200).json({
+        success: true,
+        message: `Leave request ${status} successfully`,
+        leaveRequest,
+      });
+    } catch (error) {
+      console.error("Error updating leave request status:", error);
+      const customError = errorHandler(500, "Internal Server Error");
+      next(customError);
+    }
+  };
+  
+

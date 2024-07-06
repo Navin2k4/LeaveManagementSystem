@@ -6,7 +6,6 @@ import {
   Select,
   Spinner,
   Checkbox,
-  Radio,
 } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -37,15 +36,14 @@ export default function LeaveRequestForm({ setTab }) {
   ]);
   const [forMedical, setForMedical] = useState(false);
   const [forOneDay, setForOneDay] = useState(false);
-  const [forHalfDay, setForHalfDay] = useState("");
+  const [isHalfDay, setIsHalfDay] = useState(null);
 
-  console.log(currentUser);
 
   const [formData, setFormData] = useState({
     name: currentUser.name,
-    userId: currentUser.userId,
+    userId: currentUser.userType === "Staff" ? currentUser.userId : currentUser.id,
     userType: currentUser.userType,
-    rollNo: currentUser.id,
+    rollNo: currentUser.userType === "Staff" ? currentUser.id : currentUser.roll_no,
     regNo: currentUser.register_no,
     forMedical,
     batchId: "",
@@ -56,7 +54,7 @@ export default function LeaveRequestForm({ setTab }) {
     mentorId: "",
     leaveStartDate: "",
     leaveEndDate: "",
-    forHalfDay: [], // Initialize as an empty array
+    isHalfDay,
     noOfDays: 0,
     typeOfLeave: "", // Added field for type of leave selection
   });
@@ -177,45 +175,32 @@ export default function LeaveRequestForm({ setTab }) {
       setFormData({ ...formData, leaveEndDate: "" });
     }
   };
-
-  const handleHalfDayChange = (event) => {
-    const { name } = event.target;
-  
-    const newSelection = forHalfDay === name ? "" : name;
-  
-    setForHalfDay(newSelection);
-  
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      forHalfDay: newSelection ? [newSelection] : [],
-    }));
-  };
-  
     
+  const handleIsHalfDayChange = (selectedOption) => {
+    setIsHalfDay(selectedOption);
+    setFormData({
+      ...formData,
+      isHalfDay: selectedOption 
+    });
+  };
   
 
   const validateForm = () => {
     const newErrors = {};
     if (!formData.departmentId) newErrors.departmentId = "Department must be selected";
-    if (!formData.leaveStartDate) {
-      newErrors.leaveStartDate = "Date from must be selected";
-    } else {
-      const today = new Date();
-      const leaveStartDate = new Date(formData.leaveStartDate);
-    if (leaveStartDate < today) {newErrors.leaveStartDate = "Leave start date cannot be in the past";}
-    }
-    if (!forOneDay && !forHalfDay && !formData.leaveEndDate) newErrors.leaveEndDate = "Date to must be selected";
-    if (!forOneDay && !forHalfDay && formData.leaveEndDate < formData.leaveStartDate) newErrors.leaveEndDate = "Date to must be greater than Date from";
+    if (!formData.leaveStartDate) newErrors.leaveStartDate = "Date from must be selected";
+    if (!forOneDay && !isHalfDay && !formData.leaveEndDate) newErrors.leaveEndDate = "Date to must be selected";
+    if (!forOneDay && !isHalfDay && formData.leaveEndDate < formData.leaveStartDate) newErrors.leaveEndDate = "Date to must be greater than Date from";
     if (!formData.reason) newErrors.reason = "Reason must be given";
     if (formData.reason && formData.reason.length > 200) newErrors.reason = "Reason must be less than 200 characters";
     return newErrors;
-};
+  };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
-      console.log("caught form errors");
       setErrors(formErrors);
       return;
     }
@@ -265,7 +250,6 @@ export default function LeaveRequestForm({ setTab }) {
     }
   };
 
-  console.log(formData);
   return (
     <div className="flex justify-center items-center min-h-screen">
       <div className="bg-custom-gray font-sans shadow-lg my-3 rounded px-8 pt-6 pb-8 mb-4 max-w-5xl w-full">
@@ -505,7 +489,7 @@ export default function LeaveRequestForm({ setTab }) {
                 name="leaveEndDate"
                 value={formData.leaveEndDate}
                 onChange={handleChange}
-                disabled={forOneDay || forHalfDay.FN || forHalfDay.AN}
+                disabled={forOneDay}
                 className={errors.leaveEndDate ? "border-red-500" : ""}
               />
               {errors.leaveEndDate && (
@@ -521,40 +505,41 @@ export default function LeaveRequestForm({ setTab }) {
               name="forOneDay"
               checked={forOneDay}
               onChange={handleForOneDayChange}
-              className="border border-black"
-            />
+              className="text-custom-div-bg border-custom-div-bg focus:ring-custom-div-bg"
+              />
             <Label htmlFor="forOneDay">Apply leave for one day only </Label>
           </div>
 
           <div className="flex items-center space-x-4">
-  <Label htmlFor="forHalfDay" className="font-bold">
-    For Half Day
+      <Label htmlFor="forHalfDay">
+        Are you applying leave For Half Day if Yes! select One
+      </Label>
+      <div className="flex items-center space-x-2">
+  <Checkbox
+    id="FN"
+    name="forHalfDay"
+    checked={formData.isHalfDay === 'FN'}
+    onChange={() => handleIsHalfDayChange('FN')}
+    className="text-custom-div-bg border-custom-div-bg focus:ring-custom-div-bg"
+  />
+  <Label htmlFor="FN" className="font-normal">
+    FN
   </Label>
-  <div className="flex items-center space-x-2">
-    <Radio
-      id="FN"
-      name="FN"
-      checked={forHalfDay === "FN"}
-      onChange={handleHalfDayChange}
-      className="text-custom-div-bg border-custom-div-bg focus:ring-custom-div-bg"
-    />
-    <Label htmlFor="FN" className="font-normal">
-      FN
-    </Label>
-  </div>
-  <div className="flex items-center space-x-2">
-    <Radio
-      id="AN"
-      name="AN"
-      checked={forHalfDay === "AN"}
-      onChange={handleHalfDayChange}
-      className="text-custom-div-bg border-custom-div-bg focus:ring-custom-div-bg"
-    />
-    <Label htmlFor="AN" className="font-normal">
-      AN
-    </Label>
-  </div>
 </div>
+<div className="flex items-center space-x-2">
+  <Checkbox
+    id="AN"
+    name="forHalfDay"
+    checked={formData.isHalfDay === 'AN'}
+    onChange={() => handleIsHalfDayChange('AN')}
+    className="text-custom-div-bg border-custom-div-bg focus:ring-custom-div-bg"
+  />
+  <Label htmlFor="AN" className="font-normal">
+    AN
+  </Label>
+</div>
+
+    </div>
 
           {isStaff ? (
             <div className="flex flex-col">
@@ -620,7 +605,7 @@ export default function LeaveRequestForm({ setTab }) {
           </div>
           <Button
             type="submit"
-            className="text-white p-2 font-bold tracking-wide rounded-md"
+            className="text-white bg-linkedin-blue p-2 font-bold tracking-wide rounded-md"
           >
             {loading ? (
               <div className="flex items-center">

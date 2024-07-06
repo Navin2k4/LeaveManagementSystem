@@ -25,7 +25,7 @@ function HomePage() {
             Technology.
           </p>
           <div className="request-btn-div">
-            {currentUser.userType === "Staff" ? (
+            {currentUser &&  currentUser.userType === "Staff" ? (
               <Link to="/staffdashboard" className="request-leave-btn">
                 <button className="text-center">Leave Request Form</button>
               </Link>
