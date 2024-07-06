@@ -17,7 +17,7 @@ const leaveRequestSchema = new Schema(
       enum: ['Student', 'Staff'], // Possible values are 'Student' and 'Staff'
     },
     rollNo: {
-      type: String, 
+      type: String,
     },
     regNo: {
       type: String,
@@ -44,9 +44,11 @@ const leaveRequestSchema = new Schema(
       ref: 'Staff',
     },
     ishalfDayLeave: {
-      type: String, 
-      enum: ["fn", "an", "false"], 
-      default: "false", 
+      type: [{
+        type: String,
+        enum: ["FN", "AN"], // Allow only FN or AN in the array
+      }],
+      default: [], // Default value is an empty array
     },
     fromDate: {
       type: Date,
@@ -59,7 +61,7 @@ const leaveRequestSchema = new Schema(
       type: Number,
       required: true,
     },
-    forMedical:{
+    forMedical: {
       type: Boolean,
       default: false,
     },
@@ -69,7 +71,10 @@ const leaveRequestSchema = new Schema(
     },
     typeOfLeave: {
       type: String,
-      enum: ["Casual Leave", "Sick Leave", "Earned Leave", "Maternity Leave", "Paternity Leave", "Study Leave", "Duty Leave", "Special Leave", "Sabbatical Leave"],
+      enum: [
+        "Casual Leave", "Sick Leave", "Earned Leave", "Maternity Leave",
+        "Paternity Leave", "Study Leave", "Duty Leave", "Special Leave", "Sabbatical Leave"
+      ],
     },
     status: {
       type: String,

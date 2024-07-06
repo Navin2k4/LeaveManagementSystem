@@ -221,9 +221,9 @@ export const staffsignin = async (req, res, next) => {
 
     res.status(200).json({
       token,
-      _id,
+      id : staff_id,
       name: staff_name,
-      id: staff_id,
+      userId: _id,
       mail: staff_mail,
       phone : staff_phone,
       departmentId: staff_handle_dept,

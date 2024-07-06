@@ -14,8 +14,8 @@ const StaffDashBoard = () => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
 
-  const mentorRequests = useFetchLeaveRequestForMentor(currentUser._id);
-  const classInchargeRequest = useFetchLeaveRequestForClassIncharge(currentUser._id);
+  const mentorRequests = useFetchLeaveRequestForMentor(currentUser.userId);
+  const classInchargeRequest = useFetchLeaveRequestForClassIncharge(currentUser.userId);
 
   const renderComponent = () => {
     switch (tab) {

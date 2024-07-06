@@ -15,7 +15,7 @@ const ProfilePage = () => {
       case "EditProfile":
         return <EditProfile />;
       case "DashBoard":
-        return <DashBoard />;
+        return <DashBoard setTab={setTab} />;
       default:
         return <LeaveRequestForm setTab={setTab} />;
     }

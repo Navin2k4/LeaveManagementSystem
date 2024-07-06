@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import LeaveStatus from '../components/LeaveStatus';
 import { useSelector } from 'react-redux';
 
-const DashBoard = () => {
+const DashBoard = ({ setTab }) => {
   const { currentUser } = useSelector((state) => state.user);
   const [leaveRequests, setLeaveRequests] = useState([]);
+
+
+  const id = currentUser.userType === "Student" ? currentUser.id : currentUser.userId;
 
   useEffect(() => {
     const fetchLeaveRequests = async () => {
       try {
-        const res = await fetch(`/api/getleaverequest/${currentUser.id}`);
+        const res = await fetch(`/api/getleaverequest/${id}`);
         const data = await res.json();
         if (res.ok) {
           setLeaveRequests(data);
@@ -21,6 +24,8 @@ const DashBoard = () => {
 
     fetchLeaveRequests();
   }, [currentUser.id]);
+
+  console.log(leaveRequests);
 
   const updateStatus = (id, role, newStatus) => {
     // Update the status of the leave request locally
