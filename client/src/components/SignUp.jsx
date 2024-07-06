@@ -146,7 +146,7 @@ export default function SignUp() {
 
       if (res.ok) {
         setLoading(false);
-        navigate("/signin");
+        navigate("/studentsignin");
       }
     } catch (error) {
       setErrorMessage(

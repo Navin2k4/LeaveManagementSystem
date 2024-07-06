@@ -9,6 +9,7 @@ import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import StaffSignUp from "./components/StaffSignUp"
 import PrivateRoute from "./components/PrivateRoute";
+import StaffPrivateRoute from "./components/StaffPrivateRoute";
 import ProfilePage from "./pages/ProfilePage";
 import LeaveRequestForm from "./components/LeaveRequestForm";
 import DashBoard from "./pages/DashBoard";
@@ -31,9 +32,11 @@ export default function App() {
           <Route path='/studentdashboard' element={<DashBoard />} />
           <Route path='/profile' element={<ProfilePage/>} />
           <Route path='/leaverequest' element={<LeaveRequestForm />} />
+        </Route>
+
+        <Route element={<StaffPrivateRoute />}>
           <Route path='/staffdashboard' element={<StaffDashBoard/>} />
         </Route>
-        
         <Route path='/superadmin' element={<SuperAdmin />} />
       </Routes>
 

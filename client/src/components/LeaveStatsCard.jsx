@@ -1,38 +1,27 @@
 import React from "react";
 
-const LeaveStatsCard = ({ selectedDepartment, selectedBatch, leaveRequests }) => {
+const LeaveStatsCard = () => {
   return (
     <div className="bg-white shadow-md p-4 rounded-lg">
       <h2 className="text-3xl uppercase tracking-wider text-center font-semibold mb-8">
-        Leave Statistics {selectedDepartment} {selectedBatch}
+        Leave Statistics 
       </h2>
       <div className="mb-8 ">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-linkedin-blue shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all">
             <div className="my-2 text-white text-lg font-semibold">
               <span className="">Total Requests:</span>{" "}
-              {leaveRequests.length}
             </div>
             <div className="mb-2 text-white">
               <span className="font-semibold">Pending:</span>{" "}
-              {
-                leaveRequests.filter((req) => req.status === "Pending")
-                  .length
-              }
             </div>
             <div className="mb-2 text-white">
               <span className="font-semibold">Approved:</span>{" "}
-              {
-                leaveRequests.filter((req) => req.status === "Approved")
-                  .length
-              }
+
             </div>
             <div className="mb-2 text-white">
               <span className="font-semibold">Rejected:</span>{" "}
-              {
-                leaveRequests.filter((req) => req.status === "Rejected")
-                  .length
-              }
+
             </div>
           </div>
           <div className="bg-linkedin-blue shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all">

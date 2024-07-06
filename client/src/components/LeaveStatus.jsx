@@ -9,7 +9,10 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
 
   if (!Array.isArray(leaveRequests)) {
     console.log('Leave requests not an array:', leaveRequests);
-    return <div>No leave requests found.</div>;
+    return (
+    <div className='flex items-center justify-center'>
+      <h1 className='text-center'>No leave requests found.</h1>
+    </div>);
   }
 
   const filteredRequests = leaveRequests.filter(request => {
@@ -88,8 +91,9 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
             </div>
           ))
         ) : (
-          <div>No pending requests found.</div>
-        )}
+          <div className='flex items-center justify-center'>
+          <h1 className='text-center mb-3'>No Pending requests found.</h1>
+        </div>        )}
       </div>
 
       <div className={`container ${view === 'approved' ? 'active' : ''}`}>
@@ -133,8 +137,9 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
             </div>
           ))
         ) : (
-          <div>No approved requests found.</div>
-        )}
+          <div className='flex items-center justify-center'>
+          <h1 className='text-center mb-3'>No Approved requests found.</h1>
+        </div>        )}
       </div>
     </div>
   );
