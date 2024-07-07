@@ -180,6 +180,7 @@ export default function LeaveRequestForm({ setTab }) {
     setIsHalfDay(selectedOption);
     setFormData({
       ...formData,
+      // leaveEndDate:"",
       isHalfDay: selectedOption 
     });
   };

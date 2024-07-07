@@ -83,7 +83,7 @@ export default function ClassInchargeLeaveFromStudent({
         <div>
           <div className="bg-white shadow-md p-4 rounded-lg mb-4">
             <h2 className="text-3xl uppercase tracking-wider text-center font-semibold">
-              Leave Requests as Mentor
+              Leave Requests as Class Incharge
             </h2>
           </div>
           <div className="overflow-x-auto">

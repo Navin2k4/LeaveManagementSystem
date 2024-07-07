@@ -14,6 +14,7 @@ import ProfilePage from "./pages/ProfilePage";
 import LeaveRequestForm from "./components/LeaveRequestForm";
 import DashBoard from "./pages/DashBoard";
 import StaffSignIn from "./components/StaffSignIn";
+import Hoddashboard from "./pages/HodDashBoard";
 
 export default function App() {
   return (
@@ -31,7 +32,8 @@ export default function App() {
           <Route path='/studentdashboard' element={<DashBoard />} />
           <Route path='/profile' element={<ProfilePage/>} />
           <Route path='/leaverequest' element={<LeaveRequestForm />} />
-        </Route>
+          <Route path='/hoddash' element={<Hoddashboard/>}/>
+          </Route>
 
         <Route element={<StaffPrivateRoute />}>
           <Route path='/staffdashboard' element={<StaffDashBoard/>} />

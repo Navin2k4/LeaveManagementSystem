@@ -229,3 +229,73 @@
   };
   
 
+
+  export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
+    console.log('it works')
+    try {
+      const { id } = req.params;
+      console.log(id);
+      const { status } = req.body;
+      console.log(status);
+      const validStatuses = ["approved", "rejected"];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid status. Status must be 'approved' or 'rejected'.",
+        });
+      }
+      const leaveRequest = await LeaveRequest.findByIdAndUpdate(
+        id,
+        { "approvals.hod.status": status },
+        { new: true }
+      );
+  
+      if (!leaveRequest) {
+        return res.status(404).json({
+          success: false,
+          message: "Leave request not found",
+        });
+      }
+  
+      res.status(200).json({
+        success: true,
+        message: `Leave request ${status} successfully`,
+        leaveRequest,
+      });
+    } catch (error) {
+      console.error("Error updating leave request status:", error);
+      const customError = errorHandler(500, "Internal Server Error");
+      next(customError);
+    }
+  };
+  
+  export const getleaverequestsbySectionId = async(req,res,next) =>{
+    try{
+      const {id} = req.params;
+      const data = await LeaveRequest.find({sectionId : id});
+      res.status(200).json(data);
+    }
+    catch(error){
+      console.error("Error fetching leave requests:", error);
+      const customError = errorHandler(500, "Internal Server Error");
+      next(customError);
+    }
+  }
+  
+  export const mentors = async (req, res) => {
+    console.log('Entered mentors controller');
+    const { ids } = req.query; // Correctly extract the ids query parameter
+    const sectionIDs = ids.split(','); // Assuming ids are sent as a comma-separated string
+  
+    try {
+      const response = await Staff.find({ staff_handle_section: { $in: sectionIDs } });
+      console.log(response);
+      res.status(200).json(response);
+    } catch (error) {
+      console.error('Error in Fetching the Data ', error.message);
+      res.status(500).json({ error: 'Failed to fetch mentors' });
+    }
+  };
+
+  
+  
