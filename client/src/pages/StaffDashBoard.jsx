@@ -48,13 +48,13 @@ const StaffDashBoard = () => {
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-200">
-      <div className="md:w-[20%] p-1 bg-linkedin-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto">
+    <div className="flex flex-col md:flex-row h-screen bg-trenary-blue">
+      <div className="md:w-[20%] p-1 bg-primary-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto">
         <div className="p-4 flex items-center justify-between">
           <h2 className="text-3xl tracking-wider text-white">Departments</h2>
           {isMobileView && (
             <div
-              className={`bg-white/80 p-2 rounded-full ${
+              className={`bg-ternary-blue/80 p-2 rounded-full ${
                 isMobileView ? "cursor-pointer" : ""
               } ${isProfileMenuOpen ? "rotate-180 transition-all duration-500" : "rotate-0 transition-all duration-500"}`}
               onClick={isMobileView ? toggleProfileMenu : null}
@@ -66,7 +66,7 @@ const StaffDashBoard = () => {
         </div>
         <ul
           className={`space-y-2 px-1  transition-all duration-300 overflow-hidden ${
-            isMobileView ? (isProfileMenuOpen ? "max-h-96" : "max-h-0") : "max-h-full"
+            isMobileView ? (isProfileMenuOpen ? "max-h-96  mb-3" : "max-h-0") : "max-h-full"
           }`}
         >
           <li

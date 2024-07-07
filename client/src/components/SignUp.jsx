@@ -127,19 +127,18 @@ export default function SignUp() {
 
       const data = await res.json();
 
-        if (data.success === false) {
-          if (data.message.includes("duplicate key error collection")) {
-            if (data.message.includes("email_1")) {
-              setErrorMessage("Email is already in use");
-            } else if (data.message.includes("roll_no")) {
-              setErrorMessage("Roll Number is already in use");
-            } else if (data.message.includes("register_no")) {
-              setErrorMessage("Register Number is already in use");
-            }
-
-          } else {
-            setErrorMessage(data.message);
+      if (data.success === false) {
+        if (data.message.includes("duplicate key error collection")) {
+          if (data.message.includes("email_1")) {
+            setErrorMessage("Email is already in use");
+          } else if (data.message.includes("roll_no")) {
+            setErrorMessage("Roll Number is already in use");
+          } else if (data.message.includes("register_no")) {
+            setErrorMessage("Register Number is already in use");
           }
+        } else {
+          setErrorMessage(data.message);
+        }
         setLoading(false);
         return;
       }
@@ -155,19 +154,22 @@ export default function SignUp() {
       setLoading(false);
     }
   };
+
   return (
-    <div className="flex justify-center my-8">
-      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-white rounded-lg shadow-lg border-l-4 border-linkedin-blue">
+    <div className="flex justify-center md:mt-5 ">
+      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-white rounded-lg shadow-lg md:border-l-4 border-secondary-blue">
+        <div className="mt-4">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Student Sign Up</h2>
+          <h2 className="text-3xl font-bold text-primary-blue tracking-wider">Student Sign Up</h2>
         </div>
         <Link to="/staffsignup" className="text-center p-3">
-          <h2 className="font-medium text-linkedin-blue hover:tracking-wider transition-all duration-500">
+          <h2 className="font-medium  text-primary-blue hover:tracking-wider transition-all duration-500">
             Click here for Staff Sign Up
           </h2>
         </Link>
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <div className="space-y-4">
+        </div>
+        <form onSubmit={handleSubmit} className=" space-y-6">
+          <div className="space-y-1">
             <div>
               <label
                 htmlFor="name"
@@ -179,7 +181,7 @@ export default function SignUp() {
                 type="text"
                 id="name"
                 placeholder="John Doe"
-                className="block w-full py-2 mt-1  rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                 onChange={handleChange}
               />
             </div>
@@ -196,7 +198,7 @@ export default function SignUp() {
                   type="text"
                   id="roll_no"
                   placeholder="22CSEB48"
-                  className="block w-full py-2 mt-1  rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
               </div>
@@ -212,7 +214,7 @@ export default function SignUp() {
                   type="text"
                   id="register_no"
                   placeholder="1234567891234567"
-                  className="block w-full py-2 mt-1  rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
               </div>
@@ -229,7 +231,7 @@ export default function SignUp() {
                   type="text"
                   id="student_section"
                   placeholder="A"
-                  className="block w-full py-2 mt-1  rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
               </div>
@@ -244,13 +246,13 @@ export default function SignUp() {
                   type="text"
                   id="department"
                   placeholder="Computer Science and Engineering"
-                  className="block w-full py-2 mt-1  rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
               </div>
               <div>
                 <label
-                  htmlFor="department"
+                  htmlFor="batch"
                   className="block text-sm font-medium text-gray-700"
                 >
                   Batch
@@ -260,7 +262,7 @@ export default function SignUp() {
                   id="batch"
                   onChange={handleChange}
                   required
-                  className="w-full tracking-wider mt-3 "
+                  className="w-full tracking-wider py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                 >
                   <option value="">Select Batch</option>
                   {years.map((year) => (
@@ -283,7 +285,7 @@ export default function SignUp() {
                   type="email"
                   id="email"
                   placeholder="example@example.com"
-                  className="block w-full py-2 mt-1  rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
               </div>
@@ -298,7 +300,7 @@ export default function SignUp() {
                   type="tel"
                   id="phone"
                   placeholder="1234567890"
-                  className="block w-full py-2 mt-1  rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
               </div>
@@ -315,7 +317,7 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   placeholder="********"
-                  className="block w-full  py-2 mt-1  rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
               </div>
@@ -331,7 +333,7 @@ export default function SignUp() {
                   type="password"
                   id="confirmpassword"
                   placeholder="********"
-                  className="block w-full py-2 mt-1  rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
               </div>
@@ -342,27 +344,26 @@ export default function SignUp() {
               <p>{errorMessage}</p>
             </div>
           )}
-          <button
-            type="submit"
-            className="flex justify-center w-full  py-2 text-sm font-medium text-white bg-linkedin-blue rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            disabled={loading}
-          >
-            {loading ? (
+          
+        <div className="flex items-center justify-between mt-3">
+              <Link to="/studentsignin" className="text-primary-blue font-medium hover:underline">
+                Already have an account? Sign in
+              </Link>
+              <button
+                type="submit"
+                className="px-6 py-2 text-white bg-primary-blue rounded-md shadow-sm hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
+                disabled={loading}
+              >
+                {loading ? (
               <div className="flex items-center">
-                <Spinner size="sm" className="mr-2" />
-                <span>Loading...</span>
-              </div>
-            ) : (
-              "Sign Up"
-            )}
-          </button>
+              <Spinner size="sm" className="mr-2" />
+              <span className='text-white'>Loading...</span>
+            </div>                ) : (
+                  "Sign Up"
+                )}
+              </button>
+            </div>
         </form>
-        <div className="flex gap-2 text-sm mt-5 justify-center">
-          <span>Have an account?</span>
-          <Link to="/studentsignin" className="text-linkedin-blue-300 underline">
-            Sign In
-          </Link>
-        </div>
       </section>
     </div>
   );

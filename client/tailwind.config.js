@@ -9,8 +9,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        'calm-blue': '#87CEEB',
-        'pale-lavender': '#C7B8EA',
+        'primary-blue':'#0082b6',
+        'secondary-blue':'#2290c1',
+        'ternary-blue':'#dcedf4',
         'cream': '#F5F5F5',
         'dusk-blue': '#6A5ACD',
         'sage-green': '#8B9467',

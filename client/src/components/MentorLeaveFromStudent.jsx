@@ -82,35 +82,35 @@ export default function MentorLeaveFromStudent({
       {leaveRequestsAsMentor.length > 0 ? (
         <div>
           <div className="bg-white shadow-md p-4 rounded-lg mb-4">
-            <h2 className="text-3xl uppercase tracking-wider text-center font-semibold">
+            <h2 className="text-xl md:text-3xl uppercase tracking-wider text-center font-semibold">
               Leave Requests as Mentor
             </h2>
           </div>
           <div className="overflow-x-auto">
             <Table className="bg-white rounded-md">
               <TableHead>
-                <TableHeadCell className="p-4 bg-linkedin-blue text-center text-white">
+                <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                   Student Name
                 </TableHeadCell>
-                <TableHeadCell className="p-4 bg-linkedin-blue text-center text-white">
+                <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                   Section
                 </TableHeadCell>
-                <TableHeadCell className="p-4 bg-linkedin-blue text-center text-white">
+                <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                   Reason
                 </TableHeadCell>
-                <TableHeadCell className="p-4 bg-linkedin-blue text-center text-white">
+                <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                   Start Date
                 </TableHeadCell>
-                <TableHeadCell className="p-4 bg-linkedin-blue text-center text-white">
+                <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                   End Date
                 </TableHeadCell>
-                <TableHeadCell className="p-4 bg-linkedin-blue text-center text-white">
+                <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                   Duration
                 </TableHeadCell>
-                <TableHeadCell className="p-4 bg-linkedin-blue text-center text-white">
+                <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                   Status
                 </TableHeadCell>
-                <TableHeadCell className="p-4 bg-linkedin-blue text-center text-white">
+                <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                   Actions
                 </TableHeadCell>
               </TableHead>
@@ -161,7 +161,7 @@ export default function MentorLeaveFromStudent({
                           <div className="flex items-center justify-center gap-2">
                             <button
                               onClick={() => handleRequest("taken", req._id)}
-                              className="bg-linkedin-blue hover:bg-[#1c559b] text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
+                              className="bg-secondary-blue hover:bg-[#1c559b] text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
                             >
                               Taken
                             </button>
@@ -187,7 +187,7 @@ export default function MentorLeaveFromStudent({
                   ) : modalType === "rejected" ? (
                     <RxCrossCircled className="mx-auto mb-4 h-14 w-14 text-red-400 dark:text-white" />
                   ) : (
-                    <MdOutlineDownloadDone className="mx-auto mb-4 h-14 w-14 text-linkedin-blue dark:text-white" />
+                    <MdOutlineDownloadDone className="mx-auto mb-4 h-14 w-14 text-secondary-blue dark:text-white" />
                   )}
 
                   <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
@@ -218,7 +218,7 @@ export default function MentorLeaveFromStudent({
                         )}
                       </Button>
                       <Button
-                        className="bg-linkedin-blue"
+                        className="bg-secondary-blue"
                         onClick={handleClose}
                       >
                         <h1 className="text-white">Cancel</h1>
@@ -228,7 +228,7 @@ export default function MentorLeaveFromStudent({
                   {modalType === "taken" && (
                     <div className="flex justify-center gap-4">
                       <Button
-                        className="bg-linkedin-blue"
+                        className="bg-secondary-blue"
                         onClick={handleClose}
                       >
                         <h1 className="text-white">Close</h1>

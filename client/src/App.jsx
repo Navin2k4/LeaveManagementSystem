@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SuperAdmin from "./pages/SuperAdmin";
 import PageNotFound from "./pages/PageNotFound";
 import StaffDashBoard from "./pages/StaffDashBoard";
-import HomePage from "./pages/HomePage/HomePage";
+import HomePage from "./pages/HomePage";
 import Navbar from "./components/NavBar";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";

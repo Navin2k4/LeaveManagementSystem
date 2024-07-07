@@ -253,9 +253,9 @@ export default function LeaveRequestForm({ setTab }) {
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <div className="bg-custom-gray font-sans shadow-lg my-3 rounded px-8 pt-6 pb-8 mb-4 max-w-5xl w-full">
-        <div className="flex justify-center space-x4 mb-4">
-          <h1 className="text-custom-div-bg font-bold text-2xl px-6 py-2 tracking-wide">
+      <div className="bg-custom-gray font-sans my-3 rounded px-8 pb-8 mb-4 max-w-5xl w-full">
+        <div className="flex justify-center mb-4">
+          <h1 className="text-custom-div-bg font-bold uppercase text-2xl px-6 py-2 tracking-widest">
             Leave Form
           </h1>
         </div>
@@ -331,13 +331,13 @@ export default function LeaveRequestForm({ setTab }) {
                   ))}
                 </Select>
                 {errors.departmentId && (
-                  <p className="text-red-500 text-xs italic">
+                  <p className="text-red-800 text-xs italic">
                     {errors.departmentId}
                   </p>
                 )}
               </div>
           {!isStaff && (
-            <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
+            <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
               
               <div className="flex flex-col gap-3">
                 <Label
@@ -364,7 +364,7 @@ export default function LeaveRequestForm({ setTab }) {
                   ))}
                 </Select>
                 {errors.batchId && (
-                  <p className="text-red-500 text-xs italic">
+                  <p className="text-red-800 text-xs italic">
                     {errors.batchId}
                   </p>
                 )}
@@ -391,7 +391,7 @@ export default function LeaveRequestForm({ setTab }) {
                   ))}
                 </Select>
                 {errors.sectionId && (
-                  <p className="text-red-500 text-xs italic">
+                  <p className="text-red-800 text-xs italic">
                     {errors.sectionId}
                   </p>
                 )}
@@ -422,7 +422,7 @@ export default function LeaveRequestForm({ setTab }) {
                   ))}
                 </Select>
                 {errors.mentorId && (
-                  <p className="text-red-500 text-xs italic">
+                  <p className="text-red-800 text-xs italic">
                     {errors.mentorId}
                   </p>
                 )}
@@ -449,7 +449,7 @@ export default function LeaveRequestForm({ setTab }) {
                   }`}
                 />
                 {errors.classInchargeId && (
-                  <p className="text-red-500 text-xs italic">
+                  <p className="text-red-800 text-xs italic">
                     {errors.classInchargeId}
                   </p>
                 )}
@@ -473,7 +473,7 @@ export default function LeaveRequestForm({ setTab }) {
                 className={errors.leaveStartDate ? "border-red-500" : ""}
               />
               {errors.leaveStartDate && (
-                <p className="text-red-500 text-xs italic">
+                <p className="text-red-800 text-xs italic">
                   {errors.leaveStartDate}
                 </p>
               )}
@@ -494,7 +494,7 @@ export default function LeaveRequestForm({ setTab }) {
                 className={errors.leaveEndDate ? "border-red-500" : ""}
               />
               {errors.leaveEndDate && (
-                <p className="text-red-500 text-xs italic">
+                <p className="text-red-800 text-xs italic">
                   {errors.leaveEndDate}
                 </p>
               )}
@@ -506,22 +506,20 @@ export default function LeaveRequestForm({ setTab }) {
               name="forOneDay"
               checked={forOneDay}
               onChange={handleForOneDayChange}
-              className="text-custom-div-bg border-custom-div-bg focus:ring-custom-div-bg"
+              className="text-primary-blue border-secondary-blue"
               />
             <Label htmlFor="forOneDay">Apply leave for one day only </Label>
           </div>
 
           <div className="flex items-center space-x-4">
-      <Label htmlFor="forHalfDay">
-        Are you applying leave For Half Day if Yes! select One
-      </Label>
+
       <div className="flex items-center space-x-2">
   <Checkbox
     id="FN"
     name="forHalfDay"
     checked={formData.isHalfDay === 'FN'}
     onChange={() => handleIsHalfDayChange('FN')}
-    className="text-custom-div-bg border-custom-div-bg focus:ring-custom-div-bg"
+    className="text-primary-blue border-secondary-blue"
   />
   <Label htmlFor="FN" className="font-normal">
     FN
@@ -533,13 +531,15 @@ export default function LeaveRequestForm({ setTab }) {
     name="forHalfDay"
     checked={formData.isHalfDay === 'AN'}
     onChange={() => handleIsHalfDayChange('AN')}
-    className="text-custom-div-bg border-custom-div-bg focus:ring-custom-div-bg"
+    className="text-primary-blue border-secondary-blue"
   />
   <Label htmlFor="AN" className="font-normal">
     AN
   </Label>
 </div>
-
+<Label htmlFor="forHalfDay">
+        Select One in case of half day
+      </Label>
     </div>
 
           {isStaff ? (
@@ -567,7 +567,7 @@ export default function LeaveRequestForm({ setTab }) {
                 ))}
               </Select>
               {errors.typeOfLeave && (
-                <p className="text-red-500 text-xs italic">
+                <p className="text-red-800 text-xs italic">
                   {errors.typeOfLeave}
                 </p>
               )}
@@ -579,7 +579,7 @@ export default function LeaveRequestForm({ setTab }) {
                 name="forMedical"
                 checked={forMedical}
                 onChange={handleForMedicalChange}
-                className="border border-black"
+                className="text-primary-blue border-secondary-blue"
               />
               <Label htmlFor="forMedical">Is this for medical reason?</Label>
             </div>
@@ -601,12 +601,12 @@ export default function LeaveRequestForm({ setTab }) {
               className={`rounded-md ${errors.reason ? "border-red-500" : ""}`}
             ></textarea>
             {errors.reason && (
-              <p className="text-red-500 text-xs italic">{errors.reason}</p>
+              <p className="text-red-800 text-xs italic">{errors.reason}</p>
             )}
           </div>
           <Button
             type="submit"
-            className="text-white bg-linkedin-blue p-2 font-bold tracking-wide rounded-md"
+            className="bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue text-white p-2 font-bold tracking-wide rounded-md transition-all duration-300"
           >
             {loading ? (
               <div className="flex items-center">

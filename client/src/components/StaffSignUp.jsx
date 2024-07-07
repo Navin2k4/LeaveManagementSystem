@@ -221,16 +221,18 @@ export default function SignUp() {
   console.log(formData);
 
   return (
-    <div className="flex justify-center my-8">
-      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-white rounded-lg shadow-lg border-l-4 border-linkedin-blue">
+    <div className="flex justify-center md:mt-5 ">
+      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-white rounded-lg shadow-lg md:border-l-4 border-secondary-blue">
+      <div className="mt-4">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Staff Sign Up</h2>
+          <h2 className="text-3xl font-bold text-primary-blue tracking-wider">Staff Sign Up</h2>
         </div>
-        <Link to="/signup" className="text-center p-3">
-          <h2 className="font-medium text-linkedin-blue hover:tracking-wider transition-all duration-500">
+        <Link to="/studentsignup" className="text-center p-3">
+          <h2 className="font-medium  text-primary-blue hover:tracking-wider transition-all duration-500">
             Click here for Student Sign Up
           </h2>
         </Link>
+        </div>
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-4">
             <div>
@@ -346,7 +348,7 @@ export default function SignUp() {
                   label="Class Incharge"
                   checked={formData.isClassIncharge}
                   onChange={handleRoleChange}
-                  className="mx-2 border-black"
+                  className="mx-2 border-black bg-primary-blue"
                 />
                 <Label>Are you a Mentor</Label>
                 <Checkbox
@@ -355,14 +357,14 @@ export default function SignUp() {
                   label="Mentor"
                   checked={formData.isMentor}
                   onChange={handleRoleChange}
-                  className="mx-2 border-black"
+                  className="mx-2 border-black bg-primary-blue"
                 />
               </div>
             </div>
             {formData.isClassIncharge && (
               <>
                 <div>
-                  <h2 className="text-linkedin-blue font-semibold">
+                  <h2 className="text-primary-blue font-semibold">
                     Class Incharge Detail
                   </h2>
                 </div>
@@ -430,7 +432,7 @@ export default function SignUp() {
             {formData.isMentor && (
               <>
                 <div>
-                  <h2 className="text-linkedin-blue font-semibold">
+                  <h2 className="text-primary-blue font-semibold">
                     Mentor Details
                   </h2>
                 </div>
@@ -446,7 +448,7 @@ export default function SignUp() {
                       type="number"
                       id="numberOfClassesHandledAsMentor"
                       placeholder="Enter number of classes"
-                      className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                      className="block w-full  rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
                       onChange={handleNumClassesChange}
                     />
                     {errors.numberOfClassesHandledAsMentor && (
@@ -458,7 +460,7 @@ export default function SignUp() {
                 </div>
                 {formData.numberOfClassesHandledAsMentor > 0 && (
                   <div>
-                    <h2 className="text-linkedin-blue font-semibold">
+                    <h2 className="text-primary-blue font-semibold">
                       Handling Details
                     </h2>
                     {formData.mentorHandlingData.map((data, index) => (
@@ -563,17 +565,20 @@ export default function SignUp() {
               </Alert>
             )}
             <div className="flex items-center justify-between mt-8">
-              <Link to="/staffsignin" className="text-linkedin-blue font-medium hover:underline">
+              <Link to="/staffsignin" className="text-primary-blue font-medium hover:underline">
                 Already have an account? Sign in
               </Link>
               <button
                 type="submit"
-                className="px-6 py-2 text-white bg-linkedin-blue rounded-md shadow-sm hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
+                className="px-6 py-2 text-white bg-primary-blue rounded-md shadow-sm hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary-blue"
                 disabled={loading}
               >
                 {loading ? (
-                  <Spinner className="w-5 h-5 mr-3 border-white border-2 border-opacity-25 animate-spin" />
-                ) : (
+              <div className="flex items-center">
+              <Spinner size="sm" className="mr-2" />
+              <span className='text-white'>Loading...</span>
+            </div>                )
+             : (
                   "Sign Up"
                 )}
               </button>

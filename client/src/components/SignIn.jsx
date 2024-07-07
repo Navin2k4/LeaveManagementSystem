@@ -53,12 +53,12 @@ export default function SignIn() {
 
   return (
     <div className="flex justify-center mt-20">
-      <section className="w-full max-w-md p-8 mx-auto h-auto bg-white rounded-lg shadow-lg border-l-4 border-linkedin-blue">
+      <section className="w-full max-w-md p-8 mx-auto h-auto bg-white rounded-lg shadow-lg border-l-4 border-primary-blue">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-900">Sign In</h2>
           <p className="mt-2 text-gray-600">Leave Applicant Login</p>
         <Link to="/staffsignin" className="text-center p-3">
-          <h2 className="font-medium text-linkedin-blue hover:tracking-wider transition-all duration-500">
+          <h2 className="font-medium text-primary-blue hover:tracking-wider transition-all duration-500">
             Click here for Staff Sign In
           </h2>
         </Link>
@@ -67,38 +67,38 @@ export default function SignIn() {
           <div className="space-y-4">
             <div>
               <label htmlFor="identifier" className="my-4 block text-sm font-medium text-gray-700">
-                Username
+                User Name
               </label>
               <input
                 type="text"
                 id="identifier"
                 placeholder="Roll Number / Register Number"
-                className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                className="block w-full tracking-widest px-3 py-2 mt-1 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                 onChange={handleChange}
               />
             </div>
             <div>
-              <label htmlFor="password" className="my-4 block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="my-4 block text-sm font-medium text-gray-700 ">
                 Password
               </label>
               <input
                 type="password"
                 id="password"
                 placeholder="********"
-                className="block w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                className="block w-full px-3 py-2 mt-1 tracking-widest border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                 onChange={handleChange}
               />
             </div>
           </div>
           <button
             type="submit"
-            className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-linkedin-blue rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="flex justify-center w-full px-4 py-2 text-sm font-medium  bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue transition-all duration-300 text-white rounded-md  focus:outline-none focus:ring-2 focus:ring-offset-2"
             disabled={loading}
           >
             {loading ? (
               <div className="flex items-center">
                 <Spinner size="sm" className="mr-2" />
-                <span>Loading...</span>
+                <span className='text-white'>Loading...</span>
               </div>
             ) : (
               'Sign In'
@@ -107,7 +107,7 @@ export default function SignIn() {
         </form>
         <div className="flex gap-2 text-sm mt-5 justify-center">
           <span>Create an Account?</span>
-          <Link to="/studentsignup" className="text-linkedin-blue-300 underline">
+          <Link to="/studentsignup" className="text-primary-blue-300 underline">
             Sign Up
           </Link>
         </div>

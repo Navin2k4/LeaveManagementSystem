@@ -35,11 +35,11 @@ const ProfilePage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-200">
-      <div className="md:w-[20%]  px-1 bg-linkedin-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto">
+    <div className="flex flex-col md:flex-row h-screen bg-ternary-blue">
+      <div className="md:w-[20%]  bg-primary-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto">
         <div className="p-4 flex items-center justify-between">
           <h2
-            className={`text-3xl tracking-wider text-white`}
+            className={`text-3xl tracking-wider text-white font-semibold`}
             >
             My Profile 
           </h2>
@@ -56,19 +56,19 @@ const ProfilePage = () => {
         }
         </div>
         <ul
-          className={`space-y-2 px-1  mb-4 transition-all duration-300 overflow-hidden ${
+          className={`space-y-2 transition-all duration-300 overflow-hidden ${
             isMobileView
               ? isProfileMenuOpen
-                ? "max-h-96"
+                ? "max-h-96 mb-3"
                 : "max-h-0"
               : "max-h-full"
           }`}
         >
           <li
             onClick={() => setTab("LeaveRequestForm")}
-            className={`cursor-pointer py-2 px-4 transition-all duration-300 rounded-md ${
+            className={`cursor-pointer py-2 px-3 mx-2 transition-all duration-300 rounded-md ${
               tab === "LeaveRequestForm"
-                ? "bg-white/60 text-black font-bold"
+                ? "bg-ternary-blue/80 text-black font-bold"
                 : "hover:bg-white/20 text-white font-bold"
             }`}
           >
@@ -76,9 +76,9 @@ const ProfilePage = () => {
           </li>
           <li
             onClick={() => setTab("EditProfile")}
-            className={`cursor-pointer py-2 px-4 transition-all duration-300 rounded-md ${
+            className={`cursor-pointer py-2 px-3 mx-2 transition-all duration-300 rounded-md ${
               tab === "EditProfile"
-                ? "bg-white/60 text-black font-bold"
+                ? "bg-ternary-blue/80 text-black font-bold"
                 : "hover:bg-white/20 text-white font-bold"
             }`}
           >
@@ -86,9 +86,9 @@ const ProfilePage = () => {
           </li>
           <li
             onClick={() => setTab("DashBoard")}
-            className={`cursor-pointer py-2 px-4 transition-all duration-300 rounded-md ${
+            className={`cursor-pointer py-2 px-3 mx-2 transition-all duration-300 rounded-md ${
               tab === "DashBoard"
-                ? "bg-white/60 text-black font-bold"
+                ? "bg-ternary-blue/80 text-black font-bold"
                 : "hover:bg-white/20 text-white font-bold"
             }`}
           >

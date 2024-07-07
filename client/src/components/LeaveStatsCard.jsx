@@ -8,23 +8,23 @@ const LeaveStatsCard = () => {
       </h2>
       <div className="mb-8 ">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-linkedin-blue shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all">
-            <div className="my-2 text-white text-lg font-semibold">
-              <span className="">Total Requests:</span>{" "}
+          <div className="bg-primary-blue shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all">
+            <div className="my-2 text-lg font-semibold">
+              <span className="text-white">Total Requests:</span>{" "}
             </div>
-            <div className="mb-2 text-white">
-              <span className="font-semibold">Pending:</span>{" "}
+            <div className="mb-2 ">
+              <span className="font-semibold text-white">Pending:</span>{" "}
             </div>
-            <div className="mb-2 text-white">
-              <span className="font-semibold">Approved:</span>{" "}
+            <div className="mb-2 ">
+              <span className="font-semibold text-white">Approved:</span>{" "}
 
             </div>
-            <div className="mb-2 text-white">
-              <span className="font-semibold">Rejected:</span>{" "}
+            <div className="mb-2 ">
+              <span className="font-semibold text-white">Rejected:</span>{" "}
 
             </div>
           </div>
-          <div className="bg-linkedin-blue shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all">
+          <div className="bg-primary-blue shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all">
             <h3 className="text-lg text-white font-semibold mb-4">
               Policies and Balances
             </h3>{" "}
@@ -33,7 +33,7 @@ const LeaveStatsCard = () => {
               certificate for leaves exceeding 3 days.
             </p>
           </div>
-          <div className="bg-linkedin-blue shadow-lg p-4 text-white rounded-lg hover:-translate-y-2 duration-500 transition-all">
+          <div className="bg-primary-blue shadow-lg p-4 text-white rounded-lg hover:-translate-y-2 duration-500 transition-all">
             <h3 className="text-lg font-semibold mb-4">
               Leave Approval Workflow
             </h3>
