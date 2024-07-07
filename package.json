@@ -1,11 +1,9 @@
 {
   "name": "leaveapplication",
   "version": "1.0.0",
-  "license": "ISC",
+  "description": "",
   "type": "module",
   "main": "index.js",
-  "author": "",
-  "description": "",
   "scripts": {
     "dev": "nodemon api/index.js",
     "start": "node api/index.js",
