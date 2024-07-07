@@ -26,7 +26,6 @@ export default function App() {
         <Route path='/studentsignup' element={<SignUp />} />
         <Route path='/staffsignin' element={<StaffSignIn/>} />
         <Route path='/staffsignup' element={<StaffSignUp/>} />
-        <Route path='*' element={<PageNotFound />} />
         {/* Pages that are only availabe to the users Signed in  */}
         <Route element={<PrivateRoute />} >
           <Route path='/studentdashboard' element={<DashBoard />} />
@@ -39,24 +38,6 @@ export default function App() {
         </Route>
         <Route path='/superadmin' element={<SuperAdmin />} />
       </Routes>
-
-      {/* <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route element={<PrivateRoute />} >
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Route>
-        <Route element={<OnlyAdminPrivateRoute />} >
-          <Route path="/create-post" element={<CreatePost />} />
-          <Route path="/update-post/:postId" element={<UpdatePost />} />
-        </Route>
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/post/:postSlug" element={<PostPage />} />
-      </Routes> */}
-   
     </BrowserRouter>
   );
 }
