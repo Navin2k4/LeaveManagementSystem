@@ -8,7 +8,7 @@ import userRoutes from './routes/user.route.js';
 import leaveRequestRoutes from './routes/leave.route.js';
 import departmentRoutes from './routes/department.route.js';
 
-// import path from 'path';
+import path from 'path';
 
 dotenv.config();
 
@@ -21,7 +21,7 @@ mongoose
     });
 
 
-// const __dirname = path.resolve();
+const __dirname = path.resolve();
 
 // Creating the app
 const app = express();
@@ -29,20 +29,17 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-
-// ! Place for the API Route
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use("/api", leaveRequestRoutes);
 app.use('/api', departmentRoutes);
 
+// Pages of the Frontend
+app.use(express.static(path.join(__dirname, '/client/dist')));
 
-
-// app.use(express.static(path.join(__dirname, '/client/dist')));
-
-// app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
-// });
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+});
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
