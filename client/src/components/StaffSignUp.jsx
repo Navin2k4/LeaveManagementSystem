@@ -348,7 +348,7 @@ export default function SignUp() {
                   label="Class Incharge"
                   checked={formData.isClassIncharge}
                   onChange={handleRoleChange}
-                  className="mx-2 border-black bg-primary-blue"
+                  className="mx-2 border-black"
                 />
                 <Label>Are you a Mentor</Label>
                 <Checkbox
@@ -357,7 +357,7 @@ export default function SignUp() {
                   label="Mentor"
                   checked={formData.isMentor}
                   onChange={handleRoleChange}
-                  className="mx-2 border-black bg-primary-blue"
+                  className="mx-2 border-black"
                 />
               </div>
             </div>

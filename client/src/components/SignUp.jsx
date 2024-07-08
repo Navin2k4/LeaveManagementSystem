@@ -340,8 +340,8 @@ export default function SignUp() {
             </div>
           </div>
           {errorMessage && (
-            <div className="mt-4 text-center text-red-600">
-              <p>{errorMessage}</p>
+            <div className="mt-4 text-center">
+              <p className="text-red-600 font-semibold">{errorMessage}</p>
             </div>
           )}
           

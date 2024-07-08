@@ -11,7 +11,7 @@ function HomePage() {
     <h1 className="text-4xl lg:text-5xl font-bold mb-6 tracking-wider text-primary-blue mt-8">
       Leave <br /> <span className="text-4xl lg:text-5xl">Request & Approval </span>Management System
     </h1>
-    <p className="text-lg leading-8 font-medium text-justify mb-8 text-secondary-white">
+    <p className="text-lg leading-8 font-medium text-justify mb-8 text-secondary-white indent-36">
       Manage your leave requests efficiently with our streamlined system
       designed for both students and staff. Whether you're submitting a
       new request, checking the status of previous requests, or exploring
@@ -20,32 +20,37 @@ function HomePage() {
       enhance your leave management at Velammal College of Engineering and
       Technology.
     </p>
-    <div className="grid">
+    <div className="grid items-center text-center">
       {currentUser ? (
         currentUser.userType === "Staff" ? (
           <Link
             to="/staffdashboard"
-            className="bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue text-white rounded-full py-3 px-6 text-lg transition duration-300 shadow-lg transform hover:-translate-y-1 hover:scale-105"
+            className="bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue text-white rounded-full py-2 px-6 text-lg transition duration-300 shadow-lg transform  hover:scale-105"
           >
             Leave Request Form
           </Link>
         ) : (
           <Link
             to="/profile"
-            className="bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue text-white rounded-full py-3 px-6 text-lg transition duration-300 shadow-lg transform hover:-translate-y-1 hover:scale-105"
+            className="bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue text-white rounded-full py-2 px-6 text-lg transition duration-300 shadow-lg transform  hover:scale-105"
           >
             Leave Request Form
           </Link>
         )
       ) : null}
     </div>
-
-          <div className="grid grid-cols-2 gap-3 mt-3">
-            <Link to='/staffsignup' className="cursor-pointer text-center bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue text-white rounded-full py-3 px-6 text-lg transition duration-300 shadow-lg  hover:scale-105">
+          <div className="flex gap-2 mt-2 md:mt-4 justify-end items-center">
+            <Link to='/staffsignup'>
+            <button className="cursor-pointer text-center bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue text-white rounded-full text-md px-2 py-2 md:px-3 md:py-4 md:text-lg transition duration-300 shadow-lg  hover:scale-105">
+              
               Sign Up as Staff
+              </button>
+            
             </Link>
-            <Link  to='/studentsignup' className="cursor-pointer text-center bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue text-white rounded-full py-3 px-6 text-lg transition duration-300 shadow-lg  hover:scale-105">
+            <Link  to='/studentsignup' >
+              <button className="cursor-pointer text-center bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue text-white rounded-full text-md px-2 py-2 md:px-3 md:py-4 md:text-lg transition duration-300 shadow-lg  hover:scale-105">
               Sign Up as Student
+              </button>
             </Link>
           </div>
         </div>
