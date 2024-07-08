@@ -9,7 +9,7 @@ function HomePage() {
       <div className="flex-1 flex justify-center bg-ternary-blue p-6 shadow-lg">
   <div className="max-w-xl text-left">
     <h1 className="text-4xl lg:text-5xl font-bold mb-6 tracking-wider text-primary-blue mt-8">
-      Leave <br /> <span className="text-4xl lg:text-5xl">Request & Approval </span>Management System
+      Leave Management System
     </h1>
     <p className="text-lg leading-8 font-medium text-justify mb-8 text-secondary-white indent-36">
       Manage your leave requests efficiently with our streamlined system
