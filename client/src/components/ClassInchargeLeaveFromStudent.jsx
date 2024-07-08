@@ -16,6 +16,10 @@ import { SiTicktick } from "react-icons/si";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdOutlineDownloadDone } from "react-icons/md";
 
+
+// TODO: Make a Loading Screenwhen fetching the data from the DB
+// TOFIX:Refresh on Update 
+
 export default function ClassInchargeLeaveFromStudent({
   leaveRequestsAsClassIncharge,
 }) {
@@ -52,6 +56,7 @@ export default function ClassInchargeLeaveFromStudent({
       });
 
       if (response.ok) {
+        // Update the local state immediately upon successful API response
         setRequests((prevRequests) =>
           prevRequests.map((req) =>
             req._id === currentRequestId
@@ -61,11 +66,11 @@ export default function ClassInchargeLeaveFromStudent({
                     ...req.approvals,
                     classIncharge: { status: modalType },
                   },
+                  status:'taken',
                 }
               : req
           )
         );
-        setLoading(false);
       } else {
         alert(`Failed to ${modalType} request`);
       }
@@ -73,13 +78,14 @@ export default function ClassInchargeLeaveFromStudent({
       console.error("Error updating request:", error);
       alert(`Failed to ${modalType} request`);
     } finally {
+      setLoading(false);
       handleClose();
     }
   };
 
   return (
     <>
-      {leaveRequestsAsClassIncharge.length > 0 ? (
+      {requests.length > 0 ? (
         <div>
           <div className="bg-white shadow-md p-4 rounded-lg mb-4">
             <h2 className="text-xl md:text-3xl uppercase tracking-wider text-center font-semibold">
@@ -115,7 +121,7 @@ export default function ClassInchargeLeaveFromStudent({
                 </TableHeadCell>
               </TableHead>
               <TableBody className="divide-y">
-                {leaveRequestsAsClassIncharge.map((req) => {
+                {requests.map((req) => {
                   const { status } = req.approvals.classIncharge;
 
                   return (
@@ -161,9 +167,19 @@ export default function ClassInchargeLeaveFromStudent({
                           <div className="flex items-center justify-center gap-2">
                             <button
                               onClick={() => handleRequest("taken", req._id)}
-                              className="bg-secondary-blue hover:bg-[#1c559b] text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
+                              className={`text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
+                                status === "approved"
+                                  ? "bg-green-500"
+                                  : status === "rejected"
+                                  ? "bg-red-500"
+                                  : ""
+                              }`}
                             >
-                              Taken
+                              {status === "approved"
+                                ? "Approved"
+                                : status === "rejected"
+                                ? "Rejected"
+                                : "Taken"}
                             </button>
                           </div>
                         )}
@@ -193,7 +209,7 @@ export default function ClassInchargeLeaveFromStudent({
                   <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
                     {modalType === "approved"
                       ? "Are you sure you want to approve this request?"
-                      : modalType === "reject"
+                      : modalType === "rejected"
                       ? "Are you sure you want to reject this request?"
                       : "This action has already been taken."}
                   </h3>
@@ -202,22 +218,19 @@ export default function ClassInchargeLeaveFromStudent({
                       <Button
                         color={modalType === "approved" ? "success" : "failure"}
                         onClick={confirmRequest}
+                        disabled={loading}
                       >
-                        {loading ? (
-                          <div className="flex items-center">
-                            <Spinner size="sm" className="mr-2" />
-                            <span className="text-white">Loading...</span>
-                          </div>
-                        ) : (
+                         
                           <h1 className="text-white font-semibold">
                             Yes,{" "}
                             {modalType === "approved" ? "Approve" : "Reject"}
                           </h1>
-                        )}
+                        
                       </Button>
                       <Button
                         className="bg-secondary-blue"
                         onClick={handleClose}
+                        disabled={loading}
                       >
                         <h1 className="text-white">Cancel</h1>
                       </Button>

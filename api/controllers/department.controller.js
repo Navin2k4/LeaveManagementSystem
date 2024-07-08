@@ -36,7 +36,6 @@ export const getBatches = async (req, res, next) => {
   }
 };
 
-
 export const getSections = async (req, res, next) => {
   const { batchId } = req.params;
   try {

@@ -10,8 +10,10 @@ const router = express.Router();
 
 router.post('/studentsignup',studentsignup);
 router.post('/studentsignin',studentsignin);
+
 router.post('/staffsignup',staffsignup);
 router.post('/staffsignin',staffsignin);
+
 router.post('/hodsignup',hodsignup);
 router.post('/hodsignin',hodsignin);
 

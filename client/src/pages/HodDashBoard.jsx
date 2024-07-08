@@ -447,14 +447,22 @@ const Hoddashboard = () => {
                                   </div>
                                 ) : (
                                   <div className="flex items-center justify-center gap-2">
-                                    <button
-                                      onClick={() =>
-                                        handleRequest("taken", req._id)
-                                      }
-                                      className="bg-primary-blue hover:bg-[#1c559b] text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
-                                    >
-                                      Taken
-                                    </button>
+                            <button
+                              onClick={() => handleRequest("taken", req._id)}
+                              className={`text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
+                                status === "approved"
+                                  ? "bg-green-400"
+                                  : status === "rejected"
+                                  ? "bg-red-400"
+                                  : ""
+                              }`}
+                            >
+                              {status === "approved"
+                                ? "Approved"
+                                : status === "rejected"
+                                ? "Rejected"
+                                : "Taken"}
+                            </button>
                                   </div>
                                 )}
                               </TableCell>

@@ -95,9 +95,32 @@ export default function SignUp() {
     }));
   };
 
-  const handleRoleChange = (e) => {
-    const { name, checked } = e.target;
-    setFormData((prevFormData) => ({ ...prevFormData, [name]: checked }));
+  const handleRoleChange = (event) => {
+    const { name, checked } = event.target;
+
+    if (name === 'isHod') {
+      // If HOD checkbox is checked, deselect Class Incharge and Mentor
+      if (checked) {
+        setFormData({
+          ...formData,
+          isHod: checked,
+          isClassIncharge: false,
+          isMentor: false,
+        });
+      } else {
+        // If HOD checkbox is unchecked, maintain the current state of other checkboxes
+        setFormData({
+          ...formData,
+          isHod: checked,
+        });
+      }
+    } else {
+      // For Class Incharge and Mentor checkboxes, update their checked state
+      setFormData({
+        ...formData,
+        [name]: checked,
+      });
+    }
   };
 
   const handleNumClassesChange = (e) => {

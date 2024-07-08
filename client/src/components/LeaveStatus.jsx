@@ -38,12 +38,12 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
 
   const approvedRequests = filteredRequests.filter(
     (request) =>
-      (request.approvals.mentor.status === "approved" &&
-        request.approvals.classIncharge.status === "approved" &&
-        request.approvals.hod.status === "approved") ||
+      request.approvals.mentor.status === "approved" ||
       (request.approvals.mentor.status === "rejected" &&
-        request.approvals.classIncharge.status === "rejected" &&
-        request.approvals.hod.status === "rejected")
+        request.approvals.classIncharge.status === "approved") ||
+      (request.approvals.classIncharge.status === "rejected" &&
+        request.approvals.hod.status === "approved") ||
+      request.approvals.hod.status === "rejected"
   );
 
   return (
@@ -59,7 +59,9 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
         </button>
 
         <button
-          className={` ring-1 ring-primary-blue bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue  ${view === "approved" ? "active" : ""}`}
+          className={` ring-1 ring-primary-blue bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue  ${
+            view === "approved" ? "active" : ""
+          }`}
           onClick={() => setView("approved")}
         >
           <h2 className="text-white">Approved Requests</h2>
@@ -103,28 +105,25 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
                 </p>
               </div>
               <div className="flex items-center gap-2 my-2 mt-6">
-                <div className="font-bold">
+                <div className="font-bold">Status :</div>
 
-                Status :
+                <div className="status-dots">
+                  <StatusDot
+                    status={request.approvals.mentor.status}
+                    role="mentor"
+                    showLine={true}
+                  />
+                  <StatusDot
+                    status={request.approvals.classIncharge.status}
+                    role="classIncharge"
+                    showLine={true}
+                  />
+                  <StatusDot
+                    status={request.approvals.hod.status}
+                    role="hod"
+                    showLine={false}
+                  />
                 </div>
-              
-              <div className="status-dots">
-                <StatusDot
-                  status={request.approvals.mentor.status}
-                  role="mentor"
-                  showLine={true}
-                />
-                <StatusDot
-                  status={request.approvals.classIncharge.status}
-                  role="classIncharge"
-                  showLine={true}
-                />
-                <StatusDot
-                  status={request.approvals.hod.status}
-                  role="hod"
-                  showLine={false}
-                />
-              </div>
               </div>
               <div className="pending-status">Pending</div>
             </div>
@@ -173,44 +172,129 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
                 </p>
               </div>
               <div className="flex items-center gap-2 my-2 mt-6">
-                <div className="font-bold">
+                <div className="font-bold">Status :</div>
 
-                Status :
+                <div className="status-dots">
+                  <StatusDot
+                    status={request.approvals.mentor.status}
+                    role="mentor"
+                    showLine={true}
+                  />
+                  <StatusDot
+                    status={request.approvals.classIncharge.status}
+                    role="classIncharge"
+                    showLine={true}
+                  />
+                  <StatusDot
+                    status={request.approvals.hod.status}
+                    role="hod"
+                    showLine={false}
+                  />
                 </div>
-              
-              <div className="status-dots">
-                <StatusDot
-                  status={request.approvals.mentor.status}
-                  role="mentor"
-                  showLine={true}
-                />
-                <StatusDot
-                  status={request.approvals.classIncharge.status}
-                  role="classIncharge"
-                  showLine={true}
-                />
-                <StatusDot
-                  status={request.approvals.hod.status}
-                  role="hod"
-                  showLine={false}
-                />
               </div>
-              </div>
-              {request.approvals.mentor.status === "approved" &&
-                request.approvals.classIncharge.status === "approved" &&
-                request.approvals.hod.status === "approved" && (
-                  <div className="accepted-status">Accepted</div>
-                )}
-              {request.approvals.mentor.status === "pending" &&
-                request.approvals.classIncharge.status === "pending" &&
-                request.approvals.hod.status === "pending" && (
-                  <div className="pending-status">Pending</div>
-                )}
-              {request.approvals.mentor.status === "rejected" &&
-                request.approvals.classIncharge.status === "rejected" &&
-                request.approvals.hod.status === "rejected" && (
-                  <div className="rejected-status">Rejected</div>
-                )}
+              <div>
+    {request.approvals.mentor.status === "approved" &&
+      request.approvals.classIncharge.status === "approved" &&
+      request.approvals.hod.status === "approved" && (
+        <div className="accepted-status">Accepted</div>
+      )}
+
+    {request.approvals.mentor.status === "pending" &&
+      request.approvals.classIncharge.status === "pending" &&
+      request.approvals.hod.status === "pending" && (
+        <div className="pending-status">Pending</div>
+      )}
+
+    {request.approvals.mentor.status === "rejected" &&
+      request.approvals.classIncharge.status === "rejected" &&
+      request.approvals.hod.status === "rejected" && (
+        <div className="rejected-status">Rejected</div>
+      )}
+
+    {(request.approvals.mentor.status === "approved" &&
+      request.approvals.classIncharge.status === "pending" &&
+      request.approvals.hod.status === "pending") ||
+      (request.approvals.mentor.status === "pending" &&
+      request.approvals.classIncharge.status === "approved" &&
+      request.approvals.hod.status === "pending") ||
+      (request.approvals.mentor.status === "pending" &&
+      request.approvals.classIncharge.status === "pending" &&
+      request.approvals.hod.status === "approved") ||
+      (request.approvals.mentor.status === "approved" &&
+      request.approvals.classIncharge.status === "approved" &&
+      request.approvals.hod.status === "pending") ||
+      (request.approvals.mentor.status === "approved" &&
+      request.approvals.classIncharge.status === "pending" &&
+      request.approvals.hod.status === "approved") ||
+      (request.approvals.mentor.status === "pending" &&
+      request.approvals.classIncharge.status === "approved" &&
+      request.approvals.hod.status === "approved") && (
+        <div className="pending-status">Pending</div>
+      )}
+
+    {(request.approvals.mentor.status === "approved" &&
+      request.approvals.classIncharge.status === "rejected" &&
+      request.approvals.hod.status === "rejected") ||
+      (request.approvals.mentor.status === "rejected" &&
+      request.approvals.classIncharge.status === "approved" &&
+      request.approvals.hod.status === "rejected") ||
+      (request.approvals.mentor.status === "rejected" &&
+      request.approvals.classIncharge.status === "rejected" &&
+      request.approvals.hod.status === "approved") ||
+      (request.approvals.mentor.status === "rejected" &&
+      request.approvals.classIncharge.status === "approved" &&
+      request.approvals.hod.status === "approved") ||
+      (request.approvals.mentor.status === "approved" &&
+      request.approvals.classIncharge.status === "rejected" &&
+      request.approvals.hod.status === "approved") ||
+      (request.approvals.mentor.status === "approved" &&
+      request.approvals.classIncharge.status === "approved" &&
+      request.approvals.hod.status === "rejected") && (
+        <div className="rejected-status">Rejected</div>
+      )}
+
+    {(request.approvals.mentor.status === "pending" &&
+      request.approvals.classIncharge.status === "rejected" &&
+      request.approvals.hod.status === "rejected") ||
+      (request.approvals.mentor.status === "rejected" &&
+      request.approvals.classIncharge.status === "pending" &&
+      request.approvals.hod.status === "rejected") ||
+      (request.approvals.mentor.status === "rejected" &&
+      request.approvals.classIncharge.status === "rejected" &&
+      request.approvals.hod.status === "pending") ||
+      (request.approvals.mentor.status === "rejected" &&
+      request.approvals.classIncharge.status === "pending" &&
+      request.approvals.hod.status === "pending") ||
+      (request.approvals.mentor.status === "pending" &&
+      request.approvals.classIncharge.status === "rejected" &&
+      request.approvals.hod.status === "pending") ||
+      (request.approvals.mentor.status === "pending" &&
+      request.approvals.classIncharge.status === "pending" &&
+      request.approvals.hod.status === "rejected") && (
+        <div className="pending-status">Pending</div>
+      )}
+
+    {(request.approvals.mentor.status === "approved" &&
+      request.approvals.classIncharge.status === "approved" &&
+      request.approvals.hod.status === "rejected") ||
+      (request.approvals.mentor.status === "approved" &&
+      request.approvals.classIncharge.status === "rejected" &&
+      request.approvals.hod.status === "approved") ||
+      (request.approvals.mentor.status === "rejected" &&
+      request.approvals.classIncharge.status === "approved" &&
+      request.approvals.hod.status === "approved") ||
+      (request.approvals.mentor.status === "approved" &&
+      request.approvals.classIncharge.status === "rejected" &&
+      request.approvals.hod.status === "rejected") ||
+      (request.approvals.mentor.status === "rejected" &&
+      request.approvals.classIncharge.status === "approved" &&
+      request.approvals.hod.status === "rejected") ||
+      (request.approvals.mentor.status === "rejected" &&
+      request.approvals.classIncharge.status === "rejected" &&
+      request.approvals.hod.status === "approved") && (
+        <div className="rejected-status">Rejected</div>
+      )}
+  </div>
             </div>
           ))
         ) : (

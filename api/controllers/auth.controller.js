@@ -5,6 +5,8 @@ import Staff from "../models/staff.model.js";
 import { errorHandler } from "../utils/error.js";
 import DeptHead from "../models/depthead.model.js";
 
+// HACK : Now the Student can select the department from the db and its object id is stored make easier to develop later:
+
 export const studentsignup = async (req, res, next) => {
   const {
     roll_no,
@@ -13,9 +15,9 @@ export const studentsignup = async (req, res, next) => {
     name,
     email,
     phone,
-    department,
-    student_section,
-    batch,
+    departmentId,
+    sectionId,
+    batchId,
     userType
   } = req.body;
 
@@ -26,9 +28,9 @@ export const studentsignup = async (req, res, next) => {
     !name ||
     !email ||
     !phone ||
-    !department ||
-    !student_section ||
-    !batch
+    !departmentId ||
+    !sectionId ||
+    !batchId
   ) {
     return next(errorHandler(400, "All Fields Are Required"));
   }
@@ -42,9 +44,9 @@ export const studentsignup = async (req, res, next) => {
     name,
     email,
     phone,
-    department,
-    student_section,
-    batch,
+    departmentId,
+    sectionId,
+    batchId,
     userType,
   });
 
@@ -52,7 +54,6 @@ export const studentsignup = async (req, res, next) => {
     await newStudent.save();
     res.status(201).json({ message: "Student saved successfully" });
   } catch (error) {
-    // Handle duplicate key error
     if (error.code === 11000) {
       let field = Object.keys(error.keyPattern)[0];
       if (field === "roll_no") {
@@ -97,7 +98,7 @@ export const studentsignin = async (req, res, next) => {
     });
 
     // Spread student properties directly into the response
-    const { _id, name, roll_no, register_no, email, phone, department, student_section, batch, userType } = student;
+    const { _id, name, roll_no, register_no, email, phone, departmentId, sectionId, batchId, userType } = student;
 
     res.status(200).json({
       token,
@@ -107,9 +108,9 @@ export const studentsignin = async (req, res, next) => {
       register_no,
       email,
       phone,
-      department,
-      student_section,
-      batch,
+      departmentId,
+      batchId,
+      sectionId,
       userType
     });
   } catch (error) {

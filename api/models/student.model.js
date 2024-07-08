@@ -28,16 +28,19 @@ const studentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    department: {
-      type: String,
+    departmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Department',
       required: true,
     },
-    student_section: {
-      type: String,
+    sectionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Section',
       required: true,
     },
-    batch: {
-      type: String,
+    batchId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Batch',
       required: true,
     },
     userType: {

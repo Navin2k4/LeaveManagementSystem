@@ -10,6 +10,8 @@ import {
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
+// TOFIX If end date not selected then set the end date as the start data bug fix 
+
 export default function LeaveRequestForm({ setTab }) {
   const { currentUser } = useSelector((state) => state.user);
 
@@ -59,6 +61,8 @@ export default function LeaveRequestForm({ setTab }) {
     typeOfLeave: "", // Added field for type of leave selection
   });
 
+  console.log(currentUser);
+  console.log(formData);
   const handleForMedicalChange = (e) => {
     setForMedical(e.target.checked);
     setFormData({ ...formData, forMedical: e.target.checked });
@@ -338,7 +342,7 @@ export default function LeaveRequestForm({ setTab }) {
               </div>
           {!isStaff && (
             <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
-              
+              {/* TOFIX:Can get the id of the batch and the section only display the batch and the section */}
               <div className="flex flex-col gap-3">
                 <Label
                   htmlFor="batchId"

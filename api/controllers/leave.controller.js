@@ -135,7 +135,7 @@
   export const getleaverequestbyMentorId = async (req, res, next) => {
     try {
       const { id } = req.params;
-      const data = await LeaveRequest.find({ mentorId: id });
+      const data = await LeaveRequest.find({ mentorId: id }).sort({ createdAt: -1 });
       res.status(200).json(data);
     } catch (error) {
       console.error('Error fetching leave requests:', error);
@@ -147,7 +147,7 @@
   export const getleaverequestbyclassinchargeid = async (req, res, next) => {
     try {
       const { id } = req.params;
-      const data = await LeaveRequest.find({ classInchargeId: id });
+      const data = await LeaveRequest.find({ classInchargeId: id }).sort({ createdAt: -1 });
       res.status(200).json(data);
     } catch (error) {
       console.error('Error fetching leave requests:', error);
@@ -228,8 +228,6 @@
     }
   };
   
-
-
   export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
     try {
       const { id } = req.params;
@@ -269,7 +267,7 @@
   export const getleaverequestsbySectionId = async(req,res,next) =>{
     try{
       const {id} = req.params;
-      const data = await LeaveRequest.find({sectionId : id});
+      const data = await LeaveRequest.find({sectionId : id}).sort({ createdAt: -1 });
       res.status(200).json(data);
     }
     catch(error){
@@ -279,10 +277,12 @@
     }
   }
   
+  // BUG: Not Working but in use in the hoddash to be fixed
+
   export const mentors = async (req, res) => {
     const { ids } = req.query; // Correctly extract the ids query parameter
     const sectionIDs = ids.split(','); // Assuming ids are sent as a comma-separated string
-  
+   
     try {
       const response = await Staff.find({ staff_handle_section: { $in: sectionIDs } });
       res.status(200).json(response);
@@ -291,12 +291,11 @@
       res.status(500).json({ error: 'Failed to fetch mentors' });
     }
   };
-
-  
+ 
   export const getStaffLeaveRequests = async (req, res) => {
     const { deptId } = req.query;
     try {
-      const response = await LeaveRequest.find({ departmentId : deptId , isStaff : true});
+      const response = await LeaveRequest.find({ departmentId : deptId , isStaff : true}).sort({ createdAt: -1 });
       res.status(200).json(response);
     } catch (error) {
       console.error('Error in Finding the Staff\'s Leave Request ', error.message);

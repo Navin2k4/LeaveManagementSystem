@@ -38,6 +38,8 @@ export const useFetchLeaveRequests = ({id}) => {
     return leavefromapi;
 };
 
+// XXX : Remove this file and place the useFetch where it is used more ofter=n it may solve the issue in loading the leave requests 
+// that getting displayed to the staff and mentor more faster it may!
 
 export const useFetchLeaveRequestForMentor=(id)=>{
     const[leaveRequestsAsMentor,setLeaveRequestsAsMentor] = useState([]);
@@ -71,7 +73,6 @@ export const useFetchLeaveRequestForMentor=(id)=>{
       }, [id]);
       return leaveRequestsAsMentor;
 }
-
 
 export const useFetchLeaveRequestForClassIncharge = (id, sectionId) => {
   const [leaveRequestsAsClassIncharge, setLeaveRequestsAsClassIncharge] = useState([]);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Spinner, TextInput, Select } from "flowbite-react";
+import { Spinner, TextInput, Select,Label } from "flowbite-react";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -11,18 +11,63 @@ export default function SignUp() {
     name: "",
     email: "",
     phone: "",
-    department: "",
-    student_section: "",
-    batch: "",
+    departmentId: "",
+    sectionId: "",
+    batchId: "",
     userType: "Student", // Set default userType to Student
   });
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [departments, setDepartments] = useState([]);
+  const [batches, setBatches] = useState([]);
+  const [sections, setSections] = useState([]);
+
+  const [errors, setErrors] = useState({});
+
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
   const startYear = currentYear - 4;
   const endYear = startYear + 4;
   const [years, setYears] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/departments")
+      .then((response) => response.json())
+      .then((data) => setDepartments(data))
+      .catch((error) => console.error(error));
+  }, []);
+
+  const handleDepartmentChange = async (e) => {
+    const deptId = e.target.value;
+    setFormData({ ...formData, departmentId: deptId });
+
+    try {
+      const res = await fetch(`/api/departments/${deptId}/batches`);
+      const data = await res.json();
+      setBatches(data);
+      setSections([]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleBatchChange = async (e) => {
+    const batchId = e.target.value;
+    setFormData({ ...formData, batchId: batchId });
+
+    try {
+      const res = await fetch(`/api/batches/${batchId}/sections`);
+      const data = await res.json();
+      setSections(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSectionChange = (e) => {
+    const sectionId = e.target.value;
+    setFormData({ ...formData, sectionId: sectionId });
+  };
 
   useEffect(() => {
     const yearOptions = [];
@@ -58,9 +103,9 @@ export default function SignUp() {
       name,
       email,
       phone,
-      department,
-      student_section,
-      batch,
+      departmentId,
+      sectionId,
+      batchId,
       userType,
     } = formData;
 
@@ -72,9 +117,9 @@ export default function SignUp() {
       !name ||
       !email ||
       !phone ||
-      !department ||
-      !student_section ||
-      !batch
+      !departmentId ||
+      !sectionId ||
+      !batchId
     ) {
       return setErrorMessage("Please fill out all fields");
     }
@@ -85,14 +130,6 @@ export default function SignUp() {
 
     if (!/^[0-9]{12}$/.test(register_no)) {
       return setErrorMessage("Invalid Register Number");
-    }
-
-    if (!/^[a-zA-Z\s]+$/.test(department)) {
-      return setErrorMessage("Invalid Department");
-    }
-
-    if (!/^[A-Z]$/.test(student_section)) {
-      return setErrorMessage("Invalid Section");
     }
 
     if (!/^[a-zA-Z\s]+$/.test(name)) {
@@ -154,7 +191,6 @@ export default function SignUp() {
       setLoading(false);
     }
   };
-
   return (
     <div className="flex justify-center md:mt-5 ">
       <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-white rounded-lg shadow-lg md:border-l-4 border-secondary-blue">
@@ -220,57 +256,89 @@ export default function SignUp() {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label
-                  htmlFor="student_section"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Section
-                </label>
-                <TextInput
-                  type="text"
-                  id="student_section"
-                  placeholder="A"
-                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="department"
-                  className="block text-sm font-medium text-gray-700"
+            <div className="flex flex-col">
+                <Label
+                  htmlFor="departmentId"
+                  className="mb-2 text-left font-bold tracking-wide"
                 >
                   Department
-                </label>
-                <TextInput
-                  type="text"
-                  id="department"
-                  placeholder="Computer Science and Engineering"
-                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="batch"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Batch
-                </label>
+                </Label>
                 <Select
-                  name="batch"
-                  id="batch"
-                  onChange={handleChange}
-                  required
-                  className="w-full tracking-wider py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
+                  name="departmentId"
+                  value={formData.departmentId}
+                  onChange={handleDepartmentChange}
+                  className={errors.departmentId ? "border-red-500" : ""}
                 >
-                  <option value="">Select Batch</option>
-                  {years.map((year) => (
-                    <option key={year} value={`${year}-${year + 4}`}>
-                      {year}-{year + 4}
+                  <option value="">Select Department</option>
+                  {departments.map((dept) => (
+                    <option key={dept._id} value={dept._id}>
+                      {dept.dept_name}
                     </option>
                   ))}
                 </Select>
+                {errors.departmentId && (
+                  <p className="text-red-800 text-xs italic">
+                    {errors.departmentId}
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col gap-3">
+                <Label
+                  htmlFor="batchId"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Batch
+                </Label>
+                <Select
+                  name="batchId"
+                  id="batchId"
+                  value={formData.batchId}
+                  onChange={handleBatchChange}
+                  required
+                  className={`w-full tracking-wider ${
+                    errors.batchId ? "border-red-500" : ""
+                  }`}
+                >
+                  <option value="">Select Batch</option>
+                  {batches.map((batchId) => (
+                    <option key={batchId._id} value={batchId._id}>
+                      {batchId.batch_name}
+                    </option>
+                  ))}
+                </Select>
+                {errors.batchId && (
+                  <p className="text-red-800 text-xs italic">
+                    {errors.batchId}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <Label
+                  htmlFor="sectionId"
+                  className="text-left font-bold tracking-wide"
+                >
+                  Section
+                </Label>
+                <Select
+                  name="sectionId"
+                  value={formData.sectionId}
+                  required
+                  onChange={handleSectionChange}
+                  className={errors.sectionId ? "border-red-500" : ""}
+                >
+                  <option value="">Select Section</option>
+                  {sections.map((sectionId) => (
+                    <option key={sectionId._id} value={sectionId._id}>
+                      {sectionId.section_name}
+                    </option>
+                  ))}
+                </Select>
+                {errors.sectionId && (
+                  <p className="text-red-800 text-xs italic">
+                    {errors.sectionId}
+                  </p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

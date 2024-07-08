@@ -15,17 +15,22 @@ import {
 
 const router = express.Router();
 
+
+// TODO: Seperate the section and batch route to a seperate file
+
 router.get('/departments', getDepartments);
-router.get('/batches/:id', getBatchById);
 router.get('/departments/:id', getDepartmentById);
 router.get('/department/:departmentName', getDepartmentIdByName); 
 router.get('/departments/:departmentId/batches', getBatches);
+router.get('/getDepartmentNameByCurrentUserId', getDepartmentNameByCurrentUserId);
+
+router.get('/batches/:id', getBatchById);
 router.get('/batches/:batchId/sections', getSections);
+router.get('/batches/:batchId/sections/:sectionName', getSectionIdByBatchAndName);
+
+router.get('/section/:id', getSectionNameById);
 router.get('/sections/:sectionId/mentors', getMentors);
 router.get("/sections/:sectionId/classIncharges", getClassIncharges);
-router.get('/section/:id', getSectionNameById);
-router.get('/batches/:batchId/sections/:sectionName', getSectionIdByBatchAndName);
-router.get('/getDepartmentNameByCurrentUserId', getDepartmentNameByCurrentUserId);
 
 
 export default router;

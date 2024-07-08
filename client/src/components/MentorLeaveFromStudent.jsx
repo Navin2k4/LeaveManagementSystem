@@ -16,9 +16,11 @@ import { SiTicktick } from "react-icons/si";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdOutlineDownloadDone } from "react-icons/md";
 
-export default function MentorLeaveFromStudent({
-  leaveRequestsAsMentor,
-}) {
+
+// TODO: Make a Loading Screenwhen fetching the data from the DB
+// TOFIX:Refresh on Update 
+
+export default function MentorLeaveFromStudent({ leaveRequestsAsMentor }) {
   const [modalType, setModalType] = useState(null); // 'approve', 'reject', or 'taken'
   const [currentRequestId, setCurrentRequestId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -161,9 +163,19 @@ export default function MentorLeaveFromStudent({
                           <div className="flex items-center justify-center gap-2">
                             <button
                               onClick={() => handleRequest("taken", req._id)}
-                              className="bg-secondary-blue hover:bg-[#1c559b] text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
+                              className={` text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
+                                status === "approved"
+                                  ? "bg-green-400"
+                                  : status === "rejected"
+                                  ? "bg-red-400"
+                                  : ""
+                              }`}
                             >
-                              Taken
+                              {status === "approved"
+                                ? "Approved"
+                                : status === "rejected"
+                                ? "Rejected"
+                                : "Taken"}
                             </button>
                           </div>
                         )}
@@ -193,7 +205,7 @@ export default function MentorLeaveFromStudent({
                   <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
                     {modalType === "approved"
                       ? "Are you sure you want to approve this request?"
-                      : modalType === "reject"
+                      : modalType === "rejected"
                       ? "Are you sure you want to reject this request?"
                       : "This action has already been taken."}
                   </h3>
@@ -210,10 +222,10 @@ export default function MentorLeaveFromStudent({
                           </div>
                         ) : (
                           <div>
-                          <h1 className="text-white font-semibold">
-                            Yes,{" "}
-                            {modalType === "approved" ? "Approve" : "Reject"}
-                          </h1>
+                            <h1 className="text-white font-semibold">
+                              Yes,{" "}
+                              {modalType === "approved" ? "Approve" : "Reject"}
+                            </h1>
                           </div>
                         )}
                       </Button>
