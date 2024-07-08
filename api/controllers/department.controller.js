@@ -124,3 +124,16 @@ export const getSectionNameById = async (req, res, next) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+export const getDepartmentNameByCurrentUserId = async (req, res, next) => {
+  const { deptId } = req.query;
+  try {
+    const response = await Department.findById(deptId).populate('batches');
+    if(!response) {
+      return res.status(400).json({ error : 'DepartMent not Found' });
+    }
+    res.status(200).json({ name : response.dept_name });
+  } catch (error) {
+    next(error);
+  }
+};

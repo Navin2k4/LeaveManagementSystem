@@ -70,22 +70,34 @@ const SideMenu = ({ open }) => {
             </a>
           </div>
         )}
-        {currentUser && (
-          <>
-            <div className="flex items-center mb-4">
-              <MdDashboard className="mr-2" />
-              <a href="/studentdashboard" className="block">
-                Dashboard
-              </a>
-            </div>
-            <div className="flex items-center mb-4">
-              <CgProfile className="mr-2" />
-              <a href="/profile" className="block">
-                Profile
-              </a>
-            </div>
-          </>
-        )}
+{currentUser && (
+  <>
+    {currentUser.userType === 'Student' ? (
+      <>
+        <div className="flex items-center mb-4">
+          <MdDashboard className="mr-2" />
+          <a href="/studentdashboard" className="block">
+            Dashboard
+          </a>
+        </div>
+        <div className="flex items-center mb-4">
+          <CgProfile className="mr-2" />
+          <a href="/profile" className="block">
+            Profile
+          </a>
+        </div>
+      </>
+    ) : currentUser.userType === 'staff' ? (
+      <div className="flex items-center mb-4">
+        <MdDashboard className="mr-2" />
+        <a href="/staffdashboard" className="block">
+          Dashboard
+        </a>
+      </div>
+    ) : null}
+  </>
+)}
+
       </div>
 
       {currentUser && (

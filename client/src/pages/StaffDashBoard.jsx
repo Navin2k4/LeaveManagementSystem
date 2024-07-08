@@ -13,9 +13,8 @@ const StaffDashBoard = () => {
   const [tab, setTab] = useState("Leave Reports");
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
-
   const mentorRequests = useFetchLeaveRequestForMentor(currentUser.userId);
-  const classInchargeRequest = useFetchLeaveRequestForClassIncharge(currentUser.userId);
+  const classInchargeRequest = useFetchLeaveRequestForClassIncharge(currentUser.userId,currentUser.classInchargeSectionId);
 
   const renderComponent = () => {
     switch (tab) {
@@ -30,7 +29,7 @@ const StaffDashBoard = () => {
       case "As Class Incharge":
         return <ClassInchargeLeaveFromStudent leaveRequestsAsClassIncharge={classInchargeRequest} />
       default:
-        return <LeaveReport />;
+        return <LeaveRequestForm />;
     }
   };
 

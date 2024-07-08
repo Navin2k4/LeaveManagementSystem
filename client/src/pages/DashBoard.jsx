@@ -25,7 +25,6 @@ const DashBoard = ({ setTab }) => {
     fetchLeaveRequests();
   }, [currentUser.id]);
 
-  console.log(leaveRequests);
 
   const updateStatus = (id, role, newStatus) => {
     // Update the status of the leave request locally

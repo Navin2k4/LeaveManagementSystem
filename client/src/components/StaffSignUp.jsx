@@ -16,10 +16,11 @@ export default function SignUp() {
     staff_email: "",
     staff_phone: "",
     staff_departmentId: "",
+    isMentor: false,
     isClassIncharge: false,
+    isHod:false,
     classInchargeBatchId: null, // Use null instead of empty string
     classInchargeSectionId: null, // Use null instead of empty string
-    isMentor: false,
     numberOfClassesHandledAsMentor: 0,
     mentorHandlingData: [],
     password: "",
@@ -101,13 +102,10 @@ export default function SignUp() {
 
   const handleNumClassesChange = (e) => {
     const numClasses = parseInt(e.target.value, 10);
-    const newMentorHandlingData = Array.from(
-      { length: numClasses },
-      () => ({
-        handlingBatchId: null, // Use null instead of empty string
-        handlingSectionId: null, // Use null instead of empty string
-      })
-    );
+    const newMentorHandlingData = Array.from({ length: numClasses }, () => ({
+      handlingBatchId: null, // Use null instead of empty string
+      handlingSectionId: null, // Use null instead of empty string
+    }));
 
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -120,27 +118,27 @@ export default function SignUp() {
     const { name, value } = e.target;
     const updatedMentorHandlingData = [...formData.mentorHandlingData];
     const propName = name.split("-")[0]; // Extract 'handlingBatchId' or 'handlingSectionId'
-  
+
     // Ensure handlingBatchId and handlingSectionId are null if value is ""
     const sanitizedValue = value === "" ? null : value;
-  
+
     updatedMentorHandlingData[index] = {
       ...updatedMentorHandlingData[index],
       [propName]: sanitizedValue,
     };
-  
+
     setFormData((prevFormData) => ({
       ...prevFormData,
-              classInchargeBatchId: formData.classInchargeBatchId || null,
-        classInchargeSectionId: formData.classInchargeSectionId || null,
+      classInchargeBatchId: formData.classInchargeBatchId || null,
+      classInchargeSectionId: formData.classInchargeSectionId || null,
       mentorHandlingData: updatedMentorHandlingData,
     }));
-  
+
     if (propName === "handlingBatchId" && value !== "") {
       try {
         const res = await fetch(`/api/batches/${value}/sections`);
         const data = await res.json();
-  
+
         const newMentorSections = [...mentorSections];
         newMentorSections[index] = data;
         setMentorSections(newMentorSections);
@@ -149,89 +147,97 @@ export default function SignUp() {
       }
     }
   };
-  
 
   const validateForm = () => {
     const errors = {};
-    const { staff_name, staff_id, staff_email, staff_phone, password, confirmpassword } = formData;
+    const {
+      staff_name,
+      staff_id,
+      staff_email,
+      staff_phone,
+      password,
+      confirmpassword,
+    } = formData;
 
     if (!staff_name) errors.staff_name = "Name is required";
-    if (!/^[a-zA-Z\s]+$/.test(staff_name)) errors.staff_name = "Name should contain only letters and spaces";
+    if (!/^[a-zA-Z\s]+$/.test(staff_name))
+      errors.staff_name = "Name should contain only letters and spaces";
     if (!staff_id) errors.staff_id = "Staff ID is required";
     if (!staff_email) errors.staff_email = "Email is required";
-    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(staff_email)) errors.staff_email = "Invalid email address";
+    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(staff_email))
+      errors.staff_email = "Invalid email address";
     if (!staff_phone) errors.staff_phone = "Phone number is required";
-    if (!/^[0-9]{10}$/.test(staff_phone)) errors.staff_phone = "Invalid phone number";
+    if (!/^[0-9]{10}$/.test(staff_phone))
+      errors.staff_phone = "Invalid phone number";
     if (!password) errors.password = "Password is required";
-    if (!/^.{8,16}$/.test(password)) errors.password = "Password should be 8 to 16 characters long";
-    if (password !== confirmpassword) errors.confirmpassword = "Passwords do not match";
+    if (!/^.{8,16}$/.test(password))
+      errors.password = "Password should be 8 to 16 characters long";
+    if (password !== confirmpassword)
+      errors.confirmpassword = "Passwords do not match";
 
     setErrors(errors);
 
     return Object.keys(errors).length === 0;
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-  
-    // Format mentorHandlingData
-    const formattedMentorHandlingData = formData.mentorHandlingData.map(data => ({
-      handlingBatchId: data.handlingBatchId,
-      handlingSectionId: data.handlingSectionId,
-    }));
-  
+    const formattedMentorHandlingData = formData.mentorHandlingData.map(
+      (data) => ({
+        handlingBatchId: data.handlingBatchId,
+        handlingSectionId: data.handlingSectionId,
+      })
+    );
+
     try {
       setLoading(true);
       setErrorMessage(null);
-  
-      const res = await fetch("/api/auth/staffsignup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          mentorHandlingData: formattedMentorHandlingData,
-        }),
-      });
-  
-      const data = await res.json();
-  
+      const endpoint = formData.isHod ? "/api/auth/hodsignup" : "/api/auth/staffsignup";
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...formData,
+            mentorHandlingData: formattedMentorHandlingData,
+          }),
+        });          
+        const data = await res.json();
+
       if (data.success === false) {
-        // Handle error messages from backend if needed
         setLoading(false);
         return;
       }
-  
       if (!res.ok) {
         throw new Error(data.message || "Sign up failed");
       }
-  
       setLoading(false);
       navigate("/staffsignin");
     } catch (error) {
       setErrorMessage(
-        error.message || "An error occurred while signing up. Please try again later."
+        error.message ||
+          "An error occurred while signing up. Please try again later."
       );
       setLoading(false);
     }
   };
-  
 
   console.log(formData);
 
   return (
     <div className="flex justify-center md:mt-5 ">
       <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-white rounded-lg shadow-lg md:border-l-4 border-secondary-blue">
-      <div className="mt-4">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-primary-blue tracking-wider">Staff Sign Up</h2>
-        </div>
-        <Link to="/studentsignup" className="text-center p-3">
-          <h2 className="font-medium  text-primary-blue hover:tracking-wider transition-all duration-500">
-            Click here for Student Sign Up
-          </h2>
-        </Link>
+        <div className="mt-4">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-primary-blue tracking-wider">
+              Staff Sign Up
+            </h2>
+          </div>
+          <Link to="/studentsignup" className="text-center p-3">
+            <h2 className="font-medium  text-primary-blue hover:tracking-wider transition-all duration-500">
+              Click here for Student Sign Up
+            </h2>
+          </Link>
         </div>
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-4">
@@ -250,7 +256,9 @@ export default function SignUp() {
                 onChange={handleChange}
               />
               {errors.staff_name && (
-                <p className="text-red-500 text-xs italic">{errors.staff_name}</p>
+                <p className="text-red-500 text-xs italic">
+                  {errors.staff_name}
+                </p>
               )}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -271,7 +279,9 @@ export default function SignUp() {
                   onChange={handleChange}
                 />
                 {errors.staff_id && (
-                  <p className="text-red-500 text-xs italic">{errors.staff_id}</p>
+                  <p className="text-red-500 text-xs italic">
+                    {errors.staff_id}
+                  </p>
                 )}
               </div>
               <div>
@@ -289,7 +299,9 @@ export default function SignUp() {
                   onChange={handleChange}
                 />
                 {errors.staff_email && (
-                  <p className="text-red-500 text-xs italic">{errors.staff_email}</p>
+                  <p className="text-red-500 text-xs italic">
+                    {errors.staff_email}
+                  </p>
                 )}
               </div>
             </div>
@@ -309,7 +321,9 @@ export default function SignUp() {
                   onChange={handleChange}
                 />
                 {errors.staff_phone && (
-                  <p className="text-red-500 text-xs italic">{errors.staff_phone}</p>
+                  <p className="text-red-500 text-xs italic">
+                    {errors.staff_phone}
+                  </p>
                 )}
               </div>
               <div className="flex flex-col">
@@ -339,25 +353,41 @@ export default function SignUp() {
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-4">
+            <div className="flex md:flex-row flex-col gap-3 ">
               <div className="">
-                <Label>Are you a Class Incharge</Label>
+                <Label>Are you HOD</Label>
+                <Checkbox
+                  name="isHod"
+                  id="isHod"
+                  label="HOD"
+                  checked={formData.isHod}
+                  onChange={handleRoleChange}
+                  className="mx-2 border-black"
+                />
+              </div>
+              <div className="">
+                <Label className={`${formData.isHod ? 'text-gray-300' : ''}`}  >Are you a Class Incharge</Label>
                 <Checkbox
                   name="isClassIncharge"
                   id="isClassIncharge"
                   label="Class Incharge"
                   checked={formData.isClassIncharge}
                   onChange={handleRoleChange}
-                  className="mx-2 border-black"
+                  disabled={formData.isHod}
+                  className={`${formData.isHod ? 'text-gray-300 border-gray-300' : 'border-black'} mx-2 `}
                 />
-                <Label>Are you a Mentor</Label>
-                <Checkbox
+              </div>
+              <div>
+              <Label className={`${formData.isHod ? 'text-gray-300' : ''}`}  >Are you a Mentor</Label>
+              <Checkbox
                   name="isMentor"
                   id="isMentor"
                   label="Mentor"
                   checked={formData.isMentor}
                   onChange={handleRoleChange}
-                  className="mx-2 border-black"
+                  disabled={formData.isHod}
+
+                  className={`${formData.isHod ? 'text-gray-300 border-gray-300' : 'border-black'} mx-2 `}
                 />
               </div>
             </div>
@@ -464,7 +494,10 @@ export default function SignUp() {
                       Handling Details
                     </h2>
                     {formData.mentorHandlingData.map((data, index) => (
-                      <div key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                      <div
+                        key={index}
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4"
+                      >
                         <div className="flex flex-col gap-3">
                           <Label
                             htmlFor={`handlingBatchId-${index}`}
@@ -477,7 +510,9 @@ export default function SignUp() {
                             value={data.handlingBatchId}
                             onChange={(e) => handleBatchSectionChange(e, index)}
                             className={
-                              errors[`handlingBatchId-${index}`] ? "border-red-500" : ""
+                              errors[`handlingBatchId-${index}`]
+                                ? "border-red-500"
+                                : ""
                             }
                           >
                             <option value="">Select Batch</option>
@@ -505,7 +540,9 @@ export default function SignUp() {
                             value={data.handlingSectionId}
                             onChange={(e) => handleBatchSectionChange(e, index)}
                             className={
-                              errors[`handlingSectionId-${index}`] ? "border-red-500" : ""
+                              errors[`handlingSectionId-${index}`]
+                                ? "border-red-500"
+                                : ""
                             }
                           >
                             <option value="">Select Section</option>
@@ -529,7 +566,10 @@ export default function SignUp() {
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="password" className="mb-2 text-left font-bold tracking-wide">
+                <Label
+                  htmlFor="password"
+                  className="mb-2 text-left font-bold tracking-wide"
+                >
                   Password
                 </Label>
                 <TextInput
@@ -540,11 +580,16 @@ export default function SignUp() {
                   onChange={handleChange}
                 />
                 {errors.password && (
-                  <p className="text-red-500 text-xs italic">{errors.password}</p>
+                  <p className="text-red-500 text-xs italic">
+                    {errors.password}
+                  </p>
                 )}
               </div>
               <div>
-                <Label htmlFor="confirmpassword" className="mb-2 text-left font-bold tracking-wide">
+                <Label
+                  htmlFor="confirmpassword"
+                  className="mb-2 text-left font-bold tracking-wide"
+                >
                   Confirm Password
                 </Label>
                 <TextInput
@@ -555,7 +600,9 @@ export default function SignUp() {
                   onChange={handleChange}
                 />
                 {errors.confirmpassword && (
-                  <p className="text-red-500 text-xs italic">{errors.confirmpassword}</p>
+                  <p className="text-red-500 text-xs italic">
+                    {errors.confirmpassword}
+                  </p>
                 )}
               </div>
             </div>
@@ -565,7 +612,10 @@ export default function SignUp() {
               </Alert>
             )}
             <div className="flex items-center justify-between mt-8">
-              <Link to="/staffsignin" className="text-primary-blue font-medium hover:underline">
+              <Link
+                to="/staffsignin"
+                className="text-primary-blue font-medium hover:underline"
+              >
                 Already have an account? Sign in
               </Link>
               <button
@@ -574,11 +624,11 @@ export default function SignUp() {
                 disabled={loading}
               >
                 {loading ? (
-              <div className="flex items-center">
-              <Spinner size="sm" className="mr-2" />
-              <span className='text-white'>Loading...</span>
-            </div>                )
-             : (
+                  <div className="flex items-center">
+                    <Spinner size="sm" className="mr-2" />
+                    <span className="text-white">Loading...</span>
+                  </div>
+                ) : (
                   "Sign Up"
                 )}
               </button>
@@ -589,5 +639,3 @@ export default function SignUp() {
     </div>
   );
 }
-
-

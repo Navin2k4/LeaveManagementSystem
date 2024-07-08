@@ -8,7 +8,6 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
   const [view, setView] = useState("pending");
 
   if (!Array.isArray(leaveRequests)) {
-    console.log("Leave requests not an array:", leaveRequests);
     return (
       <div className="flex items-center justify-center">
         <h1 className="text-center">No leave requests found.</h1>

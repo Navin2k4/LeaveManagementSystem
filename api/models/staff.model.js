@@ -41,6 +41,10 @@ const StaffSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isHod:{
+    type: Boolean,
+    default: false,
+  },
   classInchargeBatchId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Batch',

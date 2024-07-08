@@ -9,7 +9,8 @@ import {
   getSectionIdByBatchAndName,
   getDepartmentById,
   getBatchById ,
-  getSectionNameById
+  getSectionNameById,
+  getDepartmentNameByCurrentUserId
 } from '../controllers/department.controller.js';
 
 const router = express.Router();
@@ -24,5 +25,7 @@ router.get('/sections/:sectionId/mentors', getMentors);
 router.get("/sections/:sectionId/classIncharges", getClassIncharges);
 router.get('/section/:id', getSectionNameById);
 router.get('/batches/:batchId/sections/:sectionName', getSectionIdByBatchAndName);
+router.get('/getDepartmentNameByCurrentUserId', getDepartmentNameByCurrentUserId);
+
 
 export default router;

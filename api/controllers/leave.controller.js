@@ -231,12 +231,9 @@
 
 
   export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
-    console.log('it works')
     try {
       const { id } = req.params;
-      console.log(id);
       const { status } = req.body;
-      console.log(status);
       const validStatuses = ["approved", "rejected"];
       if (!validStatuses.includes(status)) {
         return res.status(400).json({
@@ -283,13 +280,11 @@
   }
   
   export const mentors = async (req, res) => {
-    console.log('Entered mentors controller');
     const { ids } = req.query; // Correctly extract the ids query parameter
     const sectionIDs = ids.split(','); // Assuming ids are sent as a comma-separated string
   
     try {
       const response = await Staff.find({ staff_handle_section: { $in: sectionIDs } });
-      console.log(response);
       res.status(200).json(response);
     } catch (error) {
       console.error('Error in Fetching the Data ', error.message);
@@ -298,4 +293,13 @@
   };
 
   
-  
+  export const getStaffLeaveRequests = async (req, res) => {
+    const { deptId } = req.query;
+    try {
+      const response = await LeaveRequest.find({ departmentId : deptId , isStaff : true});
+      res.status(200).json(response);
+    } catch (error) {
+      console.error('Error in Finding the Staff\'s Leave Request ', error.message);
+      res.status(500).json({ error : 'Failed to get Staff\'s Leave Request' });
+    }
+  };
