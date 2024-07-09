@@ -8,8 +8,6 @@ import MentorLeaveFromStudent from "../components/MentorLeaveFromStudent";
 import ClassInchargeLeaveFromStudent from "../components/ClassInchargeLeaveFromStudent";
 import LeaveStatsCard from "../components/LeaveStatsCard";
 
-// TOFIX:After submitting the form i need to redirect to our request page 
-
 const StaffDashBoard = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [tab, setTab] = useState("Leave Reports");
@@ -23,7 +21,7 @@ const StaffDashBoard = () => {
       case "Leave Reports":
         return <LeaveStatsCard leaveRequestsAsMentor={mentorRequests} leaveRequestsAsClassIncharge={classInchargeRequest} />;
       case "Request Leave":
-        return <LeaveRequestForm />;
+        return <LeaveRequestForm setTab={setTab} />; // Pass setTab as prop to LeaveRequestForm
       case "Your Leave Requests":
         return <DashBoard />;
       case "As Mentor":

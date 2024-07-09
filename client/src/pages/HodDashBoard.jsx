@@ -281,7 +281,8 @@ const Hoddashboard = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  
+  // TODO : Use the Skeleton and create the loading animations for loading
+
   return (
     <div className="flex flex-col md:flex-row h-screen bg-ternary-blue">
       <div className="md:w-[20%]  bg-primary-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto">
@@ -345,14 +346,6 @@ const Hoddashboard = () => {
           </li>
         </ul>
       </div>
-
-      {isFetching ? (
-        <div className="flex-1 p-4 md:p-8 overflow-y-auto flex justify-center">
-          <div>
-            <Spinner size="xl" color="purple" />
-          </div>
-        </div>
-      ) : (
         <div className="flex-1 p-4 md:p-8 overflow-y-auto">
           {studentRequest && (
             <>
@@ -378,7 +371,7 @@ const Hoddashboard = () => {
               </div>
 
               {selectedBatch && (
-                <div className="bg-slate-200 my-4 md:my-8 rounded-lg p-4">
+                <div className=" my-4 md:my-8 rounded-lg p-4">
                   <h2 className="text-3xl text-center capitalize tracking-wider mb-6">
                     Sections for {deptName} {selectedBatch.batch_name}
                   </h2>
@@ -681,14 +674,24 @@ const Hoddashboard = () => {
                                 </div>
                               ) : (
                                 <div className="flex items-center justify-center gap-2">
-                                  <button
-                                    onClick={() =>
-                                      handleRequest("taken", req._id)
-                                    }
-                                    className="bg-primary-blue hover:bg-[#1c559b] text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
-                                  >
-                                    Taken
-                                  </button>
+ <button
+                                        onClick={() =>
+                                          handleRequest("taken", req._id)
+                                        }
+                                        className={`text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
+                                          status === "approved"
+                                            ? "bg-green-400"
+                                            : status === "rejected"
+                                            ? "bg-red-400"
+                                            : ""
+                                        }`}
+                                      >
+                                        {status === "approved"
+                                          ? "Approved"
+                                          : status === "rejected"
+                                          ? "Rejected"
+                                          : "Taken"}
+                                      </button>
                                 </div>
                               )}
                             </TableCell>
@@ -772,7 +775,6 @@ const Hoddashboard = () => {
             </div>
           )}
         </div>
-      )}
     </div>
   );
 };

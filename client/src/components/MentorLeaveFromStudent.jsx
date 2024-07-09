@@ -16,6 +16,9 @@ import { SiTicktick } from "react-icons/si";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdOutlineDownloadDone } from "react-icons/md";
 import { useSelector } from "react-redux";
+import { Skeleton } from '@mui/material';
+import TableSkeleton from "./ui/TableSkeleton";
+
 
 // TODO: Make a Loading Screen when fetching the data from the DB
 // TOFIX:Refresh on Update
@@ -26,7 +29,7 @@ export default function MentorLeaveFromStudent({ leaveRequestsAsMentor }) {
   const [loading, setLoading] = useState(false);
   const [requests, setRequests] = useState(leaveRequestsAsMentor);
   const [isFetching, setIsFetching] = useState(false);
-console.log(requests);
+  console.log(requests);
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
@@ -89,18 +92,16 @@ console.log(requests);
     }
   };
 
-
   return (
     <>
       {isFetching ? (
-        <div className="flex justify-center items-center">
-          <Spinner size="xl"
-          color="purple" />
+          <div className="p-4 rounded-lg mb-4">
+            <TableSkeleton/>          
         </div>
       ) : requests.length > 0 ? (
         <div>
           <div className="bg-white shadow-md p-4 rounded-lg mb-4">
-            <h2 className="text-xl md:text-3xl uppercase tracking-wider text-center font-semibold">
+            <h2 className="text-xl md:text-3xl  tracking-wider text-center font-semibold">
               Leave Requests as Mentor
             </h2>
           </div>

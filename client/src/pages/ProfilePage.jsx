@@ -14,7 +14,7 @@ const ProfilePage = () => {
         return <LeaveRequestForm setTab={setTab} />;
       case "EditProfile":
         return <EditProfile />;
-      case "DashBoard":
+      case "Your Leave Requests":
         return <DashBoard setTab={setTab} />;
       default:
         return <LeaveRequestForm setTab={setTab} />;
@@ -85,14 +85,14 @@ const ProfilePage = () => {
             Edit Profile
           </li>
           <li
-            onClick={() => setTab("DashBoard")}
+            onClick={() => setTab("Your Leave Requests")}
             className={`cursor-pointer py-2 px-3 mx-2 transition-all duration-300 rounded-md ${
               tab === "DashBoard"
                 ? "bg-ternary-blue/80 text-black font-bold"
                 : "hover:bg-white/20 text-white font-bold"
             }`}
           >
-            My Requests
+            Your Leave Requests
           </li>
         </ul>
       </div>

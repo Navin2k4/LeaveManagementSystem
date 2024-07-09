@@ -140,7 +140,7 @@ const LeaveStatsCard = ({ leaveRequestsAsMentor, leaveRequestsAsClassIncharge })
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {currentUser.isMentor && (
             <div className="bg-primary-blue shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all">
-              <h1 className="my-2 text-lg font-semibold text-white p-3 bg-blue-500 rounded-lg">As a Mentor</h1>
+              <h1 className="mb-2 text-lg font-semibold text-white p-3 bg-secondary-blue rounded-lg">As a Mentor</h1>
               <div className="my-2 text-lg font-semibold">
                 <span className="text-white">Total Requests: {totalRequestsByMentor}</span>
               </div>
@@ -157,7 +157,7 @@ const LeaveStatsCard = ({ leaveRequestsAsMentor, leaveRequestsAsClassIncharge })
           )}
           {currentUser.isClassIncharge && (
             <div className="bg-primary-blue shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all">
-              <h1 className="my-2 text-lg font-semibold text-white p-3 bg-blue-500 rounded-lg">As a ClassIncharge</h1>
+              <h1 className="mb-2 text-lg font-semibold text-white p-3 bg-secondary-blue rounded-lg border border-ternary-blue/30 ">As a ClassIncharge</h1>
               <div className="my-2 text-lg font-semibold">
                 <span className="text-white">Total Requests: {totalRequestsByClassIncharge}</span>
               </div>
@@ -201,11 +201,12 @@ const LeaveStatsCard = ({ leaveRequestsAsMentor, leaveRequestsAsClassIncharge })
             <td className="py-2 px-4 border">{request.reason}</td>
             <td className="py-2 px-4 border">{new Date(request.fromDate).toLocaleDateString()}</td>
             <td className="py-2 px-4 border">{new Date(request.toDate).toLocaleDateString()}</td>
-            <td className="py-2 px-4 border">{request.approvals.mentor.status}</td>
+            <td className="py-2 px-4 border">{request.status}</td>
           </tr>
         ))}
       </tbody>
     </table>
+  </div>
     <div className="flex justify-end mt-4">
       <button
         onClick={downloadPDF}
@@ -220,7 +221,6 @@ const LeaveStatsCard = ({ leaveRequestsAsMentor, leaveRequestsAsClassIncharge })
         Download as Excel
       </button>
     </div>
-  </div>
   </div>
     
   );

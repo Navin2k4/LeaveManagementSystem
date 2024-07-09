@@ -16,6 +16,7 @@ import { SiTicktick } from "react-icons/si";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdOutlineDownloadDone } from "react-icons/md";
 import { useSelector } from "react-redux";
+import TableSkeleton from "./ui/TableSkeleton";
 
 // TODO: Make a Loading Screen when fetching the data from the DB
 // TOFIX:Refresh on Update 
@@ -94,13 +95,12 @@ export default function ClassInchargeLeaveFromStudent({ leaveRequestsAsClassInch
     <>
       {isFetching ? (
         <div className="flex justify-center items-center mt-6">
-          <Spinner size="xl"
-          color="purple" />
+            <TableSkeleton/>
         </div>
       ) : requests.length > 0 ? (
         <div>
           <div className="bg-white shadow-md p-4 rounded-lg mb-4">
-            <h2 className="text-xl md:text-3xl uppercase tracking-wider text-center font-semibold">
+            <h2 className="text-xl md:text-3xl tracking-wider text-center font-semibold">
               Leave Requests as Class Incharge
             </h2>
           </div>

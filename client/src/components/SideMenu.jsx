@@ -87,20 +87,22 @@ const SideMenu = ({ open }) => {
           </a>
         </div>
       </>
-    ) : currentUser.userType === 'staff' ? (
+    ) : currentUser.userType === 'Staff' ? (
       <div className="flex items-center mb-4">
         <MdDashboard className="mr-2" />
         <a href="/staffdashboard" className="block">
           Dashboard
         </a>
       </div>
-    ) : 
+    ) : currentUser.isHod ? (
     <div className="flex items-center mb-4">
     <MdDashboard className="mr-2" />
     <a href="/hoddash" className="block">
       HOD Dashboard
     </a>
   </div>
+
+    ): null
     }
   </>
 )}

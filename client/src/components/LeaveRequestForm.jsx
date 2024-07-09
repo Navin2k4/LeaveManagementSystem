@@ -61,7 +61,7 @@ export default function LeaveRequestForm({ setTab }) {
     noOfDays: 0,
     typeOfLeave: "", // Added field for type of leave selection
   });
-
+  
   console.log(currentUser);
 
   const handleForMedicalChange = (e) => {
@@ -247,7 +247,7 @@ export default function LeaveRequestForm({ setTab }) {
 
       if (res.ok) {
         setLoading(false);
-        setTab("DashBoard");
+        setTab("Your Leave Requests"); 
       }
     } catch (error) {
       setErrorMessage(
