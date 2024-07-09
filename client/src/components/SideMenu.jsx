@@ -94,7 +94,14 @@ const SideMenu = ({ open }) => {
           Dashboard
         </a>
       </div>
-    ) : null}
+    ) : 
+    <div className="flex items-center mb-4">
+    <MdDashboard className="mr-2" />
+    <a href="/hoddash" className="block">
+      HOD Dashboard
+    </a>
+  </div>
+    }
   </>
 )}
 

@@ -245,7 +245,6 @@ export default function SignUp() {
     }
   };
 
-  console.log(formData);
 
   return (
     <div className="flex justify-center md:mt-5 ">

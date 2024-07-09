@@ -13,6 +13,7 @@ export default function SignUp() {
     phone: "",
     departmentId: "",
     sectionId: "",
+    section_name:"",
     batchId: "",
     userType: "Student", // Set default userType to Student
   });
@@ -64,10 +65,41 @@ export default function SignUp() {
     }
   };
 
+
   const handleSectionChange = (e) => {
     const sectionId = e.target.value;
     setFormData({ ...formData, sectionId: sectionId });
   };
+
+
+  useEffect(() => {
+    const getSectionName = async () => {
+      try {
+        if (formData.sectionId) {
+          const response = await fetch(`/api/section/${formData.sectionId}`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch section name");
+          }
+          const sectionData = await response.json();
+          if (sectionData && sectionData.name) {
+            setFormData((prevData) => ({
+              ...prevData,
+              section_name: sectionData.name,
+            }));
+          } else {
+            console.error("Section name not found");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching section name:", error);
+      }
+    };
+
+    getSectionName();
+  }, [formData.sectionId]);
+
+console.log(formData);
+
 
   useEffect(() => {
     const yearOptions = [];
@@ -105,6 +137,7 @@ export default function SignUp() {
       phone,
       departmentId,
       sectionId,
+      section_name,
       batchId,
       userType,
     } = formData;
@@ -191,6 +224,8 @@ export default function SignUp() {
       setLoading(false);
     }
   };
+
+
   return (
     <div className="flex justify-center md:mt-5 ">
       <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-white rounded-lg shadow-lg md:border-l-4 border-secondary-blue">

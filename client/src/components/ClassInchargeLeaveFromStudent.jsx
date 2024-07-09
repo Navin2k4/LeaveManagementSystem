@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Modal,
@@ -15,33 +15,53 @@ import {
 import { SiTicktick } from "react-icons/si";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdOutlineDownloadDone } from "react-icons/md";
+import { useSelector } from "react-redux";
 
-
-// TODO: Make a Loading Screenwhen fetching the data from the DB
+// TODO: Make a Loading Screen when fetching the data from the DB
 // TOFIX:Refresh on Update 
 
-export default function ClassInchargeLeaveFromStudent({
-  leaveRequestsAsClassIncharge,
-}) {
+export default function ClassInchargeLeaveFromStudent({ leaveRequestsAsClassIncharge }) {
   const [modalType, setModalType] = useState(null); // 'approve', 'reject', or 'taken'
   const [currentRequestId, setCurrentRequestId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [requests, setRequests] = useState(leaveRequestsAsClassIncharge);
+  const [isFetching, setIsFetching] = useState(false);
 
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+
   const handleRequest = (type, id) => {
     setModalType(type);
     setCurrentRequestId(id);
   };
 
+
+  const {currentUser} = useSelector((state)=>state.user);
+
   const handleClose = () => {
     setModalType(null);
     setCurrentRequestId(null);
   };
+  
+  const fetchLeaveRequests = async () => {
+    setIsFetching(true);
+    try {
+      const response = await fetch(`/api/getleaverequestbyclassinchargeid/${currentUser.userId}` );
+      const data = await response.json();
+      setRequests(data);
+    } catch (error) {
+      console.error('Error fetching leave requests:', error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLeaveRequests();
+  }, []);
 
   const confirmRequest = async () => {
     setLoading(true);
@@ -54,23 +74,9 @@ export default function ClassInchargeLeaveFromStudent({
         },
         body: JSON.stringify({ status: modalType }),
       });
-
+  
       if (response.ok) {
-        // Update the local state immediately upon successful API response
-        setRequests((prevRequests) =>
-          prevRequests.map((req) =>
-            req._id === currentRequestId
-              ? {
-                  ...req,
-                  approvals: {
-                    ...req.approvals,
-                    classIncharge: { status: modalType },
-                  },
-                  status:'taken',
-                }
-              : req
-          )
-        );
+        await fetchLeaveRequests(); 
       } else {
         alert(`Failed to ${modalType} request`);
       }
@@ -83,9 +89,15 @@ export default function ClassInchargeLeaveFromStudent({
     }
   };
 
+
   return (
     <>
-      {requests.length > 0 ? (
+      {isFetching ? (
+        <div className="flex justify-center items-center mt-6">
+          <Spinner size="xl"
+          color="purple" />
+        </div>
+      ) : requests.length > 0 ? (
         <div>
           <div className="bg-white shadow-md p-4 rounded-lg mb-4">
             <h2 className="text-xl md:text-3xl uppercase tracking-wider text-center font-semibold">
@@ -130,7 +142,7 @@ export default function ClassInchargeLeaveFromStudent({
                         {req.name}
                       </TableCell>
                       <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                        {req.sectionName}
+                        {req.section_name}
                       </TableCell>
                       <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                         {req.reason}
@@ -167,11 +179,11 @@ export default function ClassInchargeLeaveFromStudent({
                           <div className="flex items-center justify-center gap-2">
                             <button
                               onClick={() => handleRequest("taken", req._id)}
-                              className={`text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
+                              className={` text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
                                 status === "approved"
-                                  ? "bg-green-500"
+                                  ? "bg-green-400"
                                   : status === "rejected"
-                                  ? "bg-red-500"
+                                  ? "bg-red-400"
                                   : ""
                               }`}
                             >
@@ -217,32 +229,26 @@ export default function ClassInchargeLeaveFromStudent({
                     <div className="flex justify-center gap-4">
                       <Button
                         color={modalType === "approved" ? "success" : "failure"}
+                        className={`${
+                          modalType === "approved"
+                            ? "bg-green-400 hover:bg-green-500"
+                            : "bg-red-400 hover:bg-red-500"
+                        }`}
                         onClick={confirmRequest}
-                        disabled={loading}
                       >
-                         
-                          <h1 className="text-white font-semibold">
-                            Yes,{" "}
+                        {loading ? (
+                          <div className="flex items-center">
+                            <Spinner size="sm" className="mr-2" />
+                            <span className="text-white">Loading...</span>
+                          </div>
+                        ) : (
+                          <span className="text-white">
                             {modalType === "approved" ? "Approve" : "Reject"}
-                          </h1>
-                        
+                          </span>
+                        )}
                       </Button>
-                      <Button
-                        className="bg-secondary-blue"
-                        onClick={handleClose}
-                        disabled={loading}
-                      >
-                        <h1 className="text-white">Cancel</h1>
-                      </Button>
-                    </div>
-                  )}
-                  {modalType === "taken" && (
-                    <div className="flex justify-center gap-4">
-                      <Button
-                        className="bg-secondary-blue"
-                        onClick={handleClose}
-                      >
-                        <h1 className="text-white">Close</h1>
+                      <Button color="gray" onClick={handleClose}>
+                        Cancel
                       </Button>
                     </div>
                   )}
@@ -252,10 +258,8 @@ export default function ClassInchargeLeaveFromStudent({
           </div>
         </div>
       ) : (
-        <div className="flex items-center justify-center ">
-          <h2 className="text-2xl uppercase tracking-wider text-center font-semibold">
-            No Leave Requests Yet
-          </h2>
+        <div className="text-center text-lg font-semibold">
+          No Leave Requests as Class Incharge
         </div>
       )}
     </>

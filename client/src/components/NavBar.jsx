@@ -78,13 +78,21 @@ function Navbar() {
                 </span>
               </div>
             </Link>
-          ) : (
+          ) : currentUser.userType === 'Student' ? (
             <Link to="/profile" className="flex items-center transition-all duration-200 hover:scale-105">
               <div className="flex items-center">
                 <span className="tracking-wider uppercase font-semibold">
                   {currentUser.name.split(" ")[0]}
                 </span>
               </div>
+            </Link>
+          ) : (
+            <Link to="/hoddash" className="flex items-center transition-all duration-200 hover:scale-105">
+            <div className="flex items-center">
+              <span className="tracking-wider uppercase font-semibold">
+                {currentUser.name.split(" ")[0]}
+              </span>
+            </div>
             </Link>
           )
         ) : null}

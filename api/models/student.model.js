@@ -38,6 +38,10 @@ const studentSchema = new mongoose.Schema(
       ref: 'Section',
       required: true,
     },
+    section_name:{
+      type: String,
+      required: true,
+    },
     batchId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Batch',

@@ -17,9 +17,12 @@ export const studentsignup = async (req, res, next) => {
     phone,
     departmentId,
     sectionId,
+    section_name,
     batchId,
     userType
   } = req.body;
+
+  console.log(section_name);
 
   if (
     !roll_no ||
@@ -30,6 +33,7 @@ export const studentsignup = async (req, res, next) => {
     !phone ||
     !departmentId ||
     !sectionId ||
+    !section_name ||
     !batchId
   ) {
     return next(errorHandler(400, "All Fields Are Required"));
@@ -46,6 +50,7 @@ export const studentsignup = async (req, res, next) => {
     phone,
     departmentId,
     sectionId,
+    section_name,
     batchId,
     userType,
   });
@@ -98,7 +103,7 @@ export const studentsignin = async (req, res, next) => {
     });
 
     // Spread student properties directly into the response
-    const { _id, name, roll_no, register_no, email, phone, departmentId, sectionId, batchId, userType } = student;
+    const { _id, name, roll_no, register_no, email, phone, departmentId, sectionId,section_name, batchId, userType } = student;
 
     res.status(200).json({
       token,
@@ -111,6 +116,7 @@ export const studentsignin = async (req, res, next) => {
       departmentId,
       batchId,
       sectionId,
+      section_name,
       userType
     });
   } catch (error) {
@@ -267,7 +273,6 @@ export const hodsignup = async (req, res, next) => {
       password: hashedPassword,
       isHod,
     });
-    console.log(newHod);
 
     await newHod.save();
 

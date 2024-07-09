@@ -50,6 +50,7 @@ export default function LeaveRequestForm({ setTab }) {
     forMedical,
     batchId: "",
     sectionId: "",
+    section_name:currentUser.section_name,
     departmentId: "",
     reason: "",
     classInchargeId: "",
@@ -62,7 +63,7 @@ export default function LeaveRequestForm({ setTab }) {
   });
 
   console.log(currentUser);
-  console.log(formData);
+
   const handleForMedicalChange = (e) => {
     setForMedical(e.target.checked);
     setFormData({ ...formData, forMedical: e.target.checked });
@@ -184,7 +185,7 @@ export default function LeaveRequestForm({ setTab }) {
     setIsHalfDay(selectedOption);
     setFormData({
       ...formData,
-      // leaveEndDate:"",
+      leaveEndDate:"",
       isHalfDay: selectedOption 
     });
   };
@@ -200,7 +201,8 @@ export default function LeaveRequestForm({ setTab }) {
     if (formData.reason && formData.reason.length > 200) newErrors.reason = "Reason must be less than 200 characters";
     return newErrors;
   };
-  
+
+  console.log(formData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -12,6 +12,7 @@
         forMedical,
         batchId,
         sectionId,
+        section_name,
         departmentId,
         reason,
         classInchargeId,
@@ -56,6 +57,7 @@
           forMedical,
           batchId : null,
           sectionId : null,
+          section_name,
           departmentId,
           reason,
           classInchargeId : null,
@@ -95,6 +97,7 @@
           forMedical,
           batchId,
           sectionId,
+          section_name,
           departmentId,
           reason,
           classInchargeId,
@@ -161,12 +164,14 @@
       const { id } = req.params;
       const { status } = req.body;
       const validStatuses = ["approved", "rejected"];
+  
       if (!validStatuses.includes(status)) {
         return res.status(400).json({
           success: false,
           message: "Invalid status. Status must be 'approved' or 'rejected'.",
         });
       }
+  
       const leaveRequest = await LeaveRequest.findByIdAndUpdate(
         id,
         { "approvals.mentor.status": status },
@@ -179,6 +184,10 @@
           message: "Leave request not found",
         });
       }
+  
+      await leaveRequest.computeStatus();
+  
+      await leaveRequest.save();
   
       res.status(200).json({
         success: true,
@@ -209,6 +218,7 @@
         { new: true }
       );
   
+
       if (!leaveRequest) {
         return res.status(404).json({
           success: false,
@@ -216,6 +226,10 @@
         });
       }
   
+      await leaveRequest.computeStatus();
+  
+      await leaveRequest.save();
+
       res.status(200).json({
         success: true,
         message: `Leave request ${status} successfully`,
@@ -251,6 +265,10 @@
           message: "Leave request not found",
         });
       }
+
+      await leaveRequest.computeStatus();
+  
+      await leaveRequest.save();
   
       res.status(200).json({
         success: true,

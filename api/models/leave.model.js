@@ -9,12 +9,12 @@ const leaveRequestSchema = new Schema(
     userId: {
       type: Schema.Types.ObjectId,
       required: true,
-      refPath: 'userType', // Dynamic reference based on the value of userType field
+      refPath: 'userType',
     },
     userType: {
       type: String,
       required: true,
-      enum: ['Student', 'Staff'], // Possible values are 'Student' and 'Staff'
+      enum: ['Student', 'Staff'], 
     },
     rollNo: {
       type: String,
@@ -34,6 +34,9 @@ const leaveRequestSchema = new Schema(
     sectionId: {
       type: Schema.Types.ObjectId,
       ref: 'Section',
+    },
+    section_name:{
+      type: String,
     },
     mentorId: {
       type: Schema.Types.ObjectId,
@@ -114,6 +117,54 @@ const leaveRequestSchema = new Schema(
     timestamps: true,
   }
 );
+
+leaveRequestSchema.pre('save', function (next) {
+  if (this.isModified('approvals')) {
+    if (
+      this.approvals.mentor.status === 'rejected' || 
+      this.approvals.classIncharge.status === 'rejected' || 
+      this.approvals.hod.status === 'rejected') {
+      this.status = 'rejected';
+    } else if (
+      this.approvals.mentor.status === 'approved' && 
+      this.approvals.classIncharge.status === 'approved' && 
+      this.approvals.hod.status === 'approved') {
+      this.status = 'approved';
+    } else {
+      this.status = 'pending';
+    }
+  }
+  next();
+});
+
+
+// Method to compute overall leave request status based on approvals
+leaveRequestSchema.methods.computeStatus = function () {
+  if (
+    this.approvals.mentor.status === 'rejected' || 
+    this.approvals.classIncharge.status === 'rejected' || 
+    this.approvals.hod.status === 'rejected'
+  ) 
+  {
+    return 'rejected';
+  } 
+  else if (
+    this.approvals.mentor.status === 'approved' && 
+    this.approvals.classIncharge.status === 'approved' && 
+    this.approvals.hod.status === 'approved'
+  ) {
+    return 'approved';
+  } else {
+    return 'pending';
+  }
+};
+
+// Pre-save hook to update status based on approvals
+leaveRequestSchema.pre('save', function (next) {
+  this.status = this.computeStatus();
+  console.log("rejected");
+  next();
+});
 
 const LeaveRequest = model("LeaveRequest", leaveRequestSchema);
 
