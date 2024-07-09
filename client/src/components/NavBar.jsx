@@ -47,7 +47,7 @@ function Navbar() {
   }, [open]);
 
   return (
-    <nav className="bg-white  flex justify-between items-center shadow-md p-4 lg:px-8">
+    <nav className="bg-white  flex justify-between items-center shadow-black shadow-2xl p-4 lg:px-8">
       <div className="flex items-center flex-3">
         <a href="/" className="flex items-center font-bold text-xl text-white gap-2">
           <img
