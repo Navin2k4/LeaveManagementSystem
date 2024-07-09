@@ -3,7 +3,7 @@ import "./LeaveStatus.scss";
 import StatusDot from "./StatusDot";
 import { Button, Select } from "flowbite-react";
 
-const LeaveStatus = ({ leaveRequests, updateStatus }) => {
+const LeaveStatus = ({ leaveRequests }) => {
   const [filter, setFilter] = useState("all");
   const [view, setView] = useState("pending");
 
@@ -18,7 +18,6 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
   const filteredRequests = leaveRequests.filter((request) => {
     const toDate = new Date(request.toDate);
     const today = new Date();
-
     switch (filter) {
       case "past7days":
         return toDate >= new Date(today.setDate(today.getDate() - 7));
@@ -31,20 +30,24 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
 
   const pendingRequests = filteredRequests.filter(
     (request) =>
-      request.approvals.mentor.status === "pending" ||
-      request.approvals.classIncharge.status === "pending" ||
-      request.approvals.hod.status === "pending"
+      (request.approvals.mentor.status === "pending" ||
+       request.approvals.classIncharge.status === "pending" ||
+       request.approvals.hod.status === "pending") &&
+      request.approvals.mentor.status !== "rejected" &&
+      request.approvals.classIncharge.status !== "rejected" &&
+      request.approvals.hod.status !== "rejected"
   );
+  
 
-  const approvedRequests = filteredRequests.filter(
-    (request) =>
-      request.approvals.mentor.status === "approved" ||
-      (request.approvals.mentor.status === "rejected" &&
-        request.approvals.classIncharge.status === "approved") ||
-      (request.approvals.classIncharge.status === "rejected" &&
-        request.approvals.hod.status === "approved") ||
-      request.approvals.hod.status === "rejected"
-  );
+    const approvedRequests = filteredRequests.filter(
+      (request) =>
+        request.approvals.mentor.status === "rejected" ||
+        request.approvals.classIncharge.status === "rejected" ||
+        request.approvals.hod.status === "rejected" ||
+        (request.approvals.mentor.status === "approved" &&
+          request.approvals.classIncharge.status === "approved" &&
+          request.approvals.hod.status === "approved")
+    );
 
   return (
     <div className="leave-status p-5">
@@ -64,7 +67,7 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
           }`}
           onClick={() => setView("approved")}
         >
-          <h2 className="text-white">Approved Requests</h2>
+          <h2 className="text-white">Approved / Rejected Requests</h2>
         </button>
       </div>
 
@@ -193,108 +196,14 @@ const LeaveStatus = ({ leaveRequests, updateStatus }) => {
                 </div>
               </div>
               <div>
-    {request.approvals.mentor.status === "approved" &&
-      request.approvals.classIncharge.status === "approved" &&
-      request.approvals.hod.status === "approved" && (
-        <div className="accepted-status">Accepted</div>
-      )}
-
-    {request.approvals.mentor.status === "pending" &&
-      request.approvals.classIncharge.status === "pending" &&
-      request.approvals.hod.status === "pending" && (
-        <div className="pending-status">Pending</div>
-      )}
-
-    {request.approvals.mentor.status === "rejected" &&
-      request.approvals.classIncharge.status === "rejected" &&
-      request.approvals.hod.status === "rejected" && (
-        <div className="rejected-status">Rejected</div>
-      )}
-
-    {(request.approvals.mentor.status === "approved" &&
-      request.approvals.classIncharge.status === "pending" &&
-      request.approvals.hod.status === "pending") ||
-      (request.approvals.mentor.status === "pending" &&
-      request.approvals.classIncharge.status === "approved" &&
-      request.approvals.hod.status === "pending") ||
-      (request.approvals.mentor.status === "pending" &&
-      request.approvals.classIncharge.status === "pending" &&
-      request.approvals.hod.status === "approved") ||
-      (request.approvals.mentor.status === "approved" &&
-      request.approvals.classIncharge.status === "approved" &&
-      request.approvals.hod.status === "pending") ||
-      (request.approvals.mentor.status === "approved" &&
-      request.approvals.classIncharge.status === "pending" &&
-      request.approvals.hod.status === "approved") ||
-      (request.approvals.mentor.status === "pending" &&
-      request.approvals.classIncharge.status === "approved" &&
-      request.approvals.hod.status === "approved") && (
-        <div className="pending-status">Pending</div>
-      )}
-
-    {(request.approvals.mentor.status === "approved" &&
-      request.approvals.classIncharge.status === "rejected" &&
-      request.approvals.hod.status === "rejected") ||
-      (request.approvals.mentor.status === "rejected" &&
-      request.approvals.classIncharge.status === "approved" &&
-      request.approvals.hod.status === "rejected") ||
-      (request.approvals.mentor.status === "rejected" &&
-      request.approvals.classIncharge.status === "rejected" &&
-      request.approvals.hod.status === "approved") ||
-      (request.approvals.mentor.status === "rejected" &&
-      request.approvals.classIncharge.status === "approved" &&
-      request.approvals.hod.status === "approved") ||
-      (request.approvals.mentor.status === "approved" &&
-      request.approvals.classIncharge.status === "rejected" &&
-      request.approvals.hod.status === "approved") ||
-      (request.approvals.mentor.status === "approved" &&
-      request.approvals.classIncharge.status === "approved" &&
-      request.approvals.hod.status === "rejected") && (
-        <div className="rejected-status">Rejected</div>
-      )}
-
-    {(request.approvals.mentor.status === "pending" &&
-      request.approvals.classIncharge.status === "rejected" &&
-      request.approvals.hod.status === "rejected") ||
-      (request.approvals.mentor.status === "rejected" &&
-      request.approvals.classIncharge.status === "pending" &&
-      request.approvals.hod.status === "rejected") ||
-      (request.approvals.mentor.status === "rejected" &&
-      request.approvals.classIncharge.status === "rejected" &&
-      request.approvals.hod.status === "pending") ||
-      (request.approvals.mentor.status === "rejected" &&
-      request.approvals.classIncharge.status === "pending" &&
-      request.approvals.hod.status === "pending") ||
-      (request.approvals.mentor.status === "pending" &&
-      request.approvals.classIncharge.status === "rejected" &&
-      request.approvals.hod.status === "pending") ||
-      (request.approvals.mentor.status === "pending" &&
-      request.approvals.classIncharge.status === "pending" &&
-      request.approvals.hod.status === "rejected") && (
-        <div className="pending-status">Pending</div>
-      )}
-
-    {(request.approvals.mentor.status === "approved" &&
-      request.approvals.classIncharge.status === "approved" &&
-      request.approvals.hod.status === "rejected") ||
-      (request.approvals.mentor.status === "approved" &&
-      request.approvals.classIncharge.status === "rejected" &&
-      request.approvals.hod.status === "approved") ||
-      (request.approvals.mentor.status === "rejected" &&
-      request.approvals.classIncharge.status === "approved" &&
-      request.approvals.hod.status === "approved") ||
-      (request.approvals.mentor.status === "approved" &&
-      request.approvals.classIncharge.status === "rejected" &&
-      request.approvals.hod.status === "rejected") ||
-      (request.approvals.mentor.status === "rejected" &&
-      request.approvals.classIncharge.status === "approved" &&
-      request.approvals.hod.status === "rejected") ||
-      (request.approvals.mentor.status === "rejected" &&
-      request.approvals.classIncharge.status === "rejected" &&
-      request.approvals.hod.status === "approved") && (
-        <div className="rejected-status">Rejected</div>
-      )}
-  </div>
+                {request.approvals.mentor.status === "rejected" ||
+                request.approvals.classIncharge.status === "rejected" ||
+                request.approvals.hod.status === "rejected" ? (
+                  <div className="rejected-status">Rejected</div>
+                ) : (
+                  <div className="accepted-status">Approved</div>
+                )}
+              </div>
             </div>
           ))
         ) : (

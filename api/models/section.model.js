@@ -8,8 +8,6 @@ const SectionSchema = new mongoose.Schema({
     classIncharge: { 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Staff', 
-        // BUG: Added unique to this field so that no other staff can be a classincharge if one is assigned
-        unique: true,
         required: true 
     },
     mentors: [

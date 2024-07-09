@@ -29,12 +29,19 @@ function HomePage() {
           >
             Leave Request Form
           </Link>
-        ) : (
+        ) : currentUser.userType==="Student" ? (
           <Link
             to="/profile"
             className="bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue text-white rounded-full py-2 px-6 text-lg transition duration-300 shadow-lg transform  hover:scale-105"
           >
             Leave Request Form
+          </Link>
+        ) : (
+          <Link
+            to="/hoddash"
+            className="bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue text-white rounded-full py-2 px-6 text-lg transition duration-300 shadow-lg transform  hover:scale-105"
+          >
+            View Dash Board
           </Link>
         )
       ) : null}

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import EditProfile from "../components/EditProfile";
 import LeaveRequestForm from "../components/LeaveRequestForm";
 import DashBoard from "./DashBoard";
+import { CiCirclePlus } from "react-icons/ci";
+import { FiEdit3 } from "react-icons/fi";
+import { IoDocumentOutline } from "react-icons/io5";
 
 const ProfilePage = () => {
   const [tab, setTab] = useState("LeaveRequestForm");
@@ -72,7 +75,10 @@ const ProfilePage = () => {
                 : "hover:bg-white/20 text-white font-bold"
             }`}
           >
+            <div className="flex items-center gap-3"> 
+            <CiCirclePlus size={25} />
             Request Leave
+            </div>
           </li>
           <li
             onClick={() => setTab("EditProfile")}
@@ -82,7 +88,10 @@ const ProfilePage = () => {
                 : "hover:bg-white/20 text-white font-bold"
             }`}
           >
-            Edit Profile
+            <div className="flex items-center gap-3">
+              <FiEdit3 size={20} className="ml-1" />
+              Edit Profile
+            </div>
           </li>
           <li
             onClick={() => setTab("Your Leave Requests")}
@@ -92,7 +101,11 @@ const ProfilePage = () => {
                 : "hover:bg-white/20 text-white font-bold"
             }`}
           >
+            <div className="flex items-center gap-3">
+            <IoDocumentOutline size={20} className="ml-1" />
             Your Leave Requests
+            </div>
+
           </li>
         </ul>
       </div>

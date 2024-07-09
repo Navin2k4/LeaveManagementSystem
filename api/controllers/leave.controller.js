@@ -20,16 +20,9 @@
         leaveStartDate,
         leaveEndDate,
         noOfDays,
-        isHalfDay, // Ensure these fields are extracted from req.body
-        typeOfLeave, // Ensure these fields are extracted from req.body
+        isHalfDay, 
+        typeOfLeave, 
       } = req.body;
-
-      if (new Date(leaveEndDate) <= new Date(leaveStartDate)) {
-        return res.status(400).json({
-          success: false,
-          message: "Leave end date must be after the start date",
-        });
-      }
 
       const existingLeave = await LeaveRequest.findOne({
         userId,
@@ -46,7 +39,6 @@
         });
       }
       
-      // Create leave request based on userType
       if (userType === 'Staff') {
         const staffLeaveRequest = new LeaveRequest({
           name,
@@ -110,6 +102,8 @@
         });
 
         await studentLeaveRequest.save();
+        
+        
         res.status(201).json({ success: true, message: "Student leave request submitted successfully" });
       } else {
         return res.status(400).json({

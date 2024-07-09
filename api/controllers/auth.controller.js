@@ -183,17 +183,20 @@ export const staffsignup = async (req, res, next) => {
 
     res.status(201).json({ message: "Staff saved successfully" });
   } catch (error) {
-    // Handle duplicate key error (e.g., staff ID or email already exists)
     if (error.code === 11000) {
       let field = Object.keys(error.keyPattern)[0];
       if (field === "staff_id") {
         return next(errorHandler(400, "Staff ID is already in use"));
       }
+      // TOFIX: Classincharge duplicate check is not functioning need to check it 
+      if(field === "classInchargeSectionId"){
+        return next(errorHandler(400, "Class Incharge is already assigned for this batch section"));
+      }
       if (field === "staff_mail") {
         return next(errorHandler(400, "Email is already in use"));
       }
     }
-    next(error); // Forward other errors to error handler middleware
+    next(error); 
   }
 };
 

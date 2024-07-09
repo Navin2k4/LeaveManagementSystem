@@ -10,7 +10,7 @@ import {
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-// TOFIX If end date not selected then set the end date as the start data bug fix 
+// TOFIX If end date not selected then set the end date as the start data bug fix
 
 export default function LeaveRequestForm({ setTab }) {
   const { currentUser } = useSelector((state) => state.user);
@@ -40,29 +40,28 @@ export default function LeaveRequestForm({ setTab }) {
   const [forOneDay, setForOneDay] = useState(false);
   const [isHalfDay, setIsHalfDay] = useState(null);
 
-
   const [formData, setFormData] = useState({
     name: currentUser.name,
-    userId: currentUser.userType === "Staff" ? currentUser.userId : currentUser.id,
+    userId:
+      currentUser.userType === "Staff" ? currentUser.userId : currentUser.id,
     userType: currentUser.userType,
-    rollNo: currentUser.userType === "Staff" ? currentUser.id : currentUser.roll_no,
+    rollNo:
+      currentUser.userType === "Staff" ? currentUser.id : currentUser.roll_no,
     regNo: currentUser.register_no,
     forMedical,
     batchId: "",
     sectionId: "",
-    section_name:currentUser.section_name,
+    section_name: currentUser.section_name,
     departmentId: "",
     reason: "",
     classInchargeId: "",
     mentorId: "",
     leaveStartDate: "",
     leaveEndDate: "",
-    isHalfDay,
+    isHalfDay:null,
     noOfDays: 0,
-    typeOfLeave: "", // Added field for type of leave selection
+    typeOfLeave: "", 
   });
-  
-  console.log(currentUser);
 
   const handleForMedicalChange = (e) => {
     setForMedical(e.target.checked);
@@ -85,12 +84,9 @@ export default function LeaveRequestForm({ setTab }) {
       });
     }
   };
-
   useEffect(() => {
     calculateDays();
   }, [formData.leaveStartDate, formData.leaveEndDate]);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("/api/departments")
@@ -137,7 +133,6 @@ export default function LeaveRequestForm({ setTab }) {
   const handleDepartmentChange = async (e) => {
     const deptId = e.target.value;
     setFormData({ ...formData, departmentId: deptId });
-
     try {
       const res = await fetch(`/api/departments/${deptId}/batches`);
       const data = await res.json();
@@ -153,7 +148,6 @@ export default function LeaveRequestForm({ setTab }) {
   const handleBatchChange = async (e) => {
     const batchId = e.target.value;
     setFormData({ ...formData, batchId: batchId });
-
     try {
       const res = await fetch(`/api/batches/${batchId}/sections`);
       const data = await res.json();
@@ -177,33 +171,44 @@ export default function LeaveRequestForm({ setTab }) {
   const handleForOneDayChange = (e) => {
     setForOneDay(e.target.checked);
     if (e.target.checked) {
-      setFormData({ ...formData, leaveEndDate: "" });
+      setFormData({ ...formData, leaveEndDate: formData.leaveStartDate });
     }
   };
-    
+
   const handleIsHalfDayChange = (selectedOption) => {
-    setIsHalfDay(selectedOption);
+    setIsHalfDay((prevIsHalfDay) =>
+      prevIsHalfDay === selectedOption ? null : selectedOption
+    );
     setFormData({
       ...formData,
-      leaveEndDate:"",
-      isHalfDay: selectedOption 
+      isHalfDay: isHalfDay === selectedOption ? null : selectedOption,
     });
   };
   
-
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.departmentId) newErrors.departmentId = "Department must be selected";
-    if (!formData.leaveStartDate) newErrors.leaveStartDate = "Date from must be selected";
-    if (!forOneDay && !isHalfDay && !formData.leaveEndDate) newErrors.leaveEndDate = "Date to must be selected";
-    if (!forOneDay && !isHalfDay && formData.leaveEndDate < formData.leaveStartDate) newErrors.leaveEndDate = "Date to must be greater than Date from";
-    if (!formData.reason) newErrors.reason = "Reason must be given";
-    if (formData.reason && formData.reason.length > 200) newErrors.reason = "Reason must be less than 200 characters";
+    
+    if (!formData.departmentId)
+      newErrors.departmentId = "Department must be selected";
+    
+    if (!formData.leaveStartDate)
+      newErrors.leaveStartDate = "Date from must be selected";
+    
+    if (!forOneDay && !isHalfDay && !formData.leaveEndDate)
+      newErrors.leaveEndDate = "Date to must be selected";
+    
+    if (!forOneDay && formData.leaveEndDate && formData.leaveEndDate < formData.leaveStartDate)
+      newErrors.leaveEndDate = "Date to must be greater than Date from";
+    
+    if (!formData.reason)
+      newErrors.reason = "Reason must be given";
+    
+    if (formData.reason && formData.reason.length > 200)
+      newErrors.reason = "Reason must be less than 200 characters";
+  
     return newErrors;
   };
-
-  console.log(formData);
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formErrors = validateForm();
@@ -226,7 +231,6 @@ export default function LeaveRequestForm({ setTab }) {
         }),
       });
       const data = await res.json();
-
       if (!data.success) {
         if (
           data.message.includes("Leave end date must be after the start date")
@@ -244,10 +248,9 @@ export default function LeaveRequestForm({ setTab }) {
         setLoading(false);
         return;
       }
-
       if (res.ok) {
         setLoading(false);
-        setTab("Your Leave Requests"); 
+        setTab("Your Leave Requests");
       }
     } catch (error) {
       setErrorMessage(
@@ -317,31 +320,31 @@ export default function LeaveRequestForm({ setTab }) {
             )}
           </div>
           <div className="flex flex-col">
-                <Label
-                  htmlFor="departmentId"
-                  className="mb-2 text-left font-bold tracking-wide"
-                >
-                  Department
-                </Label>
-                <Select
-                  name="departmentId"
-                  value={formData.departmentId}
-                  onChange={handleDepartmentChange}
-                  className={errors.departmentId ? "border-red-500" : ""}
-                >
-                  <option value="">Select Department</option>
-                  {departments.map((dept) => (
-                    <option key={dept._id} value={dept._id}>
-                      {dept.dept_name}
-                    </option>
-                  ))}
-                </Select>
-                {errors.departmentId && (
-                  <p className="text-red-800 text-xs italic">
-                    {errors.departmentId}
-                  </p>
-                )}
-              </div>
+            <Label
+              htmlFor="departmentId"
+              className="mb-2 text-left font-bold tracking-wide"
+            >
+              Department
+            </Label>
+            <Select
+              name="departmentId"
+              value={formData.departmentId}
+              onChange={handleDepartmentChange}
+              className={errors.departmentId ? "border-red-500" : ""}
+            >
+              <option value="">Select Department</option>
+              {departments.map((dept) => (
+                <option key={dept._id} value={dept._id}>
+                  {dept.dept_name}
+                </option>
+              ))}
+            </Select>
+            {errors.departmentId && (
+              <p className="text-red-800 text-xs italic">
+                {errors.departmentId}
+              </p>
+            )}
+          </div>
           {!isStaff && (
             <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
               {/* TOFIX:Can get the id of the batch and the section only display the batch and the section */}
@@ -513,40 +516,37 @@ export default function LeaveRequestForm({ setTab }) {
               checked={forOneDay}
               onChange={handleForOneDayChange}
               className="text-primary-blue border-secondary-blue"
-              />
+            />
             <Label htmlFor="forOneDay">Apply leave for one day only </Label>
           </div>
 
           <div className="flex items-center space-x-4">
-
-      <div className="flex items-center space-x-2">
-  <Checkbox
-    id="FN"
-    name="forHalfDay"
-    checked={formData.isHalfDay === 'FN'}
-    onChange={() => handleIsHalfDayChange('FN')}
-    className="text-primary-blue border-secondary-blue"
-  />
-  <Label htmlFor="FN" className="font-normal">
-    FN
-  </Label>
-</div>
-<div className="flex items-center space-x-2">
-  <Checkbox
-    id="AN"
-    name="forHalfDay"
-    checked={formData.isHalfDay === 'AN'}
-    onChange={() => handleIsHalfDayChange('AN')}
-    className="text-primary-blue border-secondary-blue"
-  />
-  <Label htmlFor="AN" className="font-normal">
-    AN
-  </Label>
-</div>
-<Label htmlFor="forHalfDay">
-        Select One in case of half day
-      </Label>
-    </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="FN"
+                name="forHalfDay"
+                checked={isHalfDay === "FN"}
+                onChange={() => handleIsHalfDayChange("FN")}
+                className="text-primary-blue border-secondary-blue"
+              />
+              <Label htmlFor="FN" className="font-normal">
+                FN
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="AN"
+                name="forHalfDay"
+                checked={isHalfDay === "AN"}
+                onChange={() => handleIsHalfDayChange("AN")}
+                className="text-primary-blue border-secondary-blue"
+              />
+              <Label htmlFor="AN" className="font-normal">
+                AN
+              </Label>
+            </div>
+            <Label htmlFor="forHalfDay">Select One in case of half day</Label>
+          </div>
 
           {isStaff ? (
             <div className="flex flex-col">

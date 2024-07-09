@@ -40,11 +40,10 @@ const SideMenu = ({ open }) => {
           <>
             <div className="flex items-center mb-4">
               <h2 className="text-3xl">
-                Hello,{' '}
+                Hello,{" "}
                 <span className="tracking-wider text-ternary-blue font-semibold">
-  {currentUser.name.split(" ")[0]}
-</span>
-
+                  {currentUser.name.split(" ")[0]}
+                </span>
               </h2>
             </div>
           </>
@@ -70,43 +69,40 @@ const SideMenu = ({ open }) => {
             </a>
           </div>
         )}
-{currentUser && (
-  <>
-    {currentUser.userType === 'Student' ? (
-      <>
-        <div className="flex items-center mb-4">
-          <MdDashboard className="mr-2" />
-          <a href="/studentdashboard" className="block">
-            Dashboard
-          </a>
-        </div>
-        <div className="flex items-center mb-4">
-          <CgProfile className="mr-2" />
-          <a href="/profile" className="block">
-            Profile
-          </a>
-        </div>
-      </>
-    ) : currentUser.userType === 'Staff' ? (
-      <div className="flex items-center mb-4">
-        <MdDashboard className="mr-2" />
-        <a href="/staffdashboard" className="block">
-          Dashboard
-        </a>
-      </div>
-    ) : currentUser.isHod ? (
-    <div className="flex items-center mb-4">
-    <MdDashboard className="mr-2" />
-    <a href="/hoddash" className="block">
-      HOD Dashboard
-    </a>
-  </div>
-
-    ): null
-    }
-  </>
-)}
-
+        {currentUser && (
+          <>
+            {currentUser.userType === "Student" ? (
+              <>
+                <div className="flex items-center mb-4">
+                  <MdDashboard className="mr-2" />
+                  <a href="/studentdashboard" className="block">
+                    Dashboard
+                  </a>
+                </div>
+                <div className="flex items-center mb-4">
+                  <CgProfile className="mr-2" />
+                  <a href="/profile" className="block">
+                    Profile
+                  </a>
+                </div>
+              </>
+            ) : currentUser.userType === "Staff" ? (
+              <div className="flex items-center mb-4">
+                <MdDashboard className="mr-2" />
+                <a href="/staffdashboard" className="block">
+                  Dashboard
+                </a>
+              </div>
+            ) : currentUser.isHod ? (
+              <div className="flex items-center mb-4">
+                <MdDashboard className="mr-2" />
+                <a href="/hoddash" className="block">
+                  HOD Dashboard
+                </a>
+              </div>
+            ) : null}
+          </>
+        )}
       </div>
 
       {currentUser && (
