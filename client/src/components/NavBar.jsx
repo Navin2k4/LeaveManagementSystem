@@ -51,7 +51,7 @@ function Navbar() {
       <div className="flex items-center flex-3">
         <a href="/" className="flex items-center font-bold text-xl text-white gap-2">
           <img
-            src="https://upload.wikimedia.org/wikipedia/ta/d/d0/Vcet_logo.jpg"
+            src="vcet.jpeg"
             alt="VCET Logo"
             className="w-12 h-12"
           />
