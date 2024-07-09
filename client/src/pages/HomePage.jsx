@@ -11,17 +11,19 @@ function HomePage() {
         <div className="max-w-xl text-left">
           <div className="flex flex-col gap-2">
             <div>
-              <h1 className="text-5xl font-bold tracking-wider text-primary-blue ">Leave</h1>
+              <h1 className="text-5xl font-bold tracking-wider text-primary-blue ">
+                Leave
+              </h1>
             </div>
             <div>
               <TypeAnimation
                 sequence={[
                   "Management",
-                  1500, 
-                  "Request", 
-                  1500, 
+                  1500,
+                  "Request",
+                  1500,
                   "Approval",
-                  1500, 
+                  1500,
                 ]}
                 cursor={true}
                 repeat={Infinity}
@@ -29,7 +31,9 @@ function HomePage() {
               />
             </div>
             <div>
-              <h1 className="text-5xl font-bold mb-6 tracking-wider text-primary-blue ">System</h1>
+              <h1 className="text-5xl font-bold mb-6 tracking-wider text-primary-blue ">
+                System
+              </h1>
             </div>
           </div>
           <p className="text-lg leading-8 font-medium text-justify mb-8 text-secondary-white indent-36">
@@ -82,7 +86,7 @@ function HomePage() {
         </div>
       </div>
 
-      <div className="flex-1 hidden lg:block rounded-lg overflow-hidden">
+      <div className="flex-1 hidden lg:block  overflow-hidden">
         <img
           className="w-full h-full object-cover filter transition-all duration-1000 hover:scale-125"
           src="https://content3.jdmagicbox.com/comp/madurai/31/0452p452std2000631/catalogue/velammal-college-of-engineering-and-technology-munichalai-road-madurai-engineering-colleges-dxevz9.jpg"
