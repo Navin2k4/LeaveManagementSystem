@@ -26,11 +26,6 @@ export default function SignUp() {
   const [errors, setErrors] = useState({});
 
   const navigate = useNavigate();
-  const currentYear = new Date().getFullYear();
-  const startYear = currentYear - 4;
-  const endYear = startYear + 4;
-  const [years, setYears] = useState([]);
-
   useEffect(() => {
     fetch("/api/departments")
       .then((response) => response.json())
@@ -98,16 +93,7 @@ export default function SignUp() {
     getSectionName();
   }, [formData.sectionId]);
 
-console.log(formData);
 
-
-  useEffect(() => {
-    const yearOptions = [];
-    for (let year = startYear; year <= endYear; year++) {
-      yearOptions.push(year);
-    }
-    setYears(yearOptions);
-  }, [startYear, endYear]);
 
   const handleChange = (e) => {
     let { id, value } = e.target;

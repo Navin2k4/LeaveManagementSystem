@@ -8,7 +8,7 @@ function HomePage() {
   return (
     <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)]">
       <div className="flex-1 flex justify-center bg-ternary-blue p-6 shadow-lg">
-        <div className="max-w-xl text-left">
+        <div className="max-w-2xl md:max-w-3xl text-left">
           <div className="flex flex-col gap-2">
             <div>
               <h1 className="text-5xl font-bold tracking-wider text-primary-blue ">
@@ -95,7 +95,7 @@ function HomePage() {
       </div>
 
       <div className="flex-1 flex justify-center bg-ternary-blue items-center bg-secondary-white p-8">
-        <div className="max-w-xl text-left">
+        <div className="max-w-2xl md:max-w-3xl text-left">
           <h2 className="text-3xl lg:text-4xl font-bold mb-6 text-right text-primary-blue leading-tight">
             Why <span className="text-black text-6xl">LMS?</span>
           </h2>

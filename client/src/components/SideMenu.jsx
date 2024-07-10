@@ -22,7 +22,7 @@ const SideMenu = ({ open }) => {
         console.log(data.message);
       } else {
         dispatch(signOutSuccess());
-        navigate("/studentsignin");
+        navigate("/");
       }
     } catch (error) {
       console.log(error.message);
@@ -70,39 +70,33 @@ const SideMenu = ({ open }) => {
           </div>
         )}
         {currentUser && (
-          <>
-            {currentUser.userType === "Student" ? (
-              <>
-                <div className="flex items-center mb-4">
-                  <MdDashboard className="mr-2" />
-                  <a href="/studentdashboard" className="block">
-                    Dashboard
-                  </a>
-                </div>
-                <div className="flex items-center mb-4">
-                  <CgProfile className="mr-2" />
-                  <a href="/profile" className="block">
-                    Profile
-                  </a>
-                </div>
-              </>
-            ) : currentUser.userType === "Staff" ? (
-              <div className="flex items-center mb-4">
-                <MdDashboard className="mr-2" />
-                <a href="/staffdashboard" className="block">
-                  Dashboard
-                </a>
-              </div>
-            ) : currentUser.isHod ? (
-              <div className="flex items-center mb-4">
-                <MdDashboard className="mr-2" />
-                <a href="/hoddash" className="block">
-                  HOD Dashboard
-                </a>
-              </div>
-            ) : null}
-          </>
-        )}
+  <>
+    {currentUser.userType === "Student" ? (
+      <>
+        <div className="flex items-center mb-4">
+          <MdDashboard className="mr-2" />
+          <a href="/profile" className="block">
+            Dashboard
+          </a>
+        </div>
+      </>
+    ) : currentUser.userType === "Staff" && !currentUser.isHod ? (
+      <div className="flex items-center mb-4">
+        <MdDashboard className="mr-2" />
+        <a href="/staffdashboard" className="block">
+          Dashboard
+        </a>
+      </div>
+    ) : currentUser.isHod ? (
+      <div className="flex items-center mb-4">
+        <MdDashboard className="mr-2" />
+        <a href="/hoddash" className="block">
+          HOD Dashboard
+        </a>
+      </div>
+    ) : null}
+  </>
+)}
       </div>
 
       {currentUser && (

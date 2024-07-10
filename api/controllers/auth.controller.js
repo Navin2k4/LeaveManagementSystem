@@ -5,8 +5,6 @@ import Staff from "../models/staff.model.js";
 import { errorHandler } from "../utils/error.js";
 import DeptHead from "../models/depthead.model.js";
 
-// HACK : Now the Student can select the department from the db and its object id is stored make easier to develop later:
-
 export const studentsignup = async (req, res, next) => {
   const {
     roll_no,
@@ -105,7 +103,12 @@ export const studentsignin = async (req, res, next) => {
     // Spread student properties directly into the response
     const { _id, name, roll_no, register_no, email, phone, departmentId, sectionId,section_name, batchId, userType } = student;
 
-    res.status(200).json({
+    res
+      .status(200)
+      .cookie('access_token',token,{
+        httpOnly: true,
+      })
+      .json({
       token,
       id: _id,
       name,
@@ -228,7 +231,11 @@ export const staffsignin = async (req, res, next) => {
 
     const { _id, staff_name, staff_mail, staff_phone, staff_handle_dept, isClassIncharge, classInchargeBatchId, classInchargeSectionId, isMentor, numberOfClassesHandledAsMentor, mentorHandlingData, userType } = staff;
 
-    res.status(200).json({
+    res.status(200)
+    .cookie('access_token', token,{
+       httpOnly: true,
+    })
+    .json({
       token,
       id : staff_id,
       name: staff_name,

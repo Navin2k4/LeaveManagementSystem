@@ -53,6 +53,8 @@ const StaffSchema = new mongoose.Schema({
   classInchargeSectionId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Section',
+    // TOFIX: Classincharge duplicate check is not functioning need to check it 
+    unique: true,
     default:null,
   },
   numberOfClassesHandledAsMentor: {

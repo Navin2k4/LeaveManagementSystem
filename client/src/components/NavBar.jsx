@@ -21,7 +21,7 @@ function Navbar() {
         console.log(data.message);
       } else {
         dispatch(signOutSuccess());
-        navigate("/studentsignin");
+        navigate("/");
       }
     } catch (error) {
       console.log(error.message);
