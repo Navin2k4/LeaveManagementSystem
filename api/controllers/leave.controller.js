@@ -181,7 +181,7 @@ export const getleaverequestbyclassinchargeid = async (req, res, next) => {
 export const updateLeaveRequestStatusByMentorId = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status,comment } = req.body;
     const validStatuses = ["approved", "rejected"];
 
     if (!validStatuses.includes(status)) {
@@ -193,7 +193,12 @@ export const updateLeaveRequestStatusByMentorId = async (req, res, next) => {
 
     const leaveRequest = await LeaveRequest.findByIdAndUpdate(
       id,
-      { "approvals.mentor.status": status },
+      {
+        "approvals.mentor.status": status,
+        $set: {
+          comment: comment !== "" ? comment : "No Comments Yet",
+        },
+      },
       { new: true }
     );
 
@@ -227,7 +232,7 @@ export const updateLeaveRequestStatusByClassInchargeId = async (
 ) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status , comment } = req.body;
     const validStatuses = ["approved", "rejected"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
@@ -235,9 +240,15 @@ export const updateLeaveRequestStatusByClassInchargeId = async (
         message: "Invalid status. Status must be 'approved' or 'rejected'.",
       });
     }
+
     const leaveRequest = await LeaveRequest.findByIdAndUpdate(
       id,
-      { "approvals.classIncharge.status": status },
+      {
+        "approvals.classIncharge.status": status,
+        $set: {
+          comment: comment !== "" ? comment : "No Comments Yet",
+        },
+      },
       { new: true }
     );
 
@@ -271,7 +282,7 @@ export const updateLeaveRequestStatusByClassInchargeId = async (
 export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status,comment } = req.body;
     const validStatuses = ["approved", "rejected"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
@@ -281,7 +292,12 @@ export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
     }
     const leaveRequest = await LeaveRequest.findByIdAndUpdate(
       id,
-      { "approvals.hod.status": status },
+      {
+        "approvals.hod.status": status,
+        $set: {
+          comment: comment ? comment : leaveRequest.comment,
+        },
+      },
       { new: true }
     );
 

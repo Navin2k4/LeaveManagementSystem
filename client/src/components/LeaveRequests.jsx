@@ -11,12 +11,15 @@ import {
   TableHead,
   TableHeadCell,
   TableRow,
+  Textarea,
+  TextInput,
 } from "flowbite-react";
 import { SiTicktick } from "react-icons/si";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdOutlineDownloadDone } from "react-icons/md";
 import { useSelector } from "react-redux";
 import TableSkeleton from "./ui/TableSkeleton";
+import { GiMedicines } from "react-icons/gi";
 
 export default function LeaveRequests({
   leaveRequestsAsMentor,
@@ -33,9 +36,13 @@ export default function LeaveRequests({
   const [isFetching, setIsFetching] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
 
+  const [comment, setComment] = useState("");
   const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "numeric", day: "numeric" };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    const date = new Date(dateString);
+    const year = date.getFullYear().toString().slice(-2); // Get last two digits of the year
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Month in two digits
+    const day = date.getDate().toString().padStart(2, "0"); // Day in two digits
+    return `${day}-${month}-${year}`;
   };
 
   useEffect(() => {
@@ -105,7 +112,10 @@ export default function LeaveRequests({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: mentormodalType }),
+        body: JSON.stringify({
+          status: mentormodalType,
+          comment: comment,
+        }),
       });
 
       if (response.ok) {
@@ -122,6 +132,8 @@ export default function LeaveRequests({
     }
   };
 
+  console.log(leaveRequestsAsClassIncharge);
+
   const confirmRequestClass = async () => {
     setLoading(true);
     try {
@@ -131,7 +143,10 @@ export default function LeaveRequests({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: classInchargemodalType }),
+        body: JSON.stringify({
+          status: classInchargemodalType,
+          comment: comment,
+        }),
       });
 
       if (response.ok) {
@@ -175,13 +190,13 @@ export default function LeaveRequests({
                     Reason
                   </TableHeadCell>
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
-                    Start Date
+                    From
                   </TableHeadCell>
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
-                    End Date
+                    To
                   </TableHeadCell>
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
-                    Duration
+                    Days
                   </TableHeadCell>
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                     Status
@@ -199,7 +214,7 @@ export default function LeaveRequests({
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           {req.name}
                         </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
+                        <TableCell className="text-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           {req.section_name}
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
@@ -211,11 +226,14 @@ export default function LeaveRequests({
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           {formatDate(req.toDate)}
                         </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {req.noOfDays} days
+                        <TableCell className="text-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
+                          {req.noOfDays}
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">
-                          {req.status}
+                          <div className="flex flex-col">
+                            <div>{req.status}</div>
+                            <div>{req.comment}</div>
+                          </div>{" "}
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           {status === "pending" ? (
@@ -281,11 +299,39 @@ export default function LeaveRequests({
                     )}
 
                     <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                      {mentormodalType === "approved"
-                        ? "Are you sure you want to approve this request?"
-                        : mentormodalType === "rejected"
-                        ? "Are you sure you want to reject this request?"
-                        : "This action has already been taken."}
+                      {mentormodalType === "approved" ? (
+                        <div>
+                          Are you to approve this request?
+                          <div className="w-full my-4 border border-gray-200 rounded-lg bg-gray-50">
+                            <div className="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
+                              <textarea
+                                id="comment"
+                                rows="4"
+                                className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
+                                placeholder="Write your comments..."
+                                onChange={(e) => setComment(e.target.value)}
+                              ></textarea>
+                            </div>
+                          </div>
+                        </div>
+                      ) : mentormodalType === "rejected" ? (
+                        <div>
+                          Are you sure you want to reject this request?
+                          <div className="w-full my-4 border border-gray-200 rounded-lg bg-gray-50">
+                            <div className="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
+                              <textarea
+                                id="comment"
+                                rows="4"
+                                className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
+                                placeholder="Write your comments..."
+                                onChange={(e) => setComment(e.target.value)}
+                              ></textarea>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        "This action has already been taken."
+                      )}
                     </h3>
                     {mentormodalType !== "taken" && (
                       <div className="flex justify-center gap-4">
@@ -339,9 +385,9 @@ export default function LeaveRequests({
           </div>
         ) : classInchargeRequests.length > 0 ? (
           <div className="mt-4">
-              <h2 className="text-xl md:text-2xl uppercase tracking-wider font-semibold">
-                All requests
-              </h2>
+            <h2 className="text-xl md:text-2xl uppercase tracking-wider font-semibold">
+              All requests
+            </h2>
             <div className="overflow-x-auto mt-4">
               <Table className="bg-white rounded-md">
                 <TableHead>
@@ -355,13 +401,13 @@ export default function LeaveRequests({
                     Reason
                   </TableHeadCell>
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
-                    Start Date
+                    From
                   </TableHeadCell>
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
-                    End Date
+                    To
                   </TableHeadCell>
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
-                    Duration
+                    Days
                   </TableHeadCell>
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                     Status
@@ -379,11 +425,18 @@ export default function LeaveRequests({
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           {req.name}
                         </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
+                        <TableCell className="text-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           {req.section_name}
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {req.reason}
+                          <div className="flex items-center gap-2 ">
+                            <div className="">{req.reason}</div>
+                            <div>
+                              {req.forMedical ? (
+                                <GiMedicines color="green" size={20} />
+                              ) : null}
+                            </div>
+                          </div>
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           {formatDate(req.fromDate)}
@@ -391,11 +444,14 @@ export default function LeaveRequests({
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           {formatDate(req.toDate)}
                         </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {req.noOfDays} days
+                        <TableCell className="text-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
+                          {req.noOfDays}
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">
-                          {req.status}
+                          <div className="flex flex-col">
+                            <div>{req.status}</div>
+                            <div>{req.comment}</div>
+                          </div>
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           {status === "pending" ? (
@@ -407,7 +463,7 @@ export default function LeaveRequests({
                                     req._id
                                   )
                                 }
-                                className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
+                                className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 min-w-[80px] rounded-lg transition-all duration-300"
                               >
                                 Approve
                               </button>
@@ -418,9 +474,9 @@ export default function LeaveRequests({
                                     req._id
                                   )
                                 }
-                                className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
+                                className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 min-w-[80px] rounded-lg transition-all duration-300"
                               >
-                                Reject
+                                Reject{" "}
                               </button>
                             </div>
                           ) : (
@@ -461,19 +517,47 @@ export default function LeaveRequests({
                 <ModalBody>
                   <div className="text-center">
                     {classInchargemodalType === "approved" ? (
-                      <SiTicktick className="mx-auto mb-4 h-14 w-14 text-green-400 dark:text-white" />
+                      <SiTicktick className="mx-auto mb-4 h-14 w-14 text-green-500 dark:text-white" />
                     ) : classInchargemodalType === "rejected" ? (
-                      <RxCrossCircled className="mx-auto mb-4 h-14 w-14 text-red-400 dark:text-white" />
+                      <RxCrossCircled className="mx-auto mb-4 h-14 w-14 text-red-500 dark:text-white" />
                     ) : (
                       <MdOutlineDownloadDone className="mx-auto mb-4 h-14 w-14 text-secondary-blue dark:text-white" />
                     )}
 
                     <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                      {classInchargemodalType === "approved"
-                        ? "Are you sure you want to approve this request?"
-                        : classInchargemodalType === "rejected"
-                        ? "Are you sure you want to reject this request?"
-                        : "This action has already been taken."}
+                      {classInchargemodalType === "approved" ? (
+                        <div>
+                          Are you to approve this request?
+                          <div className="w-full my-4 border border-gray-200 rounded-lg bg-gray-50">
+                            <div className="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
+                              <textarea
+                                id="comment"
+                                rows="4"
+                                className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
+                                placeholder="Write your comments..."
+                                onChange={(e) => setComment(e.target.value)}
+                              ></textarea>
+                            </div>
+                          </div>
+                        </div>
+                      ) : classInchargemodalType === "rejected" ? (
+                        <div>
+                          Are you sure you want to reject this request?
+                          <div className="w-full my-4 border border-gray-200 rounded-lg bg-gray-50">
+                            <div className="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
+                              <textarea
+                                id="comment"
+                                rows="4"
+                                className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
+                                placeholder="Write your comments..."
+                                onChange={(e) => setComment(e.target.value)}
+                              ></textarea>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        "This action has already been taken."
+                      )}
                     </h3>
                     {classInchargemodalType !== "taken" && (
                       <div className="flex justify-center gap-4">
@@ -485,8 +569,8 @@ export default function LeaveRequests({
                           }
                           className={`${
                             classInchargemodalType === "approved"
-                              ? "bg-green-400 hover:bg-green-500"
-                              : "bg-red-400 hover:bg-red-500"
+                              ? "bg-green-500 hover:bg-green-500"
+                              : "bg-red-500 hover:bg-red-500"
                           }`}
                           onClick={confirmRequestClass}
                         >

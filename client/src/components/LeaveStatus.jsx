@@ -73,8 +73,8 @@ const LeaveStatus = ({ leaveRequests }) => {
         </button>
       </div>
 
-      <div className={`container ${view === "pending" ? "active" : ""}`}>
-        <div className="filter-dropdown flex gap-3 items-center">
+      <div className={`container ${view === "pending" ? "active" : ""} `}>
+        <div className="filter-dropdown justify-between flex gap-3 items-center mb-6">
           <label>Filter by:</label>
           <Select value={filter} onChange={(e) => setFilter(e.target.value)}>
             <option value="all">All</option>
@@ -82,8 +82,6 @@ const LeaveStatus = ({ leaveRequests }) => {
             <option value="past1month">Past 1 Month</option>
           </Select>
         </div>
-        <br />
-        <br />
 
         {pendingRequests.length > 0 ? (
           pendingRequests.map((request) => (
@@ -150,7 +148,7 @@ const LeaveStatus = ({ leaveRequests }) => {
       </div>
 
       <div className={`container ${view === "approved" ? "active" : ""}`}>
-        <div className="filter-dropdown flex gap-3 items-center">
+        <div className="filter-dropdown justify-between flex gap-3 items-center mb-6">
           <label>Filter by:</label>
           <Select value={filter} onChange={(e) => setFilter(e.target.value)}>
             <option value="all">All</option>
@@ -158,8 +156,6 @@ const LeaveStatus = ({ leaveRequests }) => {
             <option value="past1month">Past 1 Month</option>
           </Select>
         </div>
-        <br />
-        <br />
 
         {approvedRequests.length > 0 ? (
           approvedRequests.map((request) => (
@@ -189,33 +185,51 @@ const LeaveStatus = ({ leaveRequests }) => {
                 <div className="font-bold">Status :</div>
 
                 <div className="status-dots">
-                  {}
-                  <StatusDot
-                    status={request.approvals.mentor.status}
-                    role="mentor"
-                    showLine={true}
-                  />
-                  <StatusDot
-                    status={request.approvals.classIncharge.status}
-                    role="classIncharge"
-                    showLine={true}
-                  />
-                  <StatusDot
-                    status={request.approvals.hod.status}
-                    role="hod"
-                    showLine={false}
-                  />
+                {currentUser.userType === "Staff" ? (
+                  <div className="status-dots">
+                    <StatusDot
+                      status={request.approvals.hod.status}
+                      role="hod"
+                      showLine={false}
+                    />
+                  </div>
+                ) : (
+                  <div className="status-dots">
+                    <StatusDot
+                      status={request.approvals.mentor.status}
+                      role="mentor"
+                      showLine={true}
+                    />
+                    <StatusDot
+                      status={request.approvals.classIncharge.status}
+                      role="classIncharge"
+                      showLine={true}
+                    />
+                    <StatusDot
+                      status={request.approvals.hod.status}
+                      role="hod"
+                      showLine={false}
+                    />
+                  </div>
+                ) }
                 </div>
               </div>
+              <div className="flex items-center justify-between">
+                
               <div>
                 {request.approvals.mentor.status === "rejected" ||
                 request.approvals.classIncharge.status === "rejected" ||
                 request.approvals.hod.status === "rejected" ? (
-                  <div className="rejected-status">Rejected</div>
+                  <div className="rejected-status">Rejected</div> 
                 ) : (
-                  <div className="accepted-status">Approved</div>
+                  <div className="accepted-status">Approved</div> 
                 )}
               </div>
+                <div>
+
+                Comments : {request.comment}
+                </div>
+                </div>
             </div>
           ))
         ) : (

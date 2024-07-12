@@ -112,6 +112,10 @@ const leaveRequestSchema = new Schema(
       type: Boolean,
       required: true,
     },
+    comment:{
+      type:String,
+      default :"No Comments",
+    }
   },
   {
     timestamps: true,

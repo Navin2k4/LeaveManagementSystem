@@ -79,7 +79,7 @@ const StaffDashBoard = () => {
               tab === "Leave Reports" ? "bg-white/60 text-black font-bold" : "hover:bg-white/20 text-white font-bold"
             }`}
           >
-            Leave Reports
+            Reports
           </li>
           <li
             onClick={() => setTab("Request Leave")}

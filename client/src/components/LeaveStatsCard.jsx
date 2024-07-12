@@ -7,6 +7,7 @@ import { parseISO, format, isValid } from "date-fns";
 import { TbFileTypePdf } from "react-icons/tb";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { IoIosCloseCircleOutline } from "react-icons/io";
+import CommonBarChart from "./ui/CommonBarChart";
 
 const LeaveStatsCard = ({
   leaveRequestsAsMentor,
@@ -227,19 +228,21 @@ const LeaveStatsCard = ({
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Recent Leave Requests");
     XLSX.writeFile(workbook, "recent_leave_requests.xlsx");
-  };  
-  
+  };
+
   const downloadExcelAsClassIncharge = () => {
-    const formattedRequests = leaveRequestsAsClassIncharge.map((request, index) => ({
-      "S.No": index + 1,
-      "Student Name": request.name,
-      Section: request.section_name,
-      Reason: request.reason,
-      "No.Of.Days": request.noOfDays,
-      "From Date": formatDate(request.fromDate),
-      "To Date": formatDate(request.toDate),
-      Status: request.status,
-    }));
+    const formattedRequests = leaveRequestsAsClassIncharge.map(
+      (request, index) => ({
+        "S.No": index + 1,
+        "Student Name": request.name,
+        Section: request.section_name,
+        Reason: request.reason,
+        "No.Of.Days": request.noOfDays,
+        "From Date": formatDate(request.fromDate),
+        "To Date": formatDate(request.toDate),
+        Status: request.status,
+      })
+    );
 
     const worksheet = XLSX.utils.json_to_sheet(formattedRequests);
 
@@ -297,10 +300,9 @@ const LeaveStatsCard = ({
           <h2 className="text-3xl uppercase tracking-wider text-center font-semibold mb-8">
             Leave Statistics
           </h2>
-
           <div className="mb-8 ">
             <br />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  items-center justify-center gap-6 ">
               {currentUser.isMentor && (
                 <div>
                   <div className="bg-primary-blue shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all">
@@ -375,6 +377,14 @@ const LeaveStatsCard = ({
                   </div>
                 </div>
               )}
+              {/* <CommonBarChart
+                  pending={pendingRequestsByMentor}
+                  approved={approvedRequestsByMentor}
+                  rejected={rejectedRequestsByMentor}
+                /> */}
+              <div className="bg-primary-blue  text-white shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all">
+                any others
+              </div>
             </div>
           </div>
         </div>
@@ -392,71 +402,94 @@ const LeaveStatsCard = ({
                   onClick={handleCloseButton}
                 >
                   <div className="flex gap-3 items-center justify-center">
-                  <IoIosCloseCircleOutline size={25}  className="block md:hidden  text-black absolute top-5  transition-all duration-300" />
-                  <span className="hidden md:block text-black mx-2  transition-all duration-300">Close</span>
-                  </div>                  
+                    <IoIosCloseCircleOutline
+                      size={25}
+                      className="block md:hidden  text-black absolute top-5  transition-all duration-300"
+                    />
+                    <span className="hidden md:block text-black mx-2  transition-all duration-300">
+                      Close
+                    </span>
+                  </div>
                 </button>
               </div>
               <br />
               <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border overflow-x-auto">
-                  <thead>
-                    <tr>
-                      <th className="py-2 px-4 border">S.No</th>
-                      <th className="py-2 px-4 border">Student Name</th>
-                      <th className="py-2 px-4 border">Section</th>
-                      <th className="py-2 px-4 border">Reason</th>
-                      <th className="py-2 px-4 border">From Date</th>
-                      <th className="py-2 px-4 border">To Date</th>
-                      <th className="py-2 px-4 border">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {leaveRequestsAsMentor.map((request, index) => (
-                      <tr key={index} className="font-semibold">
-                        <td className="py-2 px-4 border">{index + 1}</td>
-                        <td className="py-2 px-4 border">{request.name}</td>
-                        <td className="py-2 px-4 border">
-                          {request.section_name}
-                        </td>
-                        <td className="py-2 px-4 border">{request.reason}</td>
-                        <td className="py-2 px-4 border">
-                          {new Date(request.fromDate).toLocaleDateString()}
-                        </td>
-                        <td className="py-2 px-4 border">
-                          {new Date(request.toDate).toLocaleDateString()}
-                        </td>
-                        <td className={`py-2 px-4 border capitalize
-                          ${request.approvals.mentor.status === "approved" ? 'text-green-500' : ''}
-                          ${request.approvals.mentor.status === "pending" ? 'text-gray-500' : ''}
-                          ${request.approvals.mentor.status === "rejected" ? 'text-red-500' : ''}
-                          `}>
-                          {request.approvals.mentor.status}
-                        </td>
+                {leaveRequestsAsMentor.length > 0 ? (
+                  <table className="min-w-full bg-white border overflow-x-auto">
+                    <thead>
+                      <tr>
+                        <th className="py-2 px-4 border">S.No</th>
+                        <th className="py-2 px-4 border">Student Name</th>
+                        <th className="py-2 px-4 border">Section</th>
+                        <th className="py-2 px-4 border">Reason</th>
+                        <th className="py-2 px-4 border">From Date</th>
+                        <th className="py-2 px-4 border">To Date</th>
+                        <th className="py-2 px-4 border">Status</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex justify-end mt-4">
-                <button
-                  onClick={downloadPDFAsMentor}
-                  className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mr-2"
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <TbFileTypePdf size={20} />
-                    Download as PDF
-                  </div>
-                </button>
-                <button
-                  onClick={downloadExcelAsMentor}
-                  className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <RiFileExcel2Line size={20} />
-                    Download as Excel
-                  </div>
-                </button>
+                    </thead>
+                    <tbody>
+                      {leaveRequestsAsMentor.map((request, index) => (
+                        <tr key={index} className="font-semibold">
+                          <td className="py-2 px-4 border">{index + 1}</td>
+                          <td className="py-2 px-4 border">{request.name}</td>
+                          <td className="py-2 px-4 border">
+                            {request.section_name}
+                          </td>
+                          <td className="py-2 px-4 border">{request.reason}</td>
+                          <td className="py-2 px-4 border">
+                            {new Date(request.fromDate).toLocaleDateString()}
+                          </td>
+                          <td className="py-2 px-4 border">
+                            {new Date(request.toDate).toLocaleDateString()}
+                          </td>
+                          <td
+                            className={`py-2 px-4 border capitalize
+                        ${
+                          request.approvals.mentor.status === "approved"
+                            ? "text-green-500"
+                            : ""
+                        }
+                        ${
+                          request.approvals.mentor.status === "pending"
+                            ? "text-gray-500"
+                            : ""
+                        }
+                        ${
+                          request.approvals.mentor.status === "rejected"
+                            ? "text-red-500"
+                            : ""
+                        }
+                        `}
+                          >
+                            {request.approvals.mentor.status}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="text-center my-3">No requests yet</div>
+                )}
+                      <div className="flex justify-end mt-4">
+                        <button
+                          onClick={downloadPDFAsMentor}
+                          className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mr-2"
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            <TbFileTypePdf size={20} />
+                            Download as PDF
+                          </div>
+                        </button>
+                        <button
+                          onClick={downloadExcelAsMentor}
+                          className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            <RiFileExcel2Line size={20} />
+                            Download as Excel
+                          </div>
+                        </button>
+                      </div>
               </div>
             </div>
           </div>
@@ -473,76 +506,102 @@ const LeaveStatsCard = ({
                   onClick={handleCloseButton}
                 >
                   <div className="flex gap-3 items-center justify-center">
-                  <IoIosCloseCircleOutline size={25}  className="block md:hidden  text-black absolute top-5  transition-all duration-300" />
-                  <span className="hidden md:block text-black mx-2  transition-all duration-300">Close</span>
-                  </div>                  
+                    <IoIosCloseCircleOutline
+                      size={25}
+                      className="block md:hidden  text-black absolute top-5  transition-all duration-300"
+                    />
+                    <span className="hidden md:block text-black mx-2  transition-all duration-300">
+                      Close
+                    </span>
+                  </div>
                 </button>
               </div>
               <br />
               <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border">
-                  <thead>
-                    <tr>
-                      <th className="py-2 px-4 border">S.No</th>
-                      <th className="py-2 px-4 border">Student Name</th>
-                      <th className="py-2 px-4 border">Section</th>
-                      <th className="py-2 px-4 border">Reason</th>
-                      <th className="py-2 px-4 border">From Date</th>
-                      <th className="py-2 px-4 border">To Date</th>
-                      <th className="py-2 px-4 border">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {leaveRequestsAsClassIncharge.map((request, index) => (
-                      <tr key={index} className="font-semibold">
-                        <td className="py-2 px-4 border">{index + 1}</td>
-                        <td className="py-2 px-4 border">{request.name}</td>
-                        <td className="py-2 px-4 border">
-                          {request.section_name}
-                        </td>
-                        <td className="py-2 px-4 border">{request.reason}</td>
-                        <td className="py-2 px-4 border">
-                          {new Date(request.fromDate).toLocaleDateString()}
-                        </td>
-                        <td className="py-2 px-4 border">
-                          {new Date(request.toDate).toLocaleDateString()}
-                        </td>
-                        <td className={`py-2 px-4 border capitalize
-                          ${request.approvals.classIncharge.status === "approved" ? 'text-green-500' : ''}
-                          ${request.approvals.classIncharge.status === "pending" ? 'text-gray-500' : ''}
-                          ${request.approvals.classIncharge.status === "rejected" ? 'text-red-500' : ''}
-                          `}>
-                          {request.approvals.classIncharge.status}
-                        </td>
+                {leaveRequestsAsClassIncharge.length > 0 ? (
+                  <table className="min-w-full bg-white border">
+                    <thead>
+                      <tr>
+                        <th className="py-2 px-4 border">S.No</th>
+                        <th className="py-2 px-4 border">Student Name</th>
+                        <th className="py-2 px-4 border">Section</th>
+                        <th className="py-2 px-4 border">Reason</th>
+                        <th className="py-2 px-4 border">From Date</th>
+                        <th className="py-2 px-4 border">To Date</th>
+                        <th className="py-2 px-4 border">Status</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex justify-end mt-4">
-                <button
-                  onClick={downloadPDFAsClassIncharge}
-                  className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mr-2"
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <TbFileTypePdf size={20} />
-                    Download as PDF
-                  </div>
-                </button>
-                <button
-                  onClick={downloadExcelAsClassIncharge}
-                  className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    <RiFileExcel2Line size={20} />
-                    Download as Excel
-                  </div>
-                </button>
+                    </thead>
+                    <tbody>
+                      {leaveRequestsAsClassIncharge.map((request, index) => (
+                        <tr key={index} className="font-semibold">
+                          <td className="py-2 px-4 border">{index + 1}</td>
+                          <td className="py-2 px-4 border">{request.name}</td>
+                          <td className="py-2 px-4 border">
+                            {request.section_name}
+                          </td>
+                          <td className="py-2 px-4 border">{request.reason}</td>
+                          <td className="py-2 px-4 border">
+                            {new Date(request.fromDate).toLocaleDateString()}
+                          </td>
+                          <td className="py-2 px-4 border">
+                            {new Date(request.toDate).toLocaleDateString()}
+                          </td>
+                          <td
+                            className={`py-2 px-4 border capitalize
+                          ${
+                            request.approvals.classIncharge.status ===
+                            "approved"
+                              ? "text-green-500"
+                              : ""
+                          }
+                          ${
+                            request.approvals.classIncharge.status === "pending"
+                              ? "text-gray-500"
+                              : ""
+                          }
+                          ${
+                            request.approvals.classIncharge.status ===
+                            "rejected"
+                              ? "text-red-500"
+                              : ""
+                          }
+                          `}
+                          >
+                            {request.approvals.classIncharge.status}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="text-center my-3">No requests yet</div>
+                )}
+                <div className="flex justify-end mt-4">
+                        <button
+                          onClick={downloadPDFAsClassIncharge}
+                          className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mr-2"
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            <TbFileTypePdf size={20} />
+                            Download as PDF
+                          </div>
+                        </button>
+                        <button
+                          onClick={downloadExcelAsClassIncharge}
+                          className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
+                        >
+                          <div className="flex items-center justify-center gap-2">
+                            <RiFileExcel2Line size={20} />
+                            Download as Excel
+                          </div>
+                        </button>
+                      </div>
               </div>
             </div>
           </div>
         )}
       </div>
+      <div></div>
     </div>
   );
 };
