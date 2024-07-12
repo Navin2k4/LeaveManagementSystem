@@ -77,12 +77,12 @@ export default function StaffSignIn() {
 
   return (
     <div className="flex justify-center mt-20">
-      <section className="w-full max-w-md p-8 mx-auto h-auto bg-white rounded-lg shadow-lg border-l-4 border-primary-blue">
+      <section className="w-full max-w-md p-8 mx-auto h-auto bg-dark-blue rounded-lg shadow-black shadow-md border-l-4 border-white">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Sign In</h2>
-          <p className="mt-2 text-gray-600">Leave Applicant Login</p>
+          <h2 className="text-2xl font-bold text-ternary-blue"><span className='text-3xl uppercase text-white'>Staff</span> Sign In</h2>
+          {/* <p className="mt-2 text-ternary-blue">Leave Applicant Login</p> */}
           <Link to="/studentsignin" className="text-center p-3">
-            <h2 className="font-medium text-primary-blue hover:tracking-wider transition-all duration-500">
+            <h2 className="font-medium text-teal-300 hover:tracking-wider transition-all duration-500">
               Click here for Student Sign In
             </h2>
           </Link>
@@ -90,7 +90,7 @@ export default function StaffSignIn() {
         <form className="mt-8 space-y-6">
           <div className="space-y-4">
             <div>
-              <label htmlFor="identifier" className="my-4 block text-sm font-medium text-gray-700">
+              <label htmlFor="identifier" className="my-4 block text-sm font-medium text-ternary-blue">
                 Username
               </label>
               <input
@@ -102,7 +102,7 @@ export default function StaffSignIn() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="my-4 block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="my-4 block text-sm font-medium text-ternary-blue">
                 Password
               </label>
               <input
@@ -114,6 +114,8 @@ export default function StaffSignIn() {
               />
             </div>
           </div>
+          <div className='flex gap-2 items-center'>
+
           <button
             id='staffsubmitbtn'
             type="submit"
@@ -130,15 +132,16 @@ export default function StaffSignIn() {
             className="flex justify-center w-full px-4 py-2 text-sm font-medium bg-gradient-to-r from-primary-blue via-secondary-blue/85 to-primary-blue hover:bg-primary-blue transition-all duration-300 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
             disabled={hodloading}
             onClick={(e) => handleSubmit(e, 'hod')}
-          >
+            >
             {hodloading && <Spinner size="sm" className="mr-2" />}
             {!hodloading ? 'Sign In as HOD' : 'Signing In...'}
           </button>
+            </div>
         </form>
         <div className="flex gap-2 text-sm mt-5 justify-center">
-          <span>Create an Account?</span>
-          <Link to="/staffsignup" className="text-primary-blue-300 underline">
-            Sign Up
+          <span className='text-teal-300'>Create an Account?</span>
+          <Link to="/staffsignup" className="text-teal-300 underline">
+            {' '}Sign Up
           </Link>
         </div>
         {errorMessage && (

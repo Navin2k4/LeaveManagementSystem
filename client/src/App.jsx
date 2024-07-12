@@ -16,6 +16,7 @@ import DashBoard from "./pages/DashBoard";
 import StaffSignIn from "./components/StaffSignIn";
 import Hoddashboard from "./pages/HodDashBoard";
 import HodPrivateRoute from "./components/HodPrivateRoute";
+import WardDetails from "./pages/WardDetails";
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
         <Route path='/studentsignup' element={<SignUp />} />
         <Route path='/staffsignin' element={<StaffSignIn/>} />
         <Route path='/staffsignup' element={<StaffSignUp/>} />
+        <Route path="/wardDetails" element={<WardDetails />} />
         {/* Pages that are only availabe to the users Signed in  */}
         <Route element={<PrivateRoute />} >
           <Route path='/studentdashboard' element={<DashBoard />} />
@@ -42,6 +44,9 @@ export default function App() {
           <Route path='/staffdashboard' element={<StaffDashBoard/>} />
         </Route>
         <Route path='/superadmin' element={<SuperAdmin />} />
+
+        {/* Catch All other undefined Routes*/}
+        <Route path='*' element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>
   );

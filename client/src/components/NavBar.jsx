@@ -21,7 +21,7 @@ function Navbar() {
         console.log(data.message);
       } else {
         dispatch(signOutSuccess());
-        navigate("/");
+        navigate("/studentsignin");
       }
     } catch (error) {
       console.log(error.message);
@@ -65,7 +65,7 @@ function Navbar() {
           Home
         </Link>
         {!currentUser && (
-          <Link to="/to-do" className="transition-all duration-200 hover:scale-105">
+          <Link to="/wardDetails" className="transition-all duration-200 hover:scale-105">
             Wards Detail
           </Link>
         )}

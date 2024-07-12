@@ -55,8 +55,8 @@ export default function SignIn() {
     <div className="flex justify-center mt-20">
       <section className="w-full max-w-md p-8 mx-auto h-auto bg-white rounded-lg shadow-lg border-l-4 border-primary-blue">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Sign In</h2>
-          <p className="mt-2 text-gray-600">Leave Applicant Login</p>
+          <h2 className="text-3xl font-bold text-gray-900"><span className='text-3xl uppercase text-secondary-blue'>Student</span> Sign In</h2>
+          {/* <p className="mt-2 text-gray-600">Leave Applicant Login</p> */}
         <Link to="/staffsignin" className="text-center p-3">
           <h2 className="font-medium text-primary-blue hover:tracking-wider transition-all duration-500">
             Click here for Staff Sign In

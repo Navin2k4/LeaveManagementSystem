@@ -7,7 +7,6 @@ import { parseISO, format, isValid } from "date-fns";
 import { TbFileTypePdf } from "react-icons/tb";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import { Button } from "flowbite-react";
 
 const LeaveStatsCard = ({
   leaveRequestsAsMentor,
@@ -109,7 +108,7 @@ const LeaveStatsCard = ({
       : "Invalid Date";
   };
 
-  const downloadPDF = () => {
+  const downloadPDFAsMentor = () => {
     const doc = new jsPDF();
     doc.text("Recent Leave Requests (Past Month)", 14, 20);
     doc.autoTable({
@@ -139,8 +138,99 @@ const LeaveStatsCard = ({
     doc.save("recent_leave_requests.pdf");
   };
 
-  const downloadExcel = () => {
+  const downloadPDFAsClassIncharge = () => {
+    const doc = new jsPDF();
+    doc.text("Recent Leave Requests (Past Month)", 14, 20);
+    doc.autoTable({
+      head: [
+        [
+          "S.No",
+          "Student Name",
+          "Section",
+          "Reason",
+          "No.Of.Days",
+          "From Date",
+          "To Date",
+          "Status",
+        ],
+      ],
+      body: leaveRequestsAsClassIncharge.map((request, index) => [
+        index + 1,
+        request.name,
+        request.section_name,
+        request.reason,
+        request.noOfDays,
+        formatDate(request.fromDate),
+        formatDate(request.toDate),
+        request.status,
+      ]),
+    });
+    doc.save("recent_leave_requests.pdf");
+  };
+
+  const downloadExcelAsMentor = () => {
     const formattedRequests = leaveRequestsAsMentor.map((request, index) => ({
+      "S.No": index + 1,
+      "Student Name": request.name,
+      Section: request.section_name,
+      Reason: request.reason,
+      "No.Of.Days": request.noOfDays,
+      "From Date": formatDate(request.fromDate),
+      "To Date": formatDate(request.toDate),
+      Status: request.status,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedRequests);
+
+    const header = [
+      "S.No",
+      "Student Name",
+      "Section",
+      "Reason",
+      "No.of.Days",
+      "From Date",
+      "To Date",
+      "Status",
+    ];
+    XLSX.utils.sheet_add_aoa(worksheet, [header], { origin: "A1" });
+    const range = XLSX.utils.decode_range(worksheet["!ref"]);
+
+    worksheet["!cols"] = [
+      { wch: 5 },
+      { wch: 30 },
+      { wch: 15 },
+      { wch: 30 },
+      { wch: 15 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 20 },
+    ];
+
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const cell_address = XLSX.utils.encode_cell({ r: 0, c: C });
+      if (!worksheet[cell_address]) continue;
+      worksheet[cell_address].s = {
+        font: {
+          bold: true,
+          color: { rgb: "FFFFFF" },
+        },
+        fill: {
+          fgColor: { rgb: "000000" },
+        },
+        alignment: {
+          horizontal: "center",
+          vertical: "center",
+        },
+      };
+    }
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Recent Leave Requests");
+    XLSX.writeFile(workbook, "recent_leave_requests.xlsx");
+  };  
+  
+  const downloadExcelAsClassIncharge = () => {
+    const formattedRequests = leaveRequestsAsClassIncharge.map((request, index) => ({
       "S.No": index + 1,
       "Student Name": request.name,
       Section: request.section_name,
@@ -350,7 +440,7 @@ const LeaveStatsCard = ({
               </div>
               <div className="flex justify-end mt-4">
                 <button
-                  onClick={downloadPDF}
+                  onClick={downloadPDFAsMentor}
                   className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mr-2"
                 >
                   <div className="flex items-center justify-center gap-2">
@@ -359,7 +449,7 @@ const LeaveStatsCard = ({
                   </div>
                 </button>
                 <button
-                  onClick={downloadExcel}
+                  onClick={downloadExcelAsMentor}
                   className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
                 >
                   <div className="flex items-center justify-center gap-2">
@@ -431,7 +521,7 @@ const LeaveStatsCard = ({
               </div>
               <div className="flex justify-end mt-4">
                 <button
-                  onClick={downloadPDF}
+                  onClick={downloadPDFAsClassIncharge}
                   className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mr-2"
                 >
                   <div className="flex items-center justify-center gap-2">
@@ -440,7 +530,7 @@ const LeaveStatsCard = ({
                   </div>
                 </button>
                 <button
-                  onClick={downloadExcel}
+                  onClick={downloadExcelAsClassIncharge}
                   className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
                 >
                   <div className="flex items-center justify-center gap-2">

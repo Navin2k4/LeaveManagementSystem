@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import "./LeaveStatus.scss";
 import StatusDot from "./StatusDot";
 import { Button, Select } from "flowbite-react";
+import { useSelector } from "react-redux";
 
 const LeaveStatus = ({ leaveRequests }) => {
   const [filter, setFilter] = useState("all");
   const [view, setView] = useState("pending");
+
+  const { currentUser } = useSelector((state) => state.user);
 
   if (!Array.isArray(leaveRequests)) {
     return (
@@ -31,23 +34,22 @@ const LeaveStatus = ({ leaveRequests }) => {
   const pendingRequests = filteredRequests.filter(
     (request) =>
       (request.approvals.mentor.status === "pending" ||
-       request.approvals.classIncharge.status === "pending" ||
-       request.approvals.hod.status === "pending") &&
+        request.approvals.classIncharge.status === "pending" ||
+        request.approvals.hod.status === "pending") &&
       request.approvals.mentor.status !== "rejected" &&
       request.approvals.classIncharge.status !== "rejected" &&
       request.approvals.hod.status !== "rejected"
   );
-  
 
-    const approvedRequests = filteredRequests.filter(
-      (request) =>
-        request.approvals.mentor.status === "rejected" ||
-        request.approvals.classIncharge.status === "rejected" ||
-        request.approvals.hod.status === "rejected" ||
-        (request.approvals.mentor.status === "approved" &&
-          request.approvals.classIncharge.status === "approved" &&
-          request.approvals.hod.status === "approved")
-    );
+  const approvedRequests = filteredRequests.filter(
+    (request) =>
+      request.approvals.mentor.status === "rejected" ||
+      request.approvals.classIncharge.status === "rejected" ||
+      request.approvals.hod.status === "rejected" ||
+      (request.approvals.mentor.status === "approved" &&
+        request.approvals.classIncharge.status === "approved" &&
+        request.approvals.hod.status === "approved")
+  );
 
   return (
     <div className="leave-status p-5">
@@ -109,24 +111,33 @@ const LeaveStatus = ({ leaveRequests }) => {
               </div>
               <div className="flex items-center gap-2 my-2 mt-6">
                 <div className="font-bold">Status :</div>
-
-                <div className="status-dots">
-                  <StatusDot
-                    status={request.approvals.mentor.status}
-                    role="mentor"
-                    showLine={true}
-                  />
-                  <StatusDot
-                    status={request.approvals.classIncharge.status}
-                    role="classIncharge"
-                    showLine={true}
-                  />
-                  <StatusDot
-                    status={request.approvals.hod.status}
-                    role="hod"
-                    showLine={false}
-                  />
-                </div>
+                {currentUser.userType === "Staff" ? (
+                  <div className="status-dots">
+                    <StatusDot
+                      status={request.approvals.hod.status}
+                      role="hod"
+                      showLine={false}
+                    />
+                  </div>
+                ) : (
+                  <div className="status-dots">
+                    <StatusDot
+                      status={request.approvals.mentor.status}
+                      role="mentor"
+                      showLine={true}
+                    />
+                    <StatusDot
+                      status={request.approvals.classIncharge.status}
+                      role="classIncharge"
+                      showLine={true}
+                    />
+                    <StatusDot
+                      status={request.approvals.hod.status}
+                      role="hod"
+                      showLine={false}
+                    />
+                  </div>
+                ) }
               </div>
               <div className="pending-status">Pending</div>
             </div>
@@ -178,6 +189,7 @@ const LeaveStatus = ({ leaveRequests }) => {
                 <div className="font-bold">Status :</div>
 
                 <div className="status-dots">
+                  {}
                   <StatusDot
                     status={request.approvals.mentor.status}
                     role="mentor"

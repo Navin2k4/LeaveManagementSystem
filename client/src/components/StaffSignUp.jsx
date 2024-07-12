@@ -248,15 +248,15 @@ export default function SignUp() {
 
   return (
     <div className="flex justify-center md:mt-5 ">
-      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-white rounded-lg shadow-lg md:border-l-4 border-secondary-blue">
+      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-[#1A2130] rounded-lg shadow-black shadow-md md:border-l-4 border-white">
         <div className="mt-4">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-primary-blue tracking-wider">
+            <h2 className="text-3xl font-bold text-ternary-blue tracking-wider">
               Staff Sign Up
             </h2>
           </div>
           <Link to="/studentsignup" className="text-center p-3">
-            <h2 className="font-medium  text-primary-blue hover:tracking-wider transition-all duration-500">
+            <h2 className="font-medium  text-teal-300 hover:tracking-wider transition-all duration-500">
               Click here for Student Sign Up
             </h2>
           </Link>
@@ -266,7 +266,7 @@ export default function SignUp() {
             <div>
               <label
                 htmlFor="staff_name"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-ternary-blue"
               >
                 Name
               </label>
@@ -287,7 +287,7 @@ export default function SignUp() {
               <div>
                 <label
                   htmlFor="staff_id"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-ternary-blue"
                 >
                   Staff ID
                 </label>
@@ -309,7 +309,7 @@ export default function SignUp() {
               <div>
                 <label
                   htmlFor="staff_email"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-ternary-blue"
                 >
                   Email
                 </label>
@@ -331,7 +331,7 @@ export default function SignUp() {
               <div>
                 <label
                   htmlFor="staff_phone"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-ternary-blue"
                 >
                   Phone
                 </label>
@@ -351,7 +351,7 @@ export default function SignUp() {
               <div className="flex flex-col">
                 <Label
                   htmlFor="staff_department"
-                  className="mb-2 text-left font-bold tracking-wide"
+                  className="mb-2 text-left font-bold text-ternary-blue tracking-wide"
                 >
                   Department
                 </Label>
@@ -359,9 +359,9 @@ export default function SignUp() {
                   name="staff_department"
                   value={formData.staff_departmentId}
                   onChange={handleDepartmentChange}
-                  className={errors.staff_department ? "border-red-500" : ""}
+                  className={errors.staff_department ? "border-red-500 " : " mt-1"}
                 >
-                  <option value="">Select Department</option>
+                  <option value="" className="">Select Department</option>
                   {departments.map((dept) => (
                     <option key={dept._id} value={dept._id}>
                       {dept.dept_name}
@@ -377,7 +377,7 @@ export default function SignUp() {
             </div>
             <div className="flex md:flex-row flex-col gap-3 ">
               <div className="">
-                <Label>Are you HOD</Label>
+                <Label className="text-ternary-blue">Are you HOD</Label>
                 <Checkbox
                   name="isHod"
                   id="isHod"
@@ -388,7 +388,7 @@ export default function SignUp() {
                 />
               </div>
               <div className="">
-                <Label className={`${formData.isHod ? 'text-gray-300' : ''}`}  >Are you a Class Incharge</Label>
+                <Label className={`${formData.isHod ? 'text-gray-400' : 'text-ternary-blue'} `}  >Are you a Class Incharge</Label>
                 <Checkbox
                   name="isClassIncharge"
                   id="isClassIncharge"
@@ -396,11 +396,11 @@ export default function SignUp() {
                   checked={formData.isClassIncharge}
                   onChange={handleRoleChange}
                   disabled={formData.isHod}
-                  className={`${formData.isHod ? 'text-gray-300 border-gray-300' : 'border-black'} mx-2 `}
+                  className={`${formData.isHod ? 'bg-gray-400 border-gray-300' : 'border-black'} mx-2 `}
                 />
               </div>
               <div>
-              <Label className={`${formData.isHod ? 'text-gray-300' : ''}`}  >Are you a Mentor</Label>
+              <Label className={`${formData.isHod ? 'text-gray-400' : 'text-ternary-blue'} `}  >Are you a Mentor</Label>
               <Checkbox
                   name="isMentor"
                   id="isMentor"
@@ -409,14 +409,14 @@ export default function SignUp() {
                   onChange={handleRoleChange}
                   disabled={formData.isHod}
 
-                  className={`${formData.isHod ? 'text-gray-300 border-gray-300' : 'border-black'} mx-2 `}
+                  className={`${formData.isHod ? 'bg-gray-400 border-gray-300' : 'border-black'} mx-2 `}
                 />
               </div>
             </div>
             {formData.isClassIncharge && (
               <>
                 <div>
-                  <h2 className="text-primary-blue font-semibold">
+                  <h2 className="text-ternary-blue font-semibold">
                     Class Incharge Detail
                   </h2>
                 </div>
@@ -424,7 +424,7 @@ export default function SignUp() {
                   <div className="flex flex-col gap-3">
                     <Label
                       htmlFor="classInchargeBatchId"
-                      className="mb-2 text-left font-bold tracking-wide"
+                      className="mb-2 text-left font-bold tracking-wide text-ternary-blue"
                     >
                       Batch
                     </Label>
@@ -484,7 +484,7 @@ export default function SignUp() {
             {formData.isMentor && (
               <>
                 <div>
-                  <h2 className="text-primary-blue font-semibold">
+                  <h2 className="text-ternary-blue font-semibold">
                     Mentor Details
                   </h2>
                 </div>
@@ -492,7 +492,7 @@ export default function SignUp() {
                   <div className="flex flex-col gap-3">
                     <Label
                       htmlFor="numberOfClassesHandledAsMentor"
-                      className="mb-2 text-left font-bold tracking-wide"
+                      className="mb-2 text-left font-bold tracking-wide text-ternary-blue "
                     >
                       Number of Classes Handled
                     </Label>
@@ -512,7 +512,7 @@ export default function SignUp() {
                 </div>
                 {formData.numberOfClassesHandledAsMentor > 0 && (
                   <div>
-                    <h2 className="text-primary-blue font-semibold">
+                    <h2 className="text-ternary-blue font-semibold">
                       Handling Details
                     </h2>
                     {formData.mentorHandlingData.map((data, index) => (
@@ -523,7 +523,7 @@ export default function SignUp() {
                         <div className="flex flex-col gap-3">
                           <Label
                             htmlFor={`handlingBatchId-${index}`}
-                            className="mb-2 text-left font-bold tracking-wide"
+                            className="mb-2 text-left font-bold tracking-wide text-ternary-blue"
                           >
                             Batch
                           </Label>
@@ -553,7 +553,7 @@ export default function SignUp() {
                         <div className="flex flex-col gap-3">
                           <Label
                             htmlFor={`handlingSectionId-${index}`}
-                            className="mb-2 text-left font-bold tracking-wide"
+                            className="mb-2 text-left font-bold tracking-wide text-ternary-blue"
                           >
                             Section
                           </Label>
@@ -590,7 +590,7 @@ export default function SignUp() {
               <div>
                 <Label
                   htmlFor="password"
-                  className="mb-2 text-left font-bold tracking-wide"
+                  className="mb-2 text-left font-bold tracking-wide text-ternary-blue"
                 >
                   Password
                 </Label>
@@ -598,7 +598,7 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   placeholder="Enter password"
-                  className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
+                  className=" block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
                   onChange={handleChange}
                 />
                 {errors.password && (
@@ -610,7 +610,7 @@ export default function SignUp() {
               <div>
                 <Label
                   htmlFor="confirmpassword"
-                  className="mb-2 text-left font-bold tracking-wide"
+                  className="mb-2 text-left font-bold tracking-wide text-ternary-blue"
                 >
                   Confirm Password
                 </Label>
@@ -636,7 +636,7 @@ export default function SignUp() {
             <div className="flex items-center justify-between mt-8">
               <Link
                 to="/staffsignin"
-                className="text-primary-blue font-medium hover:underline"
+                className="text-teal-300 underline font-medium"
               >
                 Already have an account? Sign in
               </Link>

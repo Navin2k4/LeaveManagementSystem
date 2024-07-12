@@ -4,6 +4,7 @@ import Student from "../models/student.model.js";
 import Staff from "../models/staff.model.js";
 import { errorHandler } from "../utils/error.js";
 import DeptHead from "../models/depthead.model.js";
+import Department from "../models/department.model.js";
 
 export const studentsignup = async (req, res, next) => {
   const {
@@ -286,7 +287,17 @@ export const hodsignup = async (req, res, next) => {
 
     await newHod.save();
 
-    res.status(201).json({ message: "Staff saved successfully" });
+    const department = await Department.findById(staff_departmentId);
+    if (!department) {
+      return next(errorHandler(404, "Department not found"));
+    }
+
+    department.dept_head = newHod._id;
+
+    await department.save();
+
+    res.status(201).json({ message: "HoD saved successfully", department });
+
   } catch (error) {
     if (error.code === 11000) {
       let field = Object.keys(error.keyPattern)[0];
@@ -303,6 +314,8 @@ export const hodsignup = async (req, res, next) => {
     next(error); 
   }
 };
+
+
 
 export const hodsignin = async (req, res, next) => {
   try {

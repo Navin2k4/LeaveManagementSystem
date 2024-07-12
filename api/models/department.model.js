@@ -14,7 +14,7 @@ const DepartmentSchema = new mongoose.Schema({
   dept_head: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "DeptHead",
-    required: true,
+    // required: true,
   },
   batches: [
     {

@@ -8,7 +8,6 @@ import {
   Checkbox,
 } from "flowbite-react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 // TOFIX If end date not selected then set the end date as the start data bug fix
 
@@ -219,6 +218,7 @@ export default function LeaveRequestForm({ setTab }) {
     try {
       setLoading(true);
       setErrorMessage(null);
+      const {classInchargeId,mentorId} = formData;
       const res = await fetch("/api/leave-request", {
         method: "POST",
         headers: {
@@ -228,8 +228,11 @@ export default function LeaveRequestForm({ setTab }) {
           ...formData,
           toDate: forOneDay ? formData.leaveStartDate : formData.leaveEndDate,
           forMedical: forMedical ? true : false,
+          mentorId : classInchargeId === mentorId ? null : mentorId,
         }),
       });
+
+
       const data = await res.json();
       if (!data.success) {
         if (

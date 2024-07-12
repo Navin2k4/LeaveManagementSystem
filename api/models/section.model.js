@@ -8,14 +8,18 @@ const SectionSchema = new mongoose.Schema({
     classIncharge: { 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Staff', 
-        required: true 
     },
     mentors: [
         { 
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Staff' 
         }
-    ]
+    ],
+    Batch: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Batch",
+        required: true,
+      },
 });
 
 const Section =  mongoose.model('Section', SectionSchema);

@@ -12,6 +12,7 @@ export default {
         'primary-blue':'#0082b6',
         'secondary-blue':'#2290c1',
         'ternary-blue':'#dcedf4',
+        'dark-blue': '#1a2130',
         'cream': '#F5F5F5',
         'dusk-blue': '#6A5ACD',
         'sage-green': '#8B9467',

@@ -7,12 +7,16 @@ const BatchSchema = new mongoose.Schema({
   },
   sections: [
     {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Section",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Section",
     },
   ],
+  department: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Department",
+    required: true,
+  },
 });
 
-const Batch =  mongoose.model("Batch", BatchSchema);
-
+const Batch = mongoose.model("Batch", BatchSchema);
 export default Batch;

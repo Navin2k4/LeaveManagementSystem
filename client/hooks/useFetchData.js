@@ -5,7 +5,7 @@ export const useFetchDepartments = () => {
     useEffect(() => {
         const fetchDepartments = async () => {
             try {
-                const res = await fetch(`/api/departments/getdepartments`);
+                const res = await fetch('/api/departments');
                 const data = await res.json();
                 if (res.ok) {
                     setDepartments(data);

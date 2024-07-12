@@ -4,13 +4,12 @@ import DashBoard from "./DashBoard";
 import { useSelector } from "react-redux";
 import { useFetchLeaveRequestForClassIncharge, useFetchLeaveRequestForMentor } from "../../hooks/useFetchData";
 import { FaArrowDown } from "react-icons/fa6";
-import MentorLeaveFromStudent from "../components/MentorLeaveFromStudent";
-import ClassInchargeLeaveFromStudent from "../components/ClassInchargeLeaveFromStudent";
 import LeaveStatsCard from "../components/LeaveStatsCard";
+import LeaveRequests from "../components/LeaveRequests";
 
 const StaffDashBoard = () => {
   const { currentUser } = useSelector((state) => state.user);
-  const [tab, setTab] = useState("Leave Reports");
+  const [tab, setTab] = useState("Leave Requests");
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
   const mentorRequests = useFetchLeaveRequestForMentor(currentUser.userId);
@@ -18,16 +17,14 @@ const StaffDashBoard = () => {
 
   const renderComponent = () => {
     switch (tab) {
+      case "Leave Requests":
+        return <LeaveRequests leaveRequestsAsClassIncharge={classInchargeRequest} leaveRequestsAsMentor={mentorRequests} />;
       case "Leave Reports":
         return <LeaveStatsCard leaveRequestsAsMentor={mentorRequests} leaveRequestsAsClassIncharge={classInchargeRequest} />;
       case "Request Leave":
         return <LeaveRequestForm setTab={setTab} />; // Pass setTab as prop to LeaveRequestForm
       case "Your Leave Requests":
         return <DashBoard />;
-      case "As Mentor":
-        return <MentorLeaveFromStudent leaveRequestsAsMentor={mentorRequests} />
-      case "As Class Incharge":
-        return <ClassInchargeLeaveFromStudent leaveRequestsAsClassIncharge={classInchargeRequest} />
       default:
         return <LeaveRequestForm />;
     }
@@ -50,7 +47,7 @@ const StaffDashBoard = () => {
     <div className="flex flex-col md:flex-row h-screen bg-trenary-blue">
       <div className="md:w-[20%] p-1 bg-primary-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto">
         <div className="p-4 flex items-center justify-between">
-          <h2 className="text-3xl tracking-wider text-white">Departments</h2>
+          <h2 className="text-3xl tracking-wider text-white">DashBoard</h2>
           {isMobileView && (
             <div
               className={`bg-ternary-blue/80 p-2 rounded-full ${
@@ -66,8 +63,16 @@ const StaffDashBoard = () => {
         <ul
           className={`space-y-2 px-1  transition-all duration-300 overflow-hidden ${
             isMobileView ? (isProfileMenuOpen ? "max-h-96  mb-3" : "max-h-0") : "max-h-full"
-          }`}
+          }`} 
         >
+          <li
+            onClick={() => setTab("Leave Requests")}
+            className={`cursor-pointer py-2 px-4 transition-all duration-300 rounded-md ${
+              tab === "Leave Requests" ? "bg-white/60 text-black font-bold" : "hover:bg-white/20 text-white font-bold"
+            }`}
+          >
+            Student's Leave Requests
+          </li>
           <li
             onClick={() => setTab("Leave Reports")}
             className={`cursor-pointer py-2 px-4 transition-all duration-300 rounded-md ${
@@ -92,22 +97,7 @@ const StaffDashBoard = () => {
           >
             Your Leave Requests
           </li>
-          <li
-            onClick={() => setTab("As Mentor")}
-            className={`cursor-pointer py-2 px-4 transition-all duration-300 rounded-md ${
-              tab === "As Mentor" ? "bg-white/60 text-black font-bold" : "hover:bg-white/20 text-white font-bold"
-            }`}
-          >
-            As Mentor
-          </li>
-          <li
-            onClick={() => setTab("As Class Incharge")}
-            className={`cursor-pointer py-2 pb-3 px-4 transition-all duration-300 rounded-md ${
-              tab === "As Class Incharge" ? "bg-white/60 text-black font-bold" : "hover:bg-white/20 text-white font-bold"
-            }`}
-          >
-            As Class Incharge
-          </li>
+         
         </ul>
       </div>
       <div className="flex-1 p-4 md:p-8 overflow-y-auto">{renderComponent()}</div>
