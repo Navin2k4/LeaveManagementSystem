@@ -181,7 +181,7 @@ export const getleaverequestbyclassinchargeid = async (req, res, next) => {
 export const updateLeaveRequestStatusByMentorId = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { status,comment } = req.body;
+    const { status,mentorcomment } = req.body;
     const validStatuses = ["approved", "rejected"];
 
     if (!validStatuses.includes(status)) {
@@ -196,7 +196,7 @@ export const updateLeaveRequestStatusByMentorId = async (req, res, next) => {
       {
         "approvals.mentor.status": status,
         $set: {
-          comment: comment !== "" ? comment : "No Comments Yet",
+          mentorcomment: mentorcomment !== "" ? mentorcomment : "No Comments Yet",
         },
       },
       { new: true }
@@ -232,7 +232,7 @@ export const updateLeaveRequestStatusByClassInchargeId = async (
 ) => {
   try {
     const { id } = req.params;
-    const { status , comment } = req.body;
+    const { status , classInchargeComment } = req.body;
     const validStatuses = ["approved", "rejected"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
@@ -246,7 +246,7 @@ export const updateLeaveRequestStatusByClassInchargeId = async (
       {
         "approvals.classIncharge.status": status,
         $set: {
-          comment: comment !== "" ? comment : "No Comments Yet",
+          classInchargeComment: classInchargeComment !== "" ? classInchargeComment : "No Comments Yet",
         },
       },
       { new: true }
@@ -282,7 +282,7 @@ export const updateLeaveRequestStatusByClassInchargeId = async (
 export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { status,comment } = req.body;
+    const { status,hodComment } = req.body;
     const validStatuses = ["approved", "rejected"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
@@ -295,7 +295,7 @@ export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
       {
         "approvals.hod.status": status,
         $set: {
-          comment: comment ? comment : leaveRequest.comment,
+          hodComment: hodComment ? hodComment :  "" ? classInchargeComment : "No Comments Yet"
         },
       },
       { new: true }

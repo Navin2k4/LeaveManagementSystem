@@ -268,7 +268,7 @@ export default function SignUp() {
                 htmlFor="staff_name"
                 className="block text-sm font-medium text-ternary-blue"
               >
-                Name
+                Name<span className="text-red-400"> *</span>
               </label>
               <TextInput
                 type="text"
@@ -289,7 +289,7 @@ export default function SignUp() {
                   htmlFor="staff_id"
                   className="block text-sm font-medium text-ternary-blue"
                 >
-                  Staff ID
+                  Staff ID<span className="text-red-400"> *</span>
                 </label>
                 <TextInput
                   type="text"
@@ -311,7 +311,7 @@ export default function SignUp() {
                   htmlFor="staff_email"
                   className="block text-sm font-medium text-ternary-blue"
                 >
-                  Email
+                  Email<span className="text-red-400"> *</span>
                 </label>
                 <TextInput
                   type="email"
@@ -319,7 +319,8 @@ export default function SignUp() {
                   placeholder="example@example.com"
                   className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black"
                   onChange={handleChange}
-                />
+                  />
+<p class="text-sm text-gray-200">OTP will be sent to your email after submitting</p>
                 {errors.staff_email && (
                   <p className="text-red-500 text-xs italic">
                     {errors.staff_email}
@@ -333,7 +334,7 @@ export default function SignUp() {
                   htmlFor="staff_phone"
                   className="block text-sm font-medium text-ternary-blue"
                 >
-                  Phone
+                  Phone<span className="text-red-400"> *</span>
                 </label>
                 <TextInput
                   type="tel"
@@ -353,7 +354,7 @@ export default function SignUp() {
                   htmlFor="staff_department"
                   className="mb-2 text-left font-bold text-ternary-blue tracking-wide"
                 >
-                  Department
+                  Department<span className="text-red-400"> *</span>
                 </Label>
                 <Select
                   name="staff_department"
@@ -592,7 +593,7 @@ export default function SignUp() {
                   htmlFor="password"
                   className="mb-2 text-left font-bold tracking-wide text-ternary-blue"
                 >
-                  Password
+                  Password<span className="text-red-400"> *</span>
                 </Label>
                 <TextInput
                   type="password"
@@ -612,7 +613,7 @@ export default function SignUp() {
                   htmlFor="confirmpassword"
                   className="mb-2 text-left font-bold tracking-wide text-ternary-blue"
                 >
-                  Confirm Password
+                  Confirm Password<span className="text-red-400"> *</span>
                 </Label>
                 <TextInput
                   type="password"

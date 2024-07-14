@@ -112,7 +112,15 @@ const leaveRequestSchema = new Schema(
       type: Boolean,
       required: true,
     },
-    comment:{
+    mentorcomment:{
+      type:String,
+      default :"No Comments",
+    },
+    classInchargeComment:{
+      type:String,
+      default :"No Comments",
+    },
+    hodComment:{
       type:String,
       default :"No Comments",
     }

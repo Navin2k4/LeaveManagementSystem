@@ -18,8 +18,6 @@ import { MdOutlineDownloadDone } from "react-icons/md";
 import { useSelector } from "react-redux";
 import LeaveStatus from '../components/LeaveStatus';
 import StatusDot from "../components/StatusDot";
-import { TiTick } from "react-icons/ti";
-import { RxCross2 } from "react-icons/rx";
 
 const Hoddashboard = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -40,11 +38,8 @@ const Hoddashboard = () => {
   const [hodComment, sethodComment] = useState("");
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear().toString().slice(-2); // Get last two digits of the year
-    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Month in two digits
-    const day = date.getDate().toString().padStart(2, "0"); // Day in two digits
-    return `${day}-${month}-${year}`;
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
@@ -448,7 +443,9 @@ const Hoddashboard = () => {
                         <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
                           Student Name
                         </TableHeadCell>
-                        
+                        <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
+                          Section
+                        </TableHeadCell>
                         <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
                           Reason
                         </TableHeadCell>
@@ -462,7 +459,7 @@ const Hoddashboard = () => {
                           Days
                         </TableHeadCell>
                         <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
-                          Status
+                          Status Bar
                         </TableHeadCell>
                         <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
                           Comments
@@ -480,7 +477,9 @@ const Hoddashboard = () => {
                               <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide" style={{width:'8000px'}}>
                                 {req.name}
                               </TableCell>
-        
+                              <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
+                                {selectedSection.section_name}
+                              </TableCell>
                               <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide" style={{width:'2000px'}}>
                                 {req.reason}
                               </TableCell>
@@ -512,9 +511,9 @@ const Hoddashboard = () => {
                                   />
                               </div>
                               </TableCell>
-                              <TableCell className="border min-w-[250px] border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">
-                          <div className="flex flex-col">
-                            {req.mentorcomment !== "No Comments" &&(
+                              <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize" style={{width:"200px"}}>
+                                <div className="flex flex-col">
+                                {req.mentorcomment !== "No Comments" &&(
                               <div>
                                 <h2 className="">Mentor:</h2>
                                 <div className="text-gray-600 text-sm">{req.mentorcomment}</div>
@@ -522,7 +521,7 @@ const Hoddashboard = () => {
                             )}
                             {req.classInchargeComment !== "No Comments" &&(
                               <div>
-                                <h2 className="">Class Incharge:</h2>
+                                <h2 className="">Mentor:</h2>
                                 <div className="text-gray-600">{req.classInchargeComment}</div>
                               </div>
                             )} 
@@ -531,31 +530,29 @@ const Hoddashboard = () => {
                                 <h1 className="text-gray-600">No Comments!</h1>
                               </div>
                             )}
-                          </div>
-                        </TableCell>
+                            </div>
+                              </TableCell>
                               
                               <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                                 {status === "pending" ? (
-                                  <div className="flex items-center gap-4 justify-center">
+                                  <div className="flex items-center justify-center">
                                     <button
                                       onClick={() =>
                                         handleRequest("approved", req._id)
                                       }
-                                      className="bg-green-500 hover:bg-green-600 text-white  rounded-full transition-all duration-300"
+                                      className="bg-green-500 hover:bg-green-600 text-white  rounded-lg transition-all duration-300"
                                       disabled={loading}
                                     >
-
-                                      <TiTick size={30} />
-
+                                      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQr6WsCGy-o3brXcj2cmXGkHM_fE_p0gy4X8w&s" alt="" className="max-w-9" /> 
                                     </button>
                                     <button
                                       onClick={() =>
                                         handleRequest("rejected", req._id)
                                       }
-                                      className="bg-red-500 hover:bg-red-600 text-white rounded-full transition-all duration-300"
+                                      className="bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-300"
                                       disabled={loading}
                                     >
-<RxCross2 size={30}/>
+                                      <img src="https://static.vecteezy.com/system/resources/previews/025/782/666/non_2x/wrong-icon-free-vector.jpg" alt="" className="max-w-20"/> 
                                       </button>
                                   </div>
                                 ) : (
@@ -834,7 +831,7 @@ const Hoddashboard = () => {
                                 rows="4"
                                 className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
                                 placeholder="Write your comments..."
-                                onChange={(e) => sethodComment(e.target.value)}
+                                onChange={(e) => setComment(e.target.value)}
                               ></textarea>
                             </div>
                           </div>
@@ -849,7 +846,7 @@ const Hoddashboard = () => {
                                 rows="4"
                                 className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
                                 placeholder="Write your comments..."
-                                onChange={(e) => sethodComment(e.target.value)}
+                                onChange={(e) => setComment(e.target.value)}
                               ></textarea>
                             </div>
                           </div>

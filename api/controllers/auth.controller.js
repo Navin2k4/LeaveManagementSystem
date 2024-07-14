@@ -5,6 +5,9 @@ import Staff from "../models/staff.model.js";
 import { errorHandler } from "../utils/error.js";
 import DeptHead from "../models/depthead.model.js";
 import Department from "../models/department.model.js";
+import nodemailer from 'nodemailer';
+import otpGenerator from 'otp-generator';
+
 
 export const studentsignup = async (req, res, next) => {
   const {
@@ -18,7 +21,7 @@ export const studentsignup = async (req, res, next) => {
     sectionId,
     section_name,
     batchId,
-    userType
+    userType,
   } = req.body;
 
   console.log(section_name);
@@ -73,7 +76,6 @@ export const studentsignup = async (req, res, next) => {
     next(error);
   }
 };
-
 export const studentsignin = async (req, res, next) => {
   let { identifier, password } = req.body;
   if (!identifier || !password) {
@@ -102,32 +104,43 @@ export const studentsignin = async (req, res, next) => {
     });
 
     // Spread student properties directly into the response
-    const { _id, name, roll_no, register_no, email, phone, departmentId, sectionId,section_name, batchId, userType } = student;
-
-    res
-      .status(200)
-      .cookie('access_token',token,{
-        httpOnly: true,
-      })
-      .json({
-      token,
-      id: _id,
+    const {
+      _id,
       name,
       roll_no,
       register_no,
       email,
       phone,
       departmentId,
-      batchId,
       sectionId,
       section_name,
-      userType
-    });
+      batchId,
+      userType,
+    } = student;
+
+    res
+      .status(200)
+      .cookie("access_token", token, {
+        httpOnly: true,
+      })
+      .json({
+        token,
+        id: _id,
+        name,
+        roll_no,
+        register_no,
+        email,
+        phone,
+        departmentId,
+        batchId,
+        sectionId,
+        section_name,
+        userType,
+      });
   } catch (error) {
     next(error);
   }
 };
-
 export const staffsignup = async (req, res, next) => {
   const {
     staff_name,
@@ -147,7 +160,14 @@ export const staffsignup = async (req, res, next) => {
 
   try {
     // Validate required fields
-    if (!staff_name || !staff_id || !staff_email || !staff_phone || !staff_departmentId || !password) {
+    if (
+      !staff_name ||
+      !staff_id ||
+      !staff_email ||
+      !staff_phone ||
+      !staff_departmentId ||
+      !password
+    ) {
       return next(errorHandler(400, "All Fields Are Required"));
     }
 
@@ -156,7 +176,9 @@ export const staffsignup = async (req, res, next) => {
       for (let i = 0; i < mentorHandlingData.length; i++) {
         const data = mentorHandlingData[i];
         if (!data.handlingBatchId || !data.handlingSectionId) {
-          return res.status(400).json({ message: 'Invalid mentorHandlingData structure' });
+          return res
+            .status(400)
+            .json({ message: "Invalid mentorHandlingData structure" });
         }
         // Additional validation or processing logic if needed
       }
@@ -192,15 +214,20 @@ export const staffsignup = async (req, res, next) => {
       if (field === "staff_id") {
         return next(errorHandler(400, "Staff ID is already in use"));
       }
-      // TOFIX: Classincharge duplicate check is not functioning need to check it 
-      if(field === "classInchargeSectionId"){
-        return next(errorHandler(400, "Class Incharge is already assigned for this batch section"));
+      // TOFIX: Classincharge duplicate check is not functioning need to check it
+      if (field === "classInchargeSectionId") {
+        return next(
+          errorHandler(
+            400,
+            "Class Incharge is already assigned for this batch section"
+          )
+        );
       }
       if (field === "staff_mail") {
         return next(errorHandler(400, "Email is already in use"));
       }
     }
-    next(error); 
+    next(error);
   }
 };
 
@@ -230,33 +257,46 @@ export const staffsignin = async (req, res, next) => {
       expiresIn: "1h",
     });
 
-    const { _id, staff_name, staff_mail, staff_phone, staff_handle_dept, isClassIncharge, classInchargeBatchId, classInchargeSectionId, isMentor, numberOfClassesHandledAsMentor, mentorHandlingData, userType } = staff;
-
-    res.status(200)
-    .cookie('access_token', token,{
-       httpOnly: true,
-    })
-    .json({
-      token,
-      id : staff_id,
-      name: staff_name,
-      userId: _id,
-      mail: staff_mail,
-      phone : staff_phone,
-      departmentId: staff_handle_dept,
+    const {
+      _id,
+      staff_name,
+      staff_mail,
+      staff_phone,
+      staff_handle_dept,
       isClassIncharge,
-      isMentor,
       classInchargeBatchId,
       classInchargeSectionId,
+      isMentor,
       numberOfClassesHandledAsMentor,
       mentorHandlingData,
-      userType
-    });
+      userType,
+    } = staff;
+
+    res
+      .status(200)
+      .cookie("access_token", token, {
+        httpOnly: true,
+      })
+      .json({
+        token,
+        id: staff_id,
+        name: staff_name,
+        userId: _id,
+        mail: staff_mail,
+        phone: staff_phone,
+        departmentId: staff_handle_dept,
+        isClassIncharge,
+        isMentor,
+        classInchargeBatchId,
+        classInchargeSectionId,
+        numberOfClassesHandledAsMentor,
+        mentorHandlingData,
+        userType,
+      });
   } catch (error) {
     next(error);
   }
 };
-
 export const hodsignup = async (req, res, next) => {
   const {
     staff_name,
@@ -269,7 +309,14 @@ export const hodsignup = async (req, res, next) => {
   } = req.body;
 
   try {
-    if (!staff_name || !staff_id || !staff_email || !staff_phone || !staff_departmentId || !password) {
+    if (
+      !staff_name ||
+      !staff_id ||
+      !staff_email ||
+      !staff_phone ||
+      !staff_departmentId ||
+      !password
+    ) {
       return next(errorHandler(400, "All Fields Are Required"));
     }
 
@@ -297,7 +344,6 @@ export const hodsignup = async (req, res, next) => {
     await department.save();
 
     res.status(201).json({ message: "HoD saved successfully", department });
-
   } catch (error) {
     if (error.code === 11000) {
       let field = Object.keys(error.keyPattern)[0];
@@ -308,15 +354,17 @@ export const hodsignup = async (req, res, next) => {
         return next(errorHandler(400, "Email is already in use"));
       }
       if (field === "staff_handle_dept") {
-        return next(errorHandler(400, "Department head already exists for this department"));
+        return next(
+          errorHandler(
+            400,
+            "Department head already exists for this department"
+          )
+        );
       }
     }
-    next(error); 
+    next(error);
   }
 };
-
-
-
 export const hodsignin = async (req, res, next) => {
   try {
     let { staff_id, password } = req.body;
@@ -343,7 +391,14 @@ export const hodsignin = async (req, res, next) => {
       expiresIn: "1h",
     });
 
-    const { _id, staff_name, staff_mail, staff_phone, staff_handle_dept, isHod } = hod;
+    const {
+      _id,
+      staff_name,
+      staff_mail,
+      staff_phone,
+      staff_handle_dept,
+      isHod,
+    } = hod;
 
     res.status(200).json({
       success: true,
@@ -354,10 +409,51 @@ export const hodsignin = async (req, res, next) => {
       mail: staff_mail,
       phone: staff_phone,
       departmentId: staff_handle_dept,
-      isHod
+      isHod,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Internal Server Error', error });
+    res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error", error });
     next(error);
   }
+};
+
+const users = [];
+const otpStorage = {};
+
+const sendOtpEmail = async (email, otp) => {
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'your-email@gmail.com',
+      pass: 'your-email-password'
+    }
+  });
+
+  let mailOptions = {
+    from: 'your-email@gmail.com',
+    to: email,
+    subject: 'Your OTP Code',
+    text: `Your OTP code is ${otp}`
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+export const verifyOtp = (req, res) => {
+  const { email, otp } = req.body;
+  const storedOtp = otpStorage[email];
+
+  if (!storedOtp || storedOtp.expiresAt < Date.now()) {
+    return res.status(400).json({ message: 'OTP expired or invalid' });
+  }
+
+  if (storedOtp.otp !== otp) {
+    return res.status(400).json({ message: 'Invalid OTP' });
+  }
+
+  users.push({ email });
+  delete otpStorage[email];
+  res.status(200).json({ message: 'Signup completed successfully' });
 };

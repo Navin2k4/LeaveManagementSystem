@@ -17,6 +17,7 @@ import StaffSignIn from "./components/StaffSignIn";
 import Hoddashboard from "./pages/HodDashBoard";
 import HodPrivateRoute from "./components/HodPrivateRoute";
 import WardDetails from "./pages/WardDetails";
+import VerifyOtp from "./components/VerifyOTP";
 
 export default function App() {
   return (
@@ -47,7 +48,9 @@ export default function App() {
 
         {/* Catch All other undefined Routes*/}
         <Route path='*' element={<PageNotFound />} />
+        <Route path='/verify-otp' element={<VerifyOtp />}></Route>
       </Routes>
+
     </BrowserRouter>
   );
 }
