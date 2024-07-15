@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Spinner, TextInput, Select,Label } from "flowbite-react";
+import { Spinner, TextInput, Select, Label } from "flowbite-react";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -13,7 +13,7 @@ export default function SignUp() {
     phone: "",
     departmentId: "",
     sectionId: "",
-    section_name:"",
+    section_name: "",
     batchId: "",
     userType: "Student", // Set default userType to Student
   });
@@ -60,12 +60,10 @@ export default function SignUp() {
     }
   };
 
-
   const handleSectionChange = (e) => {
     const sectionId = e.target.value;
     setFormData({ ...formData, sectionId: sectionId });
   };
-
 
   useEffect(() => {
     const getSectionName = async () => {
@@ -93,8 +91,6 @@ export default function SignUp() {
     getSectionName();
   }, [formData.sectionId]);
 
-
-
   const handleChange = (e) => {
     let { id, value } = e.target;
 
@@ -110,9 +106,8 @@ export default function SignUp() {
     setFormData({ ...formData, [id]: value.trim() });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const validateForm = () => {
+    const errors = {};
     const {
       roll_no,
       register_no,
@@ -140,37 +135,44 @@ export default function SignUp() {
       !sectionId ||
       !batchId
     ) {
-      return setErrorMessage("Please fill out all fields");
+      errors.allfieldsRequired = "Please fill out all fields";
     }
-
     if (!/^[0-9]{2}[A-Z]{1,6}[0-9]+$/.test(roll_no)) {
-      return setErrorMessage("Invalid Roll Number");
+      errors.roll_no = "Invalid Roll Number";
     }
 
     if (!/^[0-9]{12}$/.test(register_no)) {
-      return setErrorMessage("Invalid Register Number");
+      errors.reg_no = "Invalid Register Number";
     }
 
     if (!/^[a-zA-Z\s]+$/.test(name)) {
-      return setErrorMessage("Name should contain only letters and spaces");
+      errors.student_name = "Name should contain only letters and spaces";
     }
 
     if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      return setErrorMessage("Invalid Email");
+      errors.email = "Invalid Email";
     }
 
     if (!/^[0-9]{10}$/.test(phone)) {
-      return setErrorMessage("Invalid Phone Number");
+      errors.phone = "Invalid Phone Number";
     }
 
     if (!/^.{8,16}$/.test(password)) {
-      return setErrorMessage("Password should be 8 to 16 characters long");
+      errors.password = "Password should be 8 to 16 characters long";
     }
 
     if (password !== confirmpassword) {
-      return setErrorMessage("Passwords do not match");
+      errors.confirmpassword = "Passwords do not match";
     }
+    setErrors(errors);
+    setErrors(errors);
 
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
     try {
       setLoading(true);
       setErrorMessage(null);
@@ -211,19 +213,20 @@ export default function SignUp() {
     }
   };
 
-
   return (
     <div className="flex justify-center md:mt-5 ">
       <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-white rounded-lg shadow-lg md:border-l-4 border-secondary-blue">
         <div className="mt-4">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-primary-blue tracking-wider">Student Sign Up</h2>
-        </div>
-        <Link to="/staffsignup" className="text-center p-3">
-          <h2 className="font-medium  text-primary-blue hover:tracking-wider transition-all duration-500">
-            Click here for Staff Sign Up
-          </h2>
-        </Link>
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-primary-blue tracking-wider">
+              Student Sign Up
+            </h2>
+          </div>
+          <Link to="/staffsignup" className="text-center p-3">
+            <h2 className="font-medium  text-primary-blue hover:tracking-wider transition-all duration-500">
+              Click here for Staff Sign Up
+            </h2>
+          </Link>
         </div>
         <form onSubmit={handleSubmit} className=" space-y-6">
           <div className="space-y-1">
@@ -241,6 +244,11 @@ export default function SignUp() {
                 className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                 onChange={handleChange}
               />
+              {errors.student_name && (
+                <p className="text-red-500 text-xs italic">
+                  {errors.student_name}
+                </p>
+              )}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -258,6 +266,11 @@ export default function SignUp() {
                   className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
+                {errors.roll_no && (
+                  <p className="text-red-500 text-xs italic">
+                    {errors.roll_no}
+                  </p>
+                )}
               </div>
               <div>
                 <label
@@ -274,10 +287,13 @@ export default function SignUp() {
                   className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
+                {errors.reg_no && (
+                  <p className="text-red-500 text-xs italic">{errors.reg_no}</p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex flex-col">
+              <div className="flex flex-col">
                 <Label
                   htmlFor="departmentId"
                   className="mb-2 text-left font-bold tracking-wide"
@@ -377,6 +393,9 @@ export default function SignUp() {
                   className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-xs italic">{errors.email}</p>
+                )}
               </div>
               <div>
                 <label
@@ -392,6 +411,9 @@ export default function SignUp() {
                   className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
+                {errors.phone && (
+                  <p className="text-red-500 text-xs italic">{errors.phone}</p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -409,6 +431,11 @@ export default function SignUp() {
                   className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
+                {errors.password && (
+                  <p className="text-red-500 text-xs italic">
+                    {errors.password}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -425,33 +452,48 @@ export default function SignUp() {
                   className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
+                {errors.confirmpassword && (
+                  <p className="text-red-500 text-xs italic">
+                    {errors.confirmpassword}
+                  </p>
+                )}
               </div>
             </div>
           </div>
-          {errorMessage && (
-            <div className="mt-4 text-center">
-              <p className="text-red-600 font-semibold">{errorMessage}</p>
-            </div>
+          {errors.allfieldsRequired && (
+            <p className="text-red-500 text-xs italic">
+              {errors.allfieldsRequired}
+            </p>
           )}
-          
-        <div className="flex items-center justify-between mt-3">
-              <Link to="/studentsignin" className="text-primary-blue font-medium hover:underline">
-                Already have an account? Sign in
-              </Link>
-              <button
-                type="submit"
-                className="px-6 py-2 text-white bg-primary-blue rounded-md shadow-sm hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
-                disabled={loading}
-              >
-                {loading ? (
-              <div className="flex items-center">
-              <Spinner size="sm" className="mr-2" />
-              <span className='text-white'>Loading...</span>
-            </div>                ) : (
-                  "Sign Up"
-                )}
-              </button>
-            </div>
+          {errorMessage && (
+                <p className="text-red-500 text-xs italic">
+                {errorMessage}
+              </p>
+          )
+          }
+
+          <div className="flex flex-col-reverse md:flex-row items-center justify-between mt-3 gap-3">
+            <Link
+              to="/studentsignin"
+              className="text-primary-blue font-medium hover:underline"
+            >
+              Already have an account? Sign in
+            </Link>
+            <button
+              type="submit"
+              className="px-6 py-2 text-white bg-primary-blue rounded-md shadow-sm hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="flex items-center">
+                  <Spinner size="sm" className="mr-2" />
+                  <span className="text-white">Loading...</span>
+                </div>
+              ) : (
+                <div className="px-10">Sign Up</div>
+              )}
+            </button>
+          </div>
         </form>
       </section>
     </div>

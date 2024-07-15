@@ -174,7 +174,6 @@ leaveRequestSchema.methods.computeStatus = function () {
 // Pre-save hook to update status based on approvals
 leaveRequestSchema.pre('save', function (next) {
   this.status = this.computeStatus();
-  console.log("rejected");
   next();
 });
 

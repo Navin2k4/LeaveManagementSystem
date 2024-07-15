@@ -10,7 +10,7 @@ import {
     deleteUserFailure,
 } from '../redux/user/userSlice.js';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
-
+import { FaUser, FaEnvelope, FaIdBadge, FaLock, FaKey, FaBuilding, FaLayerGroup } from "react-icons/fa";
 export default function EditProfile() {
     const dispatch = useDispatch();
     const { currentUser, error, loading } = useSelector((state) => state.user);
@@ -29,7 +29,6 @@ export default function EditProfile() {
     const [updateUserError, setUpdateUserError] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
-    console.log(currentUser);
     useEffect(() => {
         if (currentUser) {
             setFormData({
@@ -70,7 +69,6 @@ export default function EditProfile() {
             phone: formData.phone,
             departmentId: formData.departmentId,
             sectionId: formData.sectionId,
-            currentPassword: formData.currentPassword,
         };
 
         // Only include newPassword if it's provided
@@ -120,178 +118,179 @@ export default function EditProfile() {
     };
 
     return (
-        <div className="max-w-xl mx-auto mt-5">
-            <form onSubmit={handleSubmit} className="bg-ternary-blue rounded-lg p-6 space-y-6">
-                <div className="flex justify-center mb-4">
-                    <h1 className="text-custom-div-bg font-bold uppercase text-2xl px-6 py-2 tracking-widest">
-                        Edit Profile
-                    </h1>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                            Name
-                        </label>
-                        <TextInput
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="rounded-md w-full focus:outline-none focus:ring-primary-blue"
-                            required
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            Email
-                        </label>
-                        <TextInput
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="rounded-md w-full focus:ring-primary-blue"
-                            required
-                        />
-                    </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                        <label htmlFor="roll_no" className="block text-sm font-medium text-gray-700">
-                            Roll Number
-                        </label>
-                        <TextInput
-                            type="text"
-                            id="roll_no"
-                            name="roll_no"
-                            value={formData.roll_no}
-                            onChange={handleChange}
-                            className="rounded-md w-full focus:ring-primary-blue"
-                            required
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label htmlFor="register_no" className="block text-sm font-medium text-gray-700">
-                            Register Number
-                        </label>
-                        <TextInput
-                            type="text"
-                            id="register_no"
-                            name="register_no"
-                            value={formData.register_no}
-                            onChange={handleChange}
-                            className="rounded-md w-full focus:ring-primary-blue"
-                            required
-                        />
-                    </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                        <label htmlFor="departmentId" className="block text-sm font-medium text-gray-700">
-                            Department
-                        </label>
-                        <TextInput
-                            type="text"
-                            id="departmentId"
-                            name="departmentId"
-                            value={formData.departmentId}
-                            onChange={handleChange}
-                            className="rounded-md w-full focus:ring-primary-blue"
-                            required
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label htmlFor="sectionId" className="block text-sm font-medium text-gray-700">
-                            Section
-                        </label>
-                        <TextInput
-                            type="text"
-                            id="sectionId"
-                            name="sectionId"
-                            value={formData.sectionId}
-                            onChange={handleChange}
-                            className="rounded-md w-full focus:ring-primary-blue"
-                            required
-                        />
-                    </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                        <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">
-                            Current Password
-                        </label>
-                        <TextInput
-                            type="password"
-                            id="currentPassword"
-                            name="currentPassword"
-                            value={formData.currentPassword}
-                            onChange={handleChange}
-                            className="rounded-md w-full focus                            :ring-primary-blue"
-                            required={formData.newPassword || formData.confirmPassword}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
-                            New Password
-                        </label>
-                        <TextInput
-                            type="password"
-                            id="newPassword"
-                            name="newPassword"
-                            value={formData.newPassword}
-                            onChange={handleChange}
-                            className="rounded-md w-full focus:ring-primary-blue"
-                        />
-                    </div>
-                </div>
-                <div className="space-y-2">
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                        Confirm New Password
-                    </label>
-                    <TextInput
-                        type="password"
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        className="rounded-md w-full focus:ring-primary-blue"
-                    />
-                </div>
-                {updateUserError && (
-                    <Alert type="danger" className="mt-4">
-                        <HiOutlineExclamationCircle className="inline-block h-4 w-4 mr-1 -mt-1" />
-                        {updateUserError}
-                    </Alert>
-                )}
-                {updateUserSuccess && (
-                    <Alert type="success" className="mt-4">
-                        {updateUserSuccess}
-                    </Alert>
-                )}
-                {/* <div className="flex justify-end mt-4">
-                    <Button type="submit" className="mr-2" disabled={loading}>
-                        {loading ? 'Updating...' : 'Update'}
-                    </Button>
-                    <Button type="button" onClick={() => setShowModal(true)} className="bg-red-500">
-                        Delete Account
-                    </Button>
-                </div> */}
-            </form>
-            <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
-                <div className="p-6">
-                    <h3 className="text-lg font-semibold">Confirm Deletion</h3>
-                    <p className="text-sm mt-2">Are you sure you want to delete your account?</p>
-                    <div className="flex justify-end mt-4">
-                        <Button onClick={handleDeleteUser} className="bg-red-500 mr-2">
-                            Delete
-                        </Button>
-                        <Button onClick={() => setShowModal(false)}>Cancel</Button>
-                    </div>
-                </div>
-            </Modal>
+        <div className="flex justify-center md:mt-5 ">
+  <div className="w-full max-w-2xl bg-dark-blue rounded-lg shadow-xl p-8 text-white">
+    <div className="text-center mb-8">
+    <h1 className="font-bold uppercase text-2xl px-6 py-2 tracking-widest">
+    Edit Profile</h1>
+    </div>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label htmlFor="name" className="block text-sm font-medium">
+            <FaUser className="inline mr-2" /> Name
+          </label>
+          <TextInput
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="rounded-md w-full focus:outline-none focus:ring-primary-blue"
+            required
+          />
         </div>
+        <div className="space-y-2">
+          <label htmlFor="email" className="block text-sm font-medium">
+            <FaEnvelope className="inline mr-2" /> Email
+          </label>
+          <TextInput
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="rounded-md w-full focus:ring-primary-blue"
+            required
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label htmlFor="roll_no" className="block text-sm font-medium">
+            <FaIdBadge className="inline mr-2" /> Roll Number
+          </label>
+          <TextInput
+            type="text"
+            id="roll_no"
+            name="roll_no"
+            value={formData.roll_no}
+            onChange={handleChange}
+            className="rounded-md w-full focus:ring-primary-blue"
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="register_no" className="block text-sm font-medium">
+            <FaIdBadge className="inline mr-2" /> Register Number
+          </label>
+          <TextInput
+            type="text"
+            id="register_no"
+            name="register_no"
+            value={formData.register_no}
+            onChange={handleChange}
+            className="rounded-md w-full focus:ring-primary-blue"
+            required
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label htmlFor="departmentId" className="block text-sm font-medium">
+            <FaBuilding className="inline mr-2" /> Department
+          </label>
+          <TextInput
+            type="text"
+            id="departmentId"
+            name="departmentId"
+            value={formData.departmentId}
+            onChange={handleChange}
+            className="rounded-md w-full focus:ring-primary-blue"
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="sectionId" className="block text-sm font-medium">
+            <FaLayerGroup className="inline mr-2" /> Section
+          </label>
+          <TextInput
+            type="text"
+            id="sectionId"
+            name="sectionId"
+            value={formData.sectionId}
+            onChange={handleChange}
+            className="rounded-md w-full focus:ring-primary-blue"
+            required
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label htmlFor="currentPassword" className="block text-sm font-medium">
+            <FaLock className="inline mr-2" /> Current Password
+          </label>
+          <TextInput
+            type="password"
+            id="currentPassword"
+            name="currentPassword"
+            value={formData.currentPassword}
+            onChange={handleChange}
+            className="rounded-md w-full focus:ring-primary-blue"
+            required={formData.newPassword || formData.confirmPassword}
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="newPassword" className="block text-sm font-medium">
+            <FaKey className="inline mr-2" /> New Password
+          </label>
+          <TextInput
+            type="password"
+            id="newPassword"
+            name="newPassword"
+            value={formData.newPassword}
+            onChange={handleChange}
+            className="rounded-md w-full focus:ring-primary-blue"
+          />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <label htmlFor="confirmPassword" className="block text-sm font-medium">
+          <FaKey className="inline mr-2" /> Confirm New Password
+        </label>
+        <TextInput
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          className="rounded-md w-full focus:ring-primary-blue"
+        />
+      </div>
+      {updateUserError && (
+        <div className="mt-4 p-2 bg-red-500 text-white rounded-lg flex items-center">
+          <HiOutlineExclamationCircle className="h-4 w-4 mr-2" />
+          {updateUserError}
+        </div>
+      )}
+      {updateUserSuccess && (
+        <div className="mt-4 p-2 bg-green-500 text-white rounded-lg">
+          {updateUserSuccess}
+        </div>
+      )}
+      <div className="flex justify-end mt-4">
+        <button type="submit" className="bg-primary-blue text-white py-2 px-4 rounded-md mr-2" disabled={loading}>
+          {loading ? 'Updating...' : 'Update'}
+        </button>
+        <button type="button" onClick={() => setShowModal(true)} className="bg-red-500 text-white py-2 px-4 rounded-md">
+          Delete Account
+        </button>
+      </div>
+    </form>
+    <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+      <div className="p-6">
+        <h3 className="text-lg font-semibold">Confirm Deletion</h3>
+        <p className="text-sm mt-2">Are you sure you want to delete your account?</p>
+        <div className="flex justify-end mt-4">
+          <Button onClick={handleDeleteUser} className="bg-red-500 mr-2">
+            Delete
+          </Button>
+          <Button onClick={() => setShowModal(false)}>Cancel</Button>
+        </div>
+      </div>
+    </Modal>
+  </div>
+</div>
     );
 }
 

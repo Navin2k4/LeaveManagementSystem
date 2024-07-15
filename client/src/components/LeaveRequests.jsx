@@ -21,7 +21,8 @@ import { useSelector } from "react-redux";
 import TableSkeleton from "./ui/TableSkeleton";
 import { GiMedicines } from "react-icons/gi";
 import StatusDot from "./StatusDot";
-
+import { TiTick } from "react-icons/ti";
+import { RxCross2 } from "react-icons/rx";
 export default function LeaveRequests({
   leaveRequestsAsMentor,
   leaveRequestsAsClassIncharge,
@@ -105,7 +106,6 @@ export default function LeaveRequests({
   };
 
   const confirmRequestMentor = async () => {
-    console.log(mentorComment);
     setLoading(true);
     try {
       const backendUrl = `/api/leave-requestsbymentorid/${currentRequestId}/status`;
@@ -134,11 +134,9 @@ export default function LeaveRequests({
     }
   };
 
-  console.log(leaveRequestsAsClassIncharge);
 
   const confirmRequestClass = async () => {
     setLoading(true);
-    console.log(classInchargeComment)
     try {
       const backendUrl = `/api/leave-requestsbyclassinchargeid/${currentRequestId}/status`;
       const response = await fetch(backendUrl, {
@@ -193,16 +191,13 @@ export default function LeaveRequests({
                     Reason
                   </TableHeadCell>
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
-                    From
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
-                    To
+                    From - To
                   </TableHeadCell>
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                     Days
                   </TableHeadCell>
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
-                      Status Bar
+                    Status Bar
                   </TableHeadCell>
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                     Comments
@@ -226,40 +221,47 @@ export default function LeaveRequests({
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           {req.reason}
                         </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {formatDate(req.fromDate)}
-                        </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {formatDate(req.toDate)}
+                        <TableCell
+                          className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide"
+                          style={{ width: "100px" }}
+                        >
+                          <div className="flex flex-col items-center min-w-max justify-center gap-2">
+                            <div>{formatDate(req.fromDate)}</div>
+                            <div>{formatDate(req.toDate)}</div>
+                          </div>
                         </TableCell>
                         <TableCell className="text-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           {req.noOfDays}
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           <div className="status-dots">
-                              <StatusDot
-                                status={req.approvals.mentor.status}  
-                                role="mentor"
-                                showLine={true}
-                              />
-                              <StatusDot
-                                status={req.approvals.classIncharge.status}
-                                role="classIncharge"
-                                showLine={true}
-                              />
-                              <StatusDot
-                                status={req.approvals.hod.status}
-                                role="hod"
-                                showLine={false}
-                              />
+                            <StatusDot
+                              status={req.approvals.mentor.status}
+                              role="mentor"
+                              showLine={true}
+                            />
+                            <StatusDot
+                              status={req.approvals.classIncharge.status}
+                              role="classIncharge"
+                              showLine={true}
+                            />
+                            <StatusDot
+                              status={req.approvals.hod.status}
+                              role="hod"
+                              showLine={false}
+                            />
                           </div>
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">
                           <div className="flex flex-col">
                             <h2 className="">Mentor:</h2>
-                            <div className="text-gray-600">{req.mentorcomment}</div>
+                            <div className="text-gray-600">
+                              {req.mentorcomment}
+                            </div>
                             <h2>ClassIncharge:</h2>
-                            <div className="text-gray-600">{req.classInchargeComment}</div>
+                            <div className="text-gray-600">
+                              {req.classInchargeComment}
+                            </div>
                           </div>{" "}
                         </TableCell>
 
@@ -272,7 +274,7 @@ export default function LeaveRequests({
                                 }
                                 className="bg-green-400 hover:bg-green-600 text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
                               >
-                                Approve
+                                <TiTick size={30} />
                               </button>
                               <button
                                 onClick={() =>
@@ -280,7 +282,7 @@ export default function LeaveRequests({
                                 }
                                 className="bg-red-400 hover:bg-red-600 text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
                               >
-                                Reject
+                                <RxCross2 size={30} />
                               </button>
                             </div>
                           ) : (
@@ -337,10 +339,11 @@ export default function LeaveRequests({
                                 rows="4"
                                 className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
                                 placeholder="Write your comments..."
-                                onChange={(e) => setmentorComment(e.target.value)}
+                                onChange={(e) =>
+                                  setmentorComment(e.target.value)
+                                }
                               ></textarea>
                             </div>
-                            {console.log(mentorComment)}
                           </div>
                         </div>
                       ) : mentormodalType === "rejected" ? (
@@ -353,10 +356,11 @@ export default function LeaveRequests({
                                 rows="4"
                                 className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
                                 placeholder="Write your comments..."
-                                onChange={(e) => setmentorComment(e.target.value)}
+                                onChange={(e) =>
+                                  setmentorComment(e.target.value)
+                                }
                               ></textarea>
                             </div>
-                            {console.log(mentorComment)}
                           </div>
                         </div>
                       ) : (
@@ -431,11 +435,9 @@ export default function LeaveRequests({
                     Reason
                   </TableHeadCell>
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
-                    From
+                    From - To
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
-                    To
-                  </TableHeadCell>
+
                   <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                     Days
                   </TableHeadCell>
@@ -471,19 +473,29 @@ export default function LeaveRequests({
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide" style={{width:"100px"}}>
-                          {formatDate(req.fromDate)}
+                        <TableCell
+                          className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide"
+                          style={{ width: "100px" }}
+                        >
+                          {req.fromDate === req.toDate ? (
+                            <div className="flex flex-col items-center min-w-max justify-center gap-2">
+                              <div>{formatDate(req.fromDate)}</div>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center  min-w-max justify-center gap-2">
+                              <div>{formatDate(req.fromDate)}</div>
+                              <div>{formatDate(req.toDate)}</div>
+                            </div>
+                          )}
                         </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide" style={{width:"100px"}}>
-                          {formatDate(req.toDate)}
-                        </TableCell>
+
                         <TableCell className="text-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           {req.noOfDays}
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                        <div className="status-dots">
+                          <div className="status-dots">
                             <StatusDot
-                              status={req.approvals.mentor.status}  
+                              status={req.approvals.mentor.status}
                               role="mentor"
                               showLine={true}
                             />
@@ -497,27 +509,34 @@ export default function LeaveRequests({
                               role="hod"
                               showLine={false}
                             />
-                        </div>
+                          </div>
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">
                           <div className="flex flex-col">
-                            {req.mentorcomment !== "No Comments" &&(
+                            {req.mentorcomment !== "No Comments" && (
                               <div>
                                 <h2 className="">Mentor:</h2>
-                                <div className="text-gray-600 text-sm">{req.mentorcomment}</div>
+                                <div className="text-gray-600 text-sm">
+                                  {req.mentorcomment}
+                                </div>
                               </div>
                             )}
-                            {req.classInchargeComment !== "No Comments" &&(
+                            {req.classInchargeComment !== "No Comments" && (
                               <div>
-                                <h2 className="">Mentor:</h2>
-                                <div className="text-gray-600">{req.classInchargeComment}</div>
-                              </div>
-                            )} 
-                            {req.classInchargeComment === "No Comments" && req.mentorcomment === "No Comments" &&(
-                              <div>
-                                <h1 className="text-gray-600">No Comments!</h1>
+                                <h2 className="">ClassIncharge:</h2>
+                                <div className="text-gray-600">
+                                  {req.classInchargeComment}
+                                </div>
                               </div>
                             )}
+                            {req.classInchargeComment === "No Comments" &&
+                              req.mentorcomment === "No Comments" && (
+                                <div>
+                                  <h1 className="text-gray-600">
+                                    No Comments!
+                                  </h1>
+                                </div>
+                              )}
                           </div>
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
@@ -530,9 +549,9 @@ export default function LeaveRequests({
                                     req._id
                                   )
                                 }
-                                className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 min-w-[80px] rounded-lg transition-all duration-300"
+                                className="bg-green-500 hover:bg-green-600 text-white p-1  rounded-full transition-all duration-300"
                               >
-                                Approve
+                                <TiTick size={30} />
                               </button>
                               <button
                                 onClick={() =>
@@ -541,9 +560,9 @@ export default function LeaveRequests({
                                     req._id
                                   )
                                 }
-                                className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 min-w-[80px] rounded-lg transition-all duration-300"
+                                className="bg-red-500 hover:bg-red-600 text-white p-1   rounded-full transition-all duration-300"
                               >
-                                Reject{" "}
+                                <RxCross2 size={30} />
                               </button>
                             </div>
                           ) : (
@@ -602,12 +621,11 @@ export default function LeaveRequests({
                                 rows="4"
                                 className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
                                 placeholder="Write your comments..."
-                                onChange={(e) => setclassInchargeComment(e.target.value)}
-
+                                onChange={(e) =>
+                                  setclassInchargeComment(e.target.value)
+                                }
                               ></textarea>
                             </div>
-                            {console.log(classInchargeComment)}
-
                           </div>
                         </div>
                       ) : classInchargemodalType === "rejected" ? (
@@ -620,7 +638,9 @@ export default function LeaveRequests({
                                 rows="4"
                                 className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
                                 placeholder="Write your comments..."
-                                onChange={(e) => setclassInchargeComment(e.target.value)}
+                                onChange={(e) =>
+                                  setclassInchargeComment(e.target.value)
+                                }
                               ></textarea>
                             </div>
                           </div>

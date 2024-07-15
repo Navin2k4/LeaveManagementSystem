@@ -105,7 +105,6 @@ export default function LeaveRequests({
   };
 
   const confirmRequestMentor = async () => {
-    console.log(mentorComment);
     setLoading(true);
     try {
       const backendUrl = `/api/leave-requestsbymentorid/${currentRequestId}/status`;
@@ -134,11 +133,9 @@ export default function LeaveRequests({
     }
   };
 
-  console.log(leaveRequestsAsClassIncharge);
 
   const confirmRequestClass = async () => {
     setLoading(true);
-    console.log(classInchargeComment)
     try {
       const backendUrl = `/api/leave-requestsbyclassinchargeid/${currentRequestId}/status`;
       const response = await fetch(backendUrl, {
@@ -340,7 +337,6 @@ export default function LeaveRequests({
                                 onChange={(e) => setmentorComment(e.target.value)}
                               ></textarea>
                             </div>
-                            {console.log(mentorComment)}
                           </div>
                         </div>
                       ) : mentormodalType === "rejected" ? (
@@ -356,7 +352,6 @@ export default function LeaveRequests({
                                 onChange={(e) => setmentorComment(e.target.value)}
                               ></textarea>
                             </div>
-                            {console.log(mentorComment)}
                           </div>
                         </div>
                       ) : (
@@ -606,7 +601,6 @@ export default function LeaveRequests({
 
                               ></textarea>
                             </div>
-                            {console.log(classInchargeComment)}
 
                           </div>
                         </div>

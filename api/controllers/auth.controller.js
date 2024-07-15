@@ -24,8 +24,6 @@ export const studentsignup = async (req, res, next) => {
     userType,
   } = req.body;
 
-  console.log(section_name);
-
   if (
     !roll_no ||
     !register_no ||

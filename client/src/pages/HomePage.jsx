@@ -73,13 +73,13 @@ function HomePage() {
           </div>
           <div className="flex gap-4 mt-4 justify-between items-center">
             <Link to="/staffsignup">
-              <button className="cursor-pointer bg-gradient-to-r from-primary-blue via-secondary-blue to-ternary-blue hover:bg-secondary-blue text-black font-semibold rounded-full px-6 py-3 md:px-8 md:py-4 text-lg transition duration-300 shadow-black/60 shadow-sm hover:shadow-md transform hover:scale-105">
-                Sign Up as Staff
+              <button className="cursor-pointer bg-gradient-to-r from-primary-blue via-secondary-blue to-ternary-blue hover:bg-secondary-blue text-black font-semibold rounded-full px-6 py-3 md:px-5 md:py-2 text-lg transition duration-300 shadow-black/60 shadow-sm hover:shadow-md transform hover:scale-105">
+                Staff SignUp
               </button>
             </Link>
             <Link to="/studentsignup">
-              <button className="cursor-pointer bg-gradient-to-r from-primary-blue via-secondary-blue to-ternary-blue hover:bg-secondary-blue text-black font-semibold rounded-full px-6 py-3 md:px-8 md:py-4 text-lg transition duration-300 shadow-black/60 shadow-sm hover:shadow-md transform hover:scale-105">
-                Sign Up as Student
+              <button className="cursor-pointer bg-gradient-to-r from-primary-blue via-secondary-blue to-ternary-blue hover:bg-secondary-blue text-black font-semibold rounded-full px-6 py-3 md:px-5 md:py-2 text-lg transition duration-300 shadow-black/60 shadow-sm hover:shadow-md transform hover:scale-105">
+                Student SignUp
               </button>
             </Link>
           </div>

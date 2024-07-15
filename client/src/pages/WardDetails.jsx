@@ -22,7 +22,6 @@ const WardDetails = () => {
     const roll = event.target.value
     setRollNo(roll.toUpperCase());
   };
-  console.log(rollNo);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

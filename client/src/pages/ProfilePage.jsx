@@ -109,7 +109,7 @@ const ProfilePage = () => {
           </li>
         </ul>
       </div>
-      <div className="flex-1  overflow-y-auto">{renderComponent()}</div>
+      <div className="flex-1 overflow-y-auto">{renderComponent()}</div>
     </div>
   );
 };

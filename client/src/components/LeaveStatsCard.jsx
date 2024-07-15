@@ -20,8 +20,6 @@ const LeaveStatsCard = ({
   const [mentorStats, setMentorStats] = useState(false);
   const [classInchargeStats, setClassInchargeStats] = useState(false);
 
-  console.log(mentorRequests);
-  console.log(classInchargeRequests);
 
   useEffect(() => {
     if (leaveRequestsAsMentor) {
@@ -305,7 +303,7 @@ const LeaveStatsCard = ({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  items-center justify-center gap-6 ">
               {currentUser.isMentor && (
                 <div>
-                  <div className="bg-primary-blue shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all">
+                  <div className="bg-primary-blue shadow-lg p-4 rounded-lg ">
                     <h1 className="my-2  mb-4 text-lg text-center font-semibold text-white p-3 bg-secondary-blue border-r-2 rounded-lg">
                       As a Mentor
                     </h1>
@@ -331,7 +329,7 @@ const LeaveStatsCard = ({
                     </div>
                     <div className="flex items-center justify-center">
                       <button
-                        className="text-white  px-3 py-2  rounded-md bg-secondary-blue border border-ternary-blue hover:bg-blue-500 transition-all duration-300"
+                        className="text-white  px-3 py-2 w-[100%] my-2 rounded-md bg-secondary-blue  hover:bg-dark-blue hover:text-white transition-all duration-300"
                         onClick={handlementorStats}
                       >
                         Show Stats of Leave For This Month
@@ -342,7 +340,7 @@ const LeaveStatsCard = ({
               )}
               {currentUser.isClassIncharge && (
                 <div>
-                  <div className="bg-primary-blue shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all">
+                  <div className="bg-primary-blue shadow-lg p-4 rounded-lg ">
                     <h1 className="my-2 mb-4 text-lg font-semibold text-center text-white p-3 bg-secondary-blue border-r-2 rounded-lg">
                       As a ClassIncharge
                     </h1>
@@ -368,7 +366,7 @@ const LeaveStatsCard = ({
                     </div>
                     <div className="flex items-center justify-center">
                       <button
-                        className="text-white px-3 py-2 rounded-md bg-secondary-blue border border-ternary-blue hover:bg-blue-500 transition-all duration-300"
+                        className="text-white px-3 py-2 w-[100%] my-2 rounded-md bg-secondary-blue hover:bg-dark-blue hover:text-white transition-all duration-300"
                         onClick={handleClassInchargeStats}
                       >
                         Show Stats of Leave For This Month
@@ -391,7 +389,7 @@ const LeaveStatsCard = ({
       </div>
       <div>
         {mentorStats && (
-          <div className=" bg-white shadow-md p-4 rounded-lg mt-2">
+          <div className=" bg-white shadow-md p-4 rounded-lg mt-2 ">
             <div className="relative bg-white shadow-md p-4 rounded-lg overflow-x-auto">
               <div className="flex justify-between">
                 <h2 className="text-xl font-semibold mb-4">
@@ -406,7 +404,7 @@ const LeaveStatsCard = ({
                       size={25}
                       className="block md:hidden  text-black absolute top-5  transition-all duration-300"
                     />
-                    <span className="hidden md:block text-black mx-2  transition-all duration-300">
+                    <span className="hidden md:block text-white mx-2  transition-all duration-300">
                       Close
                     </span>
                   </div>
@@ -430,20 +428,20 @@ const LeaveStatsCard = ({
                     <tbody>
                       {leaveRequestsAsMentor.map((request, index) => (
                         <tr key={index} className="font-semibold">
-                          <td className="py-2 px-4 border">{index + 1}</td>
+                          <td className="py-2 px-4 border text-center">{index + 1}</td>
                           <td className="py-2 px-4 border">{request.name}</td>
-                          <td className="py-2 px-4 border">
+                          <td className="py-2 px-4 border text-center">
                             {request.section_name}
                           </td>
                           <td className="py-2 px-4 border">{request.reason}</td>
-                          <td className="py-2 px-4 border">
+                          <td className="py-2 px-4 border text-center">
                             {new Date(request.fromDate).toLocaleDateString()}
                           </td>
-                          <td className="py-2 px-4 border">
+                          <td className="py-2 px-4 border text-center">
                             {new Date(request.toDate).toLocaleDateString()}
                           </td>
                           <td
-                            className={`py-2 px-4 border capitalize
+                            className={`py-2 px-4 border capitalize text-center
                         ${
                           request.approvals.mentor.status === "approved"
                             ? "text-green-500"
@@ -510,7 +508,7 @@ const LeaveStatsCard = ({
                       size={25}
                       className="block md:hidden  text-black absolute top-5  transition-all duration-300"
                     />
-                    <span className="hidden md:block text-black mx-2  transition-all duration-300">
+                    <span className="hidden md:block text-white mx-2  transition-all duration-300">
                       Close
                     </span>
                   </div>
@@ -526,28 +524,28 @@ const LeaveStatsCard = ({
                         <th className="py-2 px-4 border">Student Name</th>
                         <th className="py-2 px-4 border">Section</th>
                         <th className="py-2 px-4 border">Reason</th>
-                        <th className="py-2 px-4 border">From Date</th>
-                        <th className="py-2 px-4 border">To Date</th>
+                        <th className="py-2 px-4 border">From</th>
+                        <th className="py-2 px-4 border">To </th>
                         <th className="py-2 px-4 border">Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       {leaveRequestsAsClassIncharge.map((request, index) => (
                         <tr key={index} className="font-semibold">
-                          <td className="py-2 px-4 border">{index + 1}</td>
+                          <td className="py-2 px-4 border text-center">{index + 1}</td>
                           <td className="py-2 px-4 border">{request.name}</td>
-                          <td className="py-2 px-4 border">
+                          <td className="py-2 px-4 border text-center">
                             {request.section_name}
                           </td>
                           <td className="py-2 px-4 border">{request.reason}</td>
-                          <td className="py-2 px-4 border">
+                          <td className="py-2 px-4 border text-center">
                             {new Date(request.fromDate).toLocaleDateString()}
                           </td>
-                          <td className="py-2 px-4 border">
+                          <td className="py-2 px-4 border text-center">
                             {new Date(request.toDate).toLocaleDateString()}
                           </td>
                           <td
-                            className={`py-2 px-4 border capitalize
+                            className={`py-2 px-4 border capitalize text-center
                           ${
                             request.approvals.classIncharge.status ===
                             "approved"

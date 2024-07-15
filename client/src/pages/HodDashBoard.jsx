@@ -16,7 +16,7 @@ import { SiTicktick } from "react-icons/si";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdOutlineDownloadDone } from "react-icons/md";
 import { useSelector } from "react-redux";
-import LeaveStatus from '../components/LeaveStatus';
+import LeaveStatus from "../components/LeaveStatus";
 import StatusDot from "../components/StatusDot";
 import { TiTick } from "react-icons/ti";
 import { RxCross2 } from "react-icons/rx";
@@ -292,12 +292,11 @@ const Hoddashboard = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-
   // const { currentUser } = useSelector((state) => state.user);
   // const [leaveRequests, setLeaveRequests] = useState([]);
 
-
-  const id = currentUser.userType === "Student" ? currentUser.id : currentUser.userId;
+  const id =
+    currentUser.userType === "Student" ? currentUser.id : currentUser.userId;
 
   useEffect(() => {
     const fetchLeaveRequests = async () => {
@@ -308,14 +307,12 @@ const Hoddashboard = () => {
           setLeaveRequests(data);
         }
       } catch (error) {
-        console.error('Error fetching leave requests:', error);
+        console.error("Error fetching leave requests:", error);
       }
     };
 
     fetchLeaveRequests();
   }, [currentUser.id]);
-
-
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-ternary-blue">
@@ -443,22 +440,21 @@ const Hoddashboard = () => {
                 </h2>
                 <div className="overflow-x-auto">
                   {leaveRequests.length > 0 ? (
-                    <Table className="bg-white rounded-md max-w-fit">
+                    <Table className="bg-white rounded-md">
                       <TableHead>
                         <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
                           Student Name
                         </TableHeadCell>
-                        
+
                         <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
                           Reason
                         </TableHeadCell>
-                        <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
-                          From
+                        <TableHeadCell
+                          className="p-4 bg-primary-blue min-w-max text-center text-white"
+                        >
+                          From - To
                         </TableHeadCell>
-                        <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
-                          To
-                        </TableHeadCell>
-                        <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
+                        <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
                           Days
                         </TableHeadCell>
                         <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
@@ -474,29 +470,31 @@ const Hoddashboard = () => {
                       <TableBody className="divide-y">
                         {leaveRequests.map((req) => {
                           const { status } = req.approvals.hod;
-                          {console.log(req)}
+
                           return (
                             <TableRow key={req._id}>
-                              <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide" style={{width:'8000px'}}>
+                              <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                                 {req.name}
                               </TableCell>
-        
-                              <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide" style={{width:'2000px'}}>
+
+                              <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                                 {req.reason}
                               </TableCell>
-                              <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide" style={{width:'4000px'}}>
-                                {formatDate(req.fromDate)}
+                              <TableCell
+                                className=" border text-center border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide"
+                              >
+                                <div className="flex flex-col items-center min-w-max justify-center gap-2">
+                                  <div>{formatDate(req.fromDate)}</div>
+                                  <div>{formatDate(req.toDate)}</div>
+                                </div>
                               </TableCell>
-                              <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide" style={{width:'4000px'}}>
-                                {formatDate(req.toDate)}
-                              </TableCell>
-                              <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
+                              <TableCell className="border text-center border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                                 {req.noOfDays}
                               </TableCell>
-                              <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                              <div className="status-dots">
+                              <TableCell className="flex  justify-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
+                                <div className="status-dots">
                                   <StatusDot
-                                    status={req.approvals.mentor.status}  
+                                    status={req.approvals.mentor.status}
                                     role="mentor"
                                     showLine={true}
                                   />
@@ -510,30 +508,38 @@ const Hoddashboard = () => {
                                     role="hod"
                                     showLine={false}
                                   />
-                              </div>
+                                </div>
                               </TableCell>
                               <TableCell className="border min-w-[250px] border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">
-                          <div className="flex flex-col">
-                            {req.mentorcomment !== "No Comments" &&(
-                              <div>
-                                <h2 className="">Mentor:</h2>
-                                <div className="text-gray-600 text-sm">{req.mentorcomment}</div>
-                              </div>
-                            )}
-                            {req.classInchargeComment !== "No Comments" &&(
-                              <div>
-                                <h2 className="">Class Incharge:</h2>
-                                <div className="text-gray-600">{req.classInchargeComment}</div>
-                              </div>
-                            )} 
-                            {req.classInchargeComment === "No Comments" && req.mentorcomment === "No Comments" &&(
-                              <div>
-                                <h1 className="text-gray-600">No Comments!</h1>
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                              
+                                <div className="flex flex-col">
+                                  {req.mentorcomment !== "No Comments" && (
+                                    <div>
+                                      <h2 className="">Mentor:</h2>
+                                      <div className="text-gray-600 text-sm">
+                                        {req.mentorcomment}
+                                      </div>
+                                    </div>
+                                  )}
+                                  {req.classInchargeComment !==
+                                    "No Comments" && (
+                                    <div>
+                                      <h2 className="">Class Incharge:</h2>
+                                      <div className="text-gray-600">
+                                        {req.classInchargeComment}
+                                      </div>
+                                    </div>
+                                  )}
+                                  {req.classInchargeComment === "No Comments" &&
+                                    req.mentorcomment === "No Comments" && (
+                                      <div>
+                                        <h1 className="text-gray-600">
+                                          No Comments!
+                                        </h1>
+                                      </div>
+                                    )}
+                                </div>
+                              </TableCell>
+
                               <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                                 {status === "pending" ? (
                                   <div className="flex items-center gap-4 justify-center">
@@ -544,9 +550,7 @@ const Hoddashboard = () => {
                                       className="bg-green-500 hover:bg-green-600 text-white  rounded-full transition-all duration-300"
                                       disabled={loading}
                                     >
-
                                       <TiTick size={30} />
-
                                     </button>
                                     <button
                                       onClick={() =>
@@ -555,8 +559,8 @@ const Hoddashboard = () => {
                                       className="bg-red-500 hover:bg-red-600 text-white rounded-full transition-all duration-300"
                                       disabled={loading}
                                     >
-<RxCross2 size={30}/>
-                                      </button>
+                                      <RxCross2 size={30} />
+                                    </button>
                                   </div>
                                 ) : (
                                   <div className="flex items-center justify-center gap-2">
@@ -622,7 +626,9 @@ const Hoddashboard = () => {
                                     rows="4"
                                     className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
                                     placeholder="Write your comments..."
-                                    onChange={(e) => sethodComment(e.target.value)}
+                                    onChange={(e) =>
+                                      sethodComment(e.target.value)
+                                    }
                                   ></textarea>
                                 </div>
                               </div>
@@ -637,7 +643,9 @@ const Hoddashboard = () => {
                                     rows="4"
                                     className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
                                     placeholder="Write your comments..."
-                                    onChange={(e) => sethodComment(e.target.value)}
+                                    onChange={(e) =>
+                                      sethodComment(e.target.value)
+                                    }
                                   ></textarea>
                                 </div>
                               </div>
@@ -707,11 +715,8 @@ const Hoddashboard = () => {
                     <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
                       Reason
                     </TableHeadCell>
-                    <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
-                      Start Date
-                    </TableHeadCell>
-                    <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
-                      End Date
+                    <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                      From - To
                     </TableHeadCell>
                     <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
                       Duration
@@ -736,12 +741,12 @@ const Hoddashboard = () => {
                             {req.reason}
                           </TableCell>
                           <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                            {formatDate(req.fromDate)}
+                            <div className="flex flex-col items-center min-w-max justify-center gap-2">
+                              <div>{formatDate(req.fromDate)}</div>
+                              <div>{formatDate(req.toDate)}</div>
+                            </div>
                           </TableCell>
-                          <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                            {formatDate(req.toDate)}
-                          </TableCell>
-                          <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
+                          <TableCell className=" text-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                             {req.noOfDays} days
                           </TableCell>
                           <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">

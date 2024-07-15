@@ -125,7 +125,6 @@ const SuperAdmin = () => {
   };
 
   const handleAddBatch = async () => {
-    console.log("Entered addBatch");
     try {
       const response = await fetch(`/api/batches/addBatch`, {
         method: "POST",
@@ -163,13 +162,11 @@ const SuperAdmin = () => {
   };
 
   const handleDeleteBatch = async (batchId) => {
-    console.log(batchId);
     try {
       const response = await fetch(`/api/batches/deleteBatch/${batchId}`, {
         method: "DELETE",
       });
       if (!response.ok) {
-        console.log("Failed to delete batch");
         throw new Error("Failed to delete class");
       }
     } catch (error) {
@@ -179,14 +176,12 @@ const SuperAdmin = () => {
 
   const handleDeleteDepartment = async (departmentId) => {
     alert("Sure to delete");
-    console.log(departmentId);
     try {
       const response = await fetch(
         `/api/departments/deleteDepartment/${departmentId}`,
         { method: "DELETE" }
       );
       if (!response.ok) {
-        console.log("Failed to delete department");
         throw new Error("Failed to delete class");
       }
     } catch (error) {

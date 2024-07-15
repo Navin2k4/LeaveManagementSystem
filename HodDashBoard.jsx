@@ -471,7 +471,6 @@ const Hoddashboard = () => {
                       <TableBody className="divide-y">
                         {leaveRequests.map((req) => {
                           const { status } = req.approvals.hod;
-                          {console.log(req)}
                           return (
                             <TableRow key={req._id}>
                               <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide" style={{width:'8000px'}}>

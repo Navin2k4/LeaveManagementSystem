@@ -248,7 +248,7 @@ export default function SignUp() {
 
   return (
     <div className="flex justify-center md:mt-5 ">
-      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-[#1A2130] rounded-lg shadow-black shadow-md md:border-l-4 border-white">
+      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-[#1A2130] shadow-black shadow-md md:border-l-4 border-white">
         <div className="mt-4">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-ternary-blue tracking-wider">
@@ -634,7 +634,7 @@ export default function SignUp() {
                 {errorMessage}
               </Alert>
             )}
-            <div className="flex items-center justify-between mt-8">
+            <div className="flex  flex-col-reverse md:flex-row items-center justify-between mt-8 gap-3">
               <Link
                 to="/staffsignin"
                 className="text-teal-300 underline font-medium"
@@ -652,7 +652,10 @@ export default function SignUp() {
                     <span className="text-white">Loading...</span>
                   </div>
                 ) : (
-                  "Sign Up"
+                  <div className="px-10">
+                    Sign Up
+
+                  </div>
                 )}
               </button>
             </div>

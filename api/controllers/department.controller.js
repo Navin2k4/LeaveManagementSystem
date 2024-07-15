@@ -168,7 +168,6 @@ export const deleteClassIncharge = async (req, res) => {
 //To add Section
 
 export const addSection = async (req, res) => {
-  console.log('Entered addSection');
   const { batchId, section_name } = req.body;
   try {
     const batch = await Batch.findById(batchId);
@@ -189,11 +188,8 @@ export const addSection = async (req, res) => {
 //To Add Department
 export const addDepartment = async(req,res) =>{
   const ignoreWords = ["and", "of", "the", "for", "with", "on", "in", "at", "by"]; // Add more words to ignore as needed
-  console.log('Entered addDepartment');
   const { dept_name } = req.body;
-  console.log(dept_name);
   const dept_acronym = dept_name.split(' ').filter(word => !ignoreWords.includes(word.toLowerCase())).map(word => word[0]).join('').toUpperCase();
-  console.log(dept_acronym);
   const dept_head = null;
   try {
     const department = new Department({ dept_name , dept_acronym, dept_head });
@@ -224,10 +220,7 @@ export const deleteSection = async(req, res) => {
 
 //To add a new Batch
 export const addNewBatch = async (req, res) => {
-  console.log('Entered adding new batch');
   const { dept_id, batch_name } = req.body;
-  console.log(dept_id);
-  console.log(batch_name);
   
   try {
     // Create a new Batch document
@@ -258,7 +251,6 @@ export const addNewBatch = async (req, res) => {
 
 //to delete a batch
 export const deleteBatch = async(req,res)=>{
-  console.log('Entered deleteBatch');
   try{
     const { batchId } = req.params;
     const batch = await Batch.findByIdAndDelete(batchId);
@@ -278,7 +270,6 @@ export const deleteBatch = async(req,res)=>{
 }
 
 export const deleteDepartment = async(req,res)=>{
-  console.log('Entered deleteDepartment');
   try{
     const { deptId } = req.params;
     const department = await Department.findByIdAndDelete(deptId);

@@ -20,6 +20,8 @@ export default function LeaveRequestForm({ setTab }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [errors, setErrors] = useState({});
   const [departments, setDepartments] = useState([]);
+  const [batches, setBatches] = useState([]);
+  const [sections, setSections] = useState([]);
   const [mentors, setMentors] = useState([]);
   const [classIncharges, setClassIncharges] = useState([]);
   const [leaveTypes, setLeaveTypes] = useState([
@@ -127,6 +129,40 @@ export default function LeaveRequestForm({ setTab }) {
     }
   }, [formData.sectionId]);
 
+  // const handleDepartmentChange = async (e) => {
+  //   const deptId = formData.departmentId;
+  //   setFormData({ ...formData, departmentId: deptId });
+  //   try {
+  //     const res = await fetch(`/api/departments/${deptId}/batches`);
+  //     const data = await res.json();
+  //     setBatches(data);
+  //     setSections([]);
+  //     setMentors([]);
+  //     setClassIncharges([]);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  // const handleBatchChange = async (e) => {
+  //   const batchId = formData.batchId;
+  //   setFormData({ ...formData, batchId: batchId });
+  //   try {
+  //     const res = await fetch(`/api/batches/${batchId}/sections`);
+  //     const data = await res.json();
+  //     setSections(data);
+  //     setMentors([]);
+  //     setClassIncharges([]);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  // const handleSectionChange = (e) => {
+  //   const sectionId = formData.sectionId;
+  //   setFormData({ ...formData, sectionId: sectionId });
+  // };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -229,19 +265,117 @@ export default function LeaveRequestForm({ setTab }) {
   };
 
   return (
-<div className="flex justify-center md:mt-5">
-  <div className="w-full max-w-2xl px-6 py-4 md:py-4 mx-auto h-auto ">
-      <div className="bg-dark-blue rounded-md text-white px-6 py-3 font-sans md:mt-2">
+    <div className="flex justify-center items-center ">
+      <div className="bg-custom-gray font-sans my-3 rounded px-8 pb-8 mb-4 max-w-5xl w-full">
         <div className="flex justify-center mb-4">
-          <h1 className="font-bold uppercase text-2xl px-6 py-2 tracking-widest">
+          <h1 className="text-custom-div-bg font-bold uppercase text-2xl px-6 py-2 tracking-widest">
             Request Leave
           </h1>
         </div>
-        <form className="flex flex-col gap-3 " onSubmit={handleSubmit}>
+        <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
+          {/* <div className="flex flex-col">
+            <h1>Name : {formData.name}</h1>
+          </div>
+            <div className="flex flex-col gap-3">
+              <h1>Roll No : {formData.rollNo}</h1>
+            </div>
+            {!isStaff && (
+              <div className="flex flex-col gap-3">
+                <h1>Register Number :{formData.regNo}</h1>
+              </div>
+            )} */}
+          {/* <div className="flex flex-col">
+            <Label
+              htmlFor="departmentId"
+              className="mb-2 text-left font-bold tracking-wide"
+            >
+              Department
+            </Label>
+            <Select
+              name="departmentId"
+              value={formData.departmentId}
+              onChange={handleDepartmentChange}
+              className={errors.departmentId ? "border-red-500" : ""}
+            >
+              <option value="">Select Department</option>
+              {departments.map((dept) => (
+                <option key={dept._id} value={dept._id}>
+                  {dept.dept_name}
+                </option>
+              ))}
+            </Select>
+            {errors.departmentId && (
+              <p className="text-red-800 text-xs italic">
+                {errors.departmentId}
+              </p>
+            )}
+          </div> 
+          {!isStaff && (
+            <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
+             TOFIX:Can get the id of the batch and the section only display the batch and the section
+               <div className="flex flex-col gap-3">
+                <Label
+                  htmlFor="batchId"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Batch
+                </Label>
+                <Select
+                  name="batchId"
+                  id="batchId"
+                  value={formData.batchId}
+                  onChange={handleBatchChange}
+                  required
+                  className={`w-full tracking-wider ${
+                    errors.batchId ? "border-red-500" : ""
+                  }`}
+                >
+                  <option value="">Select Batch</option>
+                  {batches.map((batchId) => (
+                    <option key={batchId._id} value={batchId._id}>
+                      {batchId.batch_name}
+                    </option>
+                  ))}
+                </Select>
+                {errors.batchId && (
+                  <p className="text-red-800 text-xs italic">
+                    {errors.batchId}
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col gap-3">
+                <Label
+                  htmlFor="sectionId"
+                  className="text-left font-bold tracking-wide"
+                >
+                  Section
+                </Label>
+                <Select
+                  name="sectionId"
+                  value={formData.sectionId}
+                  required
+                  onChange={handleSectionChange}
+                  className={errors.sectionId ? "border-red-500" : ""}
+                >
+                  <option value="">Select Section</option>
+                  {sections.map((sectionId) => (
+                    <option key={sectionId._id} value={sectionId._id}>
+                      {sectionId.section_name}
+                    </option>
+                  ))}
+                </Select>
+                {errors.sectionId && (
+                  <p className="text-red-800 text-xs italic">
+                    {errors.sectionId}
+                  </p>
+                )}
+              </div> 
+            </div>
+          )} */}
           {!isStaff && (
             <div className="grid grid-cols-1 gap-4">
               <div className=" gap-3">
-                <h1 className="">
+                <h1>
                   Your Class Incharge :{" "}
                   {classIncharges.length > 0
                     ? classIncharges[0].staff_name
@@ -256,9 +390,9 @@ export default function LeaveRequestForm({ setTab }) {
               <div className="flex flex-col gap-3">
                 <Label
                   htmlFor="mentorId"
-                  className="text-left font-semibold tracking-wide text-white"
+                  className="text-left font-bold tracking-wide"
                 >
-                  Mentor Name<span className="text-red-400">*</span>
+                  Mentor Name
                 </Label>
                 <Select
                   name="mentorId"
@@ -287,9 +421,9 @@ export default function LeaveRequestForm({ setTab }) {
             <div className="flex flex-col gap-3">
               <Label
                 htmlFor="leaveStartDate"
-                className="text-left font-semibold tracking-wide text-wide"
+                className="text-left font-bold tracking-wide"
               >
-                Date From<span className="text-red-400">*</span>
+                Date From
               </Label>
               <TextInput
                 type="date"
@@ -307,9 +441,9 @@ export default function LeaveRequestForm({ setTab }) {
             <div className="flex flex-col gap-3">
               <Label
                 htmlFor="leaveEndDate"
-                className="text-left font-semibold tracking-wide text-white"
+                className="text-left font-bold tracking-wide"
               >
-                Date To<span className="text-red-400">*</span>
+                Date To
               </Label>
               <TextInput
                 type="date"
@@ -334,7 +468,7 @@ export default function LeaveRequestForm({ setTab }) {
               onChange={handleForOneDayChange}
               className="text-primary-blue border-secondary-blue"
             />
-            <Label htmlFor="forOneDay" className="text-white">Apply leave for one day only </Label>
+            <Label htmlFor="forOneDay">Apply leave for one day only </Label>
           </div>
 
           <div className="flex items-center space-x-4">
@@ -346,7 +480,7 @@ export default function LeaveRequestForm({ setTab }) {
                 onChange={() => handleIsHalfDayChange("FN")}
                 className="text-primary-blue border-secondary-blue"
               />
-              <Label htmlFor="FN" className="font-normal text-white">
+              <Label htmlFor="FN" className="font-normal">
                 FN
               </Label>
             </div>
@@ -358,7 +492,7 @@ export default function LeaveRequestForm({ setTab }) {
                 onChange={() => handleIsHalfDayChange("AN")}
                 className="text-primary-blue border-secondary-blue"
               />
-              <Label htmlFor="AN" className="font-normal text-white">
+              <Label htmlFor="AN" className="font-normal">
                 AN
               </Label>
             </div>
@@ -369,9 +503,9 @@ export default function LeaveRequestForm({ setTab }) {
             <div className="flex flex-col">
               <Label
                 htmlFor="typeOfLeave"
-                className="mb-2 text-left font-bold tracking-wide text-white"
+                className="mb-2 text-left font-bold tracking-wide"
               >
-                Type of Leave<span className="text-red-400">*</span>
+                Type of Leave
               </Label>
               <Select
                 id="typeOfLeave"
@@ -404,16 +538,16 @@ export default function LeaveRequestForm({ setTab }) {
                 onChange={handleForMedicalChange}
                 className="text-primary-blue border-secondary-blue"
               />
-              <Label htmlFor="forMedical" className="text-white">Is this for medical reason?</Label>
+              <Label htmlFor="forMedical">Is this for medical reason?</Label>
             </div>
           )}
 
           <div className="flex flex-col gap-3">
             <Label
               htmlFor="reason"
-              className="text-left font-semibold tracking-wide text-white"
+              className="text-left font-bold tracking-wide"
             >
-              Reason<span className="text-red-400">*</span>
+              Reason
             </Label>
             <textarea
               name="reason"
@@ -421,7 +555,7 @@ export default function LeaveRequestForm({ setTab }) {
               cols="30"
               rows="4"
               onChange={handleChange}
-              className={`rounded-md ${errors.reason ? "border-red-500" : ""} text-black`}
+              className={`rounded-md ${errors.reason ? "border-red-500" : ""}`}
             ></textarea>
             {errors.reason && (
               <p className="text-red-800 text-xs italic">{errors.reason}</p>
@@ -429,7 +563,7 @@ export default function LeaveRequestForm({ setTab }) {
           </div>
           <Button
             type="submit"
-            className="bg-primary-blue hover:text-white p-2 font-bold tracking-wide rounded-md transition-all duration-300"
+            className="bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue text-white p-2 font-bold tracking-wide rounded-md transition-all duration-300"
           >
             {loading ? (
               <div className="flex items-center">
@@ -443,7 +577,5 @@ export default function LeaveRequestForm({ setTab }) {
         </form>
       </div>
     </div>
-    </div>
-
   );
 }

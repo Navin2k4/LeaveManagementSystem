@@ -1,6 +1,7 @@
 .status-dot-container {
     display: flex;
     align-items: center;
+    justify-content: center;
     position: relative;
   
     .tooltip {
@@ -44,7 +45,7 @@
       z-index: 1;// Adjust spacing between dots
   
       &.approved {
-        background-color: #06D001;
+        background-color: lime;
       }
   
       &.pending {
@@ -52,7 +53,7 @@
       }
   
       &.rejected {
-        background-color: #f44336;
+        background-color: red;
       }
   
       &:hover {
