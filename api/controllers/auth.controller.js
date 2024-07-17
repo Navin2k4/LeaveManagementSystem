@@ -7,7 +7,22 @@ import DeptHead from "../models/depthead.model.js";
 import Department from "../models/department.model.js";
 import nodemailer from 'nodemailer';
 import otpGenerator from 'otp-generator';
+import OTP from "../models/OTP.model.js";
+import crypto from 'crypto';
+import dotenv from 'dotenv';
 
+dotenv.config();
+
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  host: 'smtp.gmail.com',
+  secure: false,
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
 export const studentsignup = async (req, res, next) => {
   const {
@@ -57,7 +72,27 @@ export const studentsignup = async (req, res, next) => {
 
   try {
     await newStudent.save();
-    res.status(201).json({ message: "Student saved successfully" });
+
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const hashedOTP = bcryptjs.hashSync(otp, 10);
+
+    await OTP.create( { email, otp : hashedOTP } );
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: 'OTP Verification',
+      text: `Your OTP is ${otp}. Please Verify it within 5 minutes.`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if(error) {
+        return next(error);
+      } else {
+        console.log('Email sent:', info.response);
+        res.status(201).json({ message: 'Student Saved Successfully. OTP sent to the email.', email });
+      }
+    });
   } catch (error) {
     if (error.code === 11000) {
       let field = Object.keys(error.keyPattern)[0];
@@ -228,7 +263,6 @@ export const staffsignup = async (req, res, next) => {
     next(error);
   }
 };
-
 export const staffsignin = async (req, res, next) => {
   try {
     let { staff_id, password } = req.body;
@@ -454,4 +488,22 @@ export const verifyOtp = (req, res) => {
   users.push({ email });
   delete otpStorage[email];
   res.status(200).json({ message: 'Signup completed successfully' });
+};
+
+export const verifyOTP = async (req, res, next) => {
+  const { email, otp } = req.body;
+  try {
+    const otpRecord = await OTP.findOne({ email });
+    if(!otpRecord) {
+      return next(errorHandler(400, 'Invalid OTP or Expired OTP'));
+    }
+    const isValidOTP = bcryptjs.compareSync(otp, otpRecord.otp);
+    if(!isValidOTP) {
+      return next(errorHandler(400, "Invalid OTP"));
+    }
+    await OTP.deleteOne({ email });
+    res.status(201).json({ message: "OTP verified successfully" });
+  } catch (error) {
+    next(error);
+  }
 };

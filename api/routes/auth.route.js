@@ -1,5 +1,5 @@
 import express from 'express';
-import { studentsignup, verifyOtp } from '../controllers/auth.controller.js';
+import { studentsignup, verifyOTP } from '../controllers/auth.controller.js';
 import { studentsignin } from '../controllers/auth.controller.js';
 import { staffsignup } from '../controllers/auth.controller.js';
 import { staffsignin } from '../controllers/auth.controller.js';
@@ -17,6 +17,6 @@ router.post('/staffsignin',staffsignin);
 router.post('/hodsignup',hodsignup);
 router.post('/hodsignin',hodsignin);
 
-router.post('/verify-otp', verifyOtp);
+router.post('/verifyOTP', verifyOTP);
 
 export default router;
