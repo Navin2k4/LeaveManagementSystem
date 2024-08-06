@@ -27,6 +27,7 @@ export default function SignUp() {
     confirmpassword: "",
     userType: "Staff",
   });
+console.log(formData);
 
   const [departments, setDepartments] = useState([]);
   const [batches, setBatches] = useState([]);
@@ -229,10 +230,12 @@ export default function SignUp() {
 
       if (data.success === false) {
         setLoading(false);
+        setErrorMessage(data.message || "Sign up failed");
         return;
       }
       if (!res.ok) {
-        throw new Error(data.message || "Sign up failed");
+        setLoading(false);
+        return;
       }
       setLoading(false);
       navigate("/signin");
@@ -247,16 +250,16 @@ export default function SignUp() {
 
 
   return (
-    <div className="flex justify-center md:mt-5 ">
-      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-[#1A2130] shadow-black shadow-md md:border-l-4 border-white">
+    <div className="flex justify-center md:mt-5 md:my-10 ">
+      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-gradient-to-t from-blue-500 to-[#0f172a] shadow-black shadow-md ">
         <div className="mt-4">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-ternary-blue tracking-wider">
+            <h2 className="text-3xl font-bold text-white tracking-wider">
               Staff Sign Up
             </h2>
           </div>
           <Link to="/studentsignup" className="text-center p-3">
-            <h2 className="font-medium  text-teal-300 hover:tracking-wider transition-all duration-500">
+            <h2 className="font-medium  text-blue-200 underline hover:tracking-wider transition-all duration-500">
               Click here for Student Sign Up
             </h2>
           </Link>
@@ -385,7 +388,7 @@ export default function SignUp() {
                   label="HOD"
                   checked={formData.isHod}
                   onChange={handleRoleChange}
-                  className="mx-2 border-black"
+                  className="text-orange-400 mx-2 border-black"
                 />
               </div>
               <div className="">
@@ -397,7 +400,7 @@ export default function SignUp() {
                   checked={formData.isClassIncharge}
                   onChange={handleRoleChange}
                   disabled={formData.isHod}
-                  className={`${formData.isHod ? 'bg-gray-400 border-gray-300' : 'border-black'} mx-2 `}
+                  className={`${formData.isHod ? 'bg-gray-400 border-gray-300' : 'border-black'} mx-2 text-orange-400`}
                 />
               </div>
               <div>
@@ -410,7 +413,7 @@ export default function SignUp() {
                   onChange={handleRoleChange}
                   disabled={formData.isHod}
 
-                  className={`${formData.isHod ? 'bg-gray-400 border-gray-300' : 'border-black'} mx-2 `}
+                  className={`${formData.isHod ? 'bg-gray-400 border-gray-300' : 'border-black'} mx-2 text-orange-400 `}
                 />
               </div>
             </div>
@@ -453,7 +456,7 @@ export default function SignUp() {
                   <div className="flex flex-col gap-3">
                     <Label
                       htmlFor="classInchargeSectionId"
-                      className="mb-2 text-left font-bold tracking-wide"
+                      className="text-white mb-2 text-left font-bold tracking-wide"
                     >
                       Section
                     </Label>
@@ -630,20 +633,20 @@ export default function SignUp() {
               </div>
             </div>
             {errorMessage && (
-              <Alert type="danger" className="mt-4">
+          <Alert color="failure" className="mb-4">
                 {errorMessage}
               </Alert>
             )}
             <div className="flex  flex-col-reverse md:flex-row items-center justify-between mt-8 gap-3">
               <Link
                 to="/signin"
-                className="text-teal-300 underline font-medium"
+                className="text-white underline font-medium"
               >
                 Already have an account? Sign in
               </Link>
               <button
                 type="submit"
-                className="px-6 py-2 text-white bg-primary-blue rounded-md shadow-sm hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary-blue"
+                className="px-6 py-2 text-white bg-[#0f172a] rounded-md shadow-sm hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary-blue"
                 disabled={loading}
               >
                 {loading ? (

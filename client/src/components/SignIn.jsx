@@ -6,7 +6,7 @@ import {
   signInFailure,
 } from "../redux/user/userSlice";
 import { Spinner } from "flowbite-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
@@ -222,6 +222,13 @@ console.log(selectRole);
             ) : (
               "Sign In"
             )}
+          </button>
+          <button
+            className="flex justify-center w-full px-4 py-2 text-sm font-medium bg-black hover:bg-blue-400 hover:text-black transition-all duration-300 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+          >
+          <Link to='/studentsignup' >
+            Sign Up
+          </Link>
           </button>
         </form>
 

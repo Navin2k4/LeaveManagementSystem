@@ -175,6 +175,7 @@ export const studentsignin = async (req, res, next) => {
     next(error);
   }
 };
+
 export const staffsignup = async (req, res, next) => {
   const {
     staff_name,
@@ -264,6 +265,7 @@ export const staffsignup = async (req, res, next) => {
     next(error);
   }
 };
+
 export const staffsignin = async (req, res, next) => {
   try {
     let { identifier, password } = req.body;

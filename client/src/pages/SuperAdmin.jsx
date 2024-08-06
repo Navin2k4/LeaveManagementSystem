@@ -281,7 +281,7 @@ const SuperAdmin = () => {
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-200">
       {/* Sidebar for departments */}
-      <div className="bg-primary-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto p-4 space-y-4">
+      <div className="bg-[#1f3a6e] text-white lg:sticky top-0 md:h-screen overflow-y-auto p-4 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold">All Departments</h2>
         </div>
@@ -296,7 +296,7 @@ const SuperAdmin = () => {
           />
           <button
             onClick={handleAddDepartment}
-            className="bg-secondary-blue text-white hover:bg-ternary-blue hover:text-black transition-all duration-300 px-4 py-2 rounded-md"
+            className="bg-green-400 text-white font-bold hover:bg-orange-300 hover:text-black transition-all duration-300 px-4 py-2 rounded-md"
           >
             Add Department
           </button>
@@ -333,7 +333,7 @@ const SuperAdmin = () => {
       <div className="flex-1 p-4 md:p-8 overflow-y-auto">
         {selectedDepartment && (
           <>
-            <div className="bg-primary-blue mb-4 md:mb-8 p-6 rounded-lg">
+            <div className="bg-[#1f3a6e] mb-4 md:mb-8 p-6 rounded-lg">
               <div className="flex flex-row items-center justify-between mb-5 ">
                 <h2 className="text-lg text-white font-semibold">
                   Batches for {selectedDepartment.dept_name}
@@ -349,8 +349,8 @@ const SuperAdmin = () => {
                     />
                     <button
                       onClick={handleAddBatch}
-                      className="bg-green-500 text-white hover:bg-green-600 px-4 py-2 rounded-md"
-                    >
+                      className="bg-green-400 text-white font-bold hover:bg-orange-300 hover:text-black transition-all duration-300 px-4 py-2 rounded-md"
+                      >
                       Add Batch
                     </button>
                   </div>
@@ -396,23 +396,23 @@ const SuperAdmin = () => {
                   Sections for {selectedBatch.batch_name} Batch
                 </h2>
 
-                <div className="flex gap-3">
+                <div className="flex items-center justify-center gap-3">
+                  {sectionAlertMessage && (
+                    <div className="text-sm text-red-500 font-bold">{`Section ${sectionAlertMessage}`}</div>
+                  )}
                 <input
                       type="text"
                       value={newSection}
                       onChange={(e) => setNewSection(e.target.value)}
                       placeholder="New Section"
-                      className="border rounded-md"
+                      className="border rounded-md focus:ring-0"
                     />
                     <button
                       onClick={handleAddSection}
-                      className="bg-primary-blue text-white hover:bg-secondary-blue/80 transition-all duration-300  hover: px-4 py-2 rounded-md"
+                      className="bg-[#1f3a6e] text-white hover:bg-secondary-blue/80 transition-all duration-300  hover: px-4 py-2 rounded-md"
                     >
                       Add Section
                     </button>
-                    {sectionAlertMessage && (
-                      <div className="text-sm text-red-500">{`Section ${sectionAlertMessage}`}</div>
-                    )}
                   </div>
                 </div>
 
@@ -434,7 +434,7 @@ const SuperAdmin = () => {
                           Section {section.section_name}
                         </h3>
                         <button
-                          className="bg-blue-200 shadow-md px-3 py-3 rounded-lg border-l-4 transition-all duration-300"
+                          className="bg-gradient-to-br from-blue-500 to-[#0f172a] text-white shadow-md px-3 py-3 rounded-lg border-l-4 transition-all duration-300"
                           onClick={() => handleSectionSelect(section)}
                         >
                           View {section.section_name} Details

@@ -44,7 +44,7 @@ export default function VerifyOtp() {
 
   return (
     <>
-      <div className="w-full max-w-md mt-4 px-6 py-8 mx-auto bg-white rounded-lg shadow-md">
+      <div className="w-full max-w-md mt-4 px-6 py-8 mx-auto min-h-screen bg-white rounded-lg shadow-md">
         <h2 className="text-center text-2xl font-bold text-corporate-blue">
           Verify OTP
         </h2>

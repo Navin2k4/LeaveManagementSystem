@@ -199,7 +199,6 @@ export default function SignUp() {
       }
       return;
     }
-
     navigate('/verify-otp', { state: { email: formData.email } });
     } catch (error) {
       setErrorMessage(
@@ -210,16 +209,17 @@ export default function SignUp() {
   };
 
   return (
-    <div className="flex justify-center md:mt-5 ">
-      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-white rounded-lg shadow-lg md:border-l-4 border-secondary-blue">
+    <div className="flex justify-center md:mt-5 md:my-10  ">
+      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-gradient-to-t from-blue-500 to-[#0f172a]
+ rounded-lg shadow-lg md:border-l-4 ">
         <div className="mt-4">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-primary-blue tracking-wider">
+            <h2 className="text-3xl font-bold text-white tracking-wider">
               Student Sign Up
             </h2>
           </div>
           <Link to="/staffsignup" className="text-center p-3">
-            <h2 className="font-medium  text-primary-blue hover:tracking-wider transition-all duration-500">
+            <h2 className="font-medium  text-blue-200 underline hover:tracking-wider transition-all duration-500">
               Click here for Staff Sign Up
             </h2>
           </Link>
@@ -229,7 +229,7 @@ export default function SignUp() {
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-white"
               >
                 Name
               </label>
@@ -250,7 +250,7 @@ export default function SignUp() {
               <div>
                 <label
                   htmlFor="roll_no"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-white"
                 >
                   Roll Number
                   <span className="text-red-600 font-bold"> *</span>
@@ -271,7 +271,7 @@ export default function SignUp() {
               <div>
                 <label
                   htmlFor="register_no"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-white"
                 >
                   Register Number
                   <span className="text-red-600 font-bold"> *</span>
@@ -292,7 +292,7 @@ export default function SignUp() {
               <div className="flex flex-col">
                 <Label
                   htmlFor="departmentId"
-                  className="mb-2 text-left font-bold tracking-wide"
+                  className="mb-2 text-left font-bold tracking-wide text-white"
                 >
                   Department
                 </Label>
@@ -300,7 +300,7 @@ export default function SignUp() {
                   name="departmentId"
                   value={formData.departmentId}
                   onChange={handleDepartmentChange}
-                  className={errors.departmentId ? "border-red-500" : ""}
+                  className={errors.departmentId ? "border-red-500" : "mt-1"}
                 >
                   <option value="">Select Department</option>
                   {departments.map((dept) => (
@@ -318,7 +318,7 @@ export default function SignUp() {
               <div className="flex flex-col gap-3">
                 <Label
                   htmlFor="batchId"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-white"
                 >
                   Batch
                 </Label>
@@ -349,7 +349,7 @@ export default function SignUp() {
               <div className="flex flex-col gap-3">
                 <Label
                   htmlFor="sectionId"
-                  className="text-left font-bold tracking-wide"
+                  className="text-left font-bold tracking-wide text-white"
                 >
                   Section
                 </Label>
@@ -378,7 +378,7 @@ export default function SignUp() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-white"
                 >
                   Email
                 </label>
@@ -389,6 +389,8 @@ export default function SignUp() {
                   className="block w-full py-2 mt-1 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary-blue"
                   onChange={handleChange}
                 />
+                <p class="text-sm text-gray-200 mb-3">OTP will be sent to your email after submitting</p>
+
                 {errors.email && (
                   <p className="text-red-500 text-xs italic">{errors.email}</p>
                 )}
@@ -396,7 +398,7 @@ export default function SignUp() {
               <div>
                 <label
                   htmlFor="phone"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-white"
                 >
                   Phone
                 </label>
@@ -416,7 +418,7 @@ export default function SignUp() {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-white"
                 >
                   Password
                 </label>
@@ -437,7 +439,7 @@ export default function SignUp() {
               <div>
                 <label
                   htmlFor="confirmpassword"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-white"
                 >
                   Confirm Password
                 </label>
@@ -471,13 +473,14 @@ export default function SignUp() {
           <div className="flex flex-col-reverse md:flex-row items-center justify-between mt-3 gap-3">
             <Link
               to="/signin"
-              className="text-primary-blue font-medium hover:underline"
+              className="text-white underline font-medium hover:underline"
             >
               Already have an account? Sign in
             </Link>
             <button
               type="submit"
-              className="px-6 py-2 text-white bg-primary-blue rounded-md shadow-sm hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
+              className="px-6 py-2 text-white bg-[#0f172a]
+ rounded-md shadow-sm hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
               disabled={loading}
             >
               {loading ? (

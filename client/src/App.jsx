@@ -16,6 +16,7 @@ import WardDetails from "./pages/WardDetails";
 import VerifyOtp from "./components/VerifyOTP";
 import SignIn from "./components/SignIn";
 import Footer from "./components/Footer";
+import StaffSignUp from "./components/StaffSignUp";
 
 
 const AppWrapper = () => {
@@ -23,6 +24,7 @@ const AppWrapper = () => {
   const showFooter = [
     '/',
     '/studentsignup',
+    '/staffsignup',
     '/signin',
     '/wardDetails',
     '*',
@@ -35,6 +37,7 @@ const AppWrapper = () => {
       <Routes>
         <Route path='/' element={<HomePage />} />
         <Route path='/studentsignup' element={<SignUp />} />
+        <Route path='/staffsignup' element={<StaffSignUp />} />
         <Route path='/signin' element={<SignIn />} />
         <Route path="/wardDetails" element={<WardDetails />} />
         <Route element={<PrivateRoute />}>
