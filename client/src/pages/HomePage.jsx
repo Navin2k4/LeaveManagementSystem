@@ -84,6 +84,22 @@ function HomePage() {
               </Link>
             </div>
           )}
+           {!currentUser && (
+            <div className="my-4 grid grid-cols-2 gap-4 items-center text-center">
+              <Link
+                to="/studentsignup"
+                className=" bg-white font-semibold rounded-full p-2 text-lg transition duration-300 shadow-black shadow-md transform  hover:scale-105"
+              >
+                Sign Up Student
+              </Link>
+              <Link
+                to="/staffsignup"
+                className=" bg-white font-semibold rounded-full p-2 text-lg transition duration-300 shadow-black shadow-md transform  hover:scale-105"
+              >
+                Sign Up Staff
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
