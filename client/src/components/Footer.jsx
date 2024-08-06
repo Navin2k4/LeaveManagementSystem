@@ -40,7 +40,7 @@ const Footer = () => {
           </p>
           <div className="list-none text-md text-white space-y-1">
             <p className="text-white/90">Dinesh Kumar - 22CSE35</p>
-            <p className="text-white/90">Udhaya Chandra Pandiyan - 22CSE58</p>
+            <p className="text-white/90">Udhaya Chandra Pandiyan - 22CSE57</p>
             <p className="text-white/90">Navin Kumaran - 22CSE48</p>
             <p className="text-white/90">Vinoth Kumar - 22CSE59</p>
           </div>

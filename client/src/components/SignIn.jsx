@@ -107,11 +107,14 @@ console.log(selectRole);
   };
 
   return (
-    <div className="flex justify-center my-20 ">
-      <section className="w-full max-w-md p-8 mx-auto h-auto bg-gradient-to-t from-blue-500 to-[#0f172a] rounded-2xl shadow-md shadow-black">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-white">Sign In</h2>
-        </div>
+    <div className="flex justify-center md:my-20 ">
+      <div className="w-full md:max-w-md py-20 px-8 md:p-8  mx-auto h-auto bg-gradient-to-t from-blue-500 to-[#0f172a] md:rounded-2xl md:shadow-md shadow-black">
+      <hr className="border-t-2 border-gray-600 " />
+      <div className="text-center my-4">
+        <h2 className="text-3xl font-bold text-white">Sign In</h2>
+      </div>
+      <hr className="border-t-2 border-gray-600 my-4" />
+ 
 
         <div className="grid grid-cols-3 items-center justify-center gap-3 mt-6">
           <div
@@ -227,7 +230,7 @@ console.log(selectRole);
             <p className="bg-white mx-10 p-2 rounded-3xl text-red-600 font-semibold">{errorMessage}</p>
           </div>
         )}
-      </section>
+      </div>
     </div>
   );
 }

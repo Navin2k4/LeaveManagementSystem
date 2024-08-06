@@ -15,8 +15,8 @@ const ProfilePage = () => {
     switch (tab) {
       case "LeaveRequestForm":
         return <LeaveRequestForm setTab={setTab} />;
-      case "EditProfile":
-        return <EditProfile />;
+      // case "EditProfile":
+      //   return <EditProfile />;
       case "Your Leave Requests":
         return <DashBoard setTab={setTab} />;
       default:
@@ -80,7 +80,7 @@ const ProfilePage = () => {
             Request Leave
             </div>
           </li>
-          <li
+          {/* <li
             onClick={() => setTab("EditProfile")}
             className={`cursor-pointer py-2 px-3 mx-2 transition-all duration-300 rounded-md ${
               tab === "EditProfile"
@@ -92,7 +92,7 @@ const ProfilePage = () => {
               <FiEdit3 size={20} className="ml-1" />
               Edit Profile
             </div>
-          </li>
+          </li> */}
           <li
             onClick={() => setTab("Your Leave Requests")}
             className={`cursor-pointer py-2 px-3 mx-2 transition-all duration-300 rounded-md ${
