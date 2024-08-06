@@ -24,32 +24,6 @@
     }
   }
 
-  .button-group {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-
-    button {
-      padding: 10px 20px;
-      font-size: 1em;
-      font-weight: bold;
-      color: #fff;
-      background-color: #008080;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-
-      &:hover {
-        background-color:#00A1A1 ;
-      }
-
-      &.active {
-        background-color: #006666;
-      }
-    }
-  }
 }
 
 .title {

@@ -22,7 +22,7 @@ const StaffDashBoard = () => {
       case "Leave Reports":
         return <LeaveStatsCard leaveRequestsAsMentor={mentorRequests} leaveRequestsAsClassIncharge={classInchargeRequest} />;
       case "Request Leave":
-        return <LeaveRequestForm setTab={setTab} />; // Pass setTab as prop to LeaveRequestForm
+        return <LeaveRequestForm setTab={setTab} />;
       case "Your Leave Requests":
         return <DashBoard />;
       default:
@@ -45,7 +45,7 @@ const StaffDashBoard = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-trenary-blue">
-      <div className="md:w-[20%] p-1 bg-primary-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto">
+      <div className="md:w-[20%] p-1 bg-[#1f3a6e] text-white lg:sticky top-0 md:h-screen overflow-y-auto">
         <div className="p-4 flex items-center justify-between">
           <h2 className="text-3xl tracking-wider text-white">DashBoard</h2>
           {isMobileView && (

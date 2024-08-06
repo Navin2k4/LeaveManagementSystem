@@ -470,7 +470,7 @@ export default function SignUp() {
 
           <div className="flex flex-col-reverse md:flex-row items-center justify-between mt-3 gap-3">
             <Link
-              to="/studentsignin"
+              to="/signin"
               className="text-primary-blue font-medium hover:underline"
             >
               Already have an account? Sign in

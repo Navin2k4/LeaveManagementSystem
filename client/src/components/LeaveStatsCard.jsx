@@ -7,7 +7,6 @@ import { parseISO, format, isValid } from "date-fns";
 import { TbFileTypePdf } from "react-icons/tb";
 import { RiFileExcel2Line } from "react-icons/ri";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import CommonBarChart from "./ui/CommonBarChart";
 
 const LeaveStatsCard = ({
   leaveRequestsAsMentor,
@@ -19,7 +18,6 @@ const LeaveStatsCard = ({
   const [recentLeaveRequests, setRecentLeaveRequests] = useState([]);
   const [mentorStats, setMentorStats] = useState(false);
   const [classInchargeStats, setClassInchargeStats] = useState(false);
-
 
   useEffect(() => {
     if (leaveRequestsAsMentor) {
@@ -303,8 +301,11 @@ const LeaveStatsCard = ({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  items-center justify-center gap-6 ">
               {currentUser.isMentor && (
                 <div>
-                  <div className="bg-primary-blue shadow-lg p-4 rounded-lg ">
-                    <h1 className="my-2  mb-4 text-lg text-center font-semibold text-white p-3 bg-secondary-blue border-r-2 rounded-lg">
+                  <div
+                    className="bg-gradient-to-br from-blue-500 to-[#0f172a]
+ shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all "
+                  >
+                    <h1 className="my-2  mb-4 text-lg text-center font-semibold p-3 bg-white  rounded-lg">
                       As a Mentor
                     </h1>
                     <div className="my-2 text-lg font-semibold">
@@ -329,7 +330,7 @@ const LeaveStatsCard = ({
                     </div>
                     <div className="flex items-center justify-center">
                       <button
-                        className="text-white  px-3 py-2 w-[100%] my-2 rounded-md bg-secondary-blue  hover:bg-dark-blue hover:text-white transition-all duration-300"
+                        className="px-3 py-2 w-[100%] my-2 rounded-md bg-green-300 hover:bg-[#fbd1a2]  transition-all duration-300"
                         onClick={handlementorStats}
                       >
                         Show Stats of Leave For This Month
@@ -340,8 +341,11 @@ const LeaveStatsCard = ({
               )}
               {currentUser.isClassIncharge && (
                 <div>
-                  <div className="bg-primary-blue shadow-lg p-4 rounded-lg ">
-                    <h1 className="my-2 mb-4 text-lg font-semibold text-center text-white p-3 bg-secondary-blue border-r-2 rounded-lg">
+                  <div
+                    className="bg-gradient-to-br from-blue-500 to-[#0f172a]
+ shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all"
+                  >
+                    <h1 className="my-2 mb-4 text-lg font-semibold text-center bg-white  p-3  rounded-lg ">
                       As a ClassIncharge
                     </h1>
                     <div className="my-2 text-lg font-semibold">
@@ -366,7 +370,7 @@ const LeaveStatsCard = ({
                     </div>
                     <div className="flex items-center justify-center">
                       <button
-                        className="text-white px-3 py-2 w-[100%] my-2 rounded-md bg-secondary-blue hover:bg-dark-blue hover:text-white transition-all duration-300"
+                        className="px-3 py-2 w-[100%] my-2 rounded-md bg-green-300 hover:bg-[#fbd1a2]  transition-all duration-300"
                         onClick={handleClassInchargeStats}
                       >
                         Show Stats of Leave For This Month
@@ -375,12 +379,10 @@ const LeaveStatsCard = ({
                   </div>
                 </div>
               )}
-              {/* <CommonBarChart
-                  pending={pendingRequestsByMentor}
-                  approved={approvedRequestsByMentor}
-                  rejected={rejectedRequestsByMentor}
-                /> */}
-              <div className="bg-primary-blue  text-white shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all">
+              <div
+                className="bg-gradient-to-br from-blue-500 to-[#0f172a]
+  text-white shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all"
+              >
                 any others
               </div>
             </div>
@@ -389,7 +391,7 @@ const LeaveStatsCard = ({
       </div>
       <div>
         {mentorStats && (
-          <div className=" bg-white shadow-md p-4 rounded-lg mt-2 ">
+          <div className=" bg-white shadow-md rounded-lg mt-2 ">
             <div className="relative bg-white shadow-md p-4 rounded-lg overflow-x-auto">
               <div className="flex justify-between">
                 <h2 className="text-xl font-semibold mb-4">
@@ -428,7 +430,9 @@ const LeaveStatsCard = ({
                     <tbody>
                       {leaveRequestsAsMentor.map((request, index) => (
                         <tr key={index} className="font-semibold">
-                          <td className="py-2 px-4 border text-center">{index + 1}</td>
+                          <td className="py-2 px-4 border text-center">
+                            {index + 1}
+                          </td>
                           <td className="py-2 px-4 border">{request.name}</td>
                           <td className="py-2 px-4 border text-center">
                             {request.section_name}
@@ -468,32 +472,32 @@ const LeaveStatsCard = ({
                 ) : (
                   <div className="text-center my-3">No requests yet</div>
                 )}
-                      <div className="flex justify-end mt-4">
-                        <button
-                          onClick={downloadPDFAsMentor}
-                          className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mr-2"
-                        >
-                          <div className="flex items-center justify-center gap-2">
-                            <TbFileTypePdf size={20} />
-                            Download as PDF
-                          </div>
-                        </button>
-                        <button
-                          onClick={downloadExcelAsMentor}
-                          className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
-                        >
-                          <div className="flex items-center justify-center gap-2">
-                            <RiFileExcel2Line size={20} />
-                            Download as Excel
-                          </div>
-                        </button>
-                      </div>
               </div>
+                <div className="flex justify-end mt-4">
+                  <button
+                    onClick={downloadPDFAsMentor}
+                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mr-2"
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <TbFileTypePdf size={20} />
+                      Download as PDF
+                    </div>
+                  </button>
+                  <button
+                    onClick={downloadExcelAsMentor}
+                    className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <RiFileExcel2Line size={20} />
+                      Download as Excel
+                    </div>
+                  </button>
+                </div>
             </div>
           </div>
         )}
         {classInchargeStats && (
-          <div className=" bg-white shadow-md p-4 rounded-lg mt-2">
+          <div className=" bg-white shadow-md rounded-lg mt-2">
             <div className="relative bg-white shadow-md p-4 rounded-lg ">
               <div className="flex justify-between">
                 <h2 className="text-xl font-semibold mb-4">
@@ -532,7 +536,9 @@ const LeaveStatsCard = ({
                     <tbody>
                       {leaveRequestsAsClassIncharge.map((request, index) => (
                         <tr key={index} className="font-semibold">
-                          <td className="py-2 px-4 border text-center">{index + 1}</td>
+                          <td className="py-2 px-4 border text-center">
+                            {index + 1}
+                          </td>
                           <td className="py-2 px-4 border">{request.name}</td>
                           <td className="py-2 px-4 border text-center">
                             {request.section_name}
@@ -574,27 +580,27 @@ const LeaveStatsCard = ({
                 ) : (
                   <div className="text-center my-3">No requests yet</div>
                 )}
-                <div className="flex justify-end mt-4">
-                        <button
-                          onClick={downloadPDFAsClassIncharge}
-                          className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mr-2"
-                        >
-                          <div className="flex items-center justify-center gap-2">
-                            <TbFileTypePdf size={20} />
-                            Download as PDF
-                          </div>
-                        </button>
-                        <button
-                          onClick={downloadExcelAsClassIncharge}
-                          className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
-                        >
-                          <div className="flex items-center justify-center gap-2">
-                            <RiFileExcel2Line size={20} />
-                            Download as Excel
-                          </div>
-                        </button>
-                      </div>
               </div>
+                <div className="flex justify-end mt-4">
+                  <button
+                    onClick={downloadPDFAsClassIncharge}
+                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mr-2"
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <TbFileTypePdf size={20} />
+                      Download as PDF
+                    </div>
+                  </button>
+                  <button
+                    onClick={downloadExcelAsClassIncharge}
+                    className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <RiFileExcel2Line size={20} />
+                      Download as Excel
+                    </div>
+                  </button>
+                </div>
             </div>
           </div>
         )}

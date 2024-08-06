@@ -21,7 +21,7 @@ function Navbar() {
         console.log(data.message);
       } else {
         dispatch(signOutSuccess());
-        navigate("/studentsignin");
+        navigate("/signin");
       }
     } catch (error) {
       console.log(error.message);
@@ -47,59 +47,91 @@ function Navbar() {
   }, [open]);
 
   return (
-    <nav className="bg-white  flex justify-between items-center  p-4 lg:px-8">
+    <nav className="bg-[#1f3a6e]  flex justify-between items-center  p-4 lg:px-8">
       <div className="flex items-center flex-3">
-        <a href="/" className="flex items-center font-bold text-xl text-white gap-2">
+        <a
+          href="/"
+          className="flex items-center font-bold text-xl text-white gap-2"
+        >
           <img
             src="vcet.jpeg"
             alt="VCET Logo"
-            className="w-12 h-12"
+            className="w-12 h-12 rounded-full"
           />
-          <span className="inline md:text-xl sm:text-sm">
+          <span className="hidden md:inline md:text-xl text-white sm:text-sm">
             Velammal College of Engineering and Technology
           </span>
         </a>
       </div>
-      <div className="hidden lg:flex gap-10 items-center justify-evenly text-lg h-full">
+      <div className="hidden lg:flex gap-10 items-center justify-evenly text-lg text-white h-full">
+      <button className="bg-white rounded-lg px-3 py-1  shadow-lg transition-transform duration-300 transform hover:scale-105">
+      <Link 
+        to="https://cgpa-calculator-l1l7.onrender.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block w-full h-full text-black  text-center"
+      >
+        CGPA Calculator
+      </Link>
+    </button>
         <Link to="/" className="transition-all duration-200 hover:scale-105">
           Home
         </Link>
-        {!currentUser && (
-          <Link to="/wardDetails" className="transition-all duration-200 hover:scale-105">
-            Wards Detail
-          </Link>
-        )}
+        {!currentUser && 
+        <Link
+        to="/signin"
+        className="transition-all duration-200 text-white hover:scale-105"
+        >
+          Sign In
+        </Link>
+        }
+        <Link
+          to="/wardDetails"
+          className="transition-all duration-200 text-white hover:scale-105"
+        >
+          Wards Detail
+        </Link>
+
         {currentUser ? (
           currentUser.userType === "Staff" ? (
-            <Link to="/staffdashboard" className="flex items-center transition-all duration-200 hover:scale-105">
+            <Link
+              to="/staffdashboard"
+              className="flex items-center transition-all duration-200 hover:scale-105"
+            >
               <div className="flex items-center">
-                <span className="tracking-wider uppercase font-semibold">
+                <span className="tracking-wider uppercase  text-white font-semibold">
                   {currentUser.name.split(" ")[0]}
                 </span>
               </div>
             </Link>
-          ) : currentUser.userType === 'Student' ? (
-            <Link to="/profile" className="flex items-center transition-all duration-200 hover:scale-105">
+          ) : currentUser.userType === "Student" ? (
+            <Link
+              to="/profile"
+              className="flex items-center transition-all duration-200 hover:scale-105"
+            >
               <div className="flex items-center">
-                <span className="tracking-wider uppercase font-semibold">
+                <span className="tracking-wider uppercase text-white font-semibold">
                   {currentUser.name.split(" ")[0]}
                 </span>
               </div>
             </Link>
           ) : (
-            <Link to="/hoddash" className="flex items-center transition-all duration-200 hover:scale-105">
-            <div className="flex items-center">
-              <span className="tracking-wider uppercase font-semibold">
-                {currentUser.name.split(" ")[0]}
-              </span>
-            </div>
+            <Link
+              to="/hoddash"
+              className="flex items-center transition-all duration-200 hover:scale-105"
+            >
+              <div className="flex items-center">
+                <span className="tracking-wider uppercase text-white font-semibold">
+                  {currentUser.name.split(" ")[0]}
+                </span>
+              </div>
             </Link>
           )
         ) : null}
         {currentUser && (
           <button
             onClick={handleSignout}
-            className="px-3 py-1 rounded-md border border-primary-blue hover:bg-primary-blue hover:text-white transition-all duration-200"
+            className="px-3 py-1 rounded-md border text-black bg-white border-primary-blue hover:bg-primary-blue hover:text-white transition-all duration-200"
           >
             Logout
           </button>
@@ -108,7 +140,7 @@ function Navbar() {
       <div className="lg:hidden">
         <button onClick={() => setOpen((prev) => !prev)} className="p-2 ">
           <svg
-            className="w-9 h-9 cursor-pointer"
+            className="w-9 h-9 cursor-pointer text-white"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"

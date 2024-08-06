@@ -31,7 +31,7 @@ const SideMenu = ({ open }) => {
 
   return (
     <div
-      className={`lg:hidden fixed top-0 right-0 bg-gray-800 bg-opacity-30 backdrop-blur-md text-white h-full w-[60%] transition-transform duration-500 transform ${
+      className={`lg:hidden fixed top-0 right-0 bg-gray-800 bg-opacity-30 backdrop-blur-md text-white h-full w-[60%] transition-transform  ${
         open ? "translate-x-0" : "translate-x-full"
       } flex flex-col items-center text-xl p-4 shadow-lg z-50`}
     >
@@ -50,7 +50,7 @@ const SideMenu = ({ open }) => {
         ) : (
           <div className="flex items-center mb-4">
             <CiLogin className="mr-2" />
-            <Link to="/studentsignin" className="block">
+            <Link to="/signin" className="block">
               Login
             </Link>
           </div>
@@ -64,7 +64,7 @@ const SideMenu = ({ open }) => {
         {!currentUser && (
           <div className="flex items-center mb-4">
             <RiParentFill className="mr-2" />
-            <a href="/to-do" className="block active:underline">
+            <a href="/wardDetails" className="block active:underline">
               Wards Detail
             </a>
           </div>

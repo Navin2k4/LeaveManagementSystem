@@ -16,6 +16,7 @@
     "@mui/x-charts": "^7.10.0",
     "@reduxjs/toolkit": "^2.2.6",
     "@ubilabs/react-geosuggest": "^2.16.2",
+    "classnames": "^2.5.1",
     "date-fns": "^3.6.0",
     "firebase": "^10.10.0",
     "flowbite-react": "^0.7.8",

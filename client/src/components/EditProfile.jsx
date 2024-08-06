@@ -119,7 +119,7 @@ export default function EditProfile() {
 
     return (
         <div className="flex justify-center md:mt-5 ">
-  <div className="w-full max-w-2xl bg-dark-blue rounded-lg shadow-xl p-8 text-white">
+  <div className="w-full max-w-2xl bg-gradient-to-tr from-blue-500 to-[#0f172a] md:rounded-lg shadow-xl p-8 text-white">
     <div className="text-center mb-8">
     <h1 className="font-bold uppercase text-2xl px-6 py-2 tracking-widest">
     Edit Profile</h1>

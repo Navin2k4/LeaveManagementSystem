@@ -16,7 +16,6 @@ import { SiTicktick } from "react-icons/si";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdOutlineDownloadDone } from "react-icons/md";
 import { useSelector } from "react-redux";
-import LeaveStatus from "../components/LeaveStatus";
 import StatusDot from "../components/StatusDot";
 import { TiTick } from "react-icons/ti";
 import { RxCross2 } from "react-icons/rx";
@@ -292,9 +291,6 @@ const Hoddashboard = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // const { currentUser } = useSelector((state) => state.user);
-  // const [leaveRequests, setLeaveRequests] = useState([]);
-
   const id =
     currentUser.userType === "Student" ? currentUser.id : currentUser.userId;
 
@@ -316,7 +312,7 @@ const Hoddashboard = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-ternary-blue">
-      <div className="md:w-[20%]  bg-primary-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto">
+      <div className="md:w-[20%] px-2 bg-[#1f3a6e] text-white lg:sticky top-0 md:h-screen overflow-y-auto">
         <div className="p-4 flex items-center justify-between">
           <h2 className={`text-3xl tracking-wider text-white font-semibold`}>
             Your DashBoard
@@ -380,7 +376,7 @@ const Hoddashboard = () => {
       <div className="flex-1 p-4 md:p-8 overflow-y-auto">
         {studentRequest && (
           <>
-            <div className="bg-primary-blue mb-4 md:mb-8 p-4 rounded-lg">
+            <div className="bg-[#1f3a6e] mb-4 md:mb-8 p-4 rounded-lg">
               <h2 className="text-lg text-white font-semibold mb-2">
                 Batches for {deptName}
               </h2>
@@ -421,7 +417,8 @@ const Hoddashboard = () => {
                           Section {section.section_name}
                         </h3>
                         <button
-                          className="bg-primary-blue hover:bg-[#1c559b] text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
+                          className="bg-gradient-to-br from-blue-500 to-[#0f172a]
+ hover:bg-[#1c559b] text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
                           onClick={() => handleSectionSelect(section)}
                         >
                           View Requests
@@ -442,28 +439,28 @@ const Hoddashboard = () => {
                   {leaveRequests.length > 0 ? (
                     <Table className="bg-white rounded-md">
                       <TableHead>
-                        <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
+                        <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
                           Student Name
                         </TableHeadCell>
 
-                        <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
+                        <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
                           Reason
                         </TableHeadCell>
                         <TableHeadCell
-                          className="p-4 bg-primary-blue min-w-max text-center text-white"
+                          className="p-4 bg-[#1f3a6e] min-w-max text-center text-white"
                         >
                           From - To
                         </TableHeadCell>
-                        <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                        <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
                           Days
                         </TableHeadCell>
-                        <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
+                        <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
                           Status
                         </TableHeadCell>
-                        <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
+                        <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
                           Comments
                         </TableHeadCell>
-                        <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
+                        <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
                           Actions
                         </TableHeadCell>
                       </TableHead>
@@ -491,8 +488,8 @@ const Hoddashboard = () => {
                               <TableCell className="border text-center border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                                 {req.noOfDays}
                               </TableCell>
-                              <TableCell className="flex  justify-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                                <div className="status-dots">
+                              <TableCell className="flex  justify-center items-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
+                                <div className="status-dots mt-4 ">
                                   <StatusDot
                                     status={req.approvals.mentor.status}
                                     role="mentor"
@@ -513,7 +510,7 @@ const Hoddashboard = () => {
                               <TableCell className="border min-w-[250px] border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">
                                 <div className="flex flex-col">
                                   {req.mentorcomment !== "No Comments" && (
-                                    <div>
+                                    <div className="flex gap-2">
                                       <h2 className="">Mentor:</h2>
                                       <div className="text-gray-600 text-sm">
                                         {req.mentorcomment}
@@ -522,21 +519,22 @@ const Hoddashboard = () => {
                                   )}
                                   {req.classInchargeComment !==
                                     "No Comments" && (
-                                    <div>
+                                      <div className="flex gap-2">
                                       <h2 className="">Class Incharge:</h2>
                                       <div className="text-gray-600">
                                         {req.classInchargeComment}
                                       </div>
                                     </div>
                                   )}
-                                  {req.classInchargeComment === "No Comments" &&
-                                    req.mentorcomment === "No Comments" && (
-                                      <div>
-                                        <h1 className="text-gray-600">
-                                          No Comments!
-                                        </h1>
+                                 {req.hodComment !==
+                                    "No Comments" && (
+                                    <div className="flex gap-2">
+                                      <h2 className="">Hod:</h2>
+                                      <div className="text-gray-600">
+                                        {req.hodComment}
                                       </div>
-                                    )}
+                                    </div>
+                                  )}
                                 </div>
                               </TableCell>
 
@@ -709,22 +707,22 @@ const Hoddashboard = () => {
               {staffLeaveRequests.length > 0 ? (
                 <Table className="bg-white rounded-md">
                   <TableHead>
-                    <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
+                    <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
                       Staff Name
                     </TableHeadCell>
-                    <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
+                    <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
                       Reason
                     </TableHeadCell>
-                    <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                    <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
                       From - To
                     </TableHeadCell>
-                    <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
+                    <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
                       Duration
                     </TableHeadCell>
-                    <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
+                    <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
                       Status
                     </TableHeadCell>
-                    <TableHeadCell className="p-4 bg-primary-blue text-center text-white">
+                    <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
                       Actions
                     </TableHeadCell>
                   </TableHead>

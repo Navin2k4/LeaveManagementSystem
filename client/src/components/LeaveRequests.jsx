@@ -181,28 +181,28 @@ export default function LeaveRequests({
             <div className="overflow-x-auto">
               <Table className="bg-white rounded-md">
                 <TableHead>
-                  <TableHeadCell className="bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="bg-[#244784] text-center text-white">
                     Student Name
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     Section
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     Reason
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     From - To
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     Days
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     Status Bar
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     Comments
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     Actions
                   </TableHeadCell>
                 </TableHead>
@@ -312,6 +312,7 @@ export default function LeaveRequests({
                 </TableBody>
               </Table>
               <Modal
+              
                 show={mentormodalType !== null}
                 size="md"
                 onClose={handleClose}
@@ -408,7 +409,7 @@ export default function LeaveRequests({
           </div>
         ) : (
           <div className="text-center text-lg font-semibold">
-            No Leave Requests as Mentor
+            No Leave Requests from Mentee
           </div>
         )}
       </>
@@ -425,29 +426,29 @@ export default function LeaveRequests({
             <div className="overflow-x-auto mt-4">
               <Table className="bg-white rounded-md">
                 <TableHead>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     Student Name
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     Section
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     Reason
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     From - To
                   </TableHeadCell>
 
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     Days
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     Status Bar
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     Comments
                   </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-secondary-blue text-center text-white">
+                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
                     Actions
                   </TableHeadCell>
                 </TableHead>
@@ -600,7 +601,7 @@ export default function LeaveRequests({
                 popup
               >
                 <ModalHeader />
-                <ModalBody>
+                <ModalBody className="pt-3">
                   <div className="text-center">
                     {classInchargemodalType === "approved" ? (
                       <SiTicktick className="mx-auto mb-4 h-14 w-14 text-green-500 dark:text-white" />
@@ -615,7 +616,7 @@ export default function LeaveRequests({
                         <div>
                           Are you to approve this request?
                           <div className="w-full my-4 border border-gray-200 rounded-lg bg-gray-50">
-                            <div className="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
+                            <div className="px-4 py-2  rounded-t-lg dark:bg-gray-800">
                               <textarea
                                 id="classIncharge_comment"
                                 rows="4"

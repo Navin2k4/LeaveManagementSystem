@@ -235,7 +235,7 @@ export default function SignUp() {
         throw new Error(data.message || "Sign up failed");
       }
       setLoading(false);
-      navigate("/staffsignin");
+      navigate("/signin");
     } catch (error) {
       setErrorMessage(
         error.message ||
@@ -636,7 +636,7 @@ export default function SignUp() {
             )}
             <div className="flex  flex-col-reverse md:flex-row items-center justify-between mt-8 gap-3">
               <Link
-                to="/staffsignin"
+                to="/signin"
                 className="text-teal-300 underline font-medium"
               >
                 Already have an account? Sign in

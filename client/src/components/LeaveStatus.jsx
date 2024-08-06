@@ -99,7 +99,8 @@ const LeaveStatus = ({ leaveRequests }) => {
 
   return (
     <>
-      <div className="flex flex-col items-start justify-start bg-primary-blue text-white p-8 ">
+      <div className="flex flex-col items-start justify-start bg-[#244784]
+ text-white p-8 m-4 rounded-2xl ">
         <div className="flex flex-row items-center">
           <h1 className="text-3xl font-semibold mb-6">Leave Summary </h1>
           <h1 className="mb-4 mx-4">
@@ -144,20 +145,20 @@ const LeaveStatus = ({ leaveRequests }) => {
       </div>
 
       <div className="leave-status p-5">
-        <div className="button-group">
+        <div className="flex gap-2">
           <button
             className={`${
-              view === "pending" ? "active " : ""
-            }bg-gradient-to-r from-primary-blue via-secondary-blue/85 to-primary-blue hover:bg-primary-blue`}
+              view === "pending" ? "active bg-green-500 " : "bg-[#244784]"
+            } transition-all duration-500 p-3 rounded-lg`}
             onClick={() => setView("pending")}
           >
             <h2 className="text-white">Pending Requests</h2>
           </button>
 
           <button
-            className={` ring-1 ring-primary-blue bg-gradient-to-r from-primary-blue  via-secondary-blue/85 to-primary-blue  hover:bg-primary-blue  ${
-              view === "approved" ? "active" : ""
-            }`}
+            className={` ${
+              view === "approved" ? "active bg-green-500 " : "bg-[#244784]"
+            } transition-all duration-500 p-3 rounded-lg`}
             onClick={() => setView("approved")}
           >
             <h2 className="text-white">Approved / Rejected Requests</h2>
@@ -167,7 +168,7 @@ const LeaveStatus = ({ leaveRequests }) => {
         <div className={`container ${view === "pending" ? "active" : ""} `}>
           <div className="filter-dropdown justify-between flex gap-3 items-center mb-6">
             <label>Filter by:</label>
-            <Select value={filter} onChange={(e) => setFilter(e.target.value)}>
+            <Select value={filter} onChange={(e) => setFilter(e.target.value)} className="ring-0 focus:ring">
               <option value="all">All</option>
               <option value="past7days">Past 7 Days</option>
               <option value="past1month">Past 1 Month</option>

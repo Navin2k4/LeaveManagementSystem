@@ -231,7 +231,8 @@ export default function LeaveRequestForm({ setTab }) {
   return (
 <div className="flex justify-center md:mt-5">
   <div className="w-full max-w-2xl px-6 py-4 md:py-4 mx-auto h-auto ">
-      <div className="bg-dark-blue rounded-md text-white px-6 py-3 font-sans md:mt-2">
+      <div className="bg-gradient-to-tr from-blue-500 to-[#0f172a]
+ rounded-md text-white px-6 py-3 font-sans md:mt-2">
         <div className="flex justify-center mb-4">
           <h1 className="font-bold uppercase text-2xl px-6 py-2 tracking-widest">
             Request Leave
@@ -332,7 +333,7 @@ export default function LeaveRequestForm({ setTab }) {
               name="forOneDay"
               checked={forOneDay}
               onChange={handleForOneDayChange}
-              className="text-primary-blue border-secondary-blue"
+              className="text-yellow-400 border-secondary-blue"
             />
             <Label htmlFor="forOneDay" className="text-white">Apply leave for one day only </Label>
           </div>
@@ -344,7 +345,7 @@ export default function LeaveRequestForm({ setTab }) {
                 name="forHalfDay"
                 checked={isHalfDay === "FN"}
                 onChange={() => handleIsHalfDayChange("FN")}
-                className="text-primary-blue border-secondary-blue"
+                className="text-yellow-400 border-secondary-blue"
               />
               <Label htmlFor="FN" className="font-normal text-white">
                 FN
@@ -356,13 +357,13 @@ export default function LeaveRequestForm({ setTab }) {
                 name="forHalfDay"
                 checked={isHalfDay === "AN"}
                 onChange={() => handleIsHalfDayChange("AN")}
-                className="text-primary-blue border-secondary-blue"
+                className="text-yellow-400 border-secondary-blue"
               />
               <Label htmlFor="AN" className="font-normal text-white">
                 AN
               </Label>
             </div>
-            <Label htmlFor="forHalfDay">Select One in case of half day</Label>
+            <Label htmlFor="forHalfDay" className="text-white">Select One in case of half day</Label>
           </div>
 
           {isStaff ? (
@@ -378,7 +379,7 @@ export default function LeaveRequestForm({ setTab }) {
                 name="typeOfLeave"
                 value={formData.typeOfLeave}
                 onChange={handleChange}
-                className={`border border-custom-div-gray rounded-md py-2  text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                className={` rounded-md py-2  text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
                   errors.typeOfLeave ? "border-red-500" : ""
                 }`}
               >
@@ -402,7 +403,7 @@ export default function LeaveRequestForm({ setTab }) {
                 name="forMedical"
                 checked={forMedical}
                 onChange={handleForMedicalChange}
-                className="text-primary-blue border-secondary-blue"
+                className="text-yellow-400 border-secondary-blue"
               />
               <Label htmlFor="forMedical" className="text-white">Is this for medical reason?</Label>
             </div>
@@ -427,19 +428,20 @@ export default function LeaveRequestForm({ setTab }) {
               <p className="text-red-800 text-xs italic">{errors.reason}</p>
             )}
           </div>
-          <Button
+
+          <button
             type="submit"
-            className="bg-primary-blue hover:text-white p-2 font-bold tracking-wide rounded-md transition-all duration-300"
+            className="bg-green-300 hover:bg-[#fbd1a2]  p-2 font-bold tracking-wide rounded-md transition-all duration-300"
           >
             {loading ? (
               <div className="flex items-center">
                 <Spinner size="sm" className="mr-2" />
-                <span className="text-white">Loading...</span>
+                <span >Loading...</span>
               </div>
             ) : (
-              <span className="text-white">Submit</span>
+              <span >Submit</span>
             )}
-          </Button>
+          </button>
         </form>
       </div>
     </div>

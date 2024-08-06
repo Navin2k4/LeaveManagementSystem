@@ -30,7 +30,7 @@ export default function VerifyOtp() {
       const data = await response.json();
       if (response.ok) {
         setLoading(false);
-        navigate("/studentsignin");
+        navigate("/signin");
       } else {
         setLoading(false);
         setErrorMessage(data.message);

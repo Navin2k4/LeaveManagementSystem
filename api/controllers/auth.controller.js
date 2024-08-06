@@ -10,6 +10,7 @@ import otpGenerator from 'otp-generator';
 import OTP from "../models/OTP.model.js";
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import { log } from "console";
 
 dotenv.config();
 
@@ -81,8 +82,8 @@ export const studentsignup = async (req, res, next) => {
     const mailOptions = {
       from: process.env.EMAIL,
       to: email,
-      subject: 'OTP Verification',
-      text: `Your OTP is ${otp}. Please Verify it within 5 minutes.`
+      subject: 'SignUp OTP Verification',
+      text: `Your OTP for Sign up is ${otp}. Please verify your OTP within 5 minutes.`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -265,15 +266,15 @@ export const staffsignup = async (req, res, next) => {
 };
 export const staffsignin = async (req, res, next) => {
   try {
-    let { staff_id, password } = req.body;
+    let { identifier, password } = req.body;
 
-    if (!staff_id || !password) {
+    if (!identifier || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    staff_id = staff_id.toUpperCase();
+    identifier = identifier.toUpperCase();
 
-    const staff = await Staff.findOne({ staff_id: staff_id });
+    const staff = await Staff.findOne({ staff_id: identifier });
 
     if (!staff) {
       return res.status(404).json({ message: "User not found" });
@@ -311,7 +312,7 @@ export const staffsignin = async (req, res, next) => {
       })
       .json({
         token,
-        id: staff_id,
+        id: identifier,
         name: staff_name,
         userId: _id,
         mail: staff_mail,
@@ -399,16 +400,18 @@ export const hodsignup = async (req, res, next) => {
 };
 export const hodsignin = async (req, res, next) => {
   try {
-    let { staff_id, password } = req.body;
-
-    if (!staff_id || !password) {
+    let { identifier, password } = req.body;
+    
+    if (!identifier || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
+    
+    identifier = identifier.toUpperCase();
+    console.log(identifier);
 
-    staff_id = staff_id.toUpperCase();
-
-    const hod = await DeptHead.findOne({ staff_id });
-
+    const hod = await DeptHead.findOne({ staff_id:identifier });
+    console.log(hod);
+    
     if (!hod) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -435,7 +438,7 @@ export const hodsignin = async (req, res, next) => {
     res.status(200).json({
       success: true,
       token,
-      id: staff_id,
+      id: identifier,
       name: staff_name,
       userId: _id,
       mail: staff_mail,
@@ -453,25 +456,6 @@ export const hodsignin = async (req, res, next) => {
 
 const users = [];
 const otpStorage = {};
-
-const sendOtpEmail = async (email, otp) => {
-  let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'your-email@gmail.com',
-      pass: 'your-email-password'
-    }
-  });
-
-  let mailOptions = {
-    from: 'your-email@gmail.com',
-    to: email,
-    subject: 'Your OTP Code',
-    text: `Your OTP code is ${otp}`
-  };
-
-  await transporter.sendMail(mailOptions);
-};
 
 export const verifyOtp = (req, res) => {
   const { email, otp } = req.body;

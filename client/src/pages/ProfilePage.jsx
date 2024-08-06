@@ -38,8 +38,8 @@ const ProfilePage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-ternary-blue">
-      <div className="md:w-[20%]  bg-primary-blue text-white lg:sticky top-0 md:h-screen overflow-y-auto">
+    <div className="flex flex-col md:flex-row h-screen ">
+      <div className="md:w-[20%] bg-[#1f3a6e] text-white lg:sticky top-0 md:h-screen overflow-y-auto ">
         <div className="p-4 flex items-center justify-between">
           <h2
             className={`text-3xl tracking-wider text-white font-semibold`}
@@ -96,7 +96,7 @@ const ProfilePage = () => {
           <li
             onClick={() => setTab("Your Leave Requests")}
             className={`cursor-pointer py-2 px-3 mx-2 transition-all duration-300 rounded-md ${
-              tab === "DashBoard"
+              tab === "Your Leave Requests"
                 ? "bg-ternary-blue/80 text-black font-bold"
                 : "hover:bg-white/20 text-white font-bold"
             }`}
