@@ -254,15 +254,31 @@ export default function LeaveRequests({
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">
                           <div className="flex flex-col">
-                            <h2 className="">Mentor:</h2>
-                            <div className="text-gray-600">
-                              {req.mentorcomment}
-                            </div>
-                            <h2>ClassIncharge:</h2>
-                            <div className="text-gray-600">
-                              {req.classInchargeComment}
-                            </div>
-                          </div>{" "}
+                            {req.mentorcomment !== "No Comments" && (
+                              <div className="flex gap-1">
+                                <h2 className="">Mentor</h2>
+                                <div className="text-gray-600 text-sm">
+                                  {req.mentorcomment}
+                                </div>
+                              </div>
+                            )}
+                            {req.classInchargeComment !== "No Comments" && (
+                              <div className="flex gap-1">
+                                <h2 className="">ClassIncharge :</h2>
+                                <div className="text-gray-600">
+                                  {req.classInchargeComment}
+                                </div>
+                              </div>
+                            )}
+                            {req.hodComment !== "No Comments" && (
+                              <div className="flex gap-1">
+                                <h2 className="">Hod : </h2>
+                                <div className="text-gray-600">
+                                  {req.hodComment}
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </TableCell>
 
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
@@ -515,29 +531,29 @@ export default function LeaveRequests({
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">
                           <div className="flex flex-col">
                             {req.mentorcomment !== "No Comments" && (
-                              <div>
-                                <h2 className="">Mentor:</h2>
+                              <div className="flex gap-1">
+                                <h2 className="">Mentor</h2>
                                 <div className="text-gray-600 text-sm">
                                   {req.mentorcomment}
                                 </div>
                               </div>
                             )}
                             {req.classInchargeComment !== "No Comments" && (
-                              <div>
-                                <h2 className="">ClassIncharge:</h2>
+                              <div className="flex gap-1">
+                                <h2 className="">ClassIncharge :</h2>
                                 <div className="text-gray-600">
                                   {req.classInchargeComment}
                                 </div>
                               </div>
                             )}
-                            {req.classInchargeComment === "No Comments" &&
-                              req.mentorcomment === "No Comments" && (
-                                <div>
-                                  <h1 className="text-gray-600">
-                                    No Comments!
-                                  </h1>
+                            {req.hodComment !== "No Comments" && (
+                              <div className="flex gap-1">
+                                <h2 className="">Hod : </h2>
+                                <div className="text-gray-600">
+                                  {req.hodComment}
                                 </div>
-                              )}
+                              </div>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">

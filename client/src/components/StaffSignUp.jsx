@@ -27,7 +27,6 @@ export default function SignUp() {
     confirmpassword: "",
     userType: "Staff",
   });
-console.log(formData);
 
   const [departments, setDepartments] = useState([]);
   const [batches, setBatches] = useState([]);
@@ -251,7 +250,7 @@ console.log(formData);
 
   return (
     <div className="flex justify-center md:mt-5 md:my-10 ">
-      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-gradient-to-t from-blue-500 to-[#0f172a] shadow-black shadow-md ">
+      <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-gradient-to-t from-blue-500 to-[#0f172a] shadow-black md:shadow-md md:rounded-lg">
         <div className="mt-4">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-white tracking-wider">

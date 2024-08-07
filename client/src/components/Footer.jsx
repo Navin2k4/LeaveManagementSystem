@@ -36,13 +36,13 @@ const Footer = () => {
         </div>
         <div className="text-center lg:text-right">
           <p className="text-md text-white font-semibold mb-2">
-            &copy; {currentYear} All Rights Reserved.
+          Stellar Technology&#174;<br />&copy; {currentYear}  All Rights Reserved
           </p>
           <div className="list-none text-md text-white space-y-1">
-            <p className="text-white/90">Dinesh Kumar - 22CSE35</p>
-            <p className="text-white/90">Udhaya Chandra Pandiyan - 22CSE57</p>
-            <p className="text-white/90">Navin Kumaran - 22CSE48</p>
-            <p className="text-white/90">Vinoth Kumar - 22CSE59</p>
+            <p className="text-white/90 font-thin">Navin Kumaran - <span className="text-white/90 font-thin italic">22CSE48</span></p>
+            <p className="text-white/90 font-thin">Vinoth Kumar - <span className="text-white/90 font-thin italic">22CSE59</span></p>
+            <p className="text-white/90 font-thin">Dinesh Kumar - <span className="text-white/90 font-thin italic">22CSE35</span></p>
+            <p className="text-white/90 font-thin">Udhaya Chandra Pandiyan - <span className="text-white/90 font-thin italic">22CSE57</span></p>
           </div>
         </div>
       </div>

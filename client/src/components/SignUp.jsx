@@ -211,7 +211,7 @@ export default function SignUp() {
   return (
     <div className="flex justify-center md:mt-5 md:my-10  ">
       <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-gradient-to-t from-blue-500 to-[#0f172a]
- rounded-lg shadow-lg md:border-l-4 ">
+ md:rounded-lg shadow-lg md:border-l-4 pb-10 ">
         <div className="mt-4">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-white tracking-wider">

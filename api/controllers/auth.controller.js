@@ -90,7 +90,6 @@ export const studentsignup = async (req, res, next) => {
       if(error) {
         return next(error);
       } else {
-        console.log('Email sent:', info.response);
         res.status(201).json({ message: 'Student Saved Successfully. OTP sent to the email.', email });
       }
     });
@@ -409,11 +408,7 @@ export const hodsignin = async (req, res, next) => {
     }
     
     identifier = identifier.toUpperCase();
-    console.log(identifier);
-
-    const hod = await DeptHead.findOne({ staff_id:identifier });
-    console.log(hod);
-    
+    const hod = await DeptHead.findOne({ staff_id:identifier });    
     if (!hod) {
       return res.status(404).json({ message: "User not found" });
     }

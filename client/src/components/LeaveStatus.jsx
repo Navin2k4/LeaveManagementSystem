@@ -329,19 +329,19 @@ const LeaveStatus = ({ leaveRequests }) => {
                   <div className="bg-gray-100 px-3 py-3 rounded-2xl">
                     {request.mentorcomment !== "No Comments" && (
                       <div className="comments">
-                        <p className="font-bold">Mentor Comment:</p>
+                        <p className="font-bold">Mentor Comment</p>
                         <p>{request.mentorcomment}</p>
                       </div>
                     )}
-                    {request.mentorcomment !== "No Comments" && (
+                    {request.classInchargeComment !== "No Comments" && (
                       <div className="comments">
-                        <p className="font-bold">ClassIncharge Comment:</p>
+                        <p className="font-bold">ClassIncharge Comment</p>
                         <p>{request.classInchargeComment}</p>
                       </div>
                     )}
                     {request.hodComment !== "No Comments" && (
                       <div className="comments">
-                        <p className="font-bold">ClassIncharge Comment:</p>
+                        <p className="font-bold">Hod Comment</p>
                         <p>{request.hodComment}</p>
                       </div>
                     )}

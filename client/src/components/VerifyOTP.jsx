@@ -43,12 +43,12 @@ export default function VerifyOtp() {
   };
 
   return (
-    <>
-      <div className="w-full max-w-md mt-4 px-6 py-8 mx-auto min-h-screen bg-white rounded-lg shadow-md">
-        <h2 className="text-center text-2xl font-bold text-corporate-blue">
+    <div className="min-h-screen">
+      <div className="w-full max-w-md mt-4 px-6 py-8 mx-auto bg-gradient-to-br from-blue-500 to-[#0f172a] md:rounded-lg shadow-md">
+        <h2 className="text-center text-2xl font-bold text-white">
           Verify OTP
         </h2>
-        <h1 className="text-md text-center font-medium text-gray-500 mb-6 p-2">
+        <h1 className="text-md text-center font-medium text-white/70 mb-6 p-2">
           Enter the OTP Sent to your email
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -60,13 +60,13 @@ export default function VerifyOtp() {
               onChange={handleOtpChange}
             />
             {errorMessage && (
-              <p className="text-red-500 text-xs italic">{errorMessage}</p>
+              <p className="text-red-300 mt-4 text-center mt- text-xs font-semibold italic">{errorMessage}</p>
             )}
           </div>
           <div className="flex justify-center mt-3">
             <button
               type="submit"
-              className="px-6 py-2 text-white bg-primary-blue rounded-md shadow-sm hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
+              className="px-6 py-2 text-black font-semibold bg-green-400 rounded-md shadow-sm hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
               disabled={loading}
             >
               {loading ? (
@@ -81,6 +81,6 @@ export default function VerifyOtp() {
           </div>
         </form>
       </div>
-    </>
+    </div>
   );
 }

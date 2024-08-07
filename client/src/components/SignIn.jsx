@@ -16,7 +16,6 @@ export default function SignIn() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [selectRole, setSelectRole] = useState('');
-console.log(selectRole);
 
   const handleDivClick = (value) => {
     setSelectRole(value);
@@ -224,10 +223,10 @@ console.log(selectRole);
             )}
           </button>
           <button
-            className="flex justify-center w-full px-4 py-2 text-sm font-medium bg-black hover:bg-blue-400 hover:text-black transition-all duration-300 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+            className="flex justify-center w-full  transition-all duration-300 text-white underline font-semibold hover:scale-105"
           >
           <Link to='/studentsignup' >
-            Sign Up
+            CLICK HERE TO SIGNUP
           </Link>
           </button>
         </form>
