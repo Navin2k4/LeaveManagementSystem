@@ -76,7 +76,7 @@ const generateEmailContent = (name, status, fromDate, toDate, comments,who) => {
       <body>
         <div class="container">
           <div class="header">
-            <h1>Leave Request ${status.charAt(0).toUpperCase() + status.slice(1)}</h1>
+            <h1>Leave Request ${status.charAt(0).toUpperCase() + status.slice(1)} by ${who}</h1>
           </div>
           <div class="content">
             <p>Dear ${name},</p>
