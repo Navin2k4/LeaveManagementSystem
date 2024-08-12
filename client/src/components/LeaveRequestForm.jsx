@@ -36,9 +36,11 @@ export default function LeaveRequestForm({ setTab }) {
   const [forMedical, setForMedical] = useState(false);
   const [forOneDay, setForOneDay] = useState(false);
   const [isHalfDay, setIsHalfDay] = useState(null);
+  
 
   const [formData, setFormData] = useState({
     name: currentUser.name,
+    email:currentUser.email,
     userId:
       currentUser.userType === "Staff" ? currentUser.userId : currentUser.id,
     userType: currentUser.userType,

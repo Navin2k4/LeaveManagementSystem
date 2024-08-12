@@ -1,10 +1,12 @@
 import LeaveRequest from "../models/leave.model.js";
 import { errorHandler } from "../utils/error.js";
+import { notifyLeaveRequestStatus } from "./email.service.js";
 
 export const createLeaveRequest = async (req, res) => {
   try {
     const {
       name,
+      email,
       userId,
       userType,
       rollNo,
@@ -48,6 +50,7 @@ export const createLeaveRequest = async (req, res) => {
     if (userType === "Staff") {
       const staffLeaveRequest = new LeaveRequest({
         name,
+        email,
         userId,
         userType,
         rollNo,
@@ -84,15 +87,14 @@ export const createLeaveRequest = async (req, res) => {
 
       await staffLeaveRequest.save();
 
-      res
-        .status(201)
-        .json({
-          success: true,
-          message: "Staff leave request submitted successfully",
-        });
+      res.status(201).json({
+        success: true,
+        message: "Staff leave request submitted successfully",
+      });
     } else if (userType === "Student") {
       const studentLeaveRequest = new LeaveRequest({
         name,
+        email,
         userId,
         userType,
         rollNo,
@@ -110,16 +112,12 @@ export const createLeaveRequest = async (req, res) => {
         noOfDays,
         isHalfDay,
         isStaff: false,
-      });
-
+      });      
       await studentLeaveRequest.save();
-
-      res
-        .status(201)
-        .json({
-          success: true,
-          message: "Student leave request submitted successfully",
-        });
+      res.status(201).json({
+        success: true,
+        message: "Student leave request submitted successfully",
+      });
     } else {
       return res.status(400).json({
         success: false,
@@ -128,12 +126,10 @@ export const createLeaveRequest = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "An error occurred while submitting the leave request",
-      });
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while submitting the leave request",
+    });
   }
 };
 
@@ -181,7 +177,7 @@ export const getleaverequestbyclassinchargeid = async (req, res, next) => {
 export const updateLeaveRequestStatusByMentorId = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { status,mentorcomment } = req.body;
+    const { status, mentorcomment } = req.body;
     const validStatuses = ["approved", "rejected"];
 
     if (!validStatuses.includes(status)) {
@@ -196,7 +192,8 @@ export const updateLeaveRequestStatusByMentorId = async (req, res, next) => {
       {
         "approvals.mentor.status": status,
         $set: {
-          mentorcomment: mentorcomment !== "" ? mentorcomment : "No Comments Yet",
+          mentorcomment:
+            mentorcomment !== "" ? mentorcomment : "No Comments Yet",
         },
       },
       { new: true }
@@ -208,10 +205,11 @@ export const updateLeaveRequestStatusByMentorId = async (req, res, next) => {
         message: "Leave request not found",
       });
     }
-
+const who= "Mentor";
     await leaveRequest.computeStatus();
-
     await leaveRequest.save();
+    
+    await notifyLeaveRequestStatus(leaveRequest.email, leaveRequest.name, status, leaveRequest.fromDate, leaveRequest.toDate, mentorcomment,who);
 
     res.status(200).json({
       success: true,
@@ -232,7 +230,7 @@ export const updateLeaveRequestStatusByClassInchargeId = async (
 ) => {
   try {
     const { id } = req.params;
-    const { status , classInchargeComment } = req.body;
+    const { status, classInchargeComment } = req.body;
     const validStatuses = ["approved", "rejected"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
@@ -246,7 +244,10 @@ export const updateLeaveRequestStatusByClassInchargeId = async (
       {
         "approvals.classIncharge.status": status,
         $set: {
-          classInchargeComment: classInchargeComment !== "" ? classInchargeComment : "No Comments Yet",
+          classInchargeComment:
+            classInchargeComment !== ""
+              ? classInchargeComment
+              : "No Comments Yet",
         },
       },
       { new: true }
@@ -263,9 +264,10 @@ export const updateLeaveRequestStatusByClassInchargeId = async (
       });
     }
 
+    const who = "Class Incharge"
     await leaveRequest.computeStatus();
-
     await leaveRequest.save();
+    await notifyLeaveRequestStatus(leaveRequest.email, leaveRequest.name, status, leaveRequest.fromDate, leaveRequest.toDate, classInchargeComment,who);
 
     res.status(200).json({
       success: true,
@@ -277,12 +279,13 @@ export const updateLeaveRequestStatusByClassInchargeId = async (
     const customError = errorHandler(500, "Internal Server Error");
     next(customError);
   }
+
 };
 
 export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { status,hodComment } = req.body;
+    const { status, hodComment } = req.body;
     const validStatuses = ["approved", "rejected"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
@@ -295,7 +298,11 @@ export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
       {
         "approvals.hod.status": status,
         $set: {
-          hodComment: hodComment ? hodComment :  "" ? classInchargeComment : "No Comments Yet"
+          hodComment: hodComment
+            ? hodComment
+            : ""
+            ? classInchargeComment
+            : "No Comments Yet",
         },
       },
       { new: true }
@@ -307,10 +314,11 @@ export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
         message: "Leave request not found",
       });
     }
-
+    
+    const who = "HOD";
     await leaveRequest.computeStatus();
-
     await leaveRequest.save();
+    await notifyLeaveRequestStatus(leaveRequest.email, leaveRequest.name, status, leaveRequest.fromDate, leaveRequest.toDate, hodComment,who);
 
     res.status(200).json({
       success: true,

@@ -6,6 +6,9 @@ const leaveRequestSchema = new Schema(
       type: String,
       required: true,
     },
+    email: {
+      type: String,
+    }, 
     userId: {
       type: Schema.Types.ObjectId,
       required: true,
