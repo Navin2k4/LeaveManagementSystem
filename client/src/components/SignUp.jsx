@@ -213,16 +213,16 @@ export default function SignUp() {
       <section className="w-full max-w-2xl px-6 py-3 mx-auto h-auto bg-gradient-to-t from-blue-500 to-[#0f172a]
  md:rounded-lg shadow-lg md:border-l-4 pb-10 ">
         <div className="mt-4">
-          <div className="text-center">
+          <div className="text-center m-4">
             <h2 className="text-3xl font-bold text-white tracking-wider">
-              Student Sign Up
+              Sign Up
             </h2>
           </div>
-          <Link to="/staffsignup" className="text-center p-3">
+          {/* <Link to="/staffsignup" className="text-center p-3">
             <h2 className="font-medium  text-blue-200 underline hover:tracking-wider transition-all duration-500">
               Click here for Staff Sign Up
             </h2>
-          </Link>
+          </Link> */}
         </div>
         <form onSubmit={handleSubmit} className=" space-y-6">
           <div className="space-y-1">

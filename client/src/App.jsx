@@ -50,8 +50,8 @@ const AppWrapper = () => {
         </Route>
         <Route element={<StaffPrivateRoute />}>
           <Route path='/staffdashboard' element={<StaffDashBoard />} />
-        </Route>
         <Route path='/superadmin' element={<SuperAdmin />} />
+        </Route>
         <Route path='*' element={<PageNotFound />} />
         <Route path='/verify-otp' element={<VerifyOtp />} />
       </Routes>
