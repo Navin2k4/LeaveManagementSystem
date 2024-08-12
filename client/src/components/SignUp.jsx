@@ -135,9 +135,23 @@ export default function SignUp() {
     ) {
       errors.allfieldsRequired = "Please fill out all fields";
     }
-    if (!/^[0-9]{2}[A-Z]{1,6}[0-9]+$/.test(roll_no)) {
+    const departmentCodes = [
+      "CIV", "CSE", "CSEC", "ECE", "EEE", "IT", "AID", "MECH", "SH", "MBA"
+    ];
+    
+    const departmentPattern = departmentCodes.join('|');
+    const regex = new RegExp(`^[0-9]{2}(L)?(${departmentPattern})(A|B|C)?[0-9]{2}$`, 'i');
+    
+    if (!regex.test(roll_no)) {
       errors.roll_no = "Invalid Roll Number";
     }
+    
+// * Department Codes: List of department acronyms.
+// * Regex Pattern:
+// * ^[0-9]{2}: Starts with a 2-digit year.
+// * (L)?: Optional "L" for lateral entry.
+// * (${departmentPattern}): Department code.
+// * [0-9]{2}$: Roll number of exactly 2 digits.
 
     if (!/^[0-9]{12}$/.test(register_no)) {
       errors.reg_no = "Invalid Register Number";
@@ -241,7 +255,7 @@ export default function SignUp() {
                 onChange={handleChange}
               />
               {errors.student_name && (
-                <p className="text-red-500 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
                   {errors.student_name}
                 </p>
               )}
@@ -263,7 +277,7 @@ export default function SignUp() {
                   onChange={handleChange}
                 />
                 {errors.roll_no && (
-                  <p className="text-red-500 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
                     {errors.roll_no}
                   </p>
                 )}
@@ -284,7 +298,8 @@ export default function SignUp() {
                   onChange={handleChange}
                 />
                 {errors.reg_no && (
-                  <p className="text-red-500 text-xs italic">{errors.reg_no}</p>
+                                  <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
+{errors.reg_no}</p>
                 )}
               </div>
             </div>
@@ -310,7 +325,7 @@ export default function SignUp() {
                   ))}
                 </Select>
                 {errors.departmentId && (
-                  <p className="text-red-800 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
                     {errors.departmentId}
                   </p>
                 )}
@@ -340,7 +355,7 @@ export default function SignUp() {
                   ))}
                 </Select>
                 {errors.batchId && (
-                  <p className="text-red-800 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
                     {errors.batchId}
                   </p>
                 )}
@@ -368,7 +383,7 @@ export default function SignUp() {
                   ))}
                 </Select>
                 {errors.sectionId && (
-                  <p className="text-red-800 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
                     {errors.sectionId}
                   </p>
                 )}
@@ -392,7 +407,8 @@ export default function SignUp() {
                 <p class="text-sm text-gray-200 mb-3">OTP will be sent to your email after submitting</p>
 
                 {errors.email && (
-                  <p className="text-red-500 text-xs italic">{errors.email}</p>
+                                  <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
+{errors.email}</p>
                 )}
               </div>
               <div>
@@ -410,7 +426,8 @@ export default function SignUp() {
                   onChange={handleChange}
                 />
                 {errors.phone && (
-                  <p className="text-red-500 text-xs italic">{errors.phone}</p>
+                                  <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
+{errors.phone}</p>
                 )}
               </div>
             </div>
@@ -430,7 +447,7 @@ export default function SignUp() {
                   onChange={handleChange}
                 />
                 {errors.password && (
-                  <p className="text-red-500 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
                     {errors.password}
                   </p>
                 )}
@@ -451,7 +468,7 @@ export default function SignUp() {
                   onChange={handleChange}
                 />
                 {errors.confirmpassword && (
-                  <p className="text-red-500 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
                     {errors.confirmpassword}
                   </p>
                 )}
@@ -459,12 +476,12 @@ export default function SignUp() {
             </div>
           </div>
           {errors.allfieldsRequired && (
-            <p className="text-red-500 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
               {errors.allfieldsRequired}
             </p>
           )}
           {errorMessage && (
-                <p className="text-red-500 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
                 {errorMessage}
               </p>
           )

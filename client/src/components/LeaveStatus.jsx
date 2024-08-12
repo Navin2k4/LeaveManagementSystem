@@ -177,32 +177,31 @@ const LeaveStatus = ({ leaveRequests }) => {
 
           {pendingRequests.length > 0 ? (
             pendingRequests.map((request) => (
-              <div key={request._id} className="leave-status-item">
-                <div className="grid grid-cols-2">
-                  <p className="p-3 border">
+              <div key={request._id} className="leave-status-item bg-gradient-to-t from-blue-500 to-[#0f172a]">
+                <div className="grid grid-cols-2 gap-2">
+                  <p className="p-3  border rounded-xl text-white font-bold">
                     Leave From: <br />{" "}
-                    <span>
+                    <span className="font-medium text-white">
                       {new Date(request.fromDate).toLocaleDateString()}
                     </span>
                   </p>
-                  <p className="p-3 border">
+                  <p className="p-3  border rounded-xl text-white font-bold">
                     Leave To: <br />{" "}
-                    <span>{new Date(request.toDate).toLocaleDateString()}</span>
+                    <span className="font-medium text-white">{new Date(request.toDate).toLocaleDateString()}</span>
                   </p>
-                </div>
-                <div className="grid grid-cols-2">
-                  <p className="p-3 border">
+
+                  <p className="p-3  border rounded-xl text-white font-bold">
                     Apply Date: <br />{" "}
-                    <span>
+                    <span className="font-medium text-white">
                       {new Date(request.createdAt).toLocaleDateString()}
                     </span>
                   </p>
-                  <p className="p-3 border">
-                    No. of Days: <br /> <span>{request.noOfDays}</span>
+                  <p className="p-3  border rounded-xl text-white font-bold">
+                    No. of Days: <br /> <span className="font-medium text-white">{request.noOfDays}</span>
                   </p>
                 </div>
                 <div className="flex items-center gap-2 my-2 mt-6">
-                  <div className="font-bold">Status :</div>
+                  <div className="font-bold text-white">Status :</div>
                   {currentUser.userType === "Staff" ? (
                     <div className="status-dots">
                       <StatusDot

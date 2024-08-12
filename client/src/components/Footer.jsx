@@ -39,10 +39,10 @@ const Footer = () => {
           Stellar Technology&#174;<br />&copy; {currentYear}  All Rights Reserved
           </p>
           <div className="list-none text-md text-white space-y-1">
-            <p className="text-white/90 font-thin">Navin Kumaran - <span className="text-white/90 font-thin italic">22CSE48</span></p>
-            <p className="text-white/90 font-thin">Vinoth Kumar - <span className="text-white/90 font-thin italic">22CSE59</span></p>
-            <p className="text-white/90 font-thin">Dinesh Kumar - <span className="text-white/90 font-thin italic">22CSE35</span></p>
-            <p className="text-white/90 font-thin">Udhaya Chandra Pandiyan - <span className="text-white/90 font-thin italic">22CSE57</span></p>
+            <p className="text-white/90 font-thin">Navin Kumaran - <span className="text-white/90 font-thin italic">22CSEB48</span></p>
+            <p className="text-white/90 font-thin">Vinoth Kumar - <span className="text-white/90 font-thin italic">22CSEB59</span></p>
+            <p className="text-white/90 font-thin">Dinesh Kumar - <span className="text-white/90 font-thin italic">22CSEB35</span></p>
+            <p className="text-white/90 font-thin">Udhaya Chandra Pandiyan - <span className="text-white/90 font-thin italic">22CSEB57</span></p>
           </div>
         </div>
       </div>

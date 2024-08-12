@@ -100,7 +100,7 @@ export const studentsignup = async (req, res, next) => {
         return next(errorHandler(400, "Roll Number is already in use"));
       }
       if (field === "register_no") {
-        return next(errorHandler(400, "Refgister Number is already in use"));
+        return next(errorHandler(400, "Register Number is already in use"));
       }
       if (field === "email") {
         return next(errorHandler(400, "Email is already in use"));

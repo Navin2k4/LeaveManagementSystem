@@ -51,6 +51,11 @@ const studentSchema = new mongoose.Schema(
       type: String,
       default: "Student",
     },
+    status: {
+      type: String,
+      enum: ['pending', 'active'],
+      default: 'pending',
+    },
   },
   {
     timestamps: true,

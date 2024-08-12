@@ -36,7 +36,7 @@ export default function LeaveRequestForm({ setTab }) {
   const [forMedical, setForMedical] = useState(false);
   const [forOneDay, setForOneDay] = useState(false);
   const [isHalfDay, setIsHalfDay] = useState(null);
-  
+  const [noOfDays,setNoOfDays] = useState(0);
 
   const [formData, setFormData] = useState({
     name: currentUser.name,
@@ -66,26 +66,79 @@ export default function LeaveRequestForm({ setTab }) {
     setForMedical(e.target.checked);
     setFormData({ ...formData, forMedical: e.target.checked });
   };
+
   const calculateDays = () => {
-    if (formData.leaveStartDate && formData.leaveEndDate) {
-      const startDate = new Date(formData.leaveStartDate);
-      const endDate = new Date(formData.leaveEndDate);
-      const differenceInTime = endDate.getTime() - startDate.getTime();
-      const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-      setFormData({
-        ...formData,
-        noOfDays: differenceInDays + 1,
-      });
-    } else {
-      setFormData({
-        ...formData,
-        noOfDays: 1,
-      });
+  const { leaveStartDate, leaveEndDate } = formData;
+
+  if (!leaveStartDate || !leaveEndDate) return;
+
+  const startDate = new Date(leaveStartDate);
+  const endDate = new Date(leaveEndDate);
+
+  let totalDays = 0;
+  let isSecondSaturdayInRange = false;
+
+  // Ensure startDate is not after endDate
+  if (startDate > endDate) {
+    console.error('Start date must not be after end date');
+    return;
+  }
+
+  for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+    const dayOfWeek = date.getDay();
+
+    // Exclude Sundays (0)
+    if (dayOfWeek !== 0) {
+      totalDays++;
     }
-  };
+
+    // Check for the second Saturday
+    if (dayOfWeek === 6) { // Saturday
+      const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+      const firstSaturday = new Date(firstDayOfMonth);
+      firstSaturday.setDate(1 + ((6 - firstDayOfMonth.getDay() + 7) % 7));
+
+      // Find the second Saturday of the month
+      const secondSaturday = new Date(firstSaturday);
+      secondSaturday.setDate(firstSaturday.getDate() + 7);
+
+      if (date.getDate() === secondSaturday.getDate() && date.getMonth() === secondSaturday.getMonth()) {
+        isSecondSaturdayInRange = true;
+      }
+    }
+  }
+
+  // If the leave range includes the second Saturday, don't count it
+  if (isSecondSaturdayInRange) {
+    totalDays--;
+  }
+
+  setNoOfDays(totalDays);
+
+  // Calculate the total number of days inclusive
+  const differenceInTime = endDate.getTime() - startDate.getTime();
+  const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24)) + 1;
+
+  setFormData((prevFormData) => ({
+    ...prevFormData,
+    noOfDays: totalDays,
+    differenceInDays: differenceInDays,
+  }));
+};
+
+  
+  
   useEffect(() => {
+    if (forOneDay && formData.leaveStartDate) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        leaveEndDate: prevFormData.leaveStartDate,
+      }));
+    }
     calculateDays();
-  }, [formData.leaveStartDate, formData.leaveEndDate]);
+  }, [formData.leaveStartDate, formData.leaveEndDate, forOneDay]);
+  
+  
 
   useEffect(() => {
     fetch("/api/departments")
@@ -132,6 +185,7 @@ export default function LeaveRequestForm({ setTab }) {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  
   const handleForOneDayChange = (e) => {
     setForOneDay(e.target.checked);
     if (e.target.checked) {
@@ -151,30 +205,39 @@ export default function LeaveRequestForm({ setTab }) {
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.departmentId)
+    const currentDate = new Date().toISOString().split('T')[0];
+  
+    if (!formData.departmentId) {
       newErrors.departmentId = "Department must be selected";
-
-    if (!formData.leaveStartDate)
+    }
+  
+    if (!formData.leaveStartDate) {
       newErrors.leaveStartDate = "Date from must be selected";
-
-    if (!forOneDay && !isHalfDay && !formData.leaveEndDate)
-      newErrors.leaveEndDate = "Date to must be selected";
-
-    if (
-      !forOneDay &&
-      formData.leaveEndDate &&
-      formData.leaveEndDate < formData.leaveStartDate
-    )
-      newErrors.leaveEndDate = "Date to must be greater than Date from";
-
-    if (!formData.reason) newErrors.reason = "Reason must be given";
-
-    if (formData.reason && formData.reason.length > 200)
+    } else if (formData.leaveStartDate < currentDate) {
+      newErrors.leaveStartDate = "Date from must not be in the past";
+    }
+  
+  if (!forOneDay && !isHalfDay && !formData.leaveEndDate) {
+    newErrors.leaveEndDate = "Date to must be selected";
+  } else if (formData.leaveEndDate && formData.leaveEndDate < currentDate) {
+    newErrors.leaveEndDate = "Date to must not be in the past";
+  } else if (
+    !forOneDay &&
+    formData.leaveEndDate &&
+    formData.leaveEndDate < formData.leaveStartDate
+  ) {
+    newErrors.leaveEndDate = "Date to must be greater than Date from";
+  }
+    if (!formData.reason) {
+      newErrors.reason = "Reason must be given";
+    } else if (formData.reason.length > 200) {
       newErrors.reason = "Reason must be less than 200 characters";
-
+    }
+  
     return newErrors;
   };
+  
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -251,7 +314,7 @@ export default function LeaveRequestForm({ setTab }) {
                     : ""}
                 </h1>
                 {errors.classInchargeId && (
-                  <p className="text-red-800 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
                     {errors.classInchargeId}
                   </p>
                 )}
@@ -278,7 +341,7 @@ export default function LeaveRequestForm({ setTab }) {
                   ))}
                 </Select>
                 {errors.mentorId && (
-                  <p className="text-red-800 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
                     {errors.mentorId}
                   </p>
                 )}
@@ -302,7 +365,7 @@ export default function LeaveRequestForm({ setTab }) {
                 className={errors.leaveStartDate ? "border-red-500" : ""}
               />
               {errors.leaveStartDate && (
-                <p className="text-red-800 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
                   {errors.leaveStartDate}
                 </p>
               )}
@@ -323,7 +386,7 @@ export default function LeaveRequestForm({ setTab }) {
                 className={errors.leaveEndDate ? "border-red-500" : ""}
               />
               {errors.leaveEndDate && (
-                <p className="text-red-800 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
                   {errors.leaveEndDate}
                 </p>
               )}
@@ -393,7 +456,7 @@ export default function LeaveRequestForm({ setTab }) {
                 ))}
               </Select>
               {errors.typeOfLeave && (
-                <p className="text-red-800 text-xs italic">
+                <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
                   {errors.typeOfLeave}
                 </p>
               )}
@@ -427,7 +490,8 @@ export default function LeaveRequestForm({ setTab }) {
               className={`rounded-md ${errors.reason ? "border-red-500" : ""} text-black`}
             ></textarea>
             {errors.reason && (
-              <p className="text-red-800 text-xs italic">{errors.reason}</p>
+                             <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
+{errors.reason}</p>
             )}
           </div>
 
@@ -436,9 +500,9 @@ export default function LeaveRequestForm({ setTab }) {
             className="bg-green-300 hover:bg-[#fbd1a2]  p-2 font-bold tracking-wide rounded-md transition-all duration-300"
           >
             {loading ? (
-              <div className="flex items-center">
-                <Spinner size="sm" className="mr-2" />
-                <span >Loading...</span>
+              <div className="flex items-center justify-center">
+                <Spinner size="md" color='success' className="mr-2" />
+                <span className="text-black font-bold">Loading...</span>
               </div>
             ) : (
               <span >Submit</span>
