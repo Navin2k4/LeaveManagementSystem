@@ -96,7 +96,7 @@ const generateEmailContent = (name, status, fromDate, toDate, comments,who) => {
   
 
 export const notifyLeaveRequestStatus = async (email, name, status, fromDate, toDate, comments,who) => {
-  const emailSubject = `Leave Request ${status.charAt(0).toUpperCase() + status.slice(1)}`;
+  const emailSubject = `Leave Request ${status.charAt(0).toUpperCase() + status.slice(1)} by ${who}`;
   const emailContent = generateEmailContent(name, status, fromDate, toDate, comments,who);
 
   await sendEmail(email, emailSubject, emailContent);
