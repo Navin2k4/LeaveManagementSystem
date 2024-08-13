@@ -42,6 +42,8 @@ const AppWrapper = () => {
         <Route path='/staffsignup' element={<StaffSignUp />} />
         <Route path='/signin' element={<SignIn />} />
         <Route path="/wardDetails" element={<WardDetails />} />
+                <Route path='/superadmin' element={<SuperAdmin />} />
+
         <Route element={<PrivateRoute />}>
           <Route path='/studentdashboard' element={<DashBoard />} />
           <Route path='/profile' element={<ProfilePage />} />
@@ -52,7 +54,6 @@ const AppWrapper = () => {
         </Route>
         <Route element={<StaffPrivateRoute />}>
           <Route path='/staffdashboard' element={<StaffDashBoard />} />
-        <Route path='/superadmin' element={<SuperAdmin />} />
         </Route>
         <Route path='*' element={<PageNotFound />} />
         <Route path='/verify-otp' element={<VerifyOtp />} />
