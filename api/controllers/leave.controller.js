@@ -112,7 +112,7 @@ export const createLeaveRequest = async (req, res) => {
         noOfDays,
         isHalfDay,
         isStaff: false,
-      });      
+      });
       await studentLeaveRequest.save();
       res.status(201).json({
         success: true,
@@ -130,6 +130,19 @@ export const createLeaveRequest = async (req, res) => {
       success: false,
       message: "An error occurred while submitting the leave request",
     });
+  }
+};
+
+export const deleteleavebyId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedLeave = await LeaveRequest.findByIdAndDelete(id);
+    if (!deletedLeave) {
+      return res.status(404).json({ message: "Leave request not found" });
+    }
+    res.status(200).json({ message: "Leave request deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -205,11 +218,19 @@ export const updateLeaveRequestStatusByMentorId = async (req, res, next) => {
         message: "Leave request not found",
       });
     }
-const who= "Mentor";
+    const who = "Mentor";
     await leaveRequest.computeStatus();
     await leaveRequest.save();
-    
-    await notifyLeaveRequestStatus(leaveRequest.email, leaveRequest.name, status, leaveRequest.fromDate, leaveRequest.toDate, mentorcomment,who);
+
+    await notifyLeaveRequestStatus(
+      leaveRequest.email,
+      leaveRequest.name,
+      status,
+      leaveRequest.fromDate,
+      leaveRequest.toDate,
+      mentorcomment,
+      who
+    );
 
     res.status(200).json({
       success: true,
@@ -264,10 +285,18 @@ export const updateLeaveRequestStatusByClassInchargeId = async (
       });
     }
 
-    const who = "Class Incharge"
+    const who = "Class Incharge";
     await leaveRequest.computeStatus();
     await leaveRequest.save();
-    await notifyLeaveRequestStatus(leaveRequest.email, leaveRequest.name, status, leaveRequest.fromDate, leaveRequest.toDate, classInchargeComment,who);
+    await notifyLeaveRequestStatus(
+      leaveRequest.email,
+      leaveRequest.name,
+      status,
+      leaveRequest.fromDate,
+      leaveRequest.toDate,
+      classInchargeComment,
+      who
+    );
 
     res.status(200).json({
       success: true,
@@ -279,7 +308,6 @@ export const updateLeaveRequestStatusByClassInchargeId = async (
     const customError = errorHandler(500, "Internal Server Error");
     next(customError);
   }
-
 };
 
 export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
@@ -314,11 +342,19 @@ export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
         message: "Leave request not found",
       });
     }
-    
+
     const who = "HOD";
     await leaveRequest.computeStatus();
     await leaveRequest.save();
-    await notifyLeaveRequestStatus(leaveRequest.email, leaveRequest.name, status, leaveRequest.fromDate, leaveRequest.toDate, hodComment,who);
+    await notifyLeaveRequestStatus(
+      leaveRequest.email,
+      leaveRequest.name,
+      status,
+      leaveRequest.fromDate,
+      leaveRequest.toDate,
+      hodComment,
+      who
+    );
 
     res.status(200).json({
       success: true,

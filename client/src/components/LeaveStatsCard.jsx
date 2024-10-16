@@ -379,12 +379,12 @@ const LeaveStatsCard = ({
                   </div>
                 </div>
               )}
-              <div
+              {/* <div
                 className="bg-gradient-to-br from-blue-500 to-[#0f172a]
   text-white shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all"
               >
                 any others
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

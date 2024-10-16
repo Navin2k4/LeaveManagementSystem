@@ -25,6 +25,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+
 export const studentsignup = async (req, res, next) => {
   const {
     roll_no,
@@ -40,6 +41,7 @@ export const studentsignup = async (req, res, next) => {
     userType,
   } = req.body;
 
+  // Validation: All fields are required
   if (
     !roll_no ||
     !register_no ||
@@ -55,60 +57,77 @@ export const studentsignup = async (req, res, next) => {
     return next(errorHandler(400, "All Fields Are Required"));
   }
 
-  const hashedPassword = bcryptjs.hashSync(password, 10);
-
-  const newStudent = new Student({
-    roll_no,
-    register_no,
-    password: hashedPassword,
-    name,
-    email,
-    phone,
-    departmentId,
-    sectionId,
-    section_name,
-    batchId,
-    userType,
-  });
-
   try {
+    // Hash password
+    const hashedPassword = await bcryptjs.hash(password, 10);
+
+    // Create new student
+    const newStudent = new Student({
+      roll_no,
+      register_no,
+      password: hashedPassword,
+      name,
+      email,
+      phone,
+      departmentId,
+      sectionId,
+      section_name,
+      batchId,
+      userType,
+    });
+
+    // Save student to database
     await newStudent.save();
 
+    // Generate OTP and hash it
     const otp = crypto.randomInt(100000, 999999).toString();
-    const hashedOTP = bcryptjs.hashSync(otp, 10);
+    const hashedOTP = await bcryptjs.hash(otp, 10);
 
-    await OTP.create( { email, otp : hashedOTP } );
+    // Create OTP entry with expiration (5 minutes from now)
+    const otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes from now
+    await OTP.create({ email, otp: hashedOTP, expiresAt: otpExpiry });
 
+    // Send email with OTP
     const mailOptions = {
       from: process.env.EMAIL,
       to: email,
       subject: 'SignUp OTP Verification',
-      text: `Your OTP for Sign up is ${otp}. Please verify your OTP within 5 minutes.`
+      text: `Your OTP for sign up is ${otp}. Please verify your OTP within 5 minutes.`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
-      if(error) {
-        return next(error);
+      if (error) {
+        return next(errorHandler(500, "Error sending OTP email."));
       } else {
-        res.status(201).json({ message: 'Student Saved Successfully. OTP sent to the email.', email });
+        res.status(201).json({ message: 'Student saved successfully. OTP sent to email.', email });
       }
     });
   } catch (error) {
     if (error.code === 11000) {
+      // Handle duplicate key errors (roll_no, register_no, email)
       let field = Object.keys(error.keyPattern)[0];
-      if (field === "roll_no") {
-        return next(errorHandler(400, "Roll Number is already in use"));
+      let errorMessage;
+      switch (field) {
+        case 'roll_no':
+          errorMessage = 'Roll Number is already in use';
+          break;
+        case 'register_no':
+          errorMessage = 'Register Number is already in use';
+          break;
+        case 'email':
+          errorMessage = 'Email is already in use';
+          break;
+        default:
+          errorMessage = 'Duplicate key error';
       }
-      if (field === "register_no") {
-        return next(errorHandler(400, "Register Number is already in use"));
-      }
-      if (field === "email") {
-        return next(errorHandler(400, "Email is already in use"));
-      }
+      return next(errorHandler(400, errorMessage));
     }
     next(error);
   }
 };
+
+
+
 export const studentsignin = async (req, res, next) => {
   let { identifier, password } = req.body;
   if (!identifier || !password) {

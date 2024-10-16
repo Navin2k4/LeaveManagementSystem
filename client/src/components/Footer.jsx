@@ -36,7 +36,11 @@ const Footer = () => {
         </div>
         <div className="text-center lg:text-right">
           <p className="text-md text-white font-semibold mb-2">
-          Stellar Technology&#174;<br />&copy; {currentYear}  All Rights Reserved
+          VCET CSEB 22-26 {" "} 
+          {/* &#174; */}
+          {/* <br /> */}
+          &copy; {currentYear}  
+          {/* All Rights Reserved */}
           </p>
           <div className="list-none text-md text-white space-y-1">
             <p className="text-white/90 font-thin">Navin Kumaran - <span className="text-white/90 font-thin italic">22CSEB48</span></p>

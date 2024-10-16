@@ -7,10 +7,7 @@ function HomePage() {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)]">
-      <div
-        className="flex-1 flex justify-center bg-gradient-to-t from-blue-500 to-[#244784]
- p-6 shadow-lg"
-      >
+      <div className="flex-1 flex justify-center bg-gradient-to-t from-blue-500 to-[#244784] p-6 shadow-lg">
         <div className="max-w-2xl md:max-w-3xl text-left">
           <div className="flex flex-col gap-2 md:mt-10">
             <div>
@@ -92,12 +89,12 @@ function HomePage() {
               >
                 Sign Up Student
               </Link>
-              {/* <Link
+              <Link
                 to="/staffsignup"
                 className=" bg-white font-semibold rounded-full p-2 text-lg transition duration-300 shadow-black shadow-md transform  hover:scale-105"
               >
                 Sign Up Staff
-              </Link> */}
+              </Link>
             </div>
           )}
         </div>

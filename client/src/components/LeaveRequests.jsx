@@ -121,7 +121,7 @@ export default function LeaveRequests({
       });
 
       if (response.ok) {
-        await fetchLeaveRequestsMentor(); // Refetch requests after updating
+        await fetchLeaveRequestsMentor();
       } else {
         alert(`Failed to ${mentormodalType} request`);
       }
@@ -133,7 +133,6 @@ export default function LeaveRequests({
       handleClose();
     }
   };
-
 
   const confirmRequestClass = async () => {
     setLoading(true);
@@ -209,7 +208,6 @@ export default function LeaveRequests({
                 <TableBody className="divide-y">
                   {menteeRequests.map((req) => {
                     const { status } = req.approvals.mentor;
-
                     return (
                       <TableRow key={req._id}>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
@@ -280,7 +278,6 @@ export default function LeaveRequests({
                             )}
                           </div>
                         </TableCell>
-
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                           {status === "pending" ? (
                             <div className="flex items-center justify-center gap-2">
@@ -288,7 +285,7 @@ export default function LeaveRequests({
                                 onClick={() =>
                                   handleRequest("approved", req._id)
                                 }
-                                className="bg-green-400 hover:bg-green-600 text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
+                                className="bg-green-400 hover:bg-green-600 text-white p-1 rounded-full transition-all duration-300"
                               >
                                 <TiTick size={30} />
                               </button>
@@ -296,7 +293,7 @@ export default function LeaveRequests({
                                 onClick={() =>
                                   handleRequest("rejected", req._id)
                                 }
-                                className="bg-red-400 hover:bg-red-600 text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300"
+                                className="bg-red-400 hover:bg-red-600 text-white p-1  rounded-full transition-all duration-300"
                               >
                                 <RxCross2 size={30} />
                               </button>
@@ -328,7 +325,6 @@ export default function LeaveRequests({
                 </TableBody>
               </Table>
               <Modal
-              
                 show={mentormodalType !== null}
                 size="md"
                 onClose={handleClose}

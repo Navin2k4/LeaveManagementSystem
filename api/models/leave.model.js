@@ -8,16 +8,16 @@ const leaveRequestSchema = new Schema(
     },
     email: {
       type: String,
-    }, 
+    },
     userId: {
       type: Schema.Types.ObjectId,
       required: true,
-      refPath: 'userType',
+      refPath: "userType",
     },
     userType: {
       type: String,
       required: true,
-      enum: ['Student', 'Staff'], 
+      enum: ["Student", "Staff"],
     },
     rollNo: {
       type: String,
@@ -27,27 +27,27 @@ const leaveRequestSchema = new Schema(
     },
     departmentId: {
       type: Schema.Types.ObjectId,
-      ref: 'Department',
+      ref: "Department",
       required: true,
     },
     batchId: {
       type: Schema.Types.ObjectId,
-      ref: 'Batch',
+      ref: "Batch",
     },
     sectionId: {
       type: Schema.Types.ObjectId,
-      ref: 'Section',
+      ref: "Section",
     },
-    section_name:{
+    section_name: {
       type: String,
     },
     mentorId: {
       type: Schema.Types.ObjectId,
-      ref: 'Staff',
+      ref: "Staff",
     },
     classInchargeId: {
       type: Schema.Types.ObjectId,
-      ref: 'Staff',
+      ref: "Staff",
     },
     isHalfDay: {
       type: String,
@@ -76,8 +76,15 @@ const leaveRequestSchema = new Schema(
     typeOfLeave: {
       type: String,
       enum: [
-        "Casual Leave", "Sick Leave", "Earned Leave", "Maternity Leave",
-        "Paternity Leave", "Study Leave", "Duty Leave", "Special Leave", "Sabbatical Leave"
+        "Casual Leave",
+        "Sick Leave",
+        "Earned Leave",
+        "Maternity Leave",
+        "Paternity Leave",
+        "Study Leave",
+        "Duty Leave",
+        "Special Leave",
+        "Sabbatical Leave",
       ],
     },
     status: {
@@ -115,67 +122,66 @@ const leaveRequestSchema = new Schema(
       type: Boolean,
       required: true,
     },
-    mentorcomment:{
-      type:String,
-      default :"No Comments",
+    mentorcomment: {
+      type: String,
+      default: "No Comments",
     },
-    classInchargeComment:{
-      type:String,
-      default :"No Comments",
+    classInchargeComment: {
+      type: String,
+      default: "No Comments",
     },
-    hodComment:{
-      type:String,
-      default :"No Comments",
-    }
+    hodComment: {
+      type: String,
+      default: "No Comments",
+    },
   },
   {
     timestamps: true,
   }
 );
 
-leaveRequestSchema.pre('save', function (next) {
-  if (this.isModified('approvals')) {
+leaveRequestSchema.pre("save", function (next) {
+  if (this.isModified("approvals")) {
     if (
-      this.approvals.mentor.status === 'rejected' || 
-      this.approvals.classIncharge.status === 'rejected' || 
-      this.approvals.hod.status === 'rejected') {
-      this.status = 'rejected';
+      this.approvals.mentor.status === "rejected" ||
+      this.approvals.classIncharge.status === "rejected" ||
+      this.approvals.hod.status === "rejected"
+    ) {
+      this.status = "rejected";
     } else if (
-      this.approvals.mentor.status === 'approved' && 
-      this.approvals.classIncharge.status === 'approved' && 
-      this.approvals.hod.status === 'approved') {
-      this.status = 'approved';
+      this.approvals.mentor.status === "approved" &&
+      this.approvals.classIncharge.status === "approved" &&
+      this.approvals.hod.status === "approved"
+    ) {
+      this.status = "approved";
     } else {
-      this.status = 'pending';
+      this.status = "pending";
     }
   }
   next();
 });
 
-
 // Method to compute overall leave request status based on approvals
 leaveRequestSchema.methods.computeStatus = function () {
   if (
-    this.approvals.mentor.status === 'rejected' || 
-    this.approvals.classIncharge.status === 'rejected' || 
-    this.approvals.hod.status === 'rejected'
-  ) 
-  {
-    return 'rejected';
-  } 
-  else if (
-    this.approvals.mentor.status === 'approved' && 
-    this.approvals.classIncharge.status === 'approved' && 
-    this.approvals.hod.status === 'approved'
+    this.approvals.mentor.status === "rejected" ||
+    this.approvals.classIncharge.status === "rejected" ||
+    this.approvals.hod.status === "rejected"
   ) {
-    return 'approved';
+    return "rejected";
+  } else if (
+    this.approvals.mentor.status === "approved" &&
+    this.approvals.classIncharge.status === "approved" &&
+    this.approvals.hod.status === "approved"
+  ) {
+    return "approved";
   } else {
-    return 'pending';
+    return "pending";
   }
 };
 
 // Pre-save hook to update status based on approvals
-leaveRequestSchema.pre('save', function (next) {
+leaveRequestSchema.pre("save", function (next) {
   this.status = this.computeStatus();
   next();
 });
