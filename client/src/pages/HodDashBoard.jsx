@@ -466,7 +466,9 @@ const Hoddashboard = () => {
                       </TableHead>
                       <TableBody className="divide-y">
                         {leaveRequests.map((req) => {
-                          const { status } = req.approvals.hod;
+                          const { status : hodstatus } = req.approvals.hod;
+                          const { status : classInchargeStatus } = req.approvals.classIncharge;
+                          const { status : mentorStatus } = req.approvals.mentor;
 
                           return (
                             <TableRow key={req._id}>
@@ -539,7 +541,7 @@ const Hoddashboard = () => {
                               </TableCell>
 
                               <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                                {status === "pending" ? (
+                                {hodstatus === "pending" && classInchargeStatus === "approved" ? (
                                   <div className="flex items-center gap-4 justify-center">
                                     <button
                                       onClick={() =>
@@ -560,6 +562,8 @@ const Hoddashboard = () => {
                                       <RxCross2 size={30} />
                                     </button>
                                   </div>
+                                ) : classInchargeStatus === "pending" ? (
+                                        <h1>ClassIncharge and Mentor status is in pending!</h1>
                                 ) : (
                                   <div className="flex items-center justify-center gap-2">
                                     <button
