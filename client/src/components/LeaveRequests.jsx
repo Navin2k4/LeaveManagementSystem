@@ -466,8 +466,8 @@ export default function LeaveRequests({
                 </TableHead>
                 <TableBody className="divide-y">
                   {classInchargeRequests.map((req) => {
-                    const { status } = req.approvals.classIncharge;
-
+                    const { status: mentorStatus } = req.approvals.mentor;
+                    const { status: classInchargeStatus } = req.approvals.classIncharge;
                     return (
                       <TableRow key={req._id}>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
@@ -553,7 +553,7 @@ export default function LeaveRequests({
                           </div>
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {status === "pending" ? (
+                          {classInchargeStatus === "pending" && mentorStatus === "approved" ? (
                             <div className="flex items-center justify-center gap-2">
                               <button
                                 onClick={() =>
@@ -578,28 +578,34 @@ export default function LeaveRequests({
                                 <RxCross2 size={30} />
                               </button>
                             </div>
-                          ) : (
+                          ) : mentorStatus === "pending" ? (
                             <div className="flex items-center justify-center gap-2">
-                              <button
+                              <h1>Mentor yet to take Action ! please wait</h1>
+                            </div>
+                          ):(
+                                <div className="flex justify-center">
+                                  <button
                                 onClick={() =>
                                   handleRequestClassIncharge("taken", req._id)
                                 }
                                 className={` text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
-                                  status === "approved"
+                                  classInchargeStatus === "approved"
                                     ? "bg-green-400"
-                                    : status === "rejected"
+                                    : classInchargeStatus === "rejected"
                                     ? "bg-red-400"
                                     : ""
                                 }`}
                               >
-                                {status === "approved"
+                                
+                                {classInchargeStatus === "approved"
                                   ? "Approved"
-                                  : status === "rejected"
+                                  : classInchargeStatus === "rejected"
                                   ? "Rejected"
                                   : "Taken"}
                               </button>
-                            </div>
-                          )}
+                                </div>         
+                                                         
+                            )}
                         </TableCell>
                       </TableRow>
                     );
