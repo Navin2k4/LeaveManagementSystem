@@ -18,6 +18,7 @@ import SignIn from "./components/SignIn";
 import Footer from "./components/Footer";
 import StaffSignUp from "./components/StaffSignUp";
 
+
 // TODO:OTP IS WORKING BUT WE CAN CANCEL CERIFICATION AND STILL SIGN IT TO ENSURE THAT ONLY AFTER VERIFICATION THE STUDENT ATA IS SAVED IN THE DB COLLECTION  ( Actually no need to worry however going to remove signup idk ) ❌
 
 

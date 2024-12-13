@@ -195,6 +195,7 @@ export const studentsignin = async (req, res, next) => {
 };
 
 export const staffsignup = async (req, res, next) => {
+  console.log(req.body)
   const {
     staff_name,
     staff_id,
@@ -205,12 +206,14 @@ export const staffsignup = async (req, res, next) => {
     classInchargeBatchId,
     classInchargeSectionId,
     isMentor,
+    isPEStaff,
     numberOfClassesHandledAsMentor,
     mentorHandlingData,
     password,
     userType,
+   // New Field
   } = req.body;
-
+  console.log(isPEStaff)
   try {
     // Validate required fields
     if (
@@ -233,7 +236,6 @@ export const staffsignup = async (req, res, next) => {
             .status(400)
             .json({ message: "Invalid mentorHandlingData structure" });
         }
-        // Additional validation or processing logic if needed
       }
     }
 
@@ -251,11 +253,15 @@ export const staffsignup = async (req, res, next) => {
       classInchargeBatchId,
       classInchargeSectionId,
       isMentor,
+      isPEStaff,
       numberOfClassesHandledAsMentor,
       mentorHandlingData,
       password: hashedPassword,
       userType,
+       // Save the new field
     });
+
+    console.log(newStaff)
 
     // Save the new staff member to the database
     await newStaff.save();
@@ -264,10 +270,10 @@ export const staffsignup = async (req, res, next) => {
   } catch (error) {
     if (error.code === 11000) {
       let field = Object.keys(error.keyPattern)[0];
+      console.log(field)
       if (field === "staff_id") {
         return next(errorHandler(400, "Staff ID is already in use"));
       }
-      // TOFIX: Classincharge duplicate check is not functioning need to check it
       if (field === "classInchargeSectionId") {
         return next(
           errorHandler(
@@ -283,7 +289,6 @@ export const staffsignup = async (req, res, next) => {
     next(error);
   }
 };
-
 export const staffsignin = async (req, res, next) => {
   try {
     let { identifier, password } = req.body;
@@ -323,6 +328,7 @@ export const staffsignin = async (req, res, next) => {
       numberOfClassesHandledAsMentor,
       mentorHandlingData,
       userType,
+      isPEStaff, // Include the new field
     } = staff;
 
     res
@@ -345,11 +351,13 @@ export const staffsignin = async (req, res, next) => {
         numberOfClassesHandledAsMentor,
         mentorHandlingData,
         userType,
+        isPEStaff, // Return the new field
       });
   } catch (error) {
     next(error);
   }
 };
+
 export const hodsignup = async (req, res, next) => {
   const {
     staff_name,
