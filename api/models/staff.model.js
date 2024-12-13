@@ -41,6 +41,10 @@ const StaffSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isPEStaff:{
+    type: Boolean,
+    default: false,
+  },
   isHod:{
     type: Boolean,
     default: false,
@@ -54,7 +58,7 @@ const StaffSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Section',
     // TOFIX: Classincharge duplicate check is not functioning need to check it 
-    unique: true,
+    // unique: true,
     default:null,
   },
   numberOfClassesHandledAsMentor: {

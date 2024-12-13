@@ -19,6 +19,7 @@ export default function SignUp() {
     isMentor: false,
     isClassIncharge: false,
     isHod:false,
+    isPEStaff:false,
     classInchargeBatchId: null, // Use null instead of empty string
     classInchargeSectionId: null, // Use null instead of empty string
     numberOfClassesHandledAsMentor: 0,
@@ -106,6 +107,7 @@ export default function SignUp() {
           isHod: checked,
           isClassIncharge: false,
           isMentor: false,
+          isPEStaff: false
         });
       } else {
         // If HOD checkbox is unchecked, maintain the current state of other checkboxes
@@ -397,6 +399,18 @@ export default function SignUp() {
                   id="isClassIncharge"
                   label="Class Incharge"
                   checked={formData.isClassIncharge}
+                  onChange={handleRoleChange}
+                  disabled={formData.isHod}
+                  className={`${formData.isHod ? 'bg-gray-400 border-gray-300' : 'border-black'} mx-2 text-orange-400`}
+                />
+              </div>
+              <div className="">
+                <Label className={`${formData.isHod ? 'text-gray-400' : 'text-ternary-blue'} `}  >Are you a PE Staff</Label>
+                <Checkbox
+                  name="isPEStaff"
+                  id="isPEStaff"
+                  label="PE Staff"
+                  checked={formData.isPEStaff}
                   onChange={handleRoleChange}
                   disabled={formData.isHod}
                   className={`${formData.isHod ? 'bg-gray-400 border-gray-300' : 'border-black'} mx-2 text-orange-400`}
