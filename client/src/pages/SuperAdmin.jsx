@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import LeaveStatsCard from "../components/LeaveStatsCard";
 import { useFetchDepartments } from "../../hooks/useFetchData";
+import { Link } from 'react-router-dom';
 
 const SuperAdmin = () => {
   const departments = useFetchDepartments();
@@ -331,9 +332,15 @@ const SuperAdmin = () => {
       </div>
 
       <div className="flex-1 p-4 md:p-8 overflow-y-auto">
+      <div>
+      <Link to="/superadmin/excelupload" className="text-white bg-blue-600 rounded-md p-3 hover:text-blue-300">
+                To Upload Data as Excel (Student)
+        </Link>
+      </div>
+
         {selectedDepartment && (
           <>
-            <div className="bg-[#1f3a6e] mb-4 md:mb-8 p-6 rounded-lg">
+            <div className="bg-[#1f3a6e] mt-4 mb-4 md:mb-8 p-6 rounded-lg">
               <div className="flex flex-row items-center justify-between mb-5 ">
                 <h2 className="text-lg text-white font-semibold">
                   Batches for {selectedDepartment.dept_name}

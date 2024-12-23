@@ -5,6 +5,7 @@ import StaffDashBoard from "./pages/StaffDashBoard";
 import HomePage from "./pages/HomePage";
 import Navbar from "./components/NavBar";
 import SignUp from "./components/SignUp";
+import ExcelUpload from "./components/excelUpload";
 import PrivateRoute from "./components/PrivateRoute";
 import StaffPrivateRoute from "./components/StaffPrivateRoute";
 import ProfilePage from "./pages/ProfilePage";
@@ -43,8 +44,8 @@ const AppWrapper = () => {
         <Route path='/staffsignup' element={<StaffSignUp />} />
         <Route path='/signin' element={<SignIn />} />
         <Route path="/wardDetails" element={<WardDetails />} />
-                <Route path='/superadmin' element={<SuperAdmin />} />
-
+        <Route path='/superadmin' element={<SuperAdmin />} />
+        <Route path='/superadmin/excelupload' element={<ExcelUpload />} />
         <Route element={<PrivateRoute />}>
           <Route path='/studentdashboard' element={<DashBoard />} />
           <Route path='/profile' element={<ProfilePage />} />
