@@ -34,7 +34,7 @@ const MarkDefaulterAndLate = () => {
     try {
       const formattedRollNumber = rollNumber.toUpperCase();
       const response = await fetch(
-        `http://localhost:3000/api/defaulter/getStudentDetailsByRollforDefaulters/${formattedRollNumber}`
+        `/api/defaulter/getStudentDetailsByRollforDefaulters/${formattedRollNumber}`
       );
 
       if (!response.ok) {
