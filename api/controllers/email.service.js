@@ -2,6 +2,8 @@ import nodemailer from 'nodemailer';
 import schedule from 'node-schedule';
 import LeaveRequest from "../models/leave.model.js";
 
+
+let hours=0,minutes=0;
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   host: 'smtp.gmail.com',
@@ -11,6 +13,35 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD,
   },
 });
+
+export const changeMailSendTiming = (req, res) => {
+  const { time } = req.body; 
+  if (!time) {
+    return res.status(400).json({
+      success: false,
+      message: "Time is required",
+    });
+  }
+
+  try {
+    [hours, minutes] = time.split(":");
+
+    console.log("Hours:", hours);
+    console.log("Minutes:", minutes);
+
+    scheduleMail(hours, minutes);
+    res.status(200).json({
+      success: true,
+      message: "Time changed successfully",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while processing the time.",
+    });
+  }
+};
+
 
 const sendEmail = async (to, subject, htmlContent) => {
   try {
@@ -131,19 +162,27 @@ const sendConsolidatedEmails = async () => {
     leaveRequests.forEach((request) => {
       if (request.mentorId) {
         const mentorEmail = request.mentorId.staff_mail;
-        const batchSectionKey = `${request.batchId.batch_name}-${request.sectionId.section_name}`;
-        
+
         if (!groupedByMentors[mentorEmail]) {
           groupedByMentors[mentorEmail] = {};
         }
 
-        if (!groupedByMentors[mentorEmail][batchSectionKey]) {
-          groupedByMentors[mentorEmail][batchSectionKey] = [];
+        // Group by batch and section within each mentor
+        const batchName = request.batchId.batch_name;
+        const sectionName = request.sectionId.section_name;
+
+        if (!groupedByMentors[mentorEmail][batchName]) {
+          groupedByMentors[mentorEmail][batchName] = {};
         }
 
-        groupedByMentors[mentorEmail][batchSectionKey].push(request);
+        if (!groupedByMentors[mentorEmail][batchName][sectionName]) {
+          groupedByMentors[mentorEmail][batchName][sectionName] = [];
+        }
+
+        groupedByMentors[mentorEmail][batchName][sectionName].push(request);
       }
     });
+
 
     const groupedByClassIncharge={}
     leaveRequests.forEach((request) => {
@@ -160,28 +199,34 @@ const sendConsolidatedEmails = async () => {
     leaveRequests.forEach((request) => {
       if (request.departmentId && request.departmentId.dept_head) {
         const deptHeadEmail = request.departmentId.dept_head.staff_mail;
-        const deptKey = request.departmentId._id;
-        const batchSectionKey = `${request.batchId.batch_name}/${request.sectionId.section_name}`;
-        
-        if (!groupedByDeptHeads[deptKey]) {
-          groupedByDeptHeads[deptKey] = {};
+
+        if (!groupedByDeptHeads[deptHeadEmail]) {
+          groupedByDeptHeads[deptHeadEmail] = {};
         }
 
-        if (!groupedByDeptHeads[deptKey][batchSectionKey]) {
-          groupedByDeptHeads[deptKey][batchSectionKey] = { email: deptHeadEmail, requests: [] };
+        // Group by batch and section within each department
+        const batchName = request.batchId.batch_name;
+        const sectionName = request.sectionId.section_name;
+
+        if (!groupedByDeptHeads[deptHeadEmail][batchName]) {
+          groupedByDeptHeads[deptHeadEmail][batchName] = {};
         }
 
-        groupedByDeptHeads[deptKey][batchSectionKey].requests.push(request);
+        if (!groupedByDeptHeads[deptHeadEmail][batchName][sectionName]) {
+          groupedByDeptHeads[deptHeadEmail][batchName][sectionName] = [];
+        }
+
+        groupedByDeptHeads[deptHeadEmail][batchName][sectionName].push(request);
       }
     });
 
+
+
     // Send emails to mentors
     for (const [email, batches] of Object.entries(groupedByMentors)) {
-      for (const [batchSectionKey, requests] of Object.entries(batches)) {
-        const htmlContent = generateMentorEmailContent(requests, batchSectionKey);
-        console.log(`Sending email to Mentor: ${email}`);
-        await sendEmail(email, `Daily Leave Requests Summary for ${batchSectionKey}`, htmlContent);
-      }
+      const htmlContent = generateMentorEmailContent(batches);
+      console.log(`Sending consolidated email to Mentor: ${email}`);
+      await sendEmail(email, "Daily Leave Requests Summary", htmlContent);
     }
 
     for (const [email, requests] of Object.entries(groupedByClassIncharge)) {
@@ -191,13 +236,10 @@ const sendConsolidatedEmails = async () => {
     }
 
     // Send emails to department heads
-    for (const [deptKey, batches] of Object.entries(groupedByDeptHeads)) {
-      for (const [batchSectionKey, { email, requests }] of Object.entries(batches)) {
-        const [batchName, sectionName] = batchSectionKey.split("/");
-        const htmlContent = generateDeptHeadEmailContent(requests, batchName, sectionName);
-        console.log(`Sending email to DeptHead: ${email}`);
-        await sendEmail(email, `Leave Requests for ${batchName} - ${sectionName}`, htmlContent);
-      }
+    for (const [email, batches] of Object.entries(groupedByDeptHeads)) {
+      const htmlContent = generateDeptHeadEmailContent(batches);
+      console.log(`Sending consolidated email to DeptHead: ${email}`);
+      await sendEmail(email, "Daily Leave Requests Summary", htmlContent);
     }
 
     console.log("Emails sent successfully");
@@ -206,22 +248,31 @@ const sendConsolidatedEmails = async () => {
   }
 };
 
-const generateMentorEmailContent = (requests, batchSectionKey) => {
+const generateMentorEmailContent = (batches) => {
   let content = `
     <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
       <div style="background-color: #4CAF50; color: white; padding: 15px 20px; text-align: center;">
         <h1 style="margin: 0; font-size: 24px;">Daily Leave Requests Summary</h1>
       </div>
       <div style="padding: 20px;">
-        <h2 style="font-size: 18px;">Batch: ${batchSectionKey}</h2>
         <p style="font-size: 16px; margin-bottom: 20px;">
-          Dear Mentor, here is the summary of leave requests for your section in the last 24 hours:
+          Dear Mentor, here is the summary of leave requests for your sections:
         </p>
-        <ul style="list-style: none; padding: 0; margin: 0;">
   `;
 
-  requests.forEach((req) => {
-    content += `
+  // Iterate over each batch
+  for (const [batchName, sections] of Object.entries(batches)) {
+    content += `<h3 style="font-size: 20px;">Batch: ${batchName}</h3>`;
+
+    // Iterate over each section in the batch
+    for (const [sectionName, requests] of Object.entries(sections)) {
+      content += `<h4 style="font-size: 18px;">Section: ${sectionName}</h4>`;
+      content += `
+        <ul style="list-style: none; padding: 0; margin: 0;">
+      `;
+
+      requests.forEach((req) => {
+        content += `
           <li style="border-bottom: 1px solid #ddd; padding: 15px 0;">
             <p style="margin: 0; font-size: 14px;"><strong>Name:</strong> ${req.name}</p>
             <p style="margin: 0; font-size: 14px;"><strong>From:</strong> ${new Date(req.fromDate).toLocaleDateString()}</p>
@@ -233,16 +284,19 @@ const generateMentorEmailContent = (requests, batchSectionKey) => {
               </span>
             </p>
           </li>
-    `;
-  });
+        `;
+      });
+
+      content += `</ul>`;
+    }
+  }
 
   content += `
-        </ul>
         <p style="margin-top: 20px; font-size: 14px; color: #555;">
           Thank you for your attention. Please log in to the system to review further details.
         </p>
         <div style="text-align: center; margin-top: 20px;">
-          <a href="https://your-website.com" style="text-decoration: none; background-color: #4CAF50; color: white; padding: 12px 25px; font-size: 16px; border-radius: 5px; display: inline-block;">
+          <a href="https://leavemanagementsystemvcetmadurai.onrender.com/signin" style="text-decoration: none; background-color: #4CAF50; color: white; padding: 12px 25px; font-size: 16px; border-radius: 5px; display: inline-block;">
             Visit Website
           </a>
         </div>
@@ -265,8 +319,7 @@ const generateClassInchargeEmailContent = (requests)=>{
       <p style="font-size: 16px; margin-bottom: 20px;">
         Dear ClassIncharge, here is the summary of leave requests submitted in the last 24 hours:
       </p>
-      <ul style="list-style: none; padding: 0; margin: 0;">
-;`
+      <ul style="list-style: none; padding: 0; margin: 0;">`
 
 requests.forEach((req) => {
   content += `
@@ -290,7 +343,7 @@ content +=
         Thank you for your attention. Please log in to the system to review further details.
       </p>
       <div style="text-align: center; margin-top: 20px;">
-        <a href="https://your-website.com" style="text-decoration: none; background-color: #4CAF50; color: white; padding: 12px 25px; font-size: 16px; border-radius: 5px; display: inline-block;">
+        <a href="https://leavemanagementsystemvcetmadurai.onrender.com/signin" style="text-decoration: none; background-color: #4CAF50; color: white; padding: 12px 25px; font-size: 16px; border-radius: 5px; display: inline-block;">
           Visit Website
         </a>
       </div>
@@ -303,22 +356,31 @@ content +=
 return content;
 };
 
-const generateDeptHeadEmailContent = (requests, batchName, sectionName) => {
+const generateDeptHeadEmailContent = (batches) => {
   let content = `
     <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
       <div style="background-color: #4CAF50; color: white; padding: 15px 20px; text-align: center;">
         <h1 style="margin: 0; font-size: 24px;">Daily Leave Requests Summary</h1>
       </div>
       <div style="padding: 20px;">
-        <h2 style="font-size: 18px;">Batch: ${batchName} - Section: ${sectionName}</h2>
         <p style="font-size: 16px; margin-bottom: 20px;">
-          Dear Department Head, here is the summary of leave requests from your department:
+          Dear Department Head, here is the summary of leave requests for your department:
         </p>
-        <ul style="list-style: none; padding: 0; margin: 0;">
   `;
 
-  requests.forEach((req) => {
-    content += `
+  // Iterate over each batch
+  for (const [batchName, sections] of Object.entries(batches)) {
+    content += `<h3 style="font-size: 20px;">Batch: ${batchName}</h3>`;
+
+    // Iterate over each section in the batch
+    for (const [sectionName, requests] of Object.entries(sections)) {
+      content += `<h4 style="font-size: 18px;">Section: ${sectionName}</h4>`;
+      content += `
+        <ul style="list-style: none; padding: 0; margin: 0;">
+      `;
+
+      requests.forEach((req) => {
+        content += `
           <li style="border-bottom: 1px solid #ddd; padding: 15px 0;">
             <p style="margin: 0; font-size: 14px;"><strong>Name:</strong> ${req.name}</p>
             <p style="margin: 0; font-size: 14px;"><strong>From:</strong> ${new Date(req.fromDate).toLocaleDateString()}</p>
@@ -330,16 +392,19 @@ const generateDeptHeadEmailContent = (requests, batchName, sectionName) => {
               </span>
             </p>
           </li>
-    `;
-  });
+        `;
+      });
+
+      content += `</ul>`;
+    }
+  }
 
   content += `
-        </ul>
         <p style="margin-top: 20px; font-size: 14px; color: #555;">
           Thank you for your attention. Please log in to the system to review further details.
         </p>
         <div style="text-align: center; margin-top: 20px;">
-          <a href="https://your-website.com" style="text-decoration: none; background-color: #4CAF50; color: white; padding: 12px 25px; font-size: 16px; border-radius: 5px; display: inline-block;">
+          <a href="https://leavemanagementsystemvcetmadurai.onrender.com/signin" style="text-decoration: none; background-color: #4CAF50; color: white; padding: 12px 25px; font-size: 16px; border-radius: 5px; display: inline-block;">
             Visit Website
           </a>
         </div>
@@ -351,5 +416,9 @@ const generateDeptHeadEmailContent = (requests, batchName, sectionName) => {
   `;
   return content;
 };
+export const scheduleMail=(hours,minutes)=>{
+  console.log("H:"+hours)
+  console.log("M:"+minutes)
+  schedule.scheduleJob(`${minutes}  ${hours} * * *`, sendConsolidatedEmails);
+}
 
-schedule.scheduleJob("23  14 * * *", sendConsolidatedEmails);
