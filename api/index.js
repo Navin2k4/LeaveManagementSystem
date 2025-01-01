@@ -10,6 +10,7 @@ import leaveRequestRoutes from './routes/leave.route.js';
 import departmentRoutes from './routes/department.route.js';
 import defaulterRoutes from './routes/defaulter.route.js';
 import dataRoutes from './routes/data.route.js';
+import mailRoutes from './routes/mail.route.js';
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.use("/api", leaveRequestRoutes);
 app.use('/api', departmentRoutes);
 app.use('/api/defaulter', defaulterRoutes);
 app.use('/api/data', dataRoutes);
+app.use('/api/mail', mailRoutes);
 // Serve static files from React build (ensure 'client/dist' exists)
 app.use(express.static(path.join(__dirname, 'client', 'dist')));
 

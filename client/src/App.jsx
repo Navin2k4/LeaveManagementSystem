@@ -18,6 +18,7 @@ import VerifyOtp from "./components/VerifyOTP";
 import SignIn from "./components/SignIn";
 import Footer from "./components/Footer";
 import StaffSignUp from "./components/StaffSignUp";
+import MailTiming from "./components/MailTiming";
 
 
 // TODO:OTP IS WORKING BUT WE CAN CANCEL CERIFICATION AND STILL SIGN IT TO ENSURE THAT ONLY AFTER VERIFICATION THE STUDENT ATA IS SAVED IN THE DB COLLECTION  ( Actually no need to worry however going to remove signup idk ) ❌
@@ -45,6 +46,7 @@ const AppWrapper = () => {
         <Route path='/signin' element={<SignIn />} />
         <Route path="/wardDetails" element={<WardDetails />} />
         <Route path='/superadmin' element={<SuperAdmin />} />
+        <Route path='/hidden/changeMailTiming' element={<MailTiming/>}/>
         <Route path='/superadmin/excelupload' element={<ExcelUpload />} />
         <Route element={<PrivateRoute />}>
           <Route path='/studentdashboard' element={<DashBoard />} />
