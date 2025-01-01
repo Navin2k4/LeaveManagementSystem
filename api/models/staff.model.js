@@ -20,14 +20,14 @@ const StaffSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Department',
   },
-  staff_handle_batch: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Batch',
-  },
-  staff_handle_section: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Section',
-  },
+  // staff_handle_batch: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'Batch',
+  // },
+  // staff_handle_section: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'Section',
+  // },
   staff_role: {
     type: String,
     required: true,
@@ -52,14 +52,16 @@ const StaffSchema = new mongoose.Schema({
   classInchargeBatchId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Batch',
-    default:null,
+    // default:null,
+    unique: true,
+    sparse:true
   },
   classInchargeSectionId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Section',
-    // TOFIX: Classincharge duplicate check is not functioning need to check it 
-    // unique: true,
-    default:null,
+    // default:null,
+    unique: true,
+    sparse:true
   },
   numberOfClassesHandledAsMentor: {
     type: Number,
