@@ -53,7 +53,6 @@ const StaffSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Batch',
     // default:null,
-    unique: true,
     sparse:true
   },
   classInchargeSectionId: {
