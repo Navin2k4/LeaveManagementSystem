@@ -195,25 +195,27 @@ export const studentsignin = async (req, res, next) => {
 };
 
 export const staffsignup = async (req, res, next) => {
-  console.log(req.body)
+  console.log(req.body);
   const {
     staff_name,
     staff_id,
     staff_email,
     staff_phone,
     staff_departmentId,
+    isMentor,
     isClassIncharge,
+    isPEStaff,
     classInchargeBatchId,
     classInchargeSectionId,
-    isMentor,
-    isPEStaff,
     numberOfClassesHandledAsMentor,
     mentorHandlingData,
     password,
     userType,
-   // New Field
   } = req.body;
-  console.log(isPEStaff)
+  console.log(isClassIncharge);
+  console.log(isMentor);
+  console.log(isPEStaff);
+
   try {
     // Validate required fields
     if (
@@ -239,42 +241,14 @@ export const staffsignup = async (req, res, next) => {
       }
     }
 
-    // Hash the password
-    const hashedPassword = bcryptjs.hashSync(password, 10);
+    // Additional validation for Class Incharge
+    if (isClassIncharge && classInchargeSectionId) {
+      const existingClassIncharge = await Staff.findOne({
+        classInchargeSectionId,
+        isClassIncharge: true,
+      });
 
-    // Create new Staff instance
-    const newStaff = new Staff({
-      staff_name,
-      staff_id,
-      staff_mail: staff_email,
-      staff_phone,
-      staff_handle_dept: staff_departmentId,
-      isClassIncharge,
-      classInchargeBatchId,
-      classInchargeSectionId,
-      isMentor,
-      isPEStaff,
-      numberOfClassesHandledAsMentor,
-      mentorHandlingData,
-      password: hashedPassword,
-      userType,
-       // Save the new field
-    });
-
-    console.log(newStaff)
-
-    // Save the new staff member to the database
-    await newStaff.save();
-
-    res.status(201).json({ message: "Staff saved successfully" });
-  } catch (error) {
-    if (error.code === 11000) {
-      let field = Object.keys(error.keyPattern)[0];
-      console.log(field)
-      if (field === "staff_id") {
-        return next(errorHandler(400, "Staff ID is already in use"));
-      }
-      if (field === "classInchargeSectionId") {
+      if (existingClassIncharge) {
         return next(
           errorHandler(
             400,
@@ -282,6 +256,74 @@ export const staffsignup = async (req, res, next) => {
           )
         );
       }
+    }
+
+    // Hash the password
+    const hashedPassword = bcryptjs.hashSync(password, 10);
+
+    // Create new Staff instance
+    if(classInchargeBatchId!=null && classInchargeSectionId!=null) {
+    const newStaff = new Staff({
+      staff_id,
+      staff_name,
+      staff_mail: staff_email,
+      staff_phone,
+      staff_handle_dept: staff_departmentId,
+      isMentor,
+      isClassIncharge,
+      isPEStaff,
+      classInchargeBatchId,
+      classInchargeSectionId,
+      numberOfClassesHandledAsMentor,
+      mentorHandlingData,
+      password: hashedPassword,
+      userType,
+    });
+  
+
+    console.log(newStaff);
+
+    // Save the new staff member to the database
+    await newStaff.save();
+  }
+  else
+  {
+    const newStaff = new Staff({
+      staff_id,
+      staff_name,
+      staff_mail: staff_email,
+      staff_phone,
+      staff_handle_dept: staff_departmentId,
+      isMentor,
+      isClassIncharge,
+      isPEStaff,
+      numberOfClassesHandledAsMentor,
+      mentorHandlingData,
+      password: hashedPassword,
+      userType,
+    });
+  
+
+    console.log(newStaff);
+    await newStaff.save();
+  }
+
+    res.status(201).json({ message: "Staff saved successfully" });
+  } catch (error) {
+    if (error.code === 11000) {
+      console.log(error.keyPattern);
+      let field = Object.keys(error.keyPattern)[0];
+      if (field === "staff_id") {
+        return next(errorHandler(400, "Staff ID is already in use"));
+      }
+      // if (field === "classInchargeSectionId") {
+      //   return next(
+      //     errorHandler(
+      //       400,
+      //       "Class Incharge is already assigned for this batch section"
+      //     )
+      //   );
+      // }
       if (field === "staff_mail") {
         return next(errorHandler(400, "Email is already in use"));
       }
@@ -289,6 +331,7 @@ export const staffsignup = async (req, res, next) => {
     next(error);
   }
 };
+
 export const staffsignin = async (req, res, next) => {
   try {
     let { identifier, password } = req.body;
