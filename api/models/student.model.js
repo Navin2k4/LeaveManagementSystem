@@ -28,23 +28,27 @@ const studentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    mentorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Staff",
+    },
     departmentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Department',
+      ref: "Department",
       required: true,
     },
     sectionId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Section',
+      ref: "Section",
       required: true,
     },
-    section_name:{
+    section_name: {
       type: String,
       required: true,
     },
     batchId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Batch',
+      ref: "Batch",
       required: true,
     },
     userType: {
@@ -53,8 +57,8 @@ const studentSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'active'],
-      default: 'pending',
+      enum: ["pending", "active"],
+      default: "pending",
     },
   },
   {

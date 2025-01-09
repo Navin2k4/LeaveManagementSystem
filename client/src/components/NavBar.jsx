@@ -54,7 +54,7 @@ function Navbar() {
           className="flex items-center font-bold text-xl text-white gap-2"
         >
           <img
-            src="/public/vcet.jpeg"
+            src="/vcet.jpeg"
             alt="VCET Logo"
             className="w-12 h-12 rounded-full"
           />

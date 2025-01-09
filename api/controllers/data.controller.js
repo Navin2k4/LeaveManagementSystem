@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import xlsx from "xlsx";
 import fs from "fs";
 import Student from "../models/student.model.js";
@@ -6,113 +7,361 @@ import Department from "../models/department.model.js";
 import Batch from "../models/batch.model.js";
 import Section from "../models/section.model.js";
 
-// Upload and process student data
 export const uploadStudentData = async (req, res) => {
   const filePath = req.file.path;
 
   try {
-    await processStudentExcelFile(filePath);
+    const result = await processStudentExcelFile(filePath);
     fs.unlinkSync(filePath);
-    res.status(200).json({ message: "Student details processed successfully." });
+    res.status(200).json(result);
   } catch (error) {
-    console.error(error.message);
+    console.error("Error processing file:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
-// Utility function to find or throw an error if a model is not found
-async function findModelOrThrow(Model, query, entityName) {
-  const record = await Model.findOne(query);
-  if (!record) {
-    throw new Error(`${entityName} not found for query: ${JSON.stringify(query)}`);
-  }
-  return record;
-}
-
-// Function to process the student data from the Excel file
-export async function processStudentExcelFile(filePath) {
+async function processStudentExcelFile(filePath) {
   try {
-    // Read the Excel file
     const workbook = xlsx.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
-    const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], {
+      header: 1,
+      raw: false,
+    });
 
-    // Iterate over the rows
-    for (const row of sheetData) {
-      const {
-        roll_no,
-        name,
-        dept_acronym,
-        year,
-        sec,
-        mentor,
-        classincharge,
-        register_no,
-        email,
-        phone,
-      } = row;
+    // Skip header row if it exists
+    const dataRows = sheetData.slice(1);
 
-      // Step 1: Find the department based on dept_acronym
-      const department = await findModelOrThrow(Department, { dept_acronym }, "Department");
+    const results = {
+      success: [],
+      duplicates: [],
+      errors: [],
+      summary: {
+        total: 0,
+        successful: 0,
+        duplicates: 0,
+        errors: 0,
+      },
+    };
 
-      // Step 2: Find the batch based on the department and batch name (year)
-      const batch = await Batch.findOne({ 
-        department: department._id, 
-        batch_name: year 
-      });
+    for (const row of dataRows) {
+      try {
+        // Skip empty rows
+        if (!row[0]) continue;
 
-      if (!batch) {
-        throw new Error(`Batch ${year} not found in department ${dept_acronym}.`);
+        results.summary.total++;
+
+        const [
+          roll_no,
+          register_no,
+          name,
+          email,
+          phone,
+          department,
+          batch,
+          section,
+          mentor,
+        ] = row;
+
+        // Skip if essential data is missing
+        if (!roll_no || !register_no || !name) {
+          results.errors.push({
+            roll_no: roll_no || "N/A",
+            register_no: register_no || "N/A",
+            name: name || "N/A",
+            error: "Missing essential data",
+          });
+          results.summary.errors++;
+          continue;
+        }
+
+        // Check for duplicates
+        const existingStudent = await Student.findOne({
+          $or: [{ roll_no }, { register_no }, { email }],
+        });
+
+        if (existingStudent) {
+          results.duplicates.push({
+            roll_no,
+            register_no,
+            name,
+            email,
+            duplicateField:
+              existingStudent.roll_no === roll_no
+                ? "Roll No"
+                : existingStudent.register_no === register_no
+                ? "Register No"
+                : "Email",
+          });
+          results.summary.duplicates++;
+          continue;
+        }
+
+        // Find department
+        const departmentDoc = await Department.findOne({
+          dept_acronym: department,
+        });
+        if (!departmentDoc) {
+          throw new Error(`Department not found: ${department}`);
+        }
+
+        // Find batch
+        const batchDoc = await Batch.findOne({
+          department: departmentDoc._id,
+          batch_name: batch,
+        });
+        if (!batchDoc) {
+          throw new Error(`Batch not found: ${batch}`);
+        }
+
+        // Find section
+        const sectionDoc = await Section.findOne({
+          Batch: batchDoc._id,
+          section_name: section,
+        });
+        if (!sectionDoc) {
+          throw new Error(`Section not found: ${section}`);
+        }
+
+        // Find mentor
+        const mentorDoc = await Staff.findOne({
+          staff_id: mentor,
+          isMentor: true,
+        });
+        if (!mentorDoc) {
+          throw new Error(`Mentor not found: ${mentor}`);
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(register_no.toString(), 10);
+
+        // Create student record
+        const studentData = {
+          roll_no,
+          register_no,
+          password: hashedPassword,
+          name,
+          email,
+          phone,
+          departmentId: departmentDoc._id,
+          batchId: batchDoc._id,
+          sectionId: sectionDoc._id,
+          section_name: section,
+          mentorId: mentorDoc._id,
+          userType: "Student",
+          status: "active",
+        };
+
+        await Student.create(studentData);
+        results.success.push({
+          roll_no,
+          name,
+          department,
+          batch,
+          section,
+        });
+        results.summary.successful++;
+      } catch (error) {
+        results.errors.push({
+          roll_no: row[0] || "N/A",
+          register_no: row[1] || "N/A",
+          name: row[2] || "N/A",
+          error: error.message,
+        });
+        results.summary.errors++;
       }
-
-      // Step 3: Find the section based on the batch ID and section name
-      const section = await Section.findOne({
-        Batch: batch._id,
-        section_name: sec,
-      });
-
-      if (!section) {
-        throw new Error(`Section ${sec} not found for batch ${year} in department ${dept_acronym}.`);
-      }
-
-      // Validate mentor and class-in-charge
-      const mentorStaff = await Staff.findOne({ staff_name: mentor, isMentor: true });
-      if (!mentorStaff) {
-        throw new Error(`Mentor ${mentor} not found in Staff collection.`);
-      } 
-
-      const classInchargeStaff = await Staff.findOne({ staff_name: classincharge, isClassIncharge: true });
-      if (!classInchargeStaff) {
-        throw new Error(`Class In-Charge ${classincharge} not found in Staff collection.`);
-      }
-
-      // Check if the student already exists
-      const existingStudent = await Student.findOne({ roll_no });
-      if (existingStudent) {
-        console.log(`Student with roll_no ${roll_no} already exists, skipping.`);
-        continue;
-      }
-
-      // Create a new student record with the register_no as password
-      await Student.create({
-        roll_no,
-        register_no,
-        password: register_no, // Use register number as password
-        name,
-        email,
-        phone,
-        departmentId: department._id,
-        sectionId: section._id,
-        section_name: sec,
-        batchId: batch._id,
-        userType: "Student",
-        status: "active",
-      });
-
-      console.log(`Student ${roll_no} added successfully.`);
     }
+
+    return {
+      message: "File processing completed",
+      summary: results.summary,
+      details: {
+        successful: results.success,
+        duplicates: results.duplicates,
+        errors: results.errors,
+      },
+    };
   } catch (error) {
-    console.error("Error processing Excel file:", error.message);
+    console.error("Error processing Excel file:", error);
+    throw error;
+  }
+}
+
+export const uploadStaffData = async (req, res) => {
+  const filePath = req.file.path;
+
+  try {
+    const result = await processStaffExcelFile(filePath);
+    fs.unlinkSync(filePath);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error processing file:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+async function processStaffExcelFile(filePath) {
+  try {
+    const workbook = xlsx.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], {
+      header: 1,
+      raw: false,
+    });
+
+    const results = {
+      success: [],
+      duplicates: [],
+      errors: [],
+      summary: {
+        total: 0,
+        successful: 0,
+        duplicates: 0,
+        errors: 0,
+      },
+    };
+
+    for (const row of sheetData) {
+      try {
+        if (!row[0]) continue;
+
+        results.summary.total++;
+
+        const [
+          staff_id,
+          staff_name,
+          staff_mail,
+          staff_phone,
+          department,
+          batch,
+          section,
+          isClassIncharge,
+          isMentor,
+          isHOD,
+        ] = row;
+
+        // Validate essential data
+        if (!staff_id || !staff_name) {
+          results.errors.push({
+            staff_id: staff_id || "N/A",
+            staff_name: staff_name || "N/A",
+            error: "Missing essential data",
+          });
+          results.summary.errors++;
+          continue;
+        }
+
+        // Check for existing staff
+        const existingStaff = await Staff.findOne({
+          $or: [{ staff_id }, { staff_mail: staff_mail || "" }],
+        });
+
+        if (existingStaff) {
+          results.duplicates.push({
+            staff_id,
+            staff_name,
+            staff_mail,
+            duplicateField:
+              existingStaff.staff_id === staff_id ? "Staff ID" : "Email",
+          });
+          results.summary.duplicates++;
+          continue;
+        }
+
+        // Find department
+        const departmentDoc = await Department.findOne({
+          dept_acronym: department,
+        });
+        if (!departmentDoc) {
+          throw new Error(`Department not found: ${department}`);
+        }
+
+        let batchDoc = null;
+        let sectionDoc = null;
+
+        // Only validate batch and section if not HOD
+        if (isHOD?.toUpperCase() !== "YES") {
+          // Find batch
+          if (batch) {
+            batchDoc = await Batch.findOne({
+              department: departmentDoc._id,
+              batch_name: batch,
+            });
+            if (!batchDoc) {
+              throw new Error(`Batch not found: ${batch}`);
+            }
+
+            // Find section
+            if (section) {
+              sectionDoc = await Section.findOne({
+                Batch: batchDoc._id,
+                section_name: section,
+              });
+              if (!sectionDoc) {
+                throw new Error(`Section not found: ${section}`);
+              }
+            }
+          }
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(staff_id.toString(), 10);
+
+        // Create staff record
+        const staffData = {
+          staff_id,
+          staff_name,
+          staff_mail,
+          staff_phone,
+          staff_handle_dept: departmentDoc._id,
+          staff_handle_batch: batchDoc?._id || null,
+          staff_handle_section: sectionDoc?._id || null,
+          section_name: section || null,
+          isClassIncharge: isClassIncharge?.toUpperCase() === "YES",
+          isMentor: isMentor?.toUpperCase() === "YES",
+          isHod: isHOD?.toUpperCase() === "YES",
+          password: hashedPassword,
+          userType: "Staff",
+          staff_role: isHOD?.toUpperCase() === "YES" ? "HOD" : "Staff",
+        };
+
+        await Staff.create(staffData);
+        results.success.push({
+          staff_id,
+          staff_name,
+          department,
+          batch: batch || "N/A",
+          section: section || "N/A",
+          roles: [
+            isClassIncharge?.toUpperCase() === "YES" ? "Class Incharge" : "",
+            isMentor?.toUpperCase() === "YES" ? "Mentor" : "",
+            isHOD?.toUpperCase() === "YES" ? "HOD" : "",
+          ]
+            .filter(Boolean)
+            .join(", "),
+        });
+        results.summary.successful++;
+      } catch (error) {
+        results.errors.push({
+          staff_id: row[0] || "N/A",
+          staff_name: row[1] || "N/A",
+          error: error.message,
+        });
+        results.summary.errors++;
+      }
+    }
+
+    return {
+      message: "File processing completed",
+      summary: results.summary,
+      details: {
+        successful: results.success,
+        duplicates: results.duplicates,
+        errors: results.errors,
+      },
+    };
+  } catch (error) {
+    console.error("Error processing Excel file:", error);
     throw error;
   }
 }

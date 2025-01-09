@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import LeaveStatsCard from "../components/LeaveStatsCard";
 import { useFetchDepartments } from "../../hooks/useFetchData";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import UploadExcel from "../components/excelUpload";
 
 const SuperAdmin = () => {
   const departments = useFetchDepartments();
@@ -24,6 +25,7 @@ const SuperAdmin = () => {
   const [classInchargeMessage, setClassInchargeMessage] = useState("");
   const [newBatchName, setNewBatchName] = useState("");
   const [batchAlertMessage, setBatchAlertMessage] = useState("");
+  const [uploadType, setUploadType] = useState("student");
 
   useEffect(() => {
     if (selectedDepartment) {
@@ -332,11 +334,34 @@ const SuperAdmin = () => {
       </div>
 
       <div className="flex-1 p-4 md:p-8 overflow-y-auto">
-      <div>
-      <Link to="/superadmin/excelupload" className="text-white bg-blue-600 rounded-md p-3 hover:text-blue-300">
-                To Upload Data as Excel (Student)
-        </Link>
-      </div>
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800">Data Upload</h2>
+
+          <div className="flex gap-4 mb-6">
+            <button
+              onClick={() => setUploadType("student")}
+              className={`px-4 py-2 rounded-md transition duration-200 ${
+                uploadType === "student"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Student Upload
+            </button>
+            <button
+              onClick={() => setUploadType("staff")}
+              className={`px-4 py-2 rounded-md transition duration-200 ${
+                uploadType === "staff"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Staff Upload
+            </button>
+          </div>
+
+          <UploadExcel type={uploadType} />
+        </div>
 
         {selectedDepartment && (
           <>
@@ -357,7 +382,7 @@ const SuperAdmin = () => {
                     <button
                       onClick={handleAddBatch}
                       className="bg-green-400 text-white font-bold hover:bg-orange-300 hover:text-black transition-all duration-300 px-4 py-2 rounded-md"
-                      >
+                    >
                       Add Batch
                     </button>
                   </div>
@@ -398,16 +423,16 @@ const SuperAdmin = () => {
             {/* Sections list */}
             {selectedBatch && (
               <div className="bg-gray-100 mb-4 md:mb-8 p-4 rounded-lg">
-              <div className="flex flex-row items-center justify-between mb-5 ">
-              <h2 className="text-lg text-gray-800 font-semibold ">
-                  Sections for {selectedBatch.batch_name} Batch
-                </h2>
+                <div className="flex flex-row items-center justify-between mb-5 ">
+                  <h2 className="text-lg text-gray-800 font-semibold ">
+                    Sections for {selectedBatch.batch_name} Batch
+                  </h2>
 
-                <div className="flex items-center justify-center gap-3">
-                  {sectionAlertMessage && (
-                    <div className="text-sm text-red-500 font-bold">{`Section ${sectionAlertMessage}`}</div>
-                  )}
-                <input
+                  <div className="flex items-center justify-center gap-3">
+                    {sectionAlertMessage && (
+                      <div className="text-sm text-red-500 font-bold">{`Section ${sectionAlertMessage}`}</div>
+                    )}
+                    <input
                       type="text"
                       value={newSection}
                       onChange={(e) => setNewSection(e.target.value)}
@@ -422,7 +447,6 @@ const SuperAdmin = () => {
                     </button>
                   </div>
                 </div>
-
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   {sections.map((section, index) => (
@@ -456,81 +480,90 @@ const SuperAdmin = () => {
             {/* Section details */}
             {selectedSection && (
               <div className="bg-gray-100 mb-4 md:mb-8 p-6 rounded-lg shadow-md">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg text-gray-800 font-semibold">
-                  Details for {selectedSection.section_name}
-                </h2>
-                <button
-                  className="bg-red-500 text-white hover:bg-red-600 px-3 py-2 rounded-md"
-                  onClick={() => handleDeleteClass(selectedSection._id)}
-                >
-                  Delete Section
-                </button>
-              </div>
-            
-              {MentorAlertMessage && (
-                <div className="text-green-600 mb-4">
-                  {MentorAlertMessage}
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg text-gray-800 font-semibold">
+                    Details for {selectedSection.section_name}
+                  </h2>
+                  <button
+                    className="bg-red-500 text-white hover:bg-red-600 px-3 py-2 rounded-md"
+                    onClick={() => handleDeleteClass(selectedSection._id)}
+                  >
+                    Delete Section
+                  </button>
                 </div>
-              )}
-            
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Mentors:</h3>
-                <ul className="space-y-2">
-                  {classDetails.mentors.map((mentor, index) => (
-                    <li key={index} className="flex justify-between items-center bg-white p-2 rounded-md shadow-sm">
-                      <span>{mentor.staff_name}</span>
-                      <button
-                        className="text-red-500 hover:text-red-700"
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              `Are you sure you want to delete ${mentor.staff_name}?`
-                            )
-                          ) {
-                            handleDeleteMentor(mentor._id);
-                          }
-                        }}
+
+                {MentorAlertMessage && (
+                  <div className="text-green-600 mb-4">
+                    {MentorAlertMessage}
+                  </div>
+                )}
+
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    Mentors:
+                  </h3>
+                  <ul className="space-y-2">
+                    {classDetails.mentors.map((mentor, index) => (
+                      <li
+                        key={index}
+                        className="flex justify-between items-center bg-white p-2 rounded-md shadow-sm"
                       >
-                        Delete
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            
-              {classInchargeMessage && (
-                <div className="text-green-600 mb-4">
-                  {classInchargeMessage}
+                        <span>{mentor.staff_name}</span>
+                        <button
+                          className="text-red-500 hover:text-red-700"
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                `Are you sure you want to delete ${mentor.staff_name}?`
+                              )
+                            ) {
+                              handleDeleteMentor(mentor._id);
+                            }
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              )}
-            
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Class Incharges:</h3>
-                <ul className="space-y-2">
-                  {classDetails.classIncharges.map((incharge, index) => (
-                    <li key={index} className="flex justify-between items-center bg-white p-2 rounded-md shadow-sm">
-                      <span>{incharge.staff_name}</span>
-                      <button
-                        className="text-red-500 hover:text-red-700"
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              `Are you sure you want to delete ${incharge.staff_name}?`
-                            )
-                          ) {
-                            handleDeleteClassIncharge(incharge._id);
-                          }
-                        }}
+
+                {classInchargeMessage && (
+                  <div className="text-green-600 mb-4">
+                    {classInchargeMessage}
+                  </div>
+                )}
+
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    Class Incharges:
+                  </h3>
+                  <ul className="space-y-2">
+                    {classDetails.classIncharges.map((incharge, index) => (
+                      <li
+                        key={index}
+                        className="flex justify-between items-center bg-white p-2 rounded-md shadow-sm"
                       >
-                        Delete
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+                        <span>{incharge.staff_name}</span>
+                        <button
+                          className="text-red-500 hover:text-red-700"
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                `Are you sure you want to delete ${incharge.staff_name}?`
+                              )
+                            ) {
+                              handleDeleteClassIncharge(incharge._id);
+                            }
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
-            
             )}
           </>
         )}

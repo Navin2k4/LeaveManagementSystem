@@ -18,20 +18,23 @@ const StaffSchema = new mongoose.Schema({
   },
   staff_handle_dept: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Department',
+    ref: "Department",
   },
-  // staff_handle_batch: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Batch',
-  // },
-  // staff_handle_section: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Section',
-  // },
+  staff_handle_batch: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Batch",
+  },
+  staff_handle_section: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Section",
+  },
+  section_name: {
+    type: String,
+  },
   staff_role: {
     type: String,
     required: true,
-    default: 'Staff'
+    default: "Staff",
   },
   isMentor: {
     type: Boolean,
@@ -41,40 +44,42 @@ const StaffSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  isPEStaff:{
+  isPEStaff: {
     type: Boolean,
     default: false,
   },
-  isHod:{
+  isHod: {
     type: Boolean,
     default: false,
   },
   classInchargeBatchId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Batch',
+    ref: "Batch",
     // default:null,
-    sparse:true
+    sparse: true,
   },
   classInchargeSectionId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Section',
+    ref: "Section",
     // default:null,
     unique: true,
-    sparse:true
+    sparse: true,
   },
   numberOfClassesHandledAsMentor: {
     type: Number,
   },
-  mentorHandlingData: [{
-    handlingBatchId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Batch',
+  mentorHandlingData: [
+    {
+      handlingBatchId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Batch",
+      },
+      handlingSectionId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Section",
+      },
     },
-    handlingSectionId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Section',
-    }
-  }],
+  ],
   password: {
     type: String,
     required: true,
