@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { TypeAnimation } from "react-type-animation";
 
 function HomePage() {
   const { currentUser } = useSelector((state) => state.user);
@@ -9,34 +8,10 @@ function HomePage() {
     <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)]">
       <div className="flex-1 flex justify-center bg-gradient-to-t from-blue-500 to-[#244784] p-6 shadow-lg">
         <div className="max-w-2xl md:max-w-3xl text-left">
-          <div className="flex flex-col gap-2 md:mt-10">
-            <div>
               <h1 className="text-5xl font-bold tracking-wider text-white ">
-                Leave
+                VCET Connect
               </h1>
-            </div>
-            <div>
-              <TypeAnimation
-                sequence={[
-                  "Management",
-                  1500,
-                  "Request",
-                  1500,
-                  "Approval",
-                  1500,
-                ]}
-                cursor={true}
-                repeat={Infinity}
-                className="text-5xl font-bold mb-6 tracking-wider text-blue-400 transition-all duration-500"
-              />
-            </div>
-            <div>
-              <h1 className="text-5xl font-bold mb-6 tracking-wider text-white ">
-                System
-              </h1>
-            </div>
-          </div>
-          <p className="text-lg leading-8  text-justify mb-8 text-secondary-white text-white indent-36">
+          <p className="text-lg mt-5 leading-8  text-justify mb-8 text-secondary-white text-white indent-36">
             Manage your leave requests efficiently with our streamlined system
             designed for both students and staff. Whether you're submitting a
             new request, checking the status of previous requests, or exploring
@@ -71,32 +46,14 @@ function HomePage() {
               )
             ) : null}
           </div>
-          {!currentUser && (
-            <div className="grid items-center text-center">
-              <Link
-                to="/signin"
-                className=" bg-white font-semibold rounded-full p-2 text-lg transition duration-300 shadow-black shadow-md transform  hover:scale-105"
-              >
-                Sign In
-              </Link>
-            </div>
-          )}
-           {!currentUser && (
-            <div className="my-4 grid grid-cols-1 gap-4 items-center text-center">
-              <Link
-                to="/studentsignup"
-                className=" bg-white font-semibold rounded-full p-2 text-lg transition duration-300 shadow-black shadow-md transform  hover:scale-105"
-              >
-                Sign Up Student
-              </Link>
-              <Link
-                to="/staffsignup"
-                className=" bg-white font-semibold rounded-full p-2 text-lg transition duration-300 shadow-black shadow-md transform  hover:scale-105"
-              >
-                Sign Up Staff
-              </Link>
-            </div>
-          )}
+          <div className="mt-8">
+            <h1 className="text-2xl font-bold text-white mb-4">Key Features</h1>
+            <ul className="text-white text-lg space-y-2 list-disc list-inside"> 
+              <li>Submit and track leave requests easily</li>
+              <li>Apply for On-Duty permissions</li>
+              <li>View attendance status</li>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -111,7 +68,7 @@ function HomePage() {
       <div className="flex-1 flex justify-center bg-gradient-to-b from-blue-500 to-[#244784] items-center bg-secondary-white p-8">
         <div className="max-w-2xl md:max-w-3xl text-left">
           <h2 className="text-3xl lg:text-4xl font-bold mb-6 text-right text-white leading-tight">
-            Why <span className="text-blue-400 text-6xl">LMS?</span>
+            Why <span className="text-blue-400 text-6xl">Connect?</span>
           </h2>
           <ul className="text-lg leading-relaxed text-justify mb-8 text-white list-disc list-inside bg-white/20 bg-opacity-10 backdrop-blur-md border border-transparent rounded-lg shadow-md p-6">
             <li className="mb-4">

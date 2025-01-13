@@ -12,32 +12,15 @@ import { ScaleLoader } from "react-spinners";
 
 // TOFIX If end date not selected then set the end date as the start data bug fix
 
-export default function LeaveRequestForm({ setTab }) {
+export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
   const { currentUser } = useSelector((state) => state.user);
-
-  const isStaff = currentUser.userType === "Staff" || false;
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [errors, setErrors] = useState({});
-  const [departments, setDepartments] = useState([]);
-  const [mentors, setMentors] = useState([]);
-  const [classIncharges, setClassIncharges] = useState([]);
-  const [leaveTypes, setLeaveTypes] = useState([
-    "Casual Leave",
-    "Sick Leave",
-    "Earned Leave",
-    "Maternity Leave",
-    "Paternity Leave",
-    "Study Leave",
-    "Duty Leave",
-    "Special Leave",
-    "Sabbatical Leave",
-  ]);
   const [forMedical, setForMedical] = useState(false);
   const [forOneDay, setForOneDay] = useState(false);
   const [isHalfDay, setIsHalfDay] = useState(null);
-  const [noOfDays, setNoOfDays] = useState(0);
 
   const [formData, setFormData] = useState({
     name: currentUser.name,
@@ -54,14 +37,15 @@ export default function LeaveRequestForm({ setTab }) {
     section_name: currentUser.section_name,
     departmentId: currentUser.departmentId,
     reason: "",
-    classInchargeId: "",
-    mentorId: "",
+    classInchargeId: classIncharge._id,
+    mentorId: mentor._id,
     leaveStartDate: "",
     leaveEndDate: "",
     isHalfDay: null,
     noOfDays: 0,
     typeOfLeave: "",
   });
+  console.log("FormData", formData);
 
   const handleForMedicalChange = (e) => {
     setForMedical(e.target.checked);
@@ -126,8 +110,6 @@ export default function LeaveRequestForm({ setTab }) {
       totalDays--;
     }
 
-    setNoOfDays(totalDays);
-
     // Calculate the total number of days inclusive
     const differenceInTime = endDate.getTime() - startDate.getTime();
     const differenceInDays =
@@ -149,48 +131,6 @@ export default function LeaveRequestForm({ setTab }) {
     }
     calculateDays();
   }, [formData.leaveStartDate, formData.leaveEndDate, forOneDay]);
-
-  useEffect(() => {
-    fetch("/api/departments")
-      .then((response) => response.json())
-      .then((data) => setDepartments(data))
-      .catch((error) => console.error(error));
-  }, []);
-
-  useEffect(() => {
-    if (formData.sectionId) {
-      const fetchStaff = async () => {
-        try {
-          const resMentor = await fetch(
-            `/api/sections/${formData.sectionId}/mentors`
-          );
-          const mentorsData = await resMentor.json();
-          setMentors(mentorsData);
-
-          const resClassIncharge = await fetch(
-            `/api/sections/${formData.sectionId}/classIncharges`
-          );
-          const classInchargesData = await resClassIncharge.json();
-          setClassIncharges(classInchargesData);
-
-          // Set classInchargeId in formData
-          if (classInchargesData.length > 0) {
-            setFormData({
-              ...formData,
-              classInchargeId: classInchargesData[0]._id,
-            });
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      };
-
-      fetchStaff();
-    } else {
-      setMentors([]);
-      setClassIncharges([]);
-    }
-  }, [formData.sectionId]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -303,62 +243,12 @@ export default function LeaveRequestForm({ setTab }) {
 
   return (
     <div className="flex justify-center md:mt-5">
-      <div className="w-full max-w-2xl px-6 py-4 md:py-4 mx-auto h-auto ">
+      <div className="w-full px-6 py-4 md:py-4 mx-auto h-auto ">
         <div
           className="bg-slate-200 shadow-lg
  rounded-md text-black px-6 py-3 font-sans md:mt-2"
         >
-          <div className="flex justify-center mb-4">
-            <h1 className="font-bold uppercase text-2xl px-6 py-2 tracking-widest">
-              Request Leave
-            </h1>
-          </div>
           <form className="flex flex-col gap-3 " onSubmit={handleSubmit}>
-            {!isStaff && (
-              <div className="grid grid-cols-1 gap-4">
-                <div className=" gap-3">
-                  <h1 className="">
-                    Your Class Incharge :{" "}
-                    {classIncharges.length > 0
-                      ? classIncharges[0].staff_name
-                      : ""}
-                  </h1>
-                  {errors.classInchargeId && (
-                    <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
-                      {errors.classInchargeId}
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-col gap-3">
-                  <Label
-                    htmlFor="mentorId"
-                    className="text-left font-semibold tracking-wide text-black"
-                  >
-                    Mentor Name<span className="text-red-400">*</span>
-                  </Label>
-                  <Select
-                    name="mentorId"
-                    value={formData.mentorId}
-                    required
-                    onChange={handleChange}
-                    className={errors.mentorId ? "border-red-500" : ""}
-                  >
-                    <option value="">Select Mentor</option>
-                    {mentors.map((mentor) => (
-                      <option key={mentor._id} value={mentor._id}>
-                        {mentor.staff_name}
-                      </option>
-                    ))}
-                  </Select>
-                  {errors.mentorId && (
-                    <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
-                      {errors.mentorId}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
                 <Label
@@ -444,52 +334,18 @@ export default function LeaveRequestForm({ setTab }) {
                 Select One in case of half day
               </Label>
             </div>
-
-            {isStaff ? (
-              <div className="flex flex-col">
-                <Label
-                  htmlFor="typeOfLeave"
-                  className="mb-2 text-left font-bold tracking-wide text-black"
-                >
-                  Type of Leave<span className="text-red-400">*</span>
-                </Label>
-                <Select
-                  id="typeOfLeave"
-                  name="typeOfLeave"
-                  value={formData.typeOfLeave}
-                  onChange={handleChange}
-                  className={` rounded-md py-2  text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                    errors.typeOfLeave ? "border-red-500" : ""
-                  }`}
-                >
-                  <option value="">Select Type of Leave</option>
-                  {leaveTypes.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </Select>
-                {errors.typeOfLeave && (
-                  <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
-                    {errors.typeOfLeave}
-                  </p>
-                )}
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="forMedical"
-                  name="forMedical"
-                  checked={forMedical}
-                  onChange={handleForMedicalChange}
-                  className="text-blue-500 border-secondary-blue"
-                />
-                <Label htmlFor="forMedical" className="text-black">
-                  Is this for medical reason?
-                </Label>
-              </div>
-            )}
-
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="forMedical"
+                name="forMedical"
+                checked={forMedical}
+                onChange={handleForMedicalChange}
+                className="text-blue-500 border-secondary-blue"
+              />
+              <Label htmlFor="forMedical" className="text-black">
+                Is this for medical reason?
+              </Label>
+            </div>
             <div className="flex flex-col gap-3">
               <Label
                 htmlFor="reason"
@@ -525,6 +381,11 @@ export default function LeaveRequestForm({ setTab }) {
               ) : (
                 <div className="flex items-center text-white justify-center py-2">
                   Submit Leave
+                </div>
+              )}
+              {errorMessage && (
+                <div className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
+                  {errorMessage}
                 </div>
               )}
             </button>

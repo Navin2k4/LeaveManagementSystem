@@ -127,48 +127,32 @@ const LeaveStatus = ({ leaveRequests }) => {
   return (
     <>
       <div
-        className="flex flex-col items-start justify-start bg-[#244784]
+        className="flex flex-col items-start justify-start 
  text-white p-8 m-4 rounded-2xl "
       >
-        <div className="flex flex-row items-center">
-          <h1 className="text-3xl font-semibold mb-6">Leave Summary </h1>
-          <h1 className="mb-4 mx-4">
-            Max Per month : 3<span className="text-red-200">*</span>
-          </h1>
+        <div className="flex items-center gap-4 mb-4">
+          <h1 className="text-2xl text-black">Leave Summary</h1>
+          <p className="text-black">Max 3 leaves per month</p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-          <div className="bg-ternary-blue p-6 rounded-lg shadow-md shadow-slate-700">
-            <h2 className="text-black text-xl font-medium mb-1">This Week</h2>
-            <p className="text-3xl text-dark-blue font-semibold">
-              {totalApprovedDaysThisWeek}
-            </p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white p-3 rounded">
+            <h2 className="text-black">Week</h2>
+            <p className="text-xl text-black">{totalApprovedDaysThisWeek}</p>
           </div>
-          <div className="bg-ternary-blue p-6 rounded-lg shadow-md shadow-slate-700">
-            <h2 className="text-black text-xl font-medium mb-1">This Month</h2>
-            <p
-              className={`text-3xl font-semibold ${
-                totalApprovedDaysThisMonth > 3
-                  ? "text-red-500"
-                  : "text-dark-blue"
-              }`}
-            >
+          <div className="bg-white p-3 rounded">
+            <h2 className="text-black">Month</h2>
+            <p className={`text-xl ${totalApprovedDaysThisMonth > 3 ? "text-red-500" : "text-black"}`}>
               {totalApprovedDaysThisMonth}
             </p>
           </div>
-          <div className="bg-ternary-blue p-6 rounded-lg shadow-md shadow-slate-700">
-            <h2 className="text-black text-xl font-medium mb-1">
-              This Semester
-            </h2>
-            <p className="text-3xl text-dark-blue font-semibold">
-              {totalApprovedDaysThisSemester}
-            </p>
+          <div className="bg-white p-3 rounded">
+            <h2 className="text-black">Semester</h2>
+            <p className="text-xl text-black">{totalApprovedDaysThisSemester}</p>
           </div>
-          <div className="bg-ternary-blue p-6 rounded-lg shadow-md shadow-slate-700">
-            <h2 className="text-black text-xl font-medium mb-1">This Year</h2>
-            <p className="text-3xl text-dark-blue font-semibold">
-              {totalApprovedDaysThisYear}
-            </p>
+          <div className="bg-white p-3 rounded">
+            <h2 className="text-black">Year</h2>
+            <p className="text-xl text-black">{totalApprovedDaysThisYear}</p>
           </div>
         </div>
       </div>

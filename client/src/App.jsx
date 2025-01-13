@@ -4,8 +4,8 @@ import PageNotFound from "./pages/PageNotFound";
 import StaffDashBoard from "./pages/StaffDashBoard";
 import HomePage from "./pages/HomePage";
 import Navbar from "./components/NavBar";
-import SignUp from "./components/SignUp";
-import ExcelUpload from "./components/excelUpload";
+// import SignUp from "./components/SignUp";
+// import StaffSignUp from "./components/StaffSignUp";
 import PrivateRoute from "./components/PrivateRoute";
 import StaffPrivateRoute from "./components/StaffPrivateRoute";
 import ProfilePage from "./pages/ProfilePage";
@@ -17,8 +17,8 @@ import WardDetails from "./pages/WardDetails";
 import VerifyOtp from "./components/VerifyOTP";
 import SignIn from "./components/SignIn";
 import Footer from "./components/Footer";
-import StaffSignUp from "./components/StaffSignUp";
 import MailTiming from "./components/MailTiming";
+import About from "./pages/About";
 
 
 // TODO:OTP IS WORKING BUT WE CAN CANCEL CERIFICATION AND STILL SIGN IT TO ENSURE THAT ONLY AFTER VERIFICATION THE STUDENT ATA IS SAVED IN THE DB COLLECTION  ( Actually no need to worry however going to remove signup idk ) ❌
@@ -41,13 +41,13 @@ const AppWrapper = () => {
       <Navbar />
       <Routes>
         <Route path='/' element={<HomePage />} />
-        <Route path='/studentsignup' element={<SignUp />} />
-        <Route path='/staffsignup' element={<StaffSignUp />} />
+        {/* <Route path='/studentsignup' element={<SignUp />} /> */}
+        {/* <Route path='/staffsignup' element={<StaffSignUp />} /> */}
         <Route path='/signin' element={<SignIn />} />
         <Route path="/wardDetails" element={<WardDetails />} />
         <Route path='/superadmin' element={<SuperAdmin />} />
+        <Route path='/know-about-us' element={<About />} />
         <Route path='/hidden/changeMailTiming' element={<MailTiming/>}/>
-        <Route path='/superadmin/excelupload' element={<ExcelUpload />} />
         <Route element={<PrivateRoute />}>
           <Route path='/studentdashboard' element={<DashBoard />} />
           <Route path='/profile' element={<ProfilePage />} />

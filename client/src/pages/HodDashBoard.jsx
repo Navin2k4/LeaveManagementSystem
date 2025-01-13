@@ -88,9 +88,9 @@ const Hoddashboard = () => {
     }
   }, [selectedSection]);
 
-  useEffect(() => {
-    fetchStaffLeaveRequests();
-  }, []);
+  // useEffect(() => {
+  //   fetchStaffLeaveRequests();
+  // }, []);
 
   const fetchDepartmentName = async () => {
     try {
@@ -183,23 +183,23 @@ const Hoddashboard = () => {
     }
   };
 
-  const fetchStaffLeaveRequests = async () => {
-    try {
-      setIsFetching(true);
-      const response = await fetch(
-        `/api/getStaffLeaveRequests?deptId=${currentUser.departmentId}`
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch staff leave requests");
-      }
-      const data = await response.json();
-      setStaffLeaveRequests(data);
-    } catch (error) {
-      console.error("Error fetching staff leave requests:", error.message);
-    } finally {
-      setIsFetching(false);
-    }
-  };
+  // const fetchStaffLeaveRequests = async () => {
+  //   try {
+  //     setIsFetching(true);
+  //     const response = await fetch(
+  //       `/api/getStaffLeaveRequests?deptId=${currentUser.departmentId}`
+  //     );
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch staff leave requests");
+  //     }
+  //     const data = await response.json();
+  //     setStaffLeaveRequests(data);
+  //   } catch (error) {
+  //     console.error("Error fetching staff leave requests:", error.message);
+  //   } finally {
+  //     setIsFetching(false);
+  //   }
+  // };
 
   const fetchClassIncharge = async () => {
     try {
@@ -278,6 +278,7 @@ const Hoddashboard = () => {
     setStudentRequest(false);
     setStaffRequest(true);
   };
+
   const toggleProfileMenu = () => {
     setIsProfileMenuOpen(!isProfileMenuOpen);
   };
@@ -361,7 +362,7 @@ const Hoddashboard = () => {
           >
             Student's Leave Requests
           </li>
-          <li
+          {/* <li
             className={`cursor-pointer py-2 px-4 transition-all duration-300 rounded-md font-bold ${
               staffRequest
                 ? "bg-white/60 text-black"
@@ -370,7 +371,7 @@ const Hoddashboard = () => {
             onClick={handleStaffLeaveRequest}
           >
             Staff's Leave Requests
-          </li>
+          </li> */}
         </ul>
       </div>
       <div className="flex-1 p-4 md:p-8 overflow-y-auto">
@@ -446,9 +447,7 @@ const Hoddashboard = () => {
                         <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
                           Reason
                         </TableHeadCell>
-                        <TableHeadCell
-                          className="p-4 bg-[#1f3a6e] min-w-max text-center text-white"
-                        >
+                        <TableHeadCell className="p-4 bg-[#1f3a6e] min-w-max text-center text-white">
                           From - To
                         </TableHeadCell>
                         <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
@@ -461,14 +460,15 @@ const Hoddashboard = () => {
                           Comments
                         </TableHeadCell>
                         <TableHeadCell className="p-4 bg-[#1f3a6e] text-center text-white">
-                          Actions
+                          Status
                         </TableHeadCell>
                       </TableHead>
                       <TableBody className="divide-y">
                         {leaveRequests.map((req) => {
-                          const { status : hodstatus } = req.approvals.hod;
-                          const { status : classInchargeStatus } = req.approvals.classIncharge;
-                          const { status : mentorStatus } = req.approvals.mentor;
+                          const { status: hodstatus } = req.approvals.hod;
+                          const { status: classInchargeStatus } =
+                            req.approvals.classIncharge;
+                          const { status: mentorStatus } = req.approvals.mentor;
 
                           return (
                             <TableRow key={req._id}>
@@ -479,9 +479,7 @@ const Hoddashboard = () => {
                               <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                                 {req.reason}
                               </TableCell>
-                              <TableCell
-                                className=" border text-center border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide"
-                              >
+                              <TableCell className=" border text-center border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                                 <div className="flex flex-col items-center min-w-max justify-center gap-2">
                                   <div>{formatDate(req.fromDate)}</div>
                                   <div>{formatDate(req.toDate)}</div>
@@ -500,13 +498,13 @@ const Hoddashboard = () => {
                                   <StatusDot
                                     status={req.approvals.classIncharge.status}
                                     role="classIncharge"
-                                    showLine={true}
+                                    showLine={false}
                                   />
-                                  <StatusDot
+                                  {/* <StatusDot
                                     status={req.approvals.hod.status}
                                     role="hod"
                                     showLine={false}
-                                  />
+                                  /> */}
                                 </div>
                               </TableCell>
                               <TableCell className="border min-w-[250px] border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">
@@ -521,15 +519,14 @@ const Hoddashboard = () => {
                                   )}
                                   {req.classInchargeComment !==
                                     "No Comments" && (
-                                      <div className="flex gap-2">
+                                    <div className="flex gap-2">
                                       <h2 className="">Class Incharge:</h2>
                                       <div className="text-gray-600">
                                         {req.classInchargeComment}
                                       </div>
                                     </div>
                                   )}
-                                 {req.hodComment !==
-                                    "No Comments" && (
+                                  {req.hodComment !== "No Comments" && (
                                     <div className="flex gap-2">
                                       <h2 className="">Hod:</h2>
                                       <div className="text-gray-600">
@@ -541,7 +538,18 @@ const Hoddashboard = () => {
                               </TableCell>
 
                               <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                                {hodstatus === "pending" && classInchargeStatus === "approved" ? (
+                                {(() => {
+                                  const baseClasses = "text-white text-center rounded-full p-1";
+                                  if (mentorStatus === "approved" && classInchargeStatus === "approved") {
+                                    return <div className={`bg-green-400 ${baseClasses}`}>Approved</div>;
+                                  }
+                                  if (mentorStatus === "rejected" || classInchargeStatus === "rejected") {
+                                    return <div className={`bg-red-400 ${baseClasses}`}>Rejected</div>;
+                                  }
+                                  return <div className={`bg-yellow-400 ${baseClasses}`}>Pending</div>;
+                                })()}
+                                {/* {hodstatus === "pending" &&
+                                classInchargeStatus === "approved" ? (
                                   <div className="flex items-center gap-4 justify-center">
                                     <button
                                       onClick={() =>
@@ -563,7 +571,10 @@ const Hoddashboard = () => {
                                     </button>
                                   </div>
                                 ) : classInchargeStatus === "pending" ? (
-                                        <h1>ClassIncharge and Mentor status is in pending!</h1>
+                                  <h1>
+                                    ClassIncharge and Mentor status is in
+                                    pending!
+                                  </h1>
                                 ) : (
                                   <div className="flex items-center justify-center gap-2">
                                     <button
@@ -585,7 +596,7 @@ const Hoddashboard = () => {
                                         : "Taken"}
                                     </button>
                                   </div>
-                                )}
+                                )} */}
                               </TableCell>
                             </TableRow>
                           );
@@ -705,7 +716,7 @@ const Hoddashboard = () => {
             )}
           </>
         )}
-        {staffRequest && (
+        {/* {staffRequest && (
           <>
             <div className="overflow-x-auto">
               {staffLeaveRequests.length > 0 ? (
@@ -903,7 +914,7 @@ const Hoddashboard = () => {
               </Modal>
             </div>
           </>
-        )}
+        )} */}
         {!studentRequest && !staffRequest && (
           <div className="mt-8 text-center text-gray-600">
             Select Leave Request to Approve.

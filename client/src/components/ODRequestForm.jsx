@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ScaleLoader } from "react-spinners";
 
-export default function ODRequestForm({ setTab }) {
+export default function ODRequestForm({ setTab, mentor, classIncharge }) {
   const { currentUser } = useSelector((state) => state.user);
 
   const isStaff = currentUser.userType === "Staff" || false;
@@ -45,8 +45,8 @@ export default function ODRequestForm({ setTab }) {
     section_name: currentUser.section_name,
     departmentId: currentUser.departmentId,
     reason: "",
-    classInchargeId: "",
-    mentorId: "",
+    classInchargeId: classIncharge._id,
+    mentorId: mentor._id,
     leaveStartDate: "",
     leaveEndDate: "",
     noOfDays: 0,
@@ -146,41 +146,6 @@ export default function ODRequestForm({ setTab }) {
       .catch((error) => console.error(error));
   }, []);
 
-  useEffect(() => {
-    if (formData.sectionId) {
-      const fetchStaff = async () => {
-        try {
-          const resMentor = await fetch(
-            `/api/sections/${formData.sectionId}/mentors`
-          );
-          const mentorsData = await resMentor.json();
-          setMentors(mentorsData);
-
-          const resClassIncharge = await fetch(
-            `/api/sections/${formData.sectionId}/classIncharges`
-          );
-          const classInchargesData = await resClassIncharge.json();
-          setClassIncharges(classInchargesData);
-
-          // Set classInchargeId in formData
-          if (classInchargesData.length > 0) {
-            setFormData({
-              ...formData,
-              classInchargeId: classInchargesData[0]._id,
-            });
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      };
-
-      fetchStaff();
-    } else {
-      setMentors([]);
-      setClassIncharges([]);
-    }
-  }, [formData.sectionId]);
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -278,50 +243,7 @@ export default function ODRequestForm({ setTab }) {
       <div className="w-full max-w-2xl px-6 py-4 md:py-4 mx-auto h-auto ">
         <div className="bg-slate-200 shadow-lg  rounded-md text-black px-6 py-3 font-sans md:mt-2">
           <form className="flex flex-col gap-3 " onSubmit={handleSubmit}>
-            {!isStaff && (
-              <div className="grid grid-cols-1 gap-4">
-                <div className=" gap-3">
-                  <h1 className="">
-                    Your Class Incharge :{" "}
-                    {classIncharges.length > 0
-                      ? classIncharges[0].staff_name
-                      : ""}
-                  </h1>
-                  {errors.classInchargeId && (
-                    <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
-                      {errors.classInchargeId}
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-col gap-3">
-                  <Label
-                    htmlFor="mentorId"
-                    className="text-left font-semibold tracking-wide text-black"
-                  >
-                    Mentor Name<span className="text-red-400">*</span>
-                  </Label>
-                  <Select
-                    name="mentorId"
-                    value={formData.mentorId}
-                    required
-                    onChange={handleChange}
-                    className={errors.mentorId ? "border-red-500" : ""}
-                  >
-                    <option value="">Select Mentor</option>
-                    {mentors.map((mentor) => (
-                      <option key={mentor._id} value={mentor._id}>
-                        {mentor.staff_name}
-                      </option>
-                    ))}
-                  </Select>
-                  {errors.mentorId && (
-                    <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
-                      {errors.mentorId}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
+
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">

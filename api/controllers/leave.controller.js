@@ -399,19 +399,19 @@ export const mentors = async (req, res) => {
   }
 };
 
-export const getStaffLeaveRequests = async (req, res) => {
-  const { deptId } = req.query;
-  try {
-    const response = await LeaveRequest.find({
-      departmentId: deptId,
-      isStaff: true,
-    }).sort({ createdAt: -1 });
-    res.status(200).json(response);
-  } catch (error) {
-    console.error("Error in Finding the Staff's Leave Request ", error.message);
-    res.status(500).json({ error: "Failed to get Staff's Leave Request" });
-  }
-};
+// export const getStaffLeaveRequests = async (req, res) => {
+//   const { deptId } = req.query;
+//   try {
+//     const response = await LeaveRequest.find({
+//       departmentId: deptId,
+//       isStaff: true,
+//     }).sort({ createdAt: -1 });
+//     res.status(200).json(response);
+//   } catch (error) {
+//     console.error("Error in Finding the Staff's Leave Request ", error.message);
+//     res.status(500).json({ error: "Failed to get Staff's Leave Request" });
+//   }
+// };
 
 export const getWardDetailsByRollNumber = async (req, res, next) => {
   const { rollNo } = req.params;

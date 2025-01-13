@@ -28,6 +28,9 @@ const studentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    parent_phone: {
+      type: String,
+    },
     mentorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Staff",

@@ -232,7 +232,7 @@ export default function LeaveRequests({
                           {req.noOfDays}
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          <div className="status-dots">
+                          <div className="flex items-center justify-center status-dots">
                             <StatusDot
                               status={req.approvals.mentor.status}
                               role="mentor"
@@ -241,13 +241,13 @@ export default function LeaveRequests({
                             <StatusDot
                               status={req.approvals.classIncharge.status}
                               role="classIncharge"
-                              showLine={true}
+                              showLine={false}
                             />
-                            <StatusDot
+                            {/* <StatusDot
                               status={req.approvals.hod.status}
                               role="hod"
                               showLine={false}
-                            />
+                            /> */}
                           </div>
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">
@@ -506,7 +506,7 @@ export default function LeaveRequests({
                           {req.noOfDays}
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          <div className="status-dots">
+                          <div className="flex items-center justify-center status-dots">
                             <StatusDot
                               status={req.approvals.mentor.status}
                               role="mentor"
@@ -515,13 +515,13 @@ export default function LeaveRequests({
                             <StatusDot
                               status={req.approvals.classIncharge.status}
                               role="classIncharge"
-                              showLine={true}
+                              showLine={false}
                             />
-                            <StatusDot
+                            {/* <StatusDot
                               status={req.approvals.hod.status}
                               role="hod"
                               showLine={false}
-                            />
+                            /> */}
                           </div>
                         </TableCell>
                         <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">

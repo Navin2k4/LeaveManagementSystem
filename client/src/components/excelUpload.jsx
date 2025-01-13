@@ -19,6 +19,7 @@ const UploadExcel = ({ type = "student" }) => {
           "Name",
           "Email",
           "Phone",
+          "Parent Phone",
           "Department",
           "Batch",
           "Section",

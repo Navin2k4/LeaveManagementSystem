@@ -43,10 +43,10 @@ const StaffDashBoard = () => {
               leaveRequestsAsClassIncharge={classInchargeRequest}
             />
           );
-        case "Request Leave":
-          return <LeaveRequestForm setTab={setTab} />;
-        case "Your Leave Requests":
-          return <DashBoard />;
+        // case "Request Leave":
+        //   return <LeaveRequestForm setTab={setTab} />;
+        // case "Your Leave Requests":
+        //   return <DashBoard />;
         default:
           return <LeaveRequestForm />;
       }
@@ -124,7 +124,7 @@ const StaffDashBoard = () => {
               >
                 Reports
               </li>
-              <li
+              {/* <li
                 onClick={() => setTab("Request Leave")}
                 className={`cursor-pointer py-2 px-4 transition-all duration-300 rounded-md ${
                   tab === "Request Leave" ? "bg-white/60 text-black font-bold" : "hover:bg-white/20 text-white font-bold"
@@ -139,7 +139,7 @@ const StaffDashBoard = () => {
                 }`}
               >
                 Your Leave Requests
-              </li>
+              </li> */}
             </>
           )}
         </ul>

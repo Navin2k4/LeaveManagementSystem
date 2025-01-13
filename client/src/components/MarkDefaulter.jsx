@@ -116,7 +116,7 @@ const MarkDefaulterAndLate = () => {
       };
       
       console.log(payload);
-      const response = await fetch('http://localhost:3000/api/defaulter/markDefaulter', {
+      const response = await fetch('/api/defaulter/markDefaulter', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

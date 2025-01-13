@@ -64,16 +64,6 @@ function Navbar() {
         </a>
       </div>
       <div className="hidden lg:flex gap-10 items-center justify-evenly text-lg text-white h-full">
-      <button className="bg-white rounded-lg px-3 py-1  shadow-lg transition-transform duration-300 transform hover:scale-105">
-      <Link 
-        to="https://cgpa-calculator-l1l7.onrender.com/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block w-full h-full text-black  text-center"
-      >
-        CGPA Calculator
-      </Link>
-    </button>
         <Link to="/" className="transition-all duration-200 hover:scale-105">
           Home
         </Link>
