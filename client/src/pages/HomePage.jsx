@@ -42,7 +42,7 @@ function HomePage() {
           >
             <motion.div variants={fadeInUp} className="space-y-4">
               <motion.h1
-                className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-[#1f3a6e]"
+                className="text-5xl font-bold bg-clip-text text-transparent bg-blue-600"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}

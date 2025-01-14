@@ -133,7 +133,7 @@ export default function SignIn() {
         </div>
 
         {errors.role && (
-          <p className="text-red-500 text-sm text-center mb-4">{errors.role}</p>
+          <p className="text-red-500 text-sm text-center font-semibold mb-4">{errors.role}</p>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -155,7 +155,7 @@ export default function SignIn() {
               onChange={handleChange}
             />
             {errors.identifier && (
-              <p className="mt-1 text-sm text-red-500">{errors.identifier}</p>
+              <p className="mt-1 text-sm text-red-500 font-semibold">{errors.identifier}</p>
             )}
           </div>
 
@@ -173,7 +173,7 @@ export default function SignIn() {
               onChange={handleChange}
             />
             {errors.password && (
-              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+              <p className="mt-1 text-sm text-red-500 font-semibold">{errors.password}</p>
             )}
           </div>
 
@@ -194,7 +194,7 @@ export default function SignIn() {
 
         {errorMessage && (
           <div className="mt-4">
-            <p className="text-sm text-red-500 text-center">{errorMessage}</p>
+            <p className="text-sm text-red-500 text-center font-semibold">{errorMessage}</p>
           </div>
         )}
       </div>

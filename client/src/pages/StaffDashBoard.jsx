@@ -39,9 +39,7 @@ const StaffDashBoard = () => {
     } else {
       switch (tab) {
         case "Profile":
-          return (
-            <StaffProfile />
-          );
+          return <StaffProfile />;
         case "Leave Requests":
           return (
             <LeaveRequests
@@ -49,6 +47,15 @@ const StaffDashBoard = () => {
               leaveRequestsAsMentor={mentorRequests}
             />
           );
+        case "OD Requests":
+          return (
+            <LeaveRequests
+              leaveRequestsAsClassIncharge={classInchargeRequest}
+              leaveRequestsAsMentor={mentorRequests}
+            />
+          );
+        case "Defaulter":
+          return <MarkDefaulterandLate />;
         case "Leave Reports":
           return (
             <LeaveStatsCard
@@ -70,41 +77,38 @@ const StaffDashBoard = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const menuItems = currentUser.isPEStaff
-    ? [
-        {
-          id: "Mark Defaulter",
-          icon: <UserCheck size={18} />,
-          label: "Mark Defaulter",
-        },
-        {
-          id: "Generate Report",
-          icon: <FileText size={18} />,
-          label: "Generate Report",
-        },
-      ]
-    : [
-      {
-        id: "Leave Requests",
-          icon: <ClipboardList size={18} />,
-          label: "Student's Leave Requests",
-        },
-        {
-          id: "Leave Reports",
-          icon: <FileBarChart size={18} />,
-          label: "Reports",
-        },
-        {
-          id: "Mentee List",
-          icon: <UserRoundPlus size={18} />,
-          label: "Mentee List",
-        },
-        {
-          id: "Profile",
-          icon: <User size={18} />,
-          label: "Profile",
-        },
-      ];
+  const menuItems = [
+    {
+      id: "Leave Requests",
+      icon: <ClipboardList size={18} />,
+      label: "Student's Leave Requests",
+    },
+    {
+      id: "OD Requests",
+      icon: <FileText size={18} />,
+      label: "Student's OD Requests",
+    },
+    {
+      id: "Defaulter",
+      icon: <UserCheck size={18} />,
+      label: "Defaulter",
+    },
+    {
+      id: "Leave Reports",
+      icon: <FileBarChart size={18} />,
+      label: "Reports",
+    },
+    {
+      id: "Mentee List",
+      icon: <UserRoundPlus size={18} />,
+      label: "Mentee List",
+    },
+    {
+      id: "Profile",
+      icon: <User size={18} />,
+      label: "Profile",
+    },
+  ];
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 dark:bg-gray-900">

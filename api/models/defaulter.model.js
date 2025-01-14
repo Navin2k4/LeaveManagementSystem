@@ -3,8 +3,20 @@ import mongoose from "mongoose";
 const defaulterSchema = new mongoose.Schema(
   {
     roll_no: {
-      type: String, 
+      type: String,
       required: true,
+    },
+    departmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Department",
+    },
+    batchId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Batch",
+    },
+    sectionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Section",
     },
     entryDate: {
       type: Date,
@@ -24,13 +36,18 @@ const defaulterSchema = new mongoose.Schema(
       ref: "Staff",
       required: true,
     },
-    defaulterType:{
+    classInchargeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Staff",
+      required: true,
+    },
+    defaulterType: {
       type: String,
       required: true,
-    }
+    },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   }
 );
 
