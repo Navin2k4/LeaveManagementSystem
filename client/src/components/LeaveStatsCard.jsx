@@ -1,611 +1,367 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
-import * as XLSX from "xlsx";
-import { parseISO, format, isValid } from "date-fns";
-import { TbFileTypePdf } from "react-icons/tb";
-import { RiFileExcel2Line } from "react-icons/ri";
-import { IoIosCloseCircleOutline } from "react-icons/io";
+import {
+  Users,
+  CheckCircle,
+  XCircle,
+  Clock,
+  FileText,
+  Calendar,
+  GraduationCap,
+  X,
+} from "lucide-react";
+import { GiMedicines } from "react-icons/gi";
+import { format } from "date-fns";
 
 const LeaveStatsCard = ({
   leaveRequestsAsMentor,
   leaveRequestsAsClassIncharge,
 }) => {
-  const [mentorRequests, setMentorRequests] = useState([]);
-  const [classInchargeRequests, setClassInchargeRequests] = useState([]);
+  const [mentorRequests, setMentorRequests] = useState(leaveRequestsAsMentor);
+  const [classInchargeRequests, setClassInchargeRequests] = useState(
+    leaveRequestsAsClassIncharge
+  );
+  const [menteeList, setMenteeList] = useState([]);
+  const [menteeStats, setMenteeStats] = useState({
+    total: 0,
+    withLeaves: 0,
+    withoutLeaves: 0,
+  });
   const { currentUser } = useSelector((state) => state.user);
-  const [recentLeaveRequests, setRecentLeaveRequests] = useState([]);
-  const [mentorStats, setMentorStats] = useState(false);
-  const [classInchargeStats, setClassInchargeStats] = useState(false);
+  const [activeTab, setActiveTab] = useState(null);
+  const [stats, setStats] = useState({
+    mentor: {
+      total: 0,
+      pending: 0,
+      approved: 0,
+      rejected: 0,
+      medical: 0,
+      nonMedical: 0,
+      singleDay: 0,
+      multiDay: 0,
+    },
+    classIncharge: {
+      total: 0,
+      pending: 0,
+      approved: 0,
+      rejected: 0,
+      medical: 0,
+      nonMedical: 0,
+      singleDay: 0,
+      multiDay: 0,
+    },
+  });
 
   useEffect(() => {
-    if (leaveRequestsAsMentor) {
-      setMentorRequests(leaveRequestsAsMentor);
+    const fetchMenteeList = async () => {
+      try {
+        const response = await fetch(`/api/mentee/${currentUser.userId}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setMenteeList(data);
+
+          // Calculate mentee statistics
+          const menteeWithLeaves = data.filter((mentee) =>
+            leaveRequestsAsMentor.some(
+              (request) =>
+                request.name === mentee.name ||
+                request.roll_no === mentee.rollNo
+            )
+          );
+
+          setMenteeStats({
+            total: data.length,
+            withLeaves: menteeWithLeaves.length,
+            withoutLeaves: data.length - menteeWithLeaves.length,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching mentee list:", error);
+      }
+    };
+
+    if (currentUser.isMentor) {
+      fetchMenteeList();
     }
-    if (leaveRequestsAsClassIncharge) {
-      setClassInchargeRequests(leaveRequestsAsClassIncharge);
-    }
-    fetchRecentLeaveRequests();
+  }, [currentUser.userId, currentUser.isMentor]);
+
+  useEffect(() => {
+    calculateStats();
   }, [leaveRequestsAsMentor, leaveRequestsAsClassIncharge]);
 
-  const handlementorStats = () => {
-    setMentorStats(true);
-    setClassInchargeStats(false);
+  const calculateStats = () => {
+    const mentorStats = {
+      total: leaveRequestsAsMentor.length,
+      pending: 0,
+      approved: 0,
+      rejected: 0,
+      medical: 0,
+      nonMedical: 0,
+      singleDay: 0,
+      multiDay: 0,
+    };
+
+    const classInchargeStats = {
+      total: leaveRequestsAsClassIncharge.length,
+      pending: 0,
+      approved: 0,
+      rejected: 0,
+      medical: 0,
+      nonMedical: 0,
+      singleDay: 0,
+      multiDay: 0,
+    };
+
+    // Calculate mentor stats
+    leaveRequestsAsMentor.forEach((request) => {
+      const status = request.approvals.mentor.status;
+      mentorStats[status]++;
+
+      if (request.forMedical) mentorStats.medical++;
+      else mentorStats.nonMedical++;
+
+      if (request.noOfDays === 1) mentorStats.singleDay++;
+      else mentorStats.multiDay++;
+    });
+
+    // Calculate class incharge stats
+    leaveRequestsAsClassIncharge.forEach((request) => {
+      const status = request.approvals.classIncharge.status;
+      classInchargeStats[status]++;
+
+      if (request.forMedical) classInchargeStats.medical++;
+      else classInchargeStats.nonMedical++;
+
+      if (request.noOfDays === 1) classInchargeStats.singleDay++;
+      else classInchargeStats.multiDay++;
+    });
+
+    setStats({ mentor: mentorStats, classIncharge: classInchargeStats });
   };
-
-  const handleClassInchargeStats = () => {
-    setClassInchargeStats(true);
-    setMentorStats(false);
-  };
-
-  const handleCloseButton = () => {
-    setMentorStats(false);
-    setClassInchargeStats(false);
-  };
-
-  const fetchRecentLeaveRequests = () => {
-    const now = new Date();
-    const oneMonthAgo = new Date(
-      now.getFullYear(),
-      now.getMonth() - 1,
-      now.getDate()
-    );
-    const recentRequests = [
-      ...leaveRequestsAsMentor,
-      ...leaveRequestsAsClassIncharge,
-    ].filter((request) => new Date(request.date) >= oneMonthAgo);
-    setRecentLeaveRequests(recentRequests);
-  };
-
-  const countRequestsByMentorStatus = (requests, status) => {
-    return requests.filter(
-      (request) => request.approvals.mentor.status === status
-    ).length;
-  };
-
-  const countRequestsByClassInchargeStatus = (requests, status) => {
-    return requests.filter(
-      (request) => request.approvals.classIncharge.status === status
-    ).length;
-  };
-
-  const totalRequestsByMentor = mentorRequests.length;
-  const pendingRequestsByMentor = countRequestsByMentorStatus(
-    mentorRequests,
-    "pending"
-  );
-  const approvedRequestsByMentor = countRequestsByMentorStatus(
-    mentorRequests,
-    "approved"
-  );
-  const rejectedRequestsByMentor = countRequestsByMentorStatus(
-    mentorRequests,
-    "rejected"
-  );
-
-  const totalRequestsByClassIncharge = classInchargeRequests.length;
-  const pendingRequestsByClassIncharge = countRequestsByClassInchargeStatus(
-    classInchargeRequests,
-    "pending"
-  );
-  const approvedRequestsByClassIncharge = countRequestsByClassInchargeStatus(
-    classInchargeRequests,
-    "approved"
-  );
-  const rejectedRequestsByClassIncharge = countRequestsByClassInchargeStatus(
-    classInchargeRequests,
-    "rejected"
-  );
 
   const formatDate = (date) => {
-    const parsedDate = parseISO(date);
-    return isValid(parsedDate)
-      ? format(parsedDate, "dd/MM/yyyy")
-      : "Invalid Date";
+    return format(new Date(date), "dd/MM/yyyy");
   };
 
-  const downloadPDFAsMentor = () => {
-    const doc = new jsPDF();
-    doc.text("Recent Leave Requests (Past Month)", 14, 20);
-    doc.autoTable({
-      head: [
-        [
-          "S.No",
-          "Student Name",
-          "Section",
-          "Reason",
-          "No.Of.Days",
-          "From Date",
-          "To Date",
-          "Status",
-        ],
-      ],
-      body: leaveRequestsAsMentor.map((request, index) => [
-        index + 1,
-        request.name,
-        request.section_name,
-        request.reason,
-        request.noOfDays,
-        formatDate(request.fromDate),
-        formatDate(request.toDate),
-        request.status,
-      ]),
-    });
-    doc.save("recent_leave_requests.pdf");
-  };
+  const StatCard = ({ title, stats, onClick }) => (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+          {title}
+        </h3>
+      </div>
+      <div className="p-4 space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          {/* Primary Stats */}
+          <StatItem
+            icon={<Users />}
+            label="Total Requests"
+            value={stats.total}
+          />
+          <StatItem
+            icon={<Clock />}
+            label="Pending"
+            value={stats.pending}
+            colorClass="yellow"
+          />
+          <StatItem
+            icon={<CheckCircle />}
+            label="Approved"
+            value={stats.approved}
+            colorClass="green"
+          />
+          <StatItem
+            icon={<XCircle />}
+            label="Rejected"
+            value={stats.rejected}
+            colorClass="red"
+          />
 
-  const downloadPDFAsClassIncharge = () => {
-    const doc = new jsPDF();
-    doc.text("Recent Leave Requests (Past Month)", 14, 20);
-    doc.autoTable({
-      head: [
-        [
-          "S.No",
-          "Student Name",
-          "Section",
-          "Reason",
-          "No.Of.Days",
-          "From Date",
-          "To Date",
-          "Status",
-        ],
-      ],
-      body: leaveRequestsAsClassIncharge.map((request, index) => [
-        index + 1,
-        request.name,
-        request.section_name,
-        request.reason,
-        request.noOfDays,
-        formatDate(request.fromDate),
-        formatDate(request.toDate),
-        request.status,
-      ]),
-    });
-    doc.save("recent_leave_requests.pdf");
-  };
+          {/* Additional Stats */}
+          <StatItem
+            icon={<GiMedicines />}
+            label="Medical"
+            value={stats.medical}
+            colorClass="blue"
+          />
+          <StatItem
+            icon={<FileText />}
+            label="Non-Medical"
+            value={stats.nonMedical}
+            colorClass="blue"
+          />
+          <StatItem
+            icon={<Calendar />}
+            label="Single Day"
+            value={stats.singleDay}
+            colorClass="blue"
+          />
+          <StatItem
+            icon={<Calendar />}
+            label="Multiple Days"
+            value={stats.multiDay}
+            colorClass="blue"
+          />
+        </div>
 
-  const downloadExcelAsMentor = () => {
-    const formattedRequests = leaveRequestsAsMentor.map((request, index) => ({
-      "S.No": index + 1,
-      "Student Name": request.name,
-      Section: request.section_name,
-      Reason: request.reason,
-      "No.Of.Days": request.noOfDays,
-      "From Date": formatDate(request.fromDate),
-      "To Date": formatDate(request.toDate),
-      Status: request.status,
-    }));
+        <button
+          onClick={onClick}
+          className="w-full bg-[#1f3a6e] text-white py-2 rounded-lg font-medium hover:bg-[#0b1f44] transition-all duration-300"
+        >
+          View Detailed Report
+        </button>
+      </div>
+    </div>
+  );
 
-    const worksheet = XLSX.utils.json_to_sheet(formattedRequests);
-
-    const header = [
-      "S.No",
-      "Student Name",
-      "Section",
-      "Reason",
-      "No.of.Days",
-      "From Date",
-      "To Date",
-      "Status",
-    ];
-    XLSX.utils.sheet_add_aoa(worksheet, [header], { origin: "A1" });
-    const range = XLSX.utils.decode_range(worksheet["!ref"]);
-
-    worksheet["!cols"] = [
-      { wch: 5 },
-      { wch: 30 },
-      { wch: 15 },
-      { wch: 30 },
-      { wch: 15 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 20 },
-    ];
-
-    for (let C = range.s.c; C <= range.e.c; ++C) {
-      const cell_address = XLSX.utils.encode_cell({ r: 0, c: C });
-      if (!worksheet[cell_address]) continue;
-      worksheet[cell_address].s = {
-        font: {
-          bold: true,
-          color: { rgb: "FFFFFF" },
-        },
-        fill: {
-          fgColor: { rgb: "000000" },
-        },
-        alignment: {
-          horizontal: "center",
-          vertical: "center",
-        },
-      };
-    }
-
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Recent Leave Requests");
-    XLSX.writeFile(workbook, "recent_leave_requests.xlsx");
-  };
-
-  const downloadExcelAsClassIncharge = () => {
-    const formattedRequests = leaveRequestsAsClassIncharge.map(
-      (request, index) => ({
-        "S.No": index + 1,
-        "Student Name": request.name,
-        Section: request.section_name,
-        Reason: request.reason,
-        "No.Of.Days": request.noOfDays,
-        "From Date": formatDate(request.fromDate),
-        "To Date": formatDate(request.toDate),
-        Status: request.status,
-      })
-    );
-
-    const worksheet = XLSX.utils.json_to_sheet(formattedRequests);
-
-    const header = [
-      "S.No",
-      "Student Name",
-      "Section",
-      "Reason",
-      "No.of.Days",
-      "From Date",
-      "To Date",
-      "Status",
-    ];
-    XLSX.utils.sheet_add_aoa(worksheet, [header], { origin: "A1" });
-    const range = XLSX.utils.decode_range(worksheet["!ref"]);
-
-    worksheet["!cols"] = [
-      { wch: 5 },
-      { wch: 30 },
-      { wch: 15 },
-      { wch: 30 },
-      { wch: 15 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 20 },
-    ];
-
-    for (let C = range.s.c; C <= range.e.c; ++C) {
-      const cell_address = XLSX.utils.encode_cell({ r: 0, c: C });
-      if (!worksheet[cell_address]) continue;
-      worksheet[cell_address].s = {
-        font: {
-          bold: true,
-          color: { rgb: "FFFFFF" },
-        },
-        fill: {
-          fgColor: { rgb: "000000" },
-        },
-        alignment: {
-          horizontal: "center",
-          vertical: "center",
-        },
-      };
-    }
-
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Recent Leave Requests");
-    XLSX.writeFile(workbook, "recent_leave_requests.xlsx");
-  };
-
-  return (
-    <div>
-      <div className="bg-white shadow-md p-4 rounded-lg">
-        <div className="">
-          <h2 className="text-3xl uppercase tracking-wider text-center font-semibold mb-8">
-            Leave Statistics
-          </h2>
-          <div className="mb-8 ">
-            <br />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  items-center justify-center gap-6 ">
-              {currentUser.isMentor && (
-                <div>
-                  <div
-                    className="bg-gradient-to-br from-blue-500 to-[#0f172a]
- shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all "
-                  >
-                    <h1 className="my-2  mb-4 text-lg text-center font-semibold p-3 bg-white  rounded-lg">
-                      As a Mentor
-                    </h1>
-                    <div className="my-2 text-lg font-semibold">
-                      <span className="text-white">
-                        Total Requests: {totalRequestsByMentor}
-                      </span>
-                    </div>
-                    <div className="mb-2 ">
-                      <span className="font-semibold text-white">
-                        Pending: {pendingRequestsByMentor}
-                      </span>
-                    </div>
-                    <div className="mb-2 ">
-                      <span className="font-semibold text-white">
-                        Approved: {approvedRequestsByMentor}
-                      </span>
-                    </div>
-                    <div className="mb-2 ">
-                      <span className="font-semibold text-white">
-                        Rejected: {rejectedRequestsByMentor}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-center">
-                      <button
-                        className="px-3 py-2 w-[100%] my-2 rounded-md bg-green-300 hover:bg-[#fbd1a2]  transition-all duration-300"
-                        onClick={handlementorStats}
-                      >
-                        Show Stats of Leave For This Month
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {currentUser.isClassIncharge && (
-                <div>
-                  <div
-                    className="bg-gradient-to-br from-blue-500 to-[#0f172a]
- shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all"
-                  >
-                    <h1 className="my-2 mb-4 text-lg font-semibold text-center bg-white  p-3  rounded-lg ">
-                      As a ClassIncharge
-                    </h1>
-                    <div className="my-2 text-lg font-semibold">
-                      <span className="text-white">
-                        Total Requests: {totalRequestsByClassIncharge}
-                      </span>
-                    </div>
-                    <div className="mb-2 ">
-                      <span className="font-semibold text-white">
-                        Pending: {pendingRequestsByClassIncharge}
-                      </span>
-                    </div>
-                    <div className="mb-2 ">
-                      <span className="font-semibold text-white">
-                        Approved: {approvedRequestsByClassIncharge}
-                      </span>
-                    </div>
-                    <div className="mb-2 ">
-                      <span className="font-semibold text-white">
-                        Rejected: {rejectedRequestsByClassIncharge}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-center">
-                      <button
-                        className="px-3 py-2 w-[100%] my-2 rounded-md bg-green-300 hover:bg-[#fbd1a2]  transition-all duration-300"
-                        onClick={handleClassInchargeStats}
-                      >
-                        Show Stats of Leave For This Month
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {/* <div
-                className="bg-gradient-to-br from-blue-500 to-[#0f172a]
-  text-white shadow-lg p-4 rounded-lg hover:-translate-y-2 duration-500 transition-all"
-              >
-                any others
-              </div> */}
-            </div>
-          </div>
+  const StatItem = ({ icon, label, value, colorClass = "blue" }) => (
+    <div className="flex items-center gap-3">
+      <div
+        className={`p-2 bg-${colorClass}-100 dark:bg-${colorClass}-900/30 rounded-lg`}
+      >
+        <div className={`text-${colorClass}-600 dark:text-${colorClass}-400`}>
+          {icon}
         </div>
       </div>
       <div>
-        {mentorStats && (
-          <div className=" bg-white shadow-md rounded-lg mt-2 ">
-            <div className="relative bg-white shadow-md p-4 rounded-lg overflow-x-auto">
-              <div className="flex justify-between">
-                <h2 className="text-xl font-semibold mb-4">
-                  This Month Stats: (As a Mentor)
-                </h2>
-                <button
-                  className="transition-all duration-300 px-2 md:bg-gray-400 md:hover:bg-gray-300 bg-transparent text-white font-semibold rounded-lg "
-                  onClick={handleCloseButton}
+        <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
+        <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {value}
+        </p>
+      </div>
+    </div>
+  );
+
+  const DetailedTable = ({ data, title, role, onClose }) => (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm mt-4">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+          {title}
+        </h2>
+        <button
+          onClick={onClose}
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+        >
+          <X className="text-gray-500 dark:text-gray-400" />
+        </button>
+      </div>
+
+      <div className="p-4 overflow-x-auto">
+        {data.length > 0 ? (
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead>
+              <tr>
+                <th className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Student
+                </th>
+                <th className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Section
+                </th>
+                <th className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Reason
+                </th>
+                <th className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Duration
+                </th>
+                <th className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Status
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              {data.map((request, index) => (
+                <tr
+                  key={index}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
                 >
-                  <div className="flex gap-3 items-center justify-center">
-                    <IoIosCloseCircleOutline
-                      size={25}
-                      className="block md:hidden  text-black absolute top-5  transition-all duration-300"
-                    />
-                    <span className="hidden md:block text-white mx-2  transition-all duration-300">
-                      Close
+                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                    {request.name}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                    {request.section_name}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                    <div className="flex items-center gap-2">
+                      {request.reason}
+                      {request.forMedical && (
+                        <GiMedicines className="text-green-500" />
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                    <div className="flex flex-col">
+                      <span>{formatDate(request.fromDate)}</span>
+                      {request.fromDate !== request.toDate && (
+                        <span>{formatDate(request.toDate)}</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        request.approvals[role].status === "approved"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                          : request.approvals[role].status === "rejected"
+                          ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                          : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                      }`}
+                    >
+                      {request.approvals[role].status}
                     </span>
-                  </div>
-                </button>
-              </div>
-              <br />
-              <div className="overflow-x-auto">
-                {leaveRequestsAsMentor.length > 0 ? (
-                  <table className="min-w-full bg-white border overflow-x-auto">
-                    <thead>
-                      <tr>
-                        <th className="py-2 px-4 border">S.No</th>
-                        <th className="py-2 px-4 border">Student Name</th>
-                        <th className="py-2 px-4 border">Section</th>
-                        <th className="py-2 px-4 border">Reason</th>
-                        <th className="py-2 px-4 border">From Date</th>
-                        <th className="py-2 px-4 border">To Date</th>
-                        <th className="py-2 px-4 border">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {leaveRequestsAsMentor.map((request, index) => (
-                        <tr key={index} className="font-semibold">
-                          <td className="py-2 px-4 border text-center">
-                            {index + 1}
-                          </td>
-                          <td className="py-2 px-4 border">{request.name}</td>
-                          <td className="py-2 px-4 border text-center">
-                            {request.section_name}
-                          </td>
-                          <td className="py-2 px-4 border">{request.reason}</td>
-                          <td className="py-2 px-4 border text-center">
-                            {new Date(request.fromDate).toLocaleDateString()}
-                          </td>
-                          <td className="py-2 px-4 border text-center">
-                            {new Date(request.toDate).toLocaleDateString()}
-                          </td>
-                          <td
-                            className={`py-2 px-4 border capitalize text-center
-                        ${
-                          request.approvals.mentor.status === "approved"
-                            ? "text-green-500"
-                            : ""
-                        }
-                        ${
-                          request.approvals.mentor.status === "pending"
-                            ? "text-gray-500"
-                            : ""
-                        }
-                        ${
-                          request.approvals.mentor.status === "rejected"
-                            ? "text-red-500"
-                            : ""
-                        }
-                        `}
-                          >
-                            {request.approvals.mentor.status}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="text-center my-3">No requests yet</div>
-                )}
-              </div>
-                <div className="flex justify-end mt-4">
-                  <button
-                    onClick={downloadPDFAsMentor}
-                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mr-2"
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <TbFileTypePdf size={20} />
-                      Download as PDF
-                    </div>
-                  </button>
-                  <button
-                    onClick={downloadExcelAsMentor}
-                    className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <RiFileExcel2Line size={20} />
-                      Download as Excel
-                    </div>
-                  </button>
-                </div>
-            </div>
-          </div>
-        )}
-        {classInchargeStats && (
-          <div className=" bg-white shadow-md rounded-lg mt-2">
-            <div className="relative bg-white shadow-md p-4 rounded-lg ">
-              <div className="flex justify-between">
-                <h2 className="text-xl font-semibold mb-4">
-                  This Month Stats: (As a ClassIncharge)
-                </h2>
-                <button
-                  className="transition-all duration-300 px-2 md:bg-gray-400 md:hover:bg-gray-300 bg-transparent text-white font-semibold rounded-lg "
-                  onClick={handleCloseButton}
-                >
-                  <div className="flex gap-3 items-center justify-center">
-                    <IoIosCloseCircleOutline
-                      size={25}
-                      className="block md:hidden  text-black absolute top-5  transition-all duration-300"
-                    />
-                    <span className="hidden md:block text-white mx-2  transition-all duration-300">
-                      Close
-                    </span>
-                  </div>
-                </button>
-              </div>
-              <br />
-              <div className="overflow-x-auto">
-                {leaveRequestsAsClassIncharge.length > 0 ? (
-                  <table className="min-w-full bg-white border">
-                    <thead>
-                      <tr>
-                        <th className="py-2 px-4 border">S.No</th>
-                        <th className="py-2 px-4 border">Student Name</th>
-                        <th className="py-2 px-4 border">Section</th>
-                        <th className="py-2 px-4 border">Reason</th>
-                        <th className="py-2 px-4 border">From</th>
-                        <th className="py-2 px-4 border">To </th>
-                        <th className="py-2 px-4 border">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {leaveRequestsAsClassIncharge.map((request, index) => (
-                        <tr key={index} className="font-semibold">
-                          <td className="py-2 px-4 border text-center">
-                            {index + 1}
-                          </td>
-                          <td className="py-2 px-4 border">{request.name}</td>
-                          <td className="py-2 px-4 border text-center">
-                            {request.section_name}
-                          </td>
-                          <td className="py-2 px-4 border">{request.reason}</td>
-                          <td className="py-2 px-4 border text-center">
-                            {new Date(request.fromDate).toLocaleDateString()}
-                          </td>
-                          <td className="py-2 px-4 border text-center">
-                            {new Date(request.toDate).toLocaleDateString()}
-                          </td>
-                          <td
-                            className={`py-2 px-4 border capitalize text-center
-                          ${
-                            request.approvals.classIncharge.status ===
-                            "approved"
-                              ? "text-green-500"
-                              : ""
-                          }
-                          ${
-                            request.approvals.classIncharge.status === "pending"
-                              ? "text-gray-500"
-                              : ""
-                          }
-                          ${
-                            request.approvals.classIncharge.status ===
-                            "rejected"
-                              ? "text-red-500"
-                              : ""
-                          }
-                          `}
-                          >
-                            {request.approvals.classIncharge.status}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="text-center my-3">No requests yet</div>
-                )}
-              </div>
-                <div className="flex justify-end mt-4">
-                  <button
-                    onClick={downloadPDFAsClassIncharge}
-                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg mr-2"
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <TbFileTypePdf size={20} />
-                      Download as PDF
-                    </div>
-                  </button>
-                  <button
-                    onClick={downloadExcelAsClassIncharge}
-                    className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <RiFileExcel2Line size={20} />
-                      Download as Excel
-                    </div>
-                  </button>
-                </div>
-            </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+            No requests found
           </div>
         )}
       </div>
-      <div></div>
+    </div>
+  );
+
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {currentUser.isMentor && (
+          <>
+            <StatCard
+              title="As a Mentor"
+              stats={stats.mentor}
+              onClick={() => setActiveTab("mentor")}
+            />
+          </>
+        )}
+        {currentUser.isClassIncharge && (
+          <StatCard
+            title="As a Class Incharge"
+            stats={stats.classIncharge}
+            onClick={() => setActiveTab("classIncharge")}
+          />
+        )}
+      </div>
+
+      {activeTab === "mentor" && (
+        <DetailedTable
+          data={leaveRequestsAsMentor}
+          title="Detailed Report (As Mentor)"
+          role="mentor"
+          onClose={() => setActiveTab(null)}
+        />
+      )}
+
+      {activeTab === "classIncharge" && (
+        <DetailedTable
+          data={leaveRequestsAsClassIncharge}
+          title="Detailed Report (As Class Incharge)"
+          role="classIncharge"
+          onClose={() => setActiveTab(null)}
+        />
+      )}
     </div>
   );
 };

@@ -37,21 +37,17 @@ const LeaveStatus = ({ leaveRequests }) => {
   const pendingRequests = filteredRequests.filter(
     (request) =>
       (request.approvals.mentor.status === "pending" ||
-        request.approvals.classIncharge.status === "pending" ||
-        request.approvals.hod.status === "pending") &&
+        request.approvals.classIncharge.status === "pending") &&
       request.approvals.mentor.status !== "rejected" &&
-      request.approvals.classIncharge.status !== "rejected" &&
-      request.approvals.hod.status !== "rejected"
+      request.approvals.classIncharge.status !== "rejected"
   );
 
   const approvedRequests = filteredRequests.filter(
     (request) =>
       request.approvals.mentor.status === "rejected" ||
       request.approvals.classIncharge.status === "rejected" ||
-      request.approvals.hod.status === "rejected" ||
       (request.approvals.mentor.status === "approved" &&
-        request.approvals.classIncharge.status === "approved" &&
-        request.approvals.hod.status === "approved")
+        request.approvals.classIncharge.status === "approved")
   );
 
   const getStartOfWeek = (date) => {
@@ -242,13 +238,13 @@ const LeaveStatus = ({ leaveRequests }) => {
                       <StatusDot
                         status={request.approvals.classIncharge.status}
                         role="classIncharge"
-                        showLine={true}
+                        showLine={false}
                       />
-                      <StatusDot
+                      {/* <StatusDot
                         status={request.approvals.hod.status}
                         role="hod"
                         showLine={false}
-                      />
+                      /> */}
                     </div>
                   )}
                 </div>
@@ -337,11 +333,11 @@ const LeaveStatus = ({ leaveRequests }) => {
                   <div className="status-dots">
                     {currentUser.userType === "Staff" ? (
                       <div className="status-dots">
-                        <StatusDot
+                        {/* <StatusDot
                           status={request.approvals.hod.status}
                           role="hod"
                           showLine={false}
-                        />
+                        /> */}
                       </div>
                     ) : (
                       <div className="status-dots">
@@ -354,15 +350,15 @@ const LeaveStatus = ({ leaveRequests }) => {
                         <StatusDot
                           status={request.approvals.classIncharge.status}
                           role="classIncharge"
-                          showLine={true}
+                          showLine={false}
                           comment={request.classIncharge}
                         />
-                        <StatusDot
+                        {/* <StatusDot
                           status={request.approvals.hod.status}
                           role="hod"
                           showLine={false}
                           comment={request.hodComment}
-                        />
+                        /> */}
                       </div>
                     )}
                   </div>
@@ -370,8 +366,9 @@ const LeaveStatus = ({ leaveRequests }) => {
                 <div className="flex items-center justify-between">
                   <div>
                     {request.approvals.mentor.status === "rejected" ||
-                    request.approvals.classIncharge.status === "rejected" ||
-                    request.approvals.hod.status === "rejected" ? (
+                    request.approvals.classIncharge.status === "rejected" 
+                    // || request.approvals.hod.status === "rejected" 
+                    ? (
                       <div className="rejected-status">Rejected</div>
                     ) : (
                       <div className="accepted-status">Approved</div>

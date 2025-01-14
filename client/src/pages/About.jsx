@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { FileText, Clock, AlertTriangle, Users } from "lucide-react";
+import { FileText, Clock, AlertTriangle, Users, BookOpen } from "lucide-react";
 
 const systems = [
   {
@@ -19,10 +19,9 @@ const systems = [
     name: "OD Management System",
     icon: Clock,
     developers: [
-      "Developer 1 - ID1",
-      "Developer 2 - ID2",
-      "Developer 3 - ID3",
-      "Developer 4 - ID4",
+      "Manasha Devi T G - 22CSEB16",
+      "Ritika Sachdeva - 22CSEB22",
+      "Matcharani J - 22CSEB17",
     ],
   },
   {
@@ -38,120 +37,186 @@ const systems = [
   {
     name: "Our Project Coordinators",
     icon: Users,
-    developers: ["Dr. Revathy Mam - AP/CSE", "Dr. Padma Mam- AP/CSE"],
+    developers: [
+      "Mrs.S.Padmadevi - Assistant Professor, CSE",
+      "Ms.J. Shanthalakshmi Revathy - Assistant Professor, CSE",
+      "Dr.A.M.Rajeswari - Associate Professor, CSE",
+    ],
   },
 ];
 
 const About = () => {
-  const currentYear = new Date().getFullYear();
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-800 to-blue-900 text-white py-16 px-4 sm:px-6 lg:px-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="max-w-7xl mx-auto"
-      >
-        <h1 className="text-4xl font-bold text-center mb-12">
-          About Our Systems
-        </h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {systems.map((system, index) => (
-            <motion.div
-              key={system.name}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white/10 backdrop-blur-lg rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
-            >
-              <div className="flex items-center mb-4">
-                <system.icon className="h-8 w-8 text-blue-300 mr-3" />
-                <h2 className="text-2xl font-semibold">{system.name}</h2>
-              </div>
-              <div className="space-y-2">
-                {system.developers.map((developer, idx) => (
-                  <p key={idx} className="text-md text-gray-100">
-                    {developer}
-                  </p>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-center bg-white/5 backdrop-blur-lg rounded-lg p-8"
-        >
-          <div className="max-w-5xl mx-auto">
-            <h3 className="text-3xl font-bold mb-8 text-blue-300">Empowering Hasseless management Through Technology</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-              <div className="bg-white/10 p-6 rounded-xl hover:transform hover:scale-105 transition-all duration-300">
-                <h4 className="text-xl font-semibold mb-4 text-blue-200">Our Vision</h4>
-                <p className="text-gray-200">
-                  To revolutionize academic administration through innovative digital solutions that enhance the educational experience.
-                </p>
-              </div>
-              
-              <div className="bg-white/10 p-6 rounded-xl hover:transform hover:scale-105 transition-all duration-300">
-                <h4 className="text-xl font-semibold mb-4 text-blue-200">Our Mission</h4>
-                <p className="text-gray-200">
-                  Creating seamless connections between students, faculty, and administration while maintaining transparency and efficiency.
-                </p>
-              </div>
-              
-              <div className="bg-white/10 p-6 rounded-xl hover:transform hover:scale-105 transition-all duration-300">
-                <h4 className="text-xl font-semibold mb-4 text-blue-200">Our Values</h4>
-                <p className="text-gray-200">
-                  Innovation, integrity, and excellence in every aspect of our service to the VCET community.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-white/10 p-8 rounded-xl mb-8">
-              <h4 className="text-2xl font-bold mb-6 text-blue-200">Why Choose VCET Connect?</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                <ul className="space-y-3">
-                  <li className="flex items-center text-gray-200">
-                    <span className="mr-2 text-blue-200">✦</span>
-                    Streamlined Leave Management
-                  </li>
-                  <li className="flex items-center text-gray-200">
-                    <span className="mr-2 text-blue-200">✦</span>
-                    Real-time Status Updates
-                  </li>
-                  <li className="flex items-center text-gray-200">
-                    <span className="mr-2 text-blue-200">✦</span>
-                    Secure Data Handling
-                  </li>
-                </ul>
-                <ul className="space-y-3">
-                  <li className="flex items-center text-gray-200">
-                    <span className="mr-2 text-blue-200">✦</span>
-                    Automated Notifications
-                  </li>
-                  <li className="flex items-center text-gray-200">
-                    <span className="mr-2 text-blue-200">✦</span>
-                    Intuitive User Interface
-                  </li>
-                  <li className="flex items-center text-gray-200">
-                    <span className="mr-2 text-blue-200">✦</span>
-                    24/7 System Availability
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <p className="text-sm text-blue-200 italic">
-              A proud initiative of the Department of Computer Science and Engineering, VCET
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+          <div className="bg-slate-200 p-4">
+            <h2 className="text-lg font-semibold text-black">
+              About VCET Connect
+            </h2>
+            <p className="text-black/80 text-sm mt-1">
+              Learn more about our systems and the team behind them
             </p>
           </div>
-        </motion.div>
-      </motion.div>
+
+          {/* Systems Grid */}
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {systems.map((system, index) => (
+              <motion.div
+                key={system.name}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 hover:shadow-md transition-all duration-200"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-[#1f3a6e] dark:text-blue-400">
+                    <system.icon size={20} />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                    {system.name}
+                  </h3>
+                </div>
+                <div className="space-y-2">
+                  {system.developers.map((developer, idx) => (
+                    <p
+                      key={idx}
+                      className="text-md text-gray-600 dark:text-gray-300 pl-11"
+                    >
+                      {developer}
+                    </p>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Vision Mission Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+          <div className="bg-slate-200 p-4">
+            <div className="flex items-center gap-2">
+              <BookOpen size={20} className="text-[#1f3a6e]" />
+              <h2 className="text-lg font-semibold text-black">
+                Our Vision & Mission
+              </h2>
+            </div>
+          </div>
+
+          <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4"
+            >
+              <h4 className="text-md font-semibold mb-2 text-[#1f3a6e] dark:text-blue-400">
+                Our Vision
+              </h4>
+              <p className="text-md text-gray-600 dark:text-gray-300">
+                To revolutionize academic administration through innovative
+                digital solutions that enhance the educational experience.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4"
+            >
+              <h4 className="text-md font-semibold mb-2 text-[#1f3a6e] dark:text-blue-400">
+                Our Mission
+              </h4>
+              <p className="text-md text-gray-600 dark:text-gray-300">
+                Creating seamless connections between students, faculty, and
+                administration while maintaining transparency and efficiency.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4"
+            >
+              <h4 className="text-md font-semibold mb-2 text-[#1f3a6e] dark:text-blue-400">
+                Our Values
+              </h4>
+              <p className="text-md text-gray-600 dark:text-gray-300">
+                Innovation, integrity, and excellence in every aspect of our
+                service to the VCET community.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Features Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+          <div className="bg-slate-200 p-4">
+            <h2 className="text-lg font-semibold text-black">
+              Why Choose VCET Connect?
+            </h2>
+          </div>
+
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+                className="space-y-3"
+              >
+                {[
+                  "Streamlined Leave Management",
+                  "Real-time Status Updates",
+                  "Secure Data Handling",
+                ].map((feature, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-2 text-gray-600 dark:text-gray-300"
+                  >
+                    <div className="h-1.5 w-1.5 rounded-full bg-[#1f3a6e] dark:bg-blue-400" />
+                    <span className="text-sm">{feature}</span>
+                  </div>
+                ))}
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+                className="space-y-3"
+              >
+                {[
+                  "Automated Notifications",
+                  "Intuitive User Interface",
+                  "24/7 System Availability",
+                ].map((feature, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-2 text-gray-600 dark:text-gray-300"
+                  >
+                    <div className="h-1.5 w-1.5 rounded-full bg-[#1f3a6e] dark:bg-blue-400" />
+                    <span className="text-sm">{feature}</span>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="text-md font-semibold text-center text-gray-500 dark:text-gray-400 mt-6"
+            >
+              A proud initiative of the Department of Computer Science and
+              Engineering, VCET
+            </motion.p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

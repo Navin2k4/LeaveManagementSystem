@@ -5,19 +5,18 @@ import Staff from "../models/staff.model.js";
 import { errorHandler } from "../utils/error.js";
 import DeptHead from "../models/depthead.model.js";
 import Department from "../models/department.model.js";
-import nodemailer from 'nodemailer';
-import otpGenerator from 'otp-generator';
+import nodemailer from "nodemailer";
+import otpGenerator from "otp-generator";
 import OTP from "../models/OTP.model.js";
-import crypto from 'crypto';
-import dotenv from 'dotenv';
+import crypto from "crypto";
+import dotenv from "dotenv";
 import { log } from "console";
 
 dotenv.config();
 
-
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  host: 'smtp.gmail.com',
+  service: "gmail",
+  host: "smtp.gmail.com",
   secure: false,
   auth: {
     user: process.env.EMAIL,
@@ -25,6 +24,33 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+export const changePassword = async (req, res, next) => {
+  const { userType, id } = req.params;
+  const { oldPassword, newPassword } = req.body;
+  if (userType === "Staff") {
+    const staff = await Staff.findById(id);
+    const isMatch = await bcryptjs.compare(oldPassword, staff.password);
+    if (!isMatch) {
+      return next(errorHandler(400, "Invalid Old Password"));
+    }
+    const hashedPassword = await bcryptjs.hash(newPassword, 10);
+    staff.password = hashedPassword;
+    await staff.save();
+    res.status(200).json({ message: "Password changed successfully" });
+  } else if (userType === "Student") {
+    const student = await Student.findById(id);
+    const isMatch = await bcryptjs.compare(oldPassword, student.password);
+    if (!isMatch) {
+      return next(errorHandler(400, "Invalid Old Password"));
+    }
+    const hashedPassword = await bcryptjs.hash(newPassword.toString(), 10);
+    student.password = hashedPassword;
+    await student.save();
+    res.status(200).json({ message: "Password changed successfully" });
+  } else {
+    return next(errorHandler(400, "Invalid User Type"));
+  }
+};
 
 export const studentsignup = async (req, res, next) => {
   const {
@@ -91,7 +117,7 @@ export const studentsignup = async (req, res, next) => {
     const mailOptions = {
       from: process.env.EMAIL,
       to: email,
-      subject: 'SignUp OTP Verification',
+      subject: "SignUp OTP Verification",
       text: `Your OTP for sign up is ${otp}. Please verify your OTP within 5 minutes.`,
     };
 
@@ -99,7 +125,10 @@ export const studentsignup = async (req, res, next) => {
       if (error) {
         return next(errorHandler(500, "Error sending OTP email."));
       } else {
-        res.status(201).json({ message: 'Student saved successfully. OTP sent to email.', email });
+        res.status(201).json({
+          message: "Student saved successfully. OTP sent to email.",
+          email,
+        });
       }
     });
   } catch (error) {
@@ -108,25 +137,23 @@ export const studentsignup = async (req, res, next) => {
       let field = Object.keys(error.keyPattern)[0];
       let errorMessage;
       switch (field) {
-        case 'roll_no':
-          errorMessage = 'Roll Number is already in use';
+        case "roll_no":
+          errorMessage = "Roll Number is already in use";
           break;
-        case 'register_no':
-          errorMessage = 'Register Number is already in use';
+        case "register_no":
+          errorMessage = "Register Number is already in use";
           break;
-        case 'email':
-          errorMessage = 'Email is already in use';
+        case "email":
+          errorMessage = "Email is already in use";
           break;
         default:
-          errorMessage = 'Duplicate key error';
+          errorMessage = "Duplicate key error";
       }
       return next(errorHandler(400, errorMessage));
     }
     next(error);
   }
 };
-
-
 
 export const studentsignin = async (req, res, next) => {
   let { identifier, password } = req.body;
@@ -163,6 +190,7 @@ export const studentsignin = async (req, res, next) => {
       register_no,
       email,
       phone,
+      parent_phone,
       departmentId,
       mentorId,
       sectionId,
@@ -184,6 +212,7 @@ export const studentsignin = async (req, res, next) => {
         register_no,
         email,
         phone,
+        parent_phone,
         departmentId,
         mentorId,
         batchId,
@@ -264,51 +293,47 @@ export const staffsignup = async (req, res, next) => {
     const hashedPassword = bcryptjs.hashSync(password, 10);
 
     // Create new Staff instance
-    if(classInchargeBatchId!=null && classInchargeSectionId!=null) {
-    const newStaff = new Staff({
-      staff_id,
-      staff_name,
-      staff_mail: staff_email,
-      staff_phone,
-      staff_handle_dept: staff_departmentId,
-      isMentor,
-      isClassIncharge,
-      isPEStaff,
-      classInchargeBatchId,
-      classInchargeSectionId,
-      numberOfClassesHandledAsMentor,
-      mentorHandlingData,
-      password: hashedPassword,
-      userType,
-    });
-  
+    if (classInchargeBatchId != null && classInchargeSectionId != null) {
+      const newStaff = new Staff({
+        staff_id,
+        staff_name,
+        staff_mail: staff_email,
+        staff_phone,
+        staff_handle_dept: staff_departmentId,
+        isMentor,
+        isClassIncharge,
+        isPEStaff,
+        classInchargeBatchId,
+        classInchargeSectionId,
+        numberOfClassesHandledAsMentor,
+        mentorHandlingData,
+        password: hashedPassword,
+        userType,
+      });
 
-    console.log(newStaff);
+      console.log(newStaff);
 
-    // Save the new staff member to the database
-    await newStaff.save();
-  }
-  else
-  {
-    const newStaff = new Staff({
-      staff_id,
-      staff_name,
-      staff_mail: staff_email,
-      staff_phone,
-      staff_handle_dept: staff_departmentId,
-      isMentor,
-      isClassIncharge,
-      isPEStaff,
-      numberOfClassesHandledAsMentor,
-      mentorHandlingData,
-      password: hashedPassword,
-      userType,
-    });
-  
+      // Save the new staff member to the database
+      await newStaff.save();
+    } else {
+      const newStaff = new Staff({
+        staff_id,
+        staff_name,
+        staff_mail: staff_email,
+        staff_phone,
+        staff_handle_dept: staff_departmentId,
+        isMentor,
+        isClassIncharge,
+        isPEStaff,
+        numberOfClassesHandledAsMentor,
+        mentorHandlingData,
+        password: hashedPassword,
+        userType,
+      });
 
-    console.log(newStaff);
-    await newStaff.save();
-  }
+      console.log(newStaff);
+      await newStaff.save();
+    }
 
     res.status(201).json({ message: "Staff saved successfully" });
   } catch (error) {
@@ -473,16 +498,17 @@ export const hodsignup = async (req, res, next) => {
     next(error);
   }
 };
+
 export const hodsignin = async (req, res, next) => {
   try {
     let { identifier, password } = req.body;
-    
+
     if (!identifier || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
-    
+
     identifier = identifier.toUpperCase();
-    const hod = await DeptHead.findOne({ staff_id:identifier });    
+    const hod = await DeptHead.findOne({ staff_id: identifier });
     if (!hod) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -533,27 +559,27 @@ export const verifyOtp = (req, res) => {
   const storedOtp = otpStorage[email];
 
   if (!storedOtp || storedOtp.expiresAt < Date.now()) {
-    return res.status(400).json({ message: 'OTP expired or invalid' });
+    return res.status(400).json({ message: "OTP expired or invalid" });
   }
 
   if (storedOtp.otp !== otp) {
-    return res.status(400).json({ message: 'Invalid OTP' });
+    return res.status(400).json({ message: "Invalid OTP" });
   }
 
   users.push({ email });
   delete otpStorage[email];
-  res.status(200).json({ message: 'Signup completed successfully' });
+  res.status(200).json({ message: "Signup completed successfully" });
 };
 
 export const verifyOTP = async (req, res, next) => {
   const { email, otp } = req.body;
   try {
     const otpRecord = await OTP.findOne({ email });
-    if(!otpRecord) {
-      return next(errorHandler(400, 'Invalid OTP or Expired OTP'));
+    if (!otpRecord) {
+      return next(errorHandler(400, "Invalid OTP or Expired OTP"));
     }
     const isValidOTP = bcryptjs.compareSync(otp, otpRecord.otp);
-    if(!isValidOTP) {
+    if (!isValidOTP) {
       return next(errorHandler(400, "Invalid OTP"));
     }
     await OTP.deleteOne({ email });

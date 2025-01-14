@@ -10,7 +10,7 @@ const StatusDot = ({ status, role, showLine,comment }) => {
         {/* {comment} */}
       </div>
       <div className={classNames('status-dot', status)}>
-        <div className="animation"></div>
+        <div className="animation text-center items-center justify-center"></div>
       </div>
       <div>
       {showLine && <div className={classNames('status-line', status)}></div>}

@@ -78,10 +78,10 @@ export const createLeaveRequest = async (req, res) => {
             status: "approved",
             date: new Date(),
           },
-          hod: {
-            status: "pending", // Example: Set hod status to pending
-            date: null, // Example: Set hod date to null initially
-          },
+          // hod: {
+          //   status: "pending", // Example: Set hod status to pending
+          //   date: null, // Example: Set hod date to null initially
+          // },
         },
       });
 

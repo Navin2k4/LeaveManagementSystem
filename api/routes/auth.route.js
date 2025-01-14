@@ -1,5 +1,5 @@
 import express from 'express';
-import { studentsignup, verifyOTP } from '../controllers/auth.controller.js';
+import { studentsignup, verifyOTP, changePassword } from '../controllers/auth.controller.js';
 import { studentsignin } from '../controllers/auth.controller.js';
 import { staffsignup } from '../controllers/auth.controller.js';
 import { staffsignin } from '../controllers/auth.controller.js';
@@ -18,5 +18,7 @@ router.post('/hodsignup',hodsignup);
 router.post('/hodsignin',hodsignin);
 
 router.post('/verifyOTP', verifyOTP);
+
+router.put('/changePassword/:userType/:id', changePassword);
 
 export default router;

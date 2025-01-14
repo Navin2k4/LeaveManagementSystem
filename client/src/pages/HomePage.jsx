@@ -1,105 +1,138 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import { ArrowRight, CheckCircle, Clock, Shield } from "lucide-react";
 
 function HomePage() {
   const { currentUser } = useSelector((state) => state.user);
 
+  const fadeInUp = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.5 },
+  };
+
+  const staggerContainer = {
+    animate: {
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const features = [
+    {
+      icon: <CheckCircle size={20} />,
+      text: "Submit and track leave requests easily",
+    },
+    { icon: <Clock size={20} />, text: "Real-time status updates" },
+    { icon: <Shield size={20} />, text: "Secure and reliable system" },
+  ];
+
   return (
-    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)]">
-      <div className="flex-1 flex justify-center bg-gradient-to-t from-blue-500 to-[#244784] p-6 shadow-lg">
-        <div className="max-w-2xl md:max-w-3xl text-left">
-              <h1 className="text-5xl font-bold tracking-wider text-white ">
+    <div className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left Column - Main Content */}
+          <motion.div
+            initial="initial"
+            animate="animate"
+            variants={staggerContainer}
+            className="space-y-8"
+          >
+            <motion.div variants={fadeInUp} className="space-y-4">
+              <motion.h1
+                className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-[#1f3a6e]"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
                 VCET Connect
-              </h1>
-          <p className="text-lg mt-5 leading-8  text-justify mb-8 text-secondary-white text-white indent-36">
-            Manage your leave requests efficiently with our streamlined system
-            designed for both students and staff. Whether you're submitting a
-            new request, checking the status of previous requests, or exploring
-            our policies, our platform ensures a smooth and transparent process.
-            Experience real-time updates and seamless communication, tailored to
-            enhance your leave management at Velammal College of Engineering and
-            Technology.
-          </p>
-          <div className="grid items-center text-center">
-            {currentUser ? (
-              currentUser.userType === "Staff" ? (
-                <Link
-                  to="/staffdashboard"
-                  className="bg-white text-black hover:bg-ternary-blue hover:text-black font-semibold rounded-full px-6 py-3 md:px-8 md:py-4 text-lg transition duration-300 shadow-black/60 shadow-sm hover:shadow-md transform  hover:scale-105"
-                >
-                  Leave Request Form
-                </Link>
-              ) : currentUser.userType === "Student" ? (
-                <Link
-                  to="/profile"
-                  className=" bg-white text-black hover:bg-ternary-blue hover:text-black font-semibold rounded-full px-6 py-3 md:px-8 md:py-4 text-lg transition duration-300 shadow-black/60 shadow-sm hover:shadow-md transform  hover:scale-105"
-                >
-                  Leave Request Form
-                </Link>
-              ) : (
-                <Link
-                  to="/hoddash"
-                  className=" bg-white font-semibold rounded-full p-2 text-lg transition duration-300 shadow-black shadow-md transform  hover:scale-105"
-                >
-                  View Dash Board
-                </Link>
-              )
-            ) : null}
-          </div>
-          <div className="mt-8">
-            <h1 className="text-2xl font-bold text-white mb-4">Key Features</h1>
-            <ul className="text-white text-lg space-y-2 list-disc list-inside"> 
-              <li>Submit and track leave requests easily</li>
-              <li>Apply for On-Duty permissions</li>
-              <li>View attendance status</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+              </motion.h1>
+              <motion.p
+                className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed"
+                variants={fadeInUp}
+              >
+                Experience a seamless leave management system designed for
+                VCET's academic community. Streamline your requests, track
+                status updates, and stay connected.
+              </motion.p>
+            </motion.div>
 
-      <div className="flex-1 hidden lg:block  overflow-hidden">
-        <img
-          className="w-full h-full object-cover filter transition-all duration-1000 hover:scale-125"
-          src="https://content3.jdmagicbox.com/comp/madurai/31/0452p452std2000631/catalogue/velammal-college-of-engineering-and-technology-munichalai-road-madurai-engineering-colleges-dxevz9.jpg"
-          alt="Velammal College of Engineering and Technology"
-        />
-      </div>
+            {/* Features List */}
+            <motion.div className="space-y-4" variants={staggerContainer}>
+              {features.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  variants={fadeInUp}
+                  className="flex items-center space-x-3 text-gray-700 dark:text-gray-300"
+                >
+                  <span className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full text-blue-600 dark:text-blue-400">
+                    {feature.icon}
+                  </span>
+                  <span>{feature.text}</span>
+                </motion.div>
+              ))}
+            </motion.div>
 
-      <div className="flex-1 flex justify-center bg-gradient-to-b from-blue-500 to-[#244784] items-center bg-secondary-white p-8">
-        <div className="max-w-2xl md:max-w-3xl text-left">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-6 text-right text-white leading-tight">
-            Why <span className="text-blue-400 text-6xl">Connect?</span>
-          </h2>
-          <ul className="text-lg leading-relaxed text-justify mb-8 text-white list-disc list-inside bg-white/20 bg-opacity-10 backdrop-blur-md border border-transparent rounded-lg shadow-md p-6">
-            <li className="mb-4">
-              <span className="text-white italic">Efficiency :</span> Our system
-              simplifies the leave request and approval process, saving time and
-              reducing paperwork.
-            </li>
-            <li className="mb-4">
-              <span className="text-white italic">Real-Time Updates :</span> Get
-              instant notifications on the status of your leave requests,
-              ensuring you are always informed.
-            </li>
-            <li className="mb-4">
-              <span className="text-white italic">
-                User-Friendly Interface :
-              </span>{" "}
-              Designed with ease of use in mind, making it accessible for
-              everyone.
-            </li>
-            <li className="mb-4">
-              <span className="text-white italic">
-                Comprehensive Policies :
-              </span>{" "}
-              Access to detailed leave policies and guidelines to ensure
-              compliance and understanding.
-            </li>
-            <li className="mb-4">
-              <span className="text-white italic">Secure :</span> Your data is
-              protected with the highest standards of security and privacy.
-            </li>
-          </ul>
+            {/* CTA Button */}
+            {currentUser && (
+              <motion.div variants={fadeInUp} className="pt-4">
+                <Link
+                  to={
+                    currentUser.userType === "Staff"
+                      ? "/staffdashboard"
+                      : currentUser.userType === "Student"
+                      ? "/profile"
+                      : "/hoddash"
+                  }
+                  className="group inline-flex items-center gap-2 px-6 py-3 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-[#1f3a6e] rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                >
+                  {currentUser.userType === "Staff" ||
+                  currentUser.userType === "Student"
+                    ? "Leave Request Form"
+                    : "View Dashboard"}
+                  <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </motion.div>
+            )}
+          </motion.div>
+
+          {/* Right Column - Image and Cards */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="relative"
+          >
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+              <img
+                className="w-full h-[500px] object-cover transform hover:scale-110 transition-transform duration-1000"
+                src="https://content3.jdmagicbox.com/comp/madurai/31/0452p452std2000631/catalogue/velammal-college-of-engineering-and-technology-munichalai-road-madurai-engineering-colleges-dxevz9.jpg"
+                alt="Velammal College of Engineering and Technology"
+              />
+              {/* Overlay gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            </div>
+
+            {/* Floating Cards */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="absolute -bottom-6 left-6 right-6"
+            >
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-xl backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  Why Choose VCET Connect?
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Experience seamless leave management with real-time updates,
+                  secure processing, and instant notifications.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import {
   signInStart,
   signInFailure,
 } from "../redux/user/userSlice";
-import { Spinner } from "flowbite-react";
+import { ScaleLoader } from "react-spinners";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function SignIn() {
@@ -102,124 +102,89 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex justify-center md:my-20">
-      <div className="w-full md:max-w-md py-20 px-8 md:p-8  mx-auto h-auto bg-gradient-to-t from-blue-500 to-[#1a2b52] md:rounded-2xl md:shadow-md shadow-black">
-        <hr className="border-t-2 border-gray-600 " />
-        <div className="text-center my-4">
-          <h2 className="text-3xl font-bold text-white">Sign In</h2>
+    <div className="flex justify-center items-center min-h-[80vh] bg-gray-50">
+      <div className="w-full max-w-md p-8 bg-slate-200 rounded-lg shadow-lg">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
+          <p className="text-gray-600 mt-2">Please sign in to continue</p>
         </div>
-        <hr className="border-t-2 border-gray-600 my-4" />
 
-        <div className="grid grid-cols-2 items-center justify-center gap-3 mt-6">
-          <div
-            className={`flex items-center w-full rounded cursor-pointer ${
-              selectRole === "student" ? "bg-blue-500" : "bg-white"
-            } transition-all duration-300`}
+        <div className="flex gap-4 mb-6">
+          <button
             onClick={() => handleDivClick("student")}
-          >
-            <input
-              id="bordered-checkbox-1"
-              type="radio"
-              value="student"
-              name="bordered-checkbox"
-              className="w-4 h-4 focus:ring-0 hidden"
-              checked={selectRole === "student"}
-              readOnly
-            />
-            <label
-              htmlFor="bordered-checkbox-1"
-              className={`w-full py-4 text-sm text-center dark:text-gray-300 ${
-                selectRole === "student"
-                  ? "text-white font-semibold tracking-widest"
-                  : "text-gray-900"
-              } transition-all duration-300`}
-            >
-              Student
-            </label>
-          </div>
-          <div
-            className={`flex items-center w-full rounded cursor-pointer ${
-              selectRole === "staff" ? "bg-blue-500" : "bg-white"
+            className={`flex-1 py-2 px-4 rounded-md transition-colors ${
+              selectRole === "student"
+                ? "bg-[#1f3a6e] text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-white"
             } transition-all duration-300`}
-            onClick={() => handleDivClick("staff")}
           >
-            <input
-              id="bordered-checkbox-2"
-              type="radio"
-              value="staff"
-              name="bordered-checkbox"
-              className="w-4 h-4 focus:ring-0 hidden"
-              checked={selectRole === "staff"}
-              readOnly
-            />
-            <label
-              htmlFor="bordered-checkbox-2"
-              className={`w-full py-4 text-sm text-center dark:text-gray-300 ${
-                selectRole === "staff"
-                  ? "text-white font-semibold tracking-widest"
-                  : "text-gray-900"
-              } transition-all duration-300`}
-            >
-              Staff
-            </label>
-          </div>
+            Student
+          </button>
+          <button
+            onClick={() => handleDivClick("staff")}
+            className={`flex-1 py-2 px-4 rounded-md transition-colors ${
+              selectRole === "staff"
+                ? "bg-[#1f3a6e] text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-white"
+            } transition-all duration-300`}
+          >
+            Staff
+          </button>
         </div>
+
         {errors.role && (
-          <p className="text-red-200 text-center pt-4 text-sm">{errors.role}</p>
+          <p className="text-red-500 text-sm text-center mb-4">{errors.role}</p>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="identifier"
-                className="my-4 block text-sm font-medium text-white"
-              >
-                {selectRole === "student" ? "Roll Number" : "Staff Id"}
-              </label>
-              <input
-                type="text"
-                id="identifier"
-                placeholder={`${selectRole === "student" ? "Roll Number" : "Staff Id"}`}
-                className={`block w-full tracking-widest px-3 py-2 mt-1 border rounded-md shadow-sm focus:outline-none focus:ring-1 ${
-                  errors.identifier ? "border-red-500" : "border-gray-300"
-                } focus:ring-primary-blue`}
-                onChange={handleChange}
-              />
-              {errors.identifier && (
-                <p className="text-red-200 py-2 text-sm">{errors.identifier}</p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="my-4 block text-sm font-medium text-white"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                placeholder="********"
-                className={`block w-full px-3 py-2 mt-1 tracking-widest border rounded-md shadow-sm focus:outline-none focus:ring-1 ${
-                  errors.password ? "border-red-500" : "border-gray-300"
-                } focus:ring-primary-blue`}
-                onChange={handleChange}
-              />
-              {errors.password && (
-                <p className="text-red-200 py-2 text-sm">{errors.password}</p>
-              )}
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              {selectRole === "student" ? "Roll Number" : "Staff ID"}
+            </label>
+            <input
+              type="text"
+              id="identifier"
+              className={`mt-1 block w-full px-3 py-2 border ${
+                errors.identifier ? "border-red-500" : "border-gray-300"
+              } rounded-md shadow-sm focus:ring-[#1f3a6e] focus:border-[#1f3a6e]`}
+              placeholder={
+                selectRole === "student"
+                  ? "Enter roll number"
+                  : "Enter staff ID"
+              }
+              onChange={handleChange}
+            />
+            {errors.identifier && (
+              <p className="mt-1 text-sm text-red-500">{errors.identifier}</p>
+            )}
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              className={`mt-1 block w-full px-3 py-2 border ${
+                errors.password ? "border-red-500" : "border-gray-300"
+              } rounded-md shadow-sm focus:ring-[#1f3a6e] focus:border-[#1f3a6e]`}
+              placeholder="Enter your password"
+              onChange={handleChange}
+            />
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+            )}
+          </div>
+
           <button
             type="submit"
-            className="flex justify-center w-full px-4 py-2 text-sm font-medium bg-black hover:bg-blue-400 hover:text-black transition-all duration-300 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
             disabled={loading}
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#1f3a6e] hover:bg-[#0b1f44] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1f3a6e] disabled:opacity-50"
           >
             {loading ? (
               <div className="flex items-center">
-                <Spinner size="sm" className="mr-2" />
-                <span className="text-white">Loading...</span>
+                <ScaleLoader color="#ffffff" height={16} />
               </div>
             ) : (
               "Sign In"
@@ -228,10 +193,8 @@ export default function SignIn() {
         </form>
 
         {errorMessage && (
-          <div className="mt-4 text-center ">
-            <p className="bg-white mx-10 p-2 rounded-3xl text-red-600 font-semibold">
-              {errorMessage}
-            </p>
+          <div className="mt-4">
+            <p className="text-sm text-red-500 text-center">{errorMessage}</p>
           </div>
         )}
       </div>

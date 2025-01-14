@@ -173,157 +173,133 @@ export default function LeaveRequests({
         ) : menteeRequests.length > 0 ? (
           <div>
             <div className=" mb-4">
-              <h2 className="text-xl md:text-2xl uppercase tracking-wider font-semibold">
-                Mentee requests
+              <h2 className="text-xl px-3 py-2 tracking-wider font-semibold">
+                Mentee requests ({menteeRequests.length})
               </h2>
             </div>
             <div className="overflow-x-auto">
-              <Table className="bg-white rounded-md">
-                <TableHead>
-                  <TableHeadCell className="bg-[#244784] text-center text-white">
-                    Student Name
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    Section
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    Reason
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    From - To
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    Days
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    Status Bar
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    Comments
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    Actions
-                  </TableHeadCell>
-                </TableHead>
-                <TableBody className="divide-y">
-                  {menteeRequests.map((req) => {
-                    const { status } = req.approvals.mentor;
-                    return (
-                      <TableRow key={req._id}>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {req.name}
-                        </TableCell>
-                        <TableCell className="text-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {req.section_name}
-                        </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {req.reason}
-                        </TableCell>
-                        <TableCell
-                          className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide"
-                          style={{ width: "100px" }}
-                        >
-                          <div className="flex flex-col items-center min-w-max justify-center gap-2">
-                            <div>{formatDate(req.fromDate)}</div>
-                            <div>{formatDate(req.toDate)}</div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {req.noOfDays}
-                        </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          <div className="flex items-center justify-center status-dots">
-                            <StatusDot
-                              status={req.approvals.mentor.status}
-                              role="mentor"
-                              showLine={true}
-                            />
-                            <StatusDot
-                              status={req.approvals.classIncharge.status}
-                              role="classIncharge"
-                              showLine={false}
-                            />
-                            {/* <StatusDot
-                              status={req.approvals.hod.status}
-                              role="hod"
-                              showLine={false}
-                            /> */}
-                          </div>
-                        </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">
-                          <div className="flex flex-col">
-                            {req.mentorcomment !== "No Comments" && (
-                              <div className="flex gap-1">
-                                <h2 className="">Mentor</h2>
-                                <div className="text-gray-600 text-sm">
-                                  {req.mentorcomment}
-                                </div>
-                              </div>
-                            )}
-                            {req.classInchargeComment !== "No Comments" && (
-                              <div className="flex gap-1">
-                                <h2 className="">ClassIncharge :</h2>
-                                <div className="text-gray-600">
-                                  {req.classInchargeComment}
-                                </div>
-                              </div>
-                            )}
-                            {req.hodComment !== "No Comments" && (
-                              <div className="flex gap-1">
-                                <h2 className="">Hod : </h2>
-                                <div className="text-gray-600">
-                                  {req.hodComment}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {status === "pending" ? (
-                            <div className="flex items-center justify-center gap-2">
-                              <button
-                                onClick={() =>
-                                  handleRequest("approved", req._id)
-                                }
-                                className="bg-green-400 hover:bg-green-600 text-white p-1 rounded-full transition-all duration-300"
-                              >
-                                <TiTick size={30} />
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleRequest("rejected", req._id)
-                                }
-                                className="bg-red-400 hover:bg-red-600 text-white p-1  rounded-full transition-all duration-300"
-                              >
-                                <RxCross2 size={30} />
-                              </button>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400">
+                    <tr>
+                      <th className="px-4 py-3 font-medium">Student Name</th>
+                      <th className="px-4 py-3 font-medium">Section</th>
+                      <th className="px-4 py-3 font-medium">Reason</th>
+                      <th className="px-4 py-3 font-medium">From - To</th>
+                      <th className="px-4 py-3 font-medium">Days</th>
+                      <th className="px-4 py-3 font-medium">Status Bar</th>
+                      <th className="px-4 py-3 font-medium">Comments</th>
+                      <th className="px-4 py-3 font-medium">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {menteeRequests.map((req) => {
+                      const { status } = req.approvals.mentor;
+                      return (
+                        <tr key={req._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                          <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-200">
+                            {req.name}
+                          </td>
+                          <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                            {req.section_name}
+                          </td>
+                          <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                            {req.reason}
+                          </td>
+                          <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                            <div className="flex flex-col items-center min-w-max justify-center gap-2">
+                              <div>{formatDate(req.fromDate)}</div>
+                              <div>{formatDate(req.toDate)}</div>
                             </div>
-                          ) : (
-                            <div className="flex items-center justify-center gap-2">
-                              <button
-                                onClick={() => handleRequest("taken", req._id)}
-                                className={` text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
-                                  status === "approved"
-                                    ? "bg-green-400"
+                          </td>
+                          <td className="px-4 py-3 text-center text-gray-600 dark:text-gray-300">
+                            {req.noOfDays}
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center justify-center status-dots">
+                              <StatusDot
+                                status={req.approvals.mentor.status}
+                                role="mentor"
+                                showLine={true}
+                              />
+                              <StatusDot
+                                status={req.approvals.classIncharge.status}
+                                role="classIncharge"
+                                showLine={false}
+                              />
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex flex-col">
+                              {req.mentorcomment !== "No Comments" && (
+                                <div className="flex gap-1">
+                                  <h2 className="text-gray-600">Mentor:</h2>
+                                  <div className="text-gray-600 text-sm">
+                                    {req.mentorcomment}
+                                  </div>
+                                </div>
+                              )}
+                              {req.classInchargeComment !== "No Comments" && (
+                                <div className="flex gap-1">
+                                  <h2 className="text-gray-600">ClassIncharge:</h2>
+                                  <div className="text-gray-600">
+                                    {req.classInchargeComment}
+                                  </div>
+                                </div>
+                              )}
+                              {req.hodComment !== "No Comments" && (
+                                <div className="flex gap-1">
+                                  <h2 className="text-gray-600">Hod:</h2>
+                                  <div className="text-gray-600">
+                                    {req.hodComment}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            {status === "pending" ? (
+                              <div className="flex items-center justify-center gap-2">
+                                <button
+                                  onClick={() => handleRequest("approved", req._id)}
+                                  className="bg-green-400 hover:bg-green-600 text-white p-1 rounded-full transition-all duration-300"
+                                >
+                                  <TiTick size={30} />
+                                </button>
+                                <button
+                                  onClick={() => handleRequest("rejected", req._id)}
+                                  className="bg-red-400 hover:bg-red-600 text-white p-1 rounded-full transition-all duration-300"
+                                >
+                                  <RxCross2 size={30} />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-center gap-2">
+                                <button
+                                  onClick={() => handleRequest("taken", req._id)}
+                                  className={`text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
+                                    status === "approved"
+                                      ? "bg-green-400"
+                                      : status === "rejected"
+                                      ? "bg-red-400"
+                                      : ""
+                                  }`}
+                                >
+                                  {status === "approved"
+                                    ? "Approved"
                                     : status === "rejected"
-                                    ? "bg-red-400"
-                                    : ""
-                                }`}
-                              >
-                                {status === "approved"
-                                  ? "Approved"
-                                  : status === "rejected"
-                                  ? "Rejected"
-                                  : "Taken"}
-                              </button>
-                            </div>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                                    ? "Rejected"
+                                    : "Taken"}
+                                </button>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
               <Modal
                 show={mentormodalType !== null}
                 size="md"
@@ -432,186 +408,132 @@ export default function LeaveRequests({
           </div>
         ) : classInchargeRequests.length > 0 ? (
           <div className="mt-4">
-            <h2 className="text-xl md:text-2xl uppercase tracking-wider font-semibold">
-              All requests
+            <h2 className="text-xl px-3 py-2 tracking-wider font-semibold">
+              All requests ({classInchargeRequests.length})
             </h2>
             <div className="overflow-x-auto mt-4">
-              <Table className="bg-white rounded-md">
-                <TableHead>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    Student Name
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    Section
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    Reason
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    From - To
-                  </TableHeadCell>
-
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    Days
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    Status Bar
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    Comments
-                  </TableHeadCell>
-                  <TableHeadCell className="p-4 bg-[#244784] text-center text-white">
-                    Actions
-                  </TableHeadCell>
-                </TableHead>
-                <TableBody className="divide-y">
-                  {classInchargeRequests.map((req) => {
-                    const { status: mentorStatus } = req.approvals.mentor;
-                    const { status: classInchargeStatus } = req.approvals.classIncharge;
-                    return (
-                      <TableRow key={req._id}>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {req.name}
-                        </TableCell>
-                        <TableCell className="text-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {req.section_name}
-                        </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          <div className="flex items-center gap-2 ">
-                            <div className="">{req.reason}</div>
-                            <div>
-                              {req.forMedical ? (
-                                <GiMedicines color="green" size={20} />
-                              ) : null}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell
-                          className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide"
-                          style={{ width: "100px" }}
-                        >
-                          {req.fromDate === req.toDate ? (
+            <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400">
+                    <tr>
+                      <th className="px-4 py-3 font-medium">Student Name</th>
+                      <th className="px-4 py-3 font-medium">Section</th>
+                      <th className="px-4 py-3 font-medium">Reason</th>
+                      <th className="px-4 py-3 font-medium">From - To</th>
+                      <th className="px-4 py-3 font-medium">Days</th>
+                      <th className="px-4 py-3 font-medium">Status Bar</th>
+                      <th className="px-4 py-3 font-medium">Comments</th>
+                      <th className="px-4 py-3 font-medium">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {classInchargeRequests.map((req) => {
+                      const { status } = req.approvals.mentor;
+                      return (
+                        <tr key={req._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                          <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-200">
+                            {req.name}
+                          </td>
+                          <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                            {req.section_name}
+                          </td>
+                          <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                            {req.reason}
+                          </td>
+                          <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
                             <div className="flex flex-col items-center min-w-max justify-center gap-2">
-                              <div>{formatDate(req.fromDate)}</div>
-                            </div>
-                          ) : (
-                            <div className="flex flex-col items-center  min-w-max justify-center gap-2">
                               <div>{formatDate(req.fromDate)}</div>
                               <div>{formatDate(req.toDate)}</div>
                             </div>
-                          )}
-                        </TableCell>
-
-                        <TableCell className="text-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {req.noOfDays}
-                        </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          <div className="flex items-center justify-center status-dots">
-                            <StatusDot
-                              status={req.approvals.mentor.status}
-                              role="mentor"
-                              showLine={true}
-                            />
-                            <StatusDot
-                              status={req.approvals.classIncharge.status}
-                              role="classIncharge"
-                              showLine={false}
-                            />
-                            {/* <StatusDot
-                              status={req.approvals.hod.status}
-                              role="hod"
-                              showLine={false}
-                            /> */}
-                          </div>
-                        </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide capitalize">
-                          <div className="flex flex-col">
-                            {req.mentorcomment !== "No Comments" && (
-                              <div className="flex gap-1">
-                                <h2 className="">Mentor</h2>
-                                <div className="text-gray-600 text-sm">
-                                  {req.mentorcomment}
-                                </div>
-                              </div>
-                            )}
-                            {req.classInchargeComment !== "No Comments" && (
-                              <div className="flex gap-1">
-                                <h2 className="">ClassIncharge :</h2>
-                                <div className="text-gray-600">
-                                  {req.classInchargeComment}
-                                </div>
-                              </div>
-                            )}
-                            {req.hodComment !== "No Comments" && (
-                              <div className="flex gap-1">
-                                <h2 className="">Hod : </h2>
-                                <div className="text-gray-600">
-                                  {req.hodComment}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                          {classInchargeStatus === "pending" && mentorStatus === "approved" ? (
-                            <div className="flex items-center justify-center gap-2">
-                              <button
-                                onClick={() =>
-                                  handleRequestClassIncharge(
-                                    "approved",
-                                    req._id
-                                  )
-                                }
-                                className="bg-green-500 hover:bg-green-600 text-white p-1  rounded-full transition-all duration-300"
-                              >
-                                <TiTick size={30} />
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleRequestClassIncharge(
-                                    "rejected",
-                                    req._id
-                                  )
-                                }
-                                className="bg-red-500 hover:bg-red-600 text-white p-1   rounded-full transition-all duration-300"
-                              >
-                                <RxCross2 size={30} />
-                              </button>
+                          </td>
+                          <td className="px-4 py-3 text-center text-gray-600 dark:text-gray-300">
+                            {req.noOfDays}
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center justify-center status-dots">
+                              <StatusDot
+                                status={req.approvals.mentor.status}
+                                role="mentor"
+                                showLine={true}
+                              />
+                              <StatusDot
+                                status={req.approvals.classIncharge.status}
+                                role="classIncharge"
+                                showLine={false}
+                              />
                             </div>
-                          ) : mentorStatus === "pending" ? (
-                            <div className="flex items-center justify-center gap-2">
-                              <h1>Mentor yet to take Action ! please wait</h1>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex flex-col">
+                              {req.mentorcomment !== "No Comments" && (
+                                <div className="flex gap-1">
+                                  <h2 className="text-gray-600">Mentor:</h2>
+                                  <div className="text-gray-600 text-sm">
+                                    {req.mentorcomment}
+                                  </div>
+                                </div>
+                              )}
+                              {req.classInchargeComment !== "No Comments" && (
+                                <div className="flex gap-1">
+                                  <h2 className="text-gray-600">ClassIncharge:</h2>
+                                  <div className="text-gray-600">
+                                    {req.classInchargeComment}
+                                  </div>
+                                </div>
+                              )}
+                              {req.hodComment !== "No Comments" && (
+                                <div className="flex gap-1">
+                                  <h2 className="text-gray-600">Hod:</h2>
+                                  <div className="text-gray-600">
+                                    {req.hodComment}
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          ):(
-                                <div className="flex justify-center">
-                                  <button
-                                onClick={() =>
-                                  handleRequestClassIncharge("taken", req._id)
-                                }
-                                className={` text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
-                                  classInchargeStatus === "approved"
-                                    ? "bg-green-400"
-                                    : classInchargeStatus === "rejected"
-                                    ? "bg-red-400"
-                                    : ""
-                                }`}
-                              >
-                                
-                                {classInchargeStatus === "approved"
-                                  ? "Approved"
-                                  : classInchargeStatus === "rejected"
-                                  ? "Rejected"
-                                  : "Taken"}
-                              </button>
-                                </div>         
-                                                         
+                          </td>
+                          <td className="px-4 py-3">
+                            {status === "pending" ? (
+                              <div className="flex items-center justify-center gap-2">
+                                <button
+                                  onClick={() => handleRequest("approved", req._id)}
+                                  className="bg-green-400 hover:bg-green-600 text-white p-1 rounded-full transition-all duration-300"
+                                >
+                                  <TiTick size={30} />
+                                </button>
+                                <button
+                                  onClick={() => handleRequest("rejected", req._id)}
+                                  className="bg-red-400 hover:bg-red-600 text-white p-1 rounded-full transition-all duration-300"
+                                >
+                                  <RxCross2 size={30} />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-center gap-2">
+                                <button
+                                  onClick={() => handleRequest("taken", req._id)}
+                                  className={`text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
+                                    status === "approved"
+                                      ? "bg-green-400"
+                                      : status === "rejected"
+                                      ? "bg-red-400"
+                                      : ""
+                                  }`}
+                                >
+                                  {status === "approved"
+                                    ? "Approved"
+                                    : status === "rejected"
+                                    ? "Rejected"
+                                    : "Taken"}
+                                </button>
+                              </div>
                             )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
               <Modal
                 show={classInchargemodalType !== null}
                 size="md"

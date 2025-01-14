@@ -115,7 +115,6 @@ const MarkDefaulterAndLate = () => {
         defaulterType: formData.defaulterType === 'lateEntry' ? 'Late': formData.defaulterType === 'dressCode' ? 'Discipline and Dresscode' : formData.defaulterType === 'both' ? 'Both' : "",
       };
       
-      console.log(payload);
       const response = await fetch('/api/defaulter/markDefaulter', {
         method: 'POST',
         headers: {

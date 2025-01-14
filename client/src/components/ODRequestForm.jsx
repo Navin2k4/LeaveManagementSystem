@@ -1,36 +1,55 @@
-import { Checkbox, Label, Select, TextInput } from "flowbite-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { Label, Checkbox, Tabs } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { ScaleLoader } from "react-spinners";
+import {
+  Calendar,
+  MapPin,
+  Building2,
+  FileText,
+  AlertCircle,
+  Trophy,
+} from "lucide-react";
+
+// Add this custom theme object
+const customTabTheme = {
+  base: "flex flex-col gap-2",
+  tablist: {
+    base: "flex text-center",
+    styles: {
+      default: "flex-wrap border-b border-gray-200 dark:border-gray-700",
+    },
+    tabitem: {
+      base: "flex items-center justify-center p-4 rounded-t-lg text-sm font-medium first:ml-0 disabled:cursor-not-allowed disabled:text-gray-400 disabled:dark:text-gray-500 focus:outline-none",
+      styles: {
+        default: {
+          base: "rounded-t-lg",
+          active: {
+            on: "bg-blue-100 text-[#1f3a6e] dark:bg-gray-700 dark:text-blue-500",
+            off: "text-gray-500 hover:bg-gray-50 hover:text-gray-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300",
+          },
+        },
+      },
+    },
+  },
+  tabpanel: "py-3",
+};
 
 export default function ODRequestForm({ setTab, mentor, classIncharge }) {
   const { currentUser } = useSelector((state) => state.user);
-
-  const isStaff = currentUser.userType === "Staff" || false;
-
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [errors, setErrors] = useState({});
-  const [departments, setDepartments] = useState([]);
-  const [mentors, setMentors] = useState([]);
-  const [classIncharges, setClassIncharges] = useState([]);
-  const [leaveTypes, setLeaveTypes] = useState([
-    "Casual Leave",
-    "Sick Leave",
-    "Earned Leave",
-    "Maternity Leave",
-    "Paternity Leave",
-    "Study Leave",
-    "Duty Leave",
-    "Special Leave",
-    "Sabbatical Leave",
-  ]);
-  const [forMedical, setForMedical] = useState(false);
-  const [forOneDay, setForOneDay] = useState(false);
-  const [isHalfDay, setIsHalfDay] = useState(null);
-  const [noOfDays, setNoOfDays] = useState(0);
+
+  // External OD specific states
+  const [selectedEventType, setSelectedEventType] = useState({
+    paperPresentation: false,
+    projectPresentation: false,
+    otherEvent: false,
+  });
 
   const [formData, setFormData] = useState({
+    // Common fields
     name: currentUser.name,
     email: currentUser.email,
     userId:
@@ -39,288 +58,322 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
     rollNo:
       currentUser.userType === "Staff" ? currentUser.id : currentUser.roll_no,
     regNo: currentUser.register_no,
-    forMedical,
     batchId: currentUser.batchId,
     sectionId: currentUser.sectionId,
     section_name: currentUser.section_name,
     departmentId: currentUser.departmentId,
-    reason: "",
     classInchargeId: classIncharge._id,
     mentorId: mentor._id,
-    leaveStartDate: "",
-    leaveEndDate: "",
-    noOfDays: 0,
+
+    // OD specific fields
+    odType: "internal", // or "external"
+    startDate: "",
+    endDate: "",
+    reason: "",
+
+    // External OD fields
+    collegeName: "",
+    city: "",
+    eventName: "",
+    programName: "",
+    paperTitle: "",
+    projectTitle: "",
+    eventDetails: "",
   });
-
-  const handleForMedicalChange = (e) => {
-    setForMedical(e.target.checked);
-    setFormData({ ...formData, forMedical: e.target.checked });
-  };
-
-  const calculateDays = () => {
-    const { leaveStartDate, leaveEndDate } = formData;
-
-    if (!leaveStartDate || !leaveEndDate) return;
-
-    const startDate = new Date(leaveStartDate);
-    const endDate = new Date(leaveEndDate);
-
-    let totalDays = 0;
-    let isSecondSaturdayInRange = false;
-
-    // Ensure startDate is not after endDate
-    if (startDate > endDate) {
-      console.error("Start date must not be after end date");
-      return;
-    }
-
-    for (
-      let date = new Date(startDate);
-      date <= endDate;
-      date.setDate(date.getDate() + 1)
-    ) {
-      const dayOfWeek = date.getDay();
-
-      // Exclude Sundays (0)
-      if (dayOfWeek !== 0) {
-        totalDays++;
-      }
-
-      // Check for the second Saturday
-      if (dayOfWeek === 6) {
-        // Saturday
-        const firstDayOfMonth = new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          1
-        );
-        const firstSaturday = new Date(firstDayOfMonth);
-        firstSaturday.setDate(1 + ((6 - firstDayOfMonth.getDay() + 7) % 7));
-
-        // Find the second Saturday of the month
-        const secondSaturday = new Date(firstSaturday);
-        secondSaturday.setDate(firstSaturday.getDate() + 7);
-
-        if (
-          date.getDate() === secondSaturday.getDate() &&
-          date.getMonth() === secondSaturday.getMonth()
-        ) {
-          isSecondSaturdayInRange = true;
-        }
-      }
-    }
-
-    // If the leave range includes the second Saturday, don't count it
-    if (isSecondSaturdayInRange) {
-      totalDays--;
-    }
-
-    setNoOfDays(totalDays);
-
-    // Calculate the total number of days inclusive
-    const differenceInTime = endDate.getTime() - startDate.getTime();
-    const differenceInDays =
-      Math.ceil(differenceInTime / (1000 * 3600 * 24)) + 1;
-
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      noOfDays: totalDays,
-      differenceInDays: differenceInDays,
-    }));
-  };
-
-  useEffect(() => {
-    if (forOneDay && formData.leaveStartDate) {
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        leaveEndDate: prevFormData.leaveStartDate,
-      }));
-    }
-    calculateDays();
-  }, [formData.leaveStartDate, formData.leaveEndDate, forOneDay]);
-
-  useEffect(() => {
-    fetch("/api/departments")
-      .then((response) => response.json())
-      .then((data) => setDepartments(data))
-      .catch((error) => console.error(error));
-  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    const currentDate = new Date().toISOString().split("T")[0];
-
-    if (!formData.departmentId) {
-      newErrors.departmentId = "Department must be selected";
-    }
-
-    if (!formData.leaveStartDate) {
-      newErrors.leaveStartDate = "Date from must be selected";
-    } else if (formData.leaveStartDate < currentDate) {
-      newErrors.leaveStartDate = "Date from must not be in the past";
-    }
-
-    if (!forOneDay && !isHalfDay && !formData.leaveEndDate) {
-      newErrors.leaveEndDate = "Date to must be selected";
-    } else if (formData.leaveEndDate && formData.leaveEndDate < currentDate) {
-      newErrors.leaveEndDate = "Date to must not be in the past";
-    } else if (
-      !forOneDay &&
-      formData.leaveEndDate &&
-      formData.leaveEndDate < formData.leaveStartDate
-    ) {
-      newErrors.leaveEndDate = "Date to must be greater than Date from";
-    }
-    if (!formData.reason) {
-      newErrors.reason = "Reason must be given";
-    } else if (formData.reason.length > 200) {
-      newErrors.reason = "Reason must be less than 200 characters";
-    }
-
-    return newErrors;
+  const handleEventTypeChange = (type) => {
+    setSelectedEventType((prev) => ({
+      ...prev,
+      [type]: !prev[type],
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formErrors = validateForm();
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      return;
-    }
-    try {
-      setLoading(true);
-      setErrorMessage(null);
-      const { classInchargeId, mentorId } = formData;
-      const res = await fetch("/api/leave-request", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...formData,
-          toDate: forOneDay ? formData.leaveStartDate : formData.leaveEndDate,
-          forMedical: forMedical ? true : false,
-          mentorId: classInchargeId === mentorId ? null : mentorId,
-        }),
-      });
-
-      const data = await res.json();
-      if (!data.success) {
-        if (
-          data.message.includes("Leave end date must be after the start date")
-        ) {
-          setErrorMessage("Leave end date must be after the start date");
-        } else if (
-          data.message.includes(
-            "You already have a leave request for this period"
-          )
-        ) {
-          setErrorMessage("You already have a leave request for this period");
-        } else {
-          setErrorMessage(data.message);
-        }
-        setLoading(false);
-        return;
-      }
-      if (res.ok) {
-        setLoading(false);
-        setTab("Your Leave Requests");
-      }
-    } catch (error) {
-      setErrorMessage(
-        "An error occurred while submitting the leave request. Please try again later."
-      );
-      setLoading(false);
-    }
+    // Add your submit logic here
   };
 
+  const renderInternalODForm = () => (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Calendar size={16} />
+            Date From<span className="text-red-400">*</span>
+          </Label>
+          <input
+            type="date"
+            name="startDate"
+            value={formData.startDate}
+            onChange={handleChange}
+            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Calendar size={16} />
+            Date To<span className="text-red-400">*</span>
+          </Label>
+          <input
+            type="date"
+            name="endDate"
+            value={formData.endDate}
+            onChange={handleChange}
+            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <FileText size={16} />
+          Reason for OD<span className="text-red-400">*</span>
+        </Label>
+        <textarea
+          name="reason"
+          value={formData.reason}
+          onChange={handleChange}
+          rows="3"
+          className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+          placeholder="Please provide the reason for internal OD..."
+        />
+      </div>
+    </div>
+  );
+
+  const renderExternalODForm = () => (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Building2 size={16} />
+            College/Company Name<span className="text-red-400">*</span>
+          </Label>
+          <input
+            type="text"
+            name="collegeName"
+            value={formData.collegeName}
+            onChange={handleChange}
+            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            placeholder="Enter college or company name"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <MapPin size={16} />
+            City<span className="text-red-400">*</span>
+          </Label>
+          <input
+            type="text"
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            placeholder="Enter city name"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <Trophy size={16} />
+          Program/Event Name<span className="text-red-400">*</span>
+        </Label>
+        <input
+          type="text"
+          name="eventName"
+          value={formData.eventName}
+          onChange={handleChange}
+          className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+          placeholder="Enter program or event name"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Calendar size={16} />
+            Date From<span className="text-red-400">*</span>
+          </Label>
+          <input
+            type="date"
+            name="startDate"
+            value={formData.startDate}
+            onChange={handleChange}
+            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Calendar size={16} />
+            Date To<span className="text-red-400">*</span>
+          </Label>
+          <input
+            type="date"
+            name="endDate"
+            value={formData.endDate}
+            onChange={handleChange}
+            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+          />
+        </div>
+      </div>
+
+      <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 space-y-3">
+        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          Event Type
+        </Label>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="paperPresentation"
+              checked={selectedEventType.paperPresentation}
+              onChange={() => handleEventTypeChange("paperPresentation")}
+              className="text-[#1f3a6e] rounded"
+            />
+            <Label htmlFor="paperPresentation" className="text-sm">
+              Paper Presentation
+            </Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="projectPresentation"
+              checked={selectedEventType.projectPresentation}
+              onChange={() => handleEventTypeChange("projectPresentation")}
+              className="text-[#1f3a6e] rounded"
+            />
+            <Label htmlFor="projectPresentation" className="text-sm">
+              Project Presentation
+            </Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="otherEvent"
+              checked={selectedEventType.otherEvent}
+              onChange={() => handleEventTypeChange("otherEvent")}
+              className="text-[#1f3a6e] rounded"
+            />
+            <Label htmlFor="otherEvent" className="text-sm">
+              Other Event
+            </Label>
+          </div>
+        </div>
+      </div>
+
+      {selectedEventType.paperPresentation && (
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <FileText size={16} />
+            Paper Title<span className="text-red-400">*</span>
+          </Label>
+          <input
+            type="text"
+            name="paperTitle"
+            value={formData.paperTitle}
+            onChange={handleChange}
+            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            placeholder="Enter paper title"
+          />
+        </div>
+      )}
+
+      {selectedEventType.projectPresentation && (
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <FileText size={16} />
+            Project Title<span className="text-red-400">*</span>
+          </Label>
+          <input
+            type="text"
+            name="projectTitle"
+            value={formData.projectTitle}
+            onChange={handleChange}
+            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            placeholder="Enter project title"
+          />
+        </div>
+      )}
+
+      {selectedEventType.otherEvent && (
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <FileText size={16} />
+            Event Details<span className="text-red-400">*</span>
+          </Label>
+          <textarea
+            name="eventDetails"
+            value={formData.eventDetails}
+            onChange={handleChange}
+            rows="3"
+            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            placeholder="Please provide detailed information about the event..."
+          />
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <div className="flex justify-center md:mt-5">
-      <div className="w-full max-w-2xl px-6 py-4 md:py-4 mx-auto h-auto ">
-        <div className="bg-slate-200 shadow-lg  rounded-md text-black px-6 py-3 font-sans md:mt-2">
-          <form className="flex flex-col gap-3 " onSubmit={handleSubmit}>
+    <div className="max-w-3xl mx-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+        {/* Header */}
+        <div className="bg-slate-200 p-4">
+          <h2 className="text-lg font-semibold text-black">Request OD</h2>
+          <p className="text-black/80 text-sm mt-1">
+            Fill in the details below to submit your OD request
+          </p>
+        </div>
 
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label
-                  htmlFor="leaveStartDate"
-                  className="text-left text-black font-semibold tracking-wide text-wide"
-                >
-                  Date From<span className="text-red-400">*</span>
-                </Label>
-                <TextInput
-                  type="date"
-                  name="leaveStartDate"
-                  value={formData.leaveStartDate}
-                  onChange={handleChange}
-                  className={errors.leaveStartDate ? "border-red-500" : ""}
-                />
-                {errors.leaveStartDate && (
-                  <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
-                    {errors.leaveStartDate}
-                  </p>
-                )}
+        <div className="p-4">
+          <Tabs theme={customTabTheme}>
+            <Tabs.Item active={true} title="Internal OD">
+              <div className="mt-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {renderInternalODForm()}
+                  <button
+                    type="submit"
+                    className="w-full bg-[#1f3a6e] text-white py-2.5 rounded-lg font-medium hover:bg-[#0b1f44] transition-all duration-300 disabled:opacity-50"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <div className="flex items-center justify-center">
+                        <ScaleLoader color="white" height={15} />
+                      </div>
+                    ) : (
+                      "Submit Internal OD Request"
+                    )}
+                  </button>
+                </form>
               </div>
-              <div className="flex flex-col gap-3">
-                <Label
-                  htmlFor="leaveEndDate"
-                  className="text-left font-semibold tracking-wide text-black"
-                >
-                  Date To<span className="text-red-400">*</span>
-                </Label>
-                <TextInput
-                  type="date"
-                  name="leaveEndDate"
-                  value={formData.leaveEndDate}
-                  onChange={handleChange}
-                  disabled={forOneDay}
-                  className={errors.leaveEndDate ? "border-red-500" : ""}
-                />
-                {errors.leaveEndDate && (
-                  <p className="text-red-600 font-bold bg-white/80 w-max px-2 py-[0.5] rounded-lg text-xs italic">
-                    {errors.leaveEndDate}
-                  </p>
-                )}
+            </Tabs.Item>
+
+            <Tabs.Item title="External OD">
+              <div className="mt-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {renderExternalODForm()}
+                  <button
+                    type="submit"
+                    className="w-full bg-[#1f3a6e] text-white py-2.5 rounded-lg font-medium hover:bg-[#0b1f44] transition-all duration-300 disabled:opacity-50"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <div className="flex items-center justify-center">
+                        <ScaleLoader color="white" height={15} />
+                      </div>
+                    ) : (
+                      "Submit External OD Request"
+                    )}
+                  </button>
+                </form>
               </div>
-            </div>
-
-            <div className="flex items-center">
-              <Label
-                htmlFor="visitPlace"
-                className="text-left font-semibold w-1/2 tracking-wide text-black"
-              >
-                Company / College Name<span className="text-red-400">*</span>
-              </Label>
-              <TextInput
-                type="text"
-                placeholder="eg: Velammal College of Engineering and Technology"
-                className="w-full"
-                name="visitPlace"
-                // value={formData.odEndDate}
-                onChange={handleChange}
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-600   p-2 font-bold tracking-wide rounded-md transition-all duration-300"
-            >
-              {loading ? (
-                <div className="flex items-center text-white   justify-center py-2">
-                  <ScaleLoader color="white" height={15} />
-                </div>
-              ) : (
-                <div className="flex items-center text-white justify-center py-2">
-                  Submit OD
-                </div>
-              )}
-            </button>
-          </form>
+            </Tabs.Item>
+          </Tabs>
         </div>
       </div>
     </div>
