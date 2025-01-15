@@ -58,8 +58,8 @@ const StaffDashBoard = () => {
         case "Leave Reports":
           return (
             <LeaveStatsCard
-              leaveRequestsAsClassIncharge={classInchargeRequest}
-              leaveRequestsAsMentor={mentorRequests}
+            leaveRequestsAsClassIncharge={classInchargeRequest}
+            leaveRequestsAsMentor={mentorRequests}
             />
           );
         case "Mentee List":

@@ -41,38 +41,39 @@ export const useFetchLeaveRequests = ({ id }) => {
 // XXX : Remove this file and place the useFetch where it is used more ofter=n it may solve the issue in loading the leave requests
 // that getting displayed to the staff and mentor more faster it may!
 
+
 export const useFetchLeaveRequestForMentor = (id) => {
+  console.log("useFetchLeaveRequestForMentor invoked with id:", id);
+  
   const [leaveRequestsAsMentor, setLeaveRequestsAsMentor] = useState([]);
   useEffect(() => {
     const fetchLeaveRequestsForMentor = async () => {
       try {
+        console.log("Attempting to fetch leave requests for ID:", id);
         const res = await fetch(`/api/getleaverequestbymentorid/${id}`);
-        const data = await res.json();
-        if (res.ok) {
-          // Modify data to include section names
-          const requestsWithSectionNames = await Promise.all(
-            data.map(async (req) => {
-              const sectionRes = await fetch(`/api/section/${req.sectionId}`);
-              const sectionData = await sectionRes.json();
-              if (sectionRes.ok) {
-                return { ...req, sectionName: sectionData.name };
-              } else {
-                console.error(
-                  `Failed to fetch section name for ID ${req.sectionId}`
-                );
-                return req; // Fallback to original request if section name fetch fails
-              }
-            })
-          );
-          setLeaveRequestsAsMentor(requestsWithSectionNames);
+        console.log("Fetch initiated");
+
+        if (!res.ok) {
+          console.error("Error in response:", res.status, res.statusText);
+          return;
         }
+
+        const data = await res.json();
+        console.log("Fetch data received:", data);
+        setLeaveRequestsAsMentor(data);
       } catch (error) {
-        console.error("Error fetching leave requests:", error);
+        console.error("Error during fetch:", error);
       }
     };
 
-    fetchLeaveRequestsForMentor();
-  }, [id]);
+    if (id) {
+      console.log("Valid ID provided, calling fetchLeaveRequestsForMentor");
+      fetchLeaveRequestsForMentor();
+    } else {
+      console.warn("ID is undefined or invalid; fetch skipped");
+    }
+  }, (id));
+
   return leaveRequestsAsMentor;
 };
 
@@ -85,30 +86,29 @@ export const useFetchLeaveRequestForClassIncharge = (id, sectionId) => {
       try {
         const res = await fetch(`/api/getleaverequestbyclassinchargeid/${id}`);
         const data = await res.json();
-        console.log(data);
         if (res.ok) {
           // Modify data to include section names and filter based on sectionId
-          const requestsWithSectionNames = await Promise.all(
-            data.map(async (req) => {
-              const sectionRes = await fetch(`/api/section/${req.sectionId}`);
-              const sectionData = await sectionRes.json();
-              if (sectionRes.ok) {
-                return { ...req, sectionName: sectionData.name };
-              } else {
-                console.error(
-                  `Failed to fetch section name for ID ${req.sectionId}`
-                );
-                return req; // Fallback to original request if section name fetch fails
-              }
-            })
-          );
+          // const requestsWithSectionNames = await Promise.all(
+          //   data.map(async (req) => {
+          //     const sectionRes = await fetch(`/api/section/${req.sectionId}`);
+          //     const sectionData = await sectionRes.json();
+          //     if (sectionRes.ok) {
+          //       return { ...req, sectionName: sectionData.name };
+          //     } else {
+          //       console.error(
+          //         `Failed to fetch section name for ID ${req.sectionId}`
+          //       );
+          //       return req; // Fallback to original request if section name fetch fails
+          //     }
+          //   })
+          // );
 
           // Filter requests based on the provided sectionId
-          const filteredRequests = requestsWithSectionNames.filter(
-            (req) => req.sectionId === sectionId
-          );
+          // const filteredRequests = requestsWithSectionNames.filter(
+          //   (req) => req.sectionId === sectionId
+          // );
 
-          setLeaveRequestsAsClassIncharge(filteredRequests);
+          setLeaveRequestsAsClassIncharge(data);
         }
       } catch (error) {
         console.error("Error fetching leave requests:", error);
