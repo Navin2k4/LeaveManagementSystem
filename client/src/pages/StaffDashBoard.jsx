@@ -25,7 +25,6 @@ const StaffDashBoard = () => {
     currentUser.userId,
     currentUser.classInchargeSectionId
   );
-
   const renderComponent = () => {
     if (currentUser.isPEStaff === true) {
       switch (tab) {
@@ -81,7 +80,7 @@ const StaffDashBoard = () => {
     {
       id: "Leave Requests",
       icon: <ClipboardList size={18} />,
-      label: "Student's Leave Requests",
+      label: `Student's Leave Requests`,
     },
     {
       id: "OD Requests",

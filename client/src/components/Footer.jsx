@@ -18,7 +18,7 @@ const Footer = () => {
         <Link to="/know-about-us">
         <div>
           <h1 className="text-white text-xl font-bold text-right">About Us</h1>
-          <p className="text-white text-md text-right">Designed and Developed CSE</p> 
+          <p className="text-white text-md text-right">Designed and Developed by CSE</p> 
         </div>
         </Link>
       </div>

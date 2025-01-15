@@ -252,3 +252,30 @@ export const getDefaulterReport = async (req, res) => {
     });
   }
 };
+
+export const getDefaulters = async (req, res) => {
+  try {
+    const defaulters = await Defaulter.find()
+      .populate("mentorId", "staff_name")
+      .populate("departmentId", "dept_name")
+      .sort({ entryDate: -1 }) // Most recent first
+      .limit(50); // Limit to last 50 entries
+
+    return res.status(200).json({
+      defaulters: defaulters.map((d) => ({
+        roll_no: d.roll_no,
+        studentName: d.studentName,
+        departmentName: d.departmentId?.dept_name || "N/A",
+        defaulterType: d.defaulterType,
+        entryDate: d.entryDate,
+        mentorName: d.mentorId?.staff_name || "N/A",
+      })),
+    });
+  } catch (error) {
+    console.error("Error fetching defaulters:", error);
+    return res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
