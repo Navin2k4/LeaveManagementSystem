@@ -19,7 +19,7 @@ function HomePage() {
     { icon: <Calendar size={20} />, text: "Integrated tracking of attendance and on-duty hours" },
     { icon: <Clock size={20} />, text: "Real-time status updates for requests and approvals" },
     { icon: <BarChart size={20} />, text: "Comprehensive analytics for attendance and trends" },
-    { icon: <Shield size={20} />, text: "Secure, reliable, and efficient system for all needs" },
+    { icon: <Shield size={20} />, text: "Secure, reliable, and efficient system for all needs" }
 ];
 
 
