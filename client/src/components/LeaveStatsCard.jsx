@@ -17,7 +17,9 @@ const LeaveStatsCard = ({
   leaveRequestsAsMentor,
   leaveRequestsAsClassIncharge,
 }) => {
-  const [mentorRequests, setMentorRequests] = useState(leaveRequestsAsMentor);
+  console.log("MEN",leaveRequestsAsMentor);
+  console.log("CI",leaveRequestsAsClassIncharge);
+  const [menteeRequests, setMenteeRequests] = useState(leaveRequestsAsMentor);
   const [classInchargeRequests, setClassInchargeRequests] = useState(
     leaveRequestsAsClassIncharge
   );
@@ -53,20 +55,42 @@ const LeaveStatsCard = ({
   });
 
   useEffect(() => {
+    fetchLeaveRequestsMentor();
+  }, []);
+  const fetchLeaveRequestsMentor = async () => {
+    console.log('called')
+    setIsFetching(true);
+    try {
+      const response = await fetch(
+        `/api/getleaverequestbymentorid/${currentUser.userId}`
+      );
+      const data = await response.json();
+      setMenteeRequests(data);
+    } catch (error) {
+      console.error("Error fetching leave requests:", error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+
+  useEffect(() => {
     const fetchMenteeList = async () => {
       try {
-        const response = await fetch(`/api/mentee/${currentUser.userId}`);
+        const response = await fetch(`/api/fetch/mentee/${currentUser.userId}`);
         const data = await response.json();
+        
+        console.log('Datas',data);
 
         if (response.ok) {
           setMenteeList(data);
 
           // Calculate mentee statistics
-          const menteeWithLeaves = data.filter((mentee) =>
+          const menteeWithLeaves = data.filter((menteeList) =>
             leaveRequestsAsMentor.some(
               (request) =>
-                request.name === mentee.name ||
-                request.roll_no === mentee.rollNo
+                request.name === menteeList.name ||
+                request.roll_no === menteeList.rollNo
             )
           );
 
@@ -86,9 +110,10 @@ const LeaveStatsCard = ({
     }
   }, [currentUser.userId, currentUser.isMentor]);
 
+  console.log("Mentee:",menteeRequests);
   useEffect(() => {
     calculateStats();
-  }, [leaveRequestsAsMentor, leaveRequestsAsClassIncharge]);
+  }, [menteeRequests, leaveRequestsAsClassIncharge]);
 
   const calculateStats = () => {
     const mentorStats = {

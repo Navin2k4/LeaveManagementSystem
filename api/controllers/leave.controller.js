@@ -3,6 +3,7 @@ import { errorHandler } from "../utils/error.js";
 import { notifyLeaveRequestStatus } from "./email.service.js";
 
 export const createLeaveRequest = async (req, res) => {
+  console.log(req.body);
   try {
     const {
       name,
@@ -160,12 +161,14 @@ export const getleaverequestbyUserId = async (req, res, next) => {
 };
 
 export const getleaverequestbyMentorId = async (req, res, next) => {
+  console.log('getleaverequestbyMentorId')
   try {
     const { id } = req.params;
     const data = await LeaveRequest.find({ mentorId: id }).sort({
       createdAt: -1,
     });
     res.status(200).json(data);
+    console.log('mentor'+data)
   } catch (error) {
     console.error("Error fetching leave requests:", error);
     const customError = errorHandler(500, "Internal Server Error");
