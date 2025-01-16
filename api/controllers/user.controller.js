@@ -91,7 +91,6 @@ export const deleteUser = async (req, res, next) => {
 export const getStaffProfile = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    console.log("Fetching staff profile for:", userId);
 
     const staffProfile = await Staff.findById(userId)
       .populate({

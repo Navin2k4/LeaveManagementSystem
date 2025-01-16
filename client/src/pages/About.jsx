@@ -1,8 +1,15 @@
-"use client";
-
 import React from "react";
-import { motion } from "framer-motion";
-import { FileText, Clock, AlertTriangle, Users, BookOpen } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  FileText,
+  Clock,
+  AlertTriangle,
+  Users,
+  BookOpen,
+  ChevronDown,
+  Computer,
+} from "lucide-react";
+import { Carousel } from "flowbite-react";
 
 const systems = [
   {
@@ -46,18 +53,54 @@ const systems = [
 ];
 
 const About = () => {
+  const { scrollYProgress } = useScroll();
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header Section */}
+        <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
+          <motion.div
+            className="relative z-10 text-center"
+            style={{ opacity, scale }}
+          >
+            <motion.h1
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600"
+            >
+              Welcome to VCET Connect
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-xl mb-8 text-gray-800"
+            >
+              Revolutionizing academic administration through innovative digital
+              solutions
+            </motion.p>
+            <motion.a
+              href="#about"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="animate-bounce inline-block"
+            >
+              <ChevronDown size={48} className="text-white" />
+            </motion.a>
+          </motion.div>
+        </section>
+
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-          <div className="bg-slate-200 p-4">
+          <div className="bg-slate-200 flex items-center gap-2 p-4">
+            <Computer className="text-[#1f3a6e]" />
             <h2 className="text-lg font-semibold text-black">
-              About VCET Connect
+              Systems Implemented
             </h2>
-            <p className="text-black/80 text-sm mt-1">
-              Learn more about our systems and the team behind them
-            </p>
           </div>
 
           {/* Systems Grid */}

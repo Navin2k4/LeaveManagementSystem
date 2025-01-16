@@ -4,6 +4,8 @@ import {
   getStudentDetailsByRollNo,
   markDefaulter,
   getDefaulters,
+  assignWork,
+  getPendingWorksByStudentId,
 } from "../controllers/defaulter.controller.js";
 
 const router = express.Router();
@@ -21,5 +23,9 @@ router.get(
 );
 
 router.get("/getDefaulters", getDefaulters);
+
+router.post("/assignwork/:defaulterId", assignWork);
+
+router.get("/pendingworks/:studentId", getPendingWorksByStudentId);
 
 export default router;

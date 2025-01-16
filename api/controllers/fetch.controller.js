@@ -34,7 +34,6 @@ export const getMentorById = async (req, res, next) => {
 export const getMenteeByMentorId = async (req, res, next) => {
   try {
     const { mentorId } = req.params;
-    console.log("Fetching mentees for mentor:", mentorId);
 
     if (!mentorId) {
       return res.status(400).json({ message: "Mentor ID is required" });
@@ -55,7 +54,6 @@ export const getMenteeByMentorId = async (req, res, next) => {
       }
     ).lean();
 
-    console.log("Found mentees:", mentees.length);
     res.status(200).json(mentees);
   } catch (error) {
     console.error("Error in getMenteeByMentorId:", error);

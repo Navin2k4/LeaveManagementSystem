@@ -56,7 +56,6 @@ export default function PTGenerateReport() {
         );
       }
       const data = await response.json();
-      console.log(data);
       setReportData(data.defaulterReport);
       setFilteredData(data.defaulterReport);
     } catch (error) {

@@ -2,7 +2,16 @@ import mongoose from "mongoose";
 
 const defaulterSchema = new mongoose.Schema(
   {
+    studentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Student",
+      required: true,
+    },
     roll_no: {
+      type: String,
+      required: true,
+    },
+    name: {
       type: String,
       required: true,
     },
@@ -10,13 +19,22 @@ const defaulterSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Department",
     },
+    departmentName: {
+      type: String,
+    },
     batchId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Batch",
     },
+    batchName: {
+      type: String,
+    },
     sectionId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Section",
+    },
+    sectionName: {
+      type: String,
     },
     entryDate: {
       type: Date,
@@ -44,6 +62,9 @@ const defaulterSchema = new mongoose.Schema(
     defaulterType: {
       type: String,
       required: true,
+    },
+    remarks: {
+      type: String,
     },
   },
   {

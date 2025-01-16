@@ -7,6 +7,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
 import leaveRequestRoutes from "./routes/leave.route.js";
+import odRequestRoutes from "./routes/od.route.js";
 import departmentRoutes from "./routes/department.route.js";
 import defaulterRoutes from "./routes/defaulter.route.js";
 import dataRoutes from "./routes/data.route.js";
@@ -38,11 +39,13 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api", leaveRequestRoutes);
+app.use("/api", odRequestRoutes);
 app.use("/api", departmentRoutes);
 app.use("/api/defaulter", defaulterRoutes);
 app.use("/api/data", dataRoutes);
 app.use("/api/fetch", fetchRoutes);
 app.use("/api/mail", mailRoutes);
+
 // Serve static files from React build (ensure 'client/dist' exists)
 app.use(express.static(path.join(__dirname, "client", "dist")));
 

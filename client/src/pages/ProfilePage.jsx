@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import EditProfile from "../components/EditProfile";
-import LeaveRequestForm from "../components/LeaveRequestForm";
-import ODRequestForm from "../components/ODRequestForm";
+import EditProfile from "../components/user/EditProfile";
+import LeaveRequestForm from "../components/systems/leave/LeaveRequestForm";
+import ODRequestForm from "../components/systems/od/ODRequestForm";
 import DashBoard from "./DashBoard";
+import ODDashBoard from "./ODDashBoard";
 import { CiCirclePlus } from "react-icons/ci";
 import { FiEdit3 } from "react-icons/fi";
 import { IoDocumentOutline } from "react-icons/io5";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import { MdSupervisorAccount } from "react-icons/md";
 import { ChevronDown } from "lucide-react";
+import PendingWorks from "../components/systems/defaulter/PendingWorks";
 
 const ProfilePage = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -18,6 +20,7 @@ const ProfilePage = () => {
   const [tab, setTab] = useState("EditProfile");
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
+  const [pendingWorksCount, setPendingWorksCount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,6 +36,24 @@ const ProfilePage = () => {
     fetchData();
   }, [currentUser]);
 
+  useEffect(() => {
+    const fetchPendingWorksCount = async () => {
+      try {
+        const response = await fetch(
+          `/api/defaulter/pendingworks/${currentUser.id}`
+        );
+        const data = await response.json();
+        if (data.success) {
+          setPendingWorksCount(data.pendingWorks.length);
+        }
+      } catch (error) {
+        console.error("Error fetching pending works count:", error);
+      }
+    };
+
+    fetchPendingWorksCount();
+  }, [currentUser.id]);
+
   const renderComponent = () => {
     switch (tab) {
       case "LeaveRequestForm":
@@ -43,6 +64,8 @@ const ProfilePage = () => {
             classIncharge={classIncharge}
           />
         );
+      case "Your Pending Works":
+        return <PendingWorks />;
       case "ODRequestForm":
         return (
           <ODRequestForm
@@ -55,6 +78,8 @@ const ProfilePage = () => {
         return <EditProfile setTab={setTab} />;
       case "Your Leave Requests":
         return <DashBoard setTab={setTab} />;
+      case "Your OD Requests":
+        return <ODDashBoard setTab={setTab} />;
       default:
         return <LeaveRequestForm setTab={setTab} />;
     }
@@ -69,9 +94,20 @@ const ProfilePage = () => {
   const menuItems = [
     { id: "EditProfile", icon: <FiEdit3 size={18} />, label: "Edit Profile" },
     {
+      id: "Your Pending Works",
+      icon: <IoDocumentOutline size={18} />,
+      label: "Your Pending Work",
+      badge: pendingWorksCount > 0 ? pendingWorksCount : null,
+    },
+    {
       id: "LeaveRequestForm",
       icon: <CiCirclePlus size={20} />,
       label: "Request Leave",
+    },
+    {
+      id: "Your Leave Requests",
+      icon: <IoDocumentOutline size={18} />,
+      label: "Your Leave Requests",
     },
     {
       id: "ODRequestForm",
@@ -79,9 +115,9 @@ const ProfilePage = () => {
       label: "Request OD",
     },
     {
-      id: "Your Leave Requests",
+      id: "Your OD Requests",
       icon: <IoDocumentOutline size={18} />,
-      label: "Your Leave Requests",
+      label: "Your OD Requests",
     },
   ];
 
@@ -118,14 +154,21 @@ const ProfilePage = () => {
             <button
               key={item.id}
               onClick={() => setTab(item.id)}
-              className={`w-full p-4 flex items-center space-x-3 text-sm ${
+              className={`w-full p-4 flex items-center justify-between text-sm ${
                 tab === item.id
                   ? "bg-blue-200 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-medium"
                   : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
               } transition-all duration-300`}
             >
-              <span className="w-5">{item.icon}</span>
-              <span>{item.label}</span>
+              <div className="flex items-center space-x-3">
+                <span className="w-5">{item.icon}</span>
+                <span>{item.label}</span>
+              </div>
+              {item.badge && (
+                <span className="flex items-center justify-center w-6 h-6 text-xs font-medium text-white bg-red-500 rounded-full animate-pulse">
+                  {item.badge}
+                </span>
+              )}
             </button>
           ))}
         </nav>

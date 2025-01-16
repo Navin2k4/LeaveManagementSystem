@@ -58,31 +58,17 @@ const odRequestSchema = new Schema(
     },
     reason: {
       type: String,
-      required: true,
-    },
-    organizationName: {
-      type: String,
-      required: true,
     },
     city: {
       type: String,
-      required: true,
     },
-    eventTypes: {
-      type: [String],
-      required: true,
-    },
+    eventTypes: [
+      {
+        type: String,
+        enum: ["paperPresentation", "projectPresentation", "otherEvent"],
+      },
+    ],
     eventName: {
-      type: String,
-      required: true,
-    },
-    paper_title: {
-      type: String,
-    },
-    project_title: {
-      type: String,
-    },
-    event_details: {
       type: String,
     },
     status: {
@@ -107,14 +93,6 @@ const odRequestSchema = new Schema(
         },
         date: Date,
       },
-      // hod: {
-      //   status: {
-      //     type: String,
-      //     enum: ["pending", "approved", "rejected"],
-      //     default: "pending",
-      //   },
-      //   date: Date,
-      // },
     },
     mentorcomment: {
       type: String,
@@ -127,6 +105,18 @@ const odRequestSchema = new Schema(
     hodComment: {
       type: String,
       default: "No Comments",
+    },
+    collegeName: {
+      type: String,
+    },
+    paperTitle: {
+      type: String,
+    },
+    projectTitle: {
+      type: String,
+    },
+    eventDetails: {
+      type: String,
     },
   },
   {

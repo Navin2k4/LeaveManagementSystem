@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Label, Checkbox, Tabs } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { ScaleLoader } from "react-spinners";
@@ -48,11 +48,12 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
     otherEvent: false,
   });
 
+  const [activeTab, setActiveTab] = useState("Internal OD");
+
   const [formData, setFormData] = useState({
-    // Common fields
     name: currentUser.name,
     email: currentUser.email,
-    userId:
+    studentId:
       currentUser.userType === "Staff" ? currentUser.userId : currentUser.id,
     userType: currentUser.userType,
     rollNo:
@@ -64,14 +65,10 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
     departmentId: currentUser.departmentId,
     classInchargeId: classIncharge._id,
     mentorId: mentor._id,
-
-    // OD specific fields
-    odType: "internal", // or "external"
+    odType: "Internal",
     startDate: "",
     endDate: "",
-    reason: "",
-
-    // External OD fields
+    noOfDays: 0,
     collegeName: "",
     city: "",
     eventName: "",
@@ -92,9 +89,192 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
     }));
   };
 
+  const calculateDays = () => {
+    const { startDate, endDate } = formData;
+
+    if (!startDate || !endDate) return;
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    let totalDays = 0;
+    let isSecondSaturdayInRange = false;
+
+    // Ensure startDate is not after endDate
+    if (start > end) {
+      console.error("Start date must not be after end date");
+      return;
+    }
+
+    for (
+      let date = new Date(start);
+      date <= end;
+      date.setDate(date.getDate() + 1)
+    ) {
+      const dayOfWeek = date.getDay();
+
+      // Exclude Sundays (0)
+      if (dayOfWeek !== 0) {
+        totalDays++;
+      }
+
+      // Check for the second Saturday
+      if (dayOfWeek === 6) {
+        // Saturday
+        const firstDayOfMonth = new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          1
+        );
+        const firstSaturday = new Date(firstDayOfMonth);
+        firstSaturday.setDate(1 + ((6 - firstDayOfMonth.getDay() + 7) % 7));
+
+        // Find the second Saturday of the month
+        const secondSaturday = new Date(firstSaturday);
+        secondSaturday.setDate(firstSaturday.getDate() + 7);
+
+        if (
+          date.getDate() === secondSaturday.getDate() &&
+          date.getMonth() === secondSaturday.getMonth()
+        ) {
+          isSecondSaturdayInRange = true;
+        }
+      }
+    }
+
+    // If the leave range includes the second Saturday, don't count it
+    if (isSecondSaturdayInRange) {
+      totalDays--;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      noOfDays: totalDays,
+    }));
+  };
+
+  useEffect(() => {
+    calculateDays();
+  }, [formData.startDate, formData.endDate]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    const currentDate = new Date().toISOString().split("T")[0];
+
+    // Common validations for both Internal and External OD
+    if (!formData.startDate) {
+      newErrors.startDate = "Start date is required";
+    } else if (formData.startDate < currentDate) {
+      newErrors.startDate = "Start date cannot be in the past";
+    }
+
+    if (!formData.endDate) {
+      newErrors.endDate = "End date is required";
+    } else if (formData.endDate < formData.startDate) {
+      newErrors.endDate = "End date must be after start date";
+    }
+
+    // Internal OD specific validations
+    if (formData.odType === "Internal") {
+      if (!formData.reason) {
+        newErrors.reason = "Reason is required";
+      } else if (formData.reason.length > 200) {
+        newErrors.reason = "Reason must be less than 200 characters";
+      }
+    }
+
+    // External OD specific validations
+    if (formData.odType === "External") {
+      if (!formData.collegeName) {
+        newErrors.collegeName = "College/Company name is required";
+      }
+      if (!formData.city) {
+        newErrors.city = "City is required";
+      }
+      if (!formData.eventName) {
+        newErrors.eventName = "Program/Event name is required";
+      }
+
+      // Check if at least one event type is selected
+      const hasEventType = Object.values(selectedEventType).some(
+        (value) => value
+      );
+      if (!hasEventType) {
+        newErrors.eventType = "Please select at least one event type";
+      }
+
+      // Validate based on selected event types
+      if (selectedEventType.paperPresentation && !formData.paperTitle) {
+        newErrors.paperTitle = "Paper title is required";
+      }
+      if (selectedEventType.projectPresentation && !formData.projectTitle) {
+        newErrors.projectTitle = "Project title is required";
+      }
+      if (selectedEventType.otherEvent && !formData.eventDetails) {
+        newErrors.eventDetails = "Event details are required";
+      }
+    }
+
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your submit logic here
+    const formErrors = validateForm();
+    setErrors(formErrors);
+
+    if (Object.keys(formErrors).length > 0) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setErrorMessage(null);
+      const { classInchargeId, mentorId } = formData;
+
+      const requestBody = {
+        ...formData,
+        mentorId: classInchargeId === mentorId ? mentorId : mentorId,
+        selectedEventType:
+          formData.odType === "External" ? selectedEventType : null,
+      };
+
+      const res = await fetch("/api/od-request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        if (
+          data.message.includes("Leave end date must be after the start date")
+        ) {
+          setErrorMessage("Leave end date must be after the start date");
+        } else if (
+          data.message.includes(
+            "You already have a leave request for this period"
+          )
+        ) {
+          setErrorMessage("You already have a leave request for this period");
+        } else {
+          setErrorMessage(data.message);
+        }
+        setLoading(false);
+        return;
+      }
+      if (res.ok) {
+        setLoading(false);
+        setTab("Your OD Requests");
+      }
+    } catch (error) {
+      setErrorMessage(
+        "An error occurred while submitting the OD request. Please try again later."
+      );
+      setLoading(false);
+    }
   };
 
   const renderInternalODForm = () => (
@@ -110,8 +290,13 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="startDate"
             value={formData.startDate}
             onChange={handleChange}
-            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            className={`w-full rounded-lg border ${
+              errors.startDate
+                ? "border-red-500"
+                : "border-gray-300 dark:border-gray-600"
+            } shadow-sm text-sm`}
           />
+          <ErrorMessage error={errors.startDate} />
         </div>
 
         <div className="space-y-2">
@@ -124,8 +309,13 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="endDate"
             value={formData.endDate}
             onChange={handleChange}
-            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            className={`w-full rounded-lg border ${
+              errors.endDate
+                ? "border-red-500"
+                : "border-gray-300 dark:border-gray-600"
+            } shadow-sm text-sm`}
           />
+          <ErrorMessage error={errors.endDate} />
         </div>
       </div>
 
@@ -139,9 +329,14 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
           value={formData.reason}
           onChange={handleChange}
           rows="3"
-          className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+          className={`w-full rounded-lg border ${
+            errors.reason
+              ? "border-red-500"
+              : "border-gray-300 dark:border-gray-600"
+          } shadow-sm text-sm`}
           placeholder="Please provide the reason for internal OD..."
         />
+        <ErrorMessage error={errors.reason} />
       </div>
     </div>
   );
@@ -159,9 +354,14 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="collegeName"
             value={formData.collegeName}
             onChange={handleChange}
-            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            className={`w-full rounded-lg border ${
+              errors.collegeName
+                ? "border-red-500"
+                : "border-gray-300 dark:border-gray-600"
+            } shadow-sm text-sm`}
             placeholder="Enter college or company name"
           />
+          <ErrorMessage error={errors.collegeName} />
         </div>
 
         <div className="space-y-2">
@@ -174,9 +374,14 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="city"
             value={formData.city}
             onChange={handleChange}
-            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            className={`w-full rounded-lg border ${
+              errors.city
+                ? "border-red-500"
+                : "border-gray-300 dark:border-gray-600"
+            } shadow-sm text-sm`}
             placeholder="Enter city name"
           />
+          <ErrorMessage error={errors.city} />
         </div>
       </div>
 
@@ -190,9 +395,14 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
           name="eventName"
           value={formData.eventName}
           onChange={handleChange}
-          className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+          className={`w-full rounded-lg border ${
+            errors.eventName
+              ? "border-red-500"
+              : "border-gray-300 dark:border-gray-600"
+          } shadow-sm text-sm`}
           placeholder="Enter program or event name"
         />
+        <ErrorMessage error={errors.eventName} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -206,8 +416,13 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="startDate"
             value={formData.startDate}
             onChange={handleChange}
-            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            className={`w-full rounded-lg border ${
+              errors.startDate
+                ? "border-red-500"
+                : "border-gray-300 dark:border-gray-600"
+            } shadow-sm text-sm`}
           />
+          <ErrorMessage error={errors.startDate} />
         </div>
 
         <div className="space-y-2">
@@ -220,14 +435,19 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="endDate"
             value={formData.endDate}
             onChange={handleChange}
-            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            className={`w-full rounded-lg border ${
+              errors.endDate
+                ? "border-red-500"
+                : "border-gray-300 dark:border-gray-600"
+            } shadow-sm text-sm`}
           />
+          <ErrorMessage error={errors.endDate} />
         </div>
       </div>
 
       <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 space-y-3">
         <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Event Type
+          Event Type<span className="text-red-400">*</span>
         </Label>
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-center gap-2">
@@ -264,6 +484,7 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             </Label>
           </div>
         </div>
+        <ErrorMessage error={errors.eventType} />
       </div>
 
       {selectedEventType.paperPresentation && (
@@ -277,9 +498,14 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="paperTitle"
             value={formData.paperTitle}
             onChange={handleChange}
-            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            className={`w-full rounded-lg border ${
+              errors.paperTitle
+                ? "border-red-500"
+                : "border-gray-300 dark:border-gray-600"
+            } shadow-sm text-sm`}
             placeholder="Enter paper title"
           />
+          <ErrorMessage error={errors.paperTitle} />
         </div>
       )}
 
@@ -294,9 +520,14 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="projectTitle"
             value={formData.projectTitle}
             onChange={handleChange}
-            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            className={`w-full rounded-lg border ${
+              errors.projectTitle
+                ? "border-red-500"
+                : "border-gray-300 dark:border-gray-600"
+            } shadow-sm text-sm`}
             placeholder="Enter project title"
           />
+          <ErrorMessage error={errors.projectTitle} />
         </div>
       )}
 
@@ -311,13 +542,36 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             value={formData.eventDetails}
             onChange={handleChange}
             rows="3"
-            className="w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm"
+            className={`w-full rounded-lg border ${
+              errors.eventDetails
+                ? "border-red-500"
+                : "border-gray-300 dark:border-gray-600"
+            } shadow-sm text-sm`}
             placeholder="Please provide detailed information about the event..."
           />
+          <ErrorMessage error={errors.eventDetails} />
         </div>
       )}
     </div>
   );
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setFormData((prev) => ({
+      ...prev,
+      odType: tab === "Internal OD" ? "Internal" : "External",
+    }));
+  };
+
+  const ErrorMessage = ({ error }) => {
+    if (!error) return null;
+    return (
+      <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+        <AlertCircle size={12} />
+        {error}
+      </p>
+    );
+  };
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -330,9 +584,16 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
           </p>
         </div>
 
+        {errorMessage && (
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
+            <AlertCircle size={16} />
+            {errorMessage}
+          </div>
+        )}
+
         <div className="p-4">
-          <Tabs theme={customTabTheme}>
-            <Tabs.Item active={true} title="Internal OD">
+          <Tabs theme={customTabTheme} onActiveTabChange={handleTabChange}>
+            <Tabs.Item active={activeTab === "Internal OD"} title="Internal OD">
               <div className="mt-4">
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {renderInternalODForm()}
@@ -353,7 +614,7 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
               </div>
             </Tabs.Item>
 
-            <Tabs.Item title="External OD">
+            <Tabs.Item active={activeTab === "External OD"} title="External OD">
               <div className="mt-4">
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {renderExternalODForm()}

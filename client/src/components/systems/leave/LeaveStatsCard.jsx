@@ -17,8 +17,7 @@ const LeaveStatsCard = ({
   leaveRequestsAsMentor,
   leaveRequestsAsClassIncharge,
 }) => {
-  console.log("MEN",leaveRequestsAsMentor);
-  console.log("CI",leaveRequestsAsClassIncharge);
+
   const [menteeRequests, setMenteeRequests] = useState(leaveRequestsAsMentor);
   const [classInchargeRequests, setClassInchargeRequests] = useState(
     leaveRequestsAsClassIncharge
@@ -58,7 +57,6 @@ const LeaveStatsCard = ({
     fetchLeaveRequestsMentor();
   }, []);
   const fetchLeaveRequestsMentor = async () => {
-    console.log('called')
     setIsFetching(true);
     try {
       const response = await fetch(
@@ -79,8 +77,7 @@ const LeaveStatsCard = ({
       try {
         const response = await fetch(`/api/fetch/mentee/${currentUser.userId}`);
         const data = await response.json();
-        
-        console.log('Datas',data);
+      
 
         if (response.ok) {
           setMenteeList(data);
@@ -110,7 +107,6 @@ const LeaveStatsCard = ({
     }
   }, [currentUser.userId, currentUser.isMentor]);
 
-  console.log("Mentee:",menteeRequests);
   useEffect(() => {
     calculateStats();
   }, [menteeRequests, leaveRequestsAsClassIncharge]);

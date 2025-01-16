@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import LeaveStatus from '../components/LeaveStatus';
+import LeaveStatus from '../components/systems/leave/LeaveStatus';
 import { useSelector } from 'react-redux';
 
 const DashBoard = () => {

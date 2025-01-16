@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { CgTrash } from "react-icons/cg";
 import { useSelector } from "react-redux";
 import "./LeaveStatus.scss";
-import StatusDot from "./StatusDot";
+import StatusDot from "../../general/StatusDot";
 import { BeatLoader, SyncLoader } from "react-spinners";
 
 const LeaveStatus = ({ leaveRequests }) => {
@@ -100,15 +100,15 @@ const LeaveStatus = ({ leaveRequests }) => {
     setdeletingLeave(true);
     try {
       const response = await fetch(`/api/deleteleave/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
-  
+
       if (response.ok) {
         console.log("Leave request deleted successfully");
-        window.location.reload(); 
+        window.location.reload();
       } else {
         console.log("Failed to delete leave request");
       }
@@ -119,36 +119,49 @@ const LeaveStatus = ({ leaveRequests }) => {
     }
   };
   const summaryItems = [
-    { title: 'Week', value: totalApprovedDaysThisWeek },
-    { title: 'Month', value: totalApprovedDaysThisMonth, maxValue: 3 },
-    { title: 'Semester', value: totalApprovedDaysThisSemester },
-    { title: 'Year', value: totalApprovedDaysThisYear }
+    { title: "Week", value: totalApprovedDaysThisWeek },
+    { title: "Month", value: totalApprovedDaysThisMonth, maxValue: 3 },
+    { title: "Semester", value: totalApprovedDaysThisSemester },
+    { title: "Year", value: totalApprovedDaysThisYear },
   ];
 
   return (
     <>
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 shadow-lg rounded-3xl p-8 m-4 max-w-4xl mx-auto">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
-        <h1 className="text-3xl font-bold text-indigo-800 mb-2 sm:mb-0">Leave Summary</h1>
-        <p className="text-sm text-indigo-600 bg-white px-3 py-1 rounded-full shadow">Max 3 leaves per month</p>
-      </div>
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 shadow-md rounded-3xl p-8 m-4 max-w-4xl mx-auto">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
+          <h1 className="text-3xl font-bold text-blue-800 mb-2 sm:mb-0">
+            Leave Summary
+          </h1>
+          <p className="text-sm text-indigo-600 bg-white px-3 py-1 rounded-full shadow">
+            Max 3 leaves per month
+          </p>
+        </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-        {summaryItems.map((item) => (
-          <div key={item.title} className="bg-white rounded-2xl p-2 shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-            <h2 className="text-sm font-medium text-indigo-400 mb-1">{item.title}</h2>
-            <p className={`text-2xl font-bold ${
-              item.maxValue && item.value > item.maxValue ? 'text-red-500' : 'text-indigo-700'
-            }`}>
-              {item.value}
-            </p>
-            {item.maxValue && item.value > item.maxValue && (
-              <p className="text-xs text-red-500 mt-1">Exceeds limit</p>
-            )}
-          </div>
-        ))}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          {summaryItems.map((item) => (
+            <div
+              key={item.title}
+              className="bg-white rounded-2xl p-2 shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+            >
+              <h2 className="text-sm font-medium text-indigo-400 mb-1">
+                {item.title}
+              </h2>
+              <p
+                className={`text-2xl font-bold ${
+                  item.maxValue && item.value > item.maxValue
+                    ? "text-red-500"
+                    : "text-indigo-700"
+                }`}
+              >
+                {item.value}
+              </p>
+              {item.maxValue && item.value > item.maxValue && (
+                <p className="text-xs text-red-500 mt-1">Limit Exceeded</p>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
 
       <div className="leave-status p-5">
         <div className="flex gap-2">
@@ -167,7 +180,7 @@ const LeaveStatus = ({ leaveRequests }) => {
             } transition-all duration-500 p-3 rounded-lg`}
             onClick={() => setView("approved")}
           >
-            <h2 className="text-white">Approved / Rejected Requests</h2>
+            <h2 className="text-white">Completed Requests</h2>
           </button>
         </div>
 
@@ -266,7 +279,11 @@ const LeaveStatus = ({ leaveRequests }) => {
                         onClick={() => handleDeleteLeave(request._id)}
                       >
                         <h1 className="text-white ">
-                          {deletingLeave ? <BeatLoader color="white" size={5} /> : "Yes Delete"}
+                          {deletingLeave ? (
+                            <BeatLoader color="white" size={5} />
+                          ) : (
+                            "Yes Delete"
+                          )}
                         </h1>
                       </button>
                       <button
@@ -363,9 +380,8 @@ const LeaveStatus = ({ leaveRequests }) => {
                 <div className="flex items-center justify-between">
                   <div>
                     {request.approvals.mentor.status === "rejected" ||
-                    request.approvals.classIncharge.status === "rejected" 
-                    // || request.approvals.hod.status === "rejected" 
-                    ? (
+                    request.approvals.classIncharge.status === "rejected" ? (
+                      // || request.approvals.hod.status === "rejected"
                       <div className="rejected-status">Rejected</div>
                     ) : (
                       <div className="accepted-status">Approved</div>

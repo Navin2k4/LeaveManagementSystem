@@ -16,7 +16,7 @@ import { SiTicktick } from "react-icons/si";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdOutlineDownloadDone } from "react-icons/md";
 import { useSelector } from "react-redux";
-import StatusDot from "../components/StatusDot";
+import StatusDot from "../components/general/StatusDot";
 import { TiTick } from "react-icons/ti";
 import { RxCross2 } from "react-icons/rx";
 
@@ -539,14 +539,39 @@ const Hoddashboard = () => {
 
                               <TableCell className="border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
                                 {(() => {
-                                  const baseClasses = "text-white text-center rounded-full p-1";
-                                  if (mentorStatus === "approved" && classInchargeStatus === "approved") {
-                                    return <div className={`bg-green-400 ${baseClasses}`}>Approved</div>;
+                                  const baseClasses =
+                                    "text-white text-center rounded-full p-1";
+                                  if (
+                                    mentorStatus === "approved" &&
+                                    classInchargeStatus === "approved"
+                                  ) {
+                                    return (
+                                      <div
+                                        className={`bg-green-400 ${baseClasses}`}
+                                      >
+                                        Approved
+                                      </div>
+                                    );
                                   }
-                                  if (mentorStatus === "rejected" || classInchargeStatus === "rejected") {
-                                    return <div className={`bg-red-400 ${baseClasses}`}>Rejected</div>;
+                                  if (
+                                    mentorStatus === "rejected" ||
+                                    classInchargeStatus === "rejected"
+                                  ) {
+                                    return (
+                                      <div
+                                        className={`bg-red-400 ${baseClasses}`}
+                                      >
+                                        Rejected
+                                      </div>
+                                    );
                                   }
-                                  return <div className={`bg-yellow-400 ${baseClasses}`}>Pending</div>;
+                                  return (
+                                    <div
+                                      className={`bg-yellow-400 ${baseClasses}`}
+                                    >
+                                      Pending
+                                    </div>
+                                  );
                                 })()}
                                 {/* {hodstatus === "pending" &&
                                 classInchargeStatus === "approved" ? (

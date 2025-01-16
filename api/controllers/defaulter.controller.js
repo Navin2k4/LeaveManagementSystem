@@ -76,6 +76,7 @@ export const getStudentDetailsByRollNo = async (req, res) => {
     }
 
     return res.status(200).json({
+      studentId: studentdata._id,
       name: studentdata.name,
       sectionName: studentdata.section_name,
       batch_name: studentdata.batchId ? studentdata.batchId.batch_name : "N/A",
@@ -103,6 +104,11 @@ export const getStudentDetailsByRollNo = async (req, res) => {
 
 export const markDefaulter = async (req, res) => {
   const {
+    studentId,
+    name,
+    departmentName,
+    batchName,
+    sectionName,
     rollNumber,
     entryDate,
     timeIn,
@@ -128,6 +134,11 @@ export const markDefaulter = async (req, res) => {
     // Create a new defaulter entry with IDs
     const newDefaulter = new Defaulter({
       roll_no: rollNumber,
+      studentId,
+      name,
+      departmentName,
+      batchName,
+      sectionName,
       entryDate,
       timeIn,
       observation,
@@ -263,12 +274,16 @@ export const getDefaulters = async (req, res) => {
 
     return res.status(200).json({
       defaulters: defaulters.map((d) => ({
+        studentId: d.studentId,
         roll_no: d.roll_no,
-        studentName: d.studentName,
-        departmentName: d.departmentId?.dept_name || "N/A",
+        name: d.name,
+        departmentName: d.departmentName,
+        batchName: d.batchName,
+        sectionName: d.sectionName,
         defaulterType: d.defaulterType,
         entryDate: d.entryDate,
         mentorName: d.mentorId?.staff_name || "N/A",
+        remarks: d.remarks,
       })),
     });
   } catch (error) {
@@ -276,6 +291,61 @@ export const getDefaulters = async (req, res) => {
     return res.status(500).json({
       message: "Server error",
       error: error.message,
+    });
+  }
+};
+
+export const getDefaulterByStudentId = async (req, res) => {
+  const { studentId } = req.params;
+  const defaulter = await Defaulter.findOne({ studentId });
+  return res.status(200).json({ defaulter });
+};
+
+export const assignWork = async (req, res) => {
+  try {
+    const { defaulterId } = req.params;
+    const { remarks } = req.body;
+
+    const updatedDefaulter = await Defaulter.findOneAndUpdate(
+      { studentId: defaulterId },
+      { remarks },
+      { new: true }
+    );
+
+    if (!updatedDefaulter) {
+      return res.status(404).json({ message: "Defaulter not found" });
+    }
+
+    res.status(200).json({
+      message: "Work assigned successfully",
+      defaulter: updatedDefaulter,
+    });
+  } catch (error) {
+    console.error("Error assigning work:", error);
+    res.status(500).json({ message: "Error assigning work" });
+  }
+};
+
+export const getPendingWorksByStudentId = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    const defaulters = await Defaulter.find({
+      studentId: studentId,
+      remarks: { $exists: true, $ne: "" }, // Only get entries with remarks
+    })
+      .sort({ entryDate: -1 }) // Most recent first
+      .select("defaulterType entryDate remarks");
+
+    res.status(200).json({
+      success: true,
+      pendingWorks: defaulters,
+    });
+  } catch (error) {
+    console.error("Error fetching pending works:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching pending works",
     });
   }
 };

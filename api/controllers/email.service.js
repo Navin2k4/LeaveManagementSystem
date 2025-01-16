@@ -134,6 +134,13 @@ export const notifyLeaveRequestStatus = async (email, name, status, fromDate, to
   await sendEmail(email, emailSubject, emailContent);
 };
 
+export const notifyOdRequestStatus = async (email, name, status, fromDate, toDate, comments,who) => {
+  const emailSubject = `Leave Request ${status.charAt(0).toUpperCase() + status.slice(1)} by ${who}`;
+  const emailContent = generateEmailContent(name, status, fromDate, toDate, comments,who);
+
+  await sendEmail(email, emailSubject, emailContent);
+};
+
 // Usage example:
 // await notifyLeaveRequestStatus(leaveRequest.email, leaveRequest.name, status, leaveRequest.fromDate, leaveRequest.toDate, mentorcomment);
 

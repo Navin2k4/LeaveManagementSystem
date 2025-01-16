@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import SideMenu from "./SideMenu";
-import { signOutSuccess } from "../redux/user/userSlice";
+import SideMenu from "../general/SideMenu";
+import { signOutSuccess } from "../../redux/user/userSlice";
 import { RiParentFill } from "react-icons/ri";
 
 function Navbar() {

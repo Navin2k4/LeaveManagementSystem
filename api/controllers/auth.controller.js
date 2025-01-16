@@ -226,7 +226,6 @@ export const studentsignin = async (req, res, next) => {
 };
 
 export const staffsignup = async (req, res, next) => {
-  console.log(req.body);
   const {
     staff_name,
     staff_id,
@@ -243,9 +242,6 @@ export const staffsignup = async (req, res, next) => {
     password,
     userType,
   } = req.body;
-  console.log(isClassIncharge);
-  console.log(isMentor);
-  console.log(isPEStaff);
 
   try {
     // Validate required fields
@@ -311,8 +307,6 @@ export const staffsignup = async (req, res, next) => {
         userType,
       });
 
-      console.log(newStaff);
-
       // Save the new staff member to the database
       await newStaff.save();
     } else {
@@ -330,8 +324,6 @@ export const staffsignup = async (req, res, next) => {
         password: hashedPassword,
         userType,
       });
-
-      console.log(newStaff);
       await newStaff.save();
     }
 

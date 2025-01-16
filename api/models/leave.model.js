@@ -19,28 +19,7 @@ const leaveRequestSchema = new Schema(
       required: true,
       enum: ["Student", "Staff"],
     },
-    rollNo: {
-      type: String,
-    },
-    regNo: {
-      type: String,
-    },
-    departmentId: {
-      type: Schema.Types.ObjectId,
-      ref: "Department",
-      required: true,
-    },
-    batchId: {
-      type: Schema.Types.ObjectId,
-      ref: "Batch",
-    },
-    sectionId: {
-      type: Schema.Types.ObjectId,
-      ref: "Section",
-    },
-    section_name: {
-      type: String,
-    },
+    
     mentorId: {
       type: Schema.Types.ObjectId,
       ref: "Staff",

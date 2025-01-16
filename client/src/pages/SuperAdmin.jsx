@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import LeaveStatsCard from "../components/LeaveStatsCard";
+import LeaveStatsCard from "../components/systems/leave/LeaveStatsCard";
 import { useFetchDepartments } from "../../hooks/useFetchData";
 import { Link } from "react-router-dom";
-import UploadExcel from "../components/excelUpload";
+import UploadExcel from "../components/systems/excelUpload";
 
 const SuperAdmin = () => {
   const departments = useFetchDepartments();

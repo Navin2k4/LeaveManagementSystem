@@ -120,3 +120,62 @@ export const useFetchLeaveRequestForClassIncharge = (id, sectionId) => {
 
   return leaveRequestsAsClassIncharge;
 };
+
+
+export const useFetchODRequestForMentor = (id) => {
+  console.log("useFetchODRequestForMentor invoked with id:", id);
+  
+  const [odRequestsAsMentor, setODRequestsAsMentor] = useState([]);
+  useEffect(() => {
+    const fetchODRequestsForMentor = async () => {
+      try {
+        console.log("Attempting to fetch OD requests for ID:", id);
+        const res = await fetch(`/api/getodrequestbymentorid/${id}`);
+        console.log("Fetch initiated");
+
+        if (!res.ok) {
+          console.error("Error in response:", res.status, res.statusText);
+          return;
+        }
+
+        const data = await res.json();
+        console.log("Fetch data received:", data);
+        setODRequestsAsMentor(data);
+      } catch (error) {
+        console.error("Error during fetch:", error);
+      }
+    };
+
+    if (id) {
+      console.log("Valid ID provided, calling fetchODRequestsForMentor");
+      fetchODRequestsForMentor();
+    } else {
+      console.warn("ID is undefined or invalid; fetch skipped");
+    }
+  }, (id));
+
+  return odRequestsAsMentor;
+};
+
+export const useFetchODRequestForClassIncharge = (id, sectionId) => {
+    const [odRequestsAsClassIncharge, setODRequestsAsClassIncharge] =
+    useState([]);
+
+  useEffect(() => {
+    const fetchODRequestsForClassIncharge = async () => {
+      try {
+        const res = await fetch(`/api/getodrequestbyclassinchargeid/${id}`);
+        const data = await res.json();
+        if (res.ok) {
+          setODRequestsAsClassIncharge(data);
+        }
+      } catch (error) {
+        console.error("Error fetching OD requests:", error);
+      }
+    };
+
+    fetchODRequestsForClassIncharge();
+  }, [id, sectionId]);
+
+  return odRequestsAsClassIncharge;
+};

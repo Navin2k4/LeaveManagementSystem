@@ -4,7 +4,7 @@ import {
   signInSuccess,
   signInStart,
   signInFailure,
-} from "../redux/user/userSlice";
+} from "../../redux/user/userSlice";
 import { ScaleLoader } from "react-spinners";
 import { Link, useNavigate } from "react-router-dom";
 

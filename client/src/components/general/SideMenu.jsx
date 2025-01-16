@@ -4,7 +4,7 @@ import { MdDashboard } from "react-icons/md";
 import { CiLogin } from "react-icons/ci";
 import { CgProfile } from "react-icons/cg";
 import { useSelector, useDispatch } from "react-redux";
-import { signOutSuccess } from "../redux/user/userSlice";
+import { signOutSuccess } from "../../redux/user/userSlice";
 import { RiParentFill } from "react-icons/ri";
 
 const SideMenu = ({ open }) => {

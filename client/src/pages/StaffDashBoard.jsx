@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
-import LeaveRequestForm from "../components/LeaveRequestForm";
+import LeaveRequestForm from "../components/systems/leave/LeaveRequestForm";
 import DashBoard from "./DashBoard";
 import { useSelector } from "react-redux";
 import {
   useFetchLeaveRequestForClassIncharge,
   useFetchLeaveRequestForMentor,
+  useFetchODRequestForMentor,
+  useFetchODRequestForClassIncharge,
 } from "../../hooks/useFetchData";
 import { ChevronDown, User, UserRoundPlus } from "lucide-react";
 import { ClipboardList, FileBarChart, UserCheck, FileText } from "lucide-react";
-import LeaveStatsCard from "../components/LeaveStatsCard";
-import LeaveRequests from "../components/LeaveRequests";
-import MarkDefaulterandLate from "../components/MarkDefaulter";
-import GenerateReport from "../components/PTGenerateReport";
-import MenteeList from "../components/MenteeList";
-import StaffProfile from "../components/StaffProfile";
+import LeaveStatsCard from "../components/systems/leave/LeaveStatsCard";
+import LeaveRequests from "../components/systems/leave/LeaveRequests";
+import MarkDefaulterandLate from "../components/systems/defaulter/MarkDefaulter";
+import GenerateReport from "../components/systems/defaulter/PTGenerateReport";
+import MenteeList from "../components/systems/MenteeList";
+import StaffProfile from "../components/user/StaffProfile";
+import ODRequests from "../components/systems/od/ODRequests";
 
 const StaffDashBoard = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -22,6 +25,11 @@ const StaffDashBoard = () => {
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
   const mentorRequests = useFetchLeaveRequestForMentor(currentUser.userId);
   const classInchargeRequest = useFetchLeaveRequestForClassIncharge(
+    currentUser.userId,
+    currentUser.classInchargeSectionId
+  );
+  const mentorODRequests = useFetchODRequestForMentor(currentUser.userId);
+  const classInchargeODRequests = useFetchODRequestForClassIncharge(
     currentUser.userId,
     currentUser.classInchargeSectionId
   );
@@ -48,9 +56,9 @@ const StaffDashBoard = () => {
           );
         case "OD Requests":
           return (
-            <LeaveRequests
-              leaveRequestsAsClassIncharge={classInchargeRequest}
-              leaveRequestsAsMentor={mentorRequests}
+            <ODRequests
+              odRequestsAsClassIncharge={classInchargeODRequests}
+              odRequestsAsMentor={mentorODRequests}
             />
           );
         case "Defaulter":
@@ -58,8 +66,8 @@ const StaffDashBoard = () => {
         case "Leave Reports":
           return (
             <LeaveStatsCard
-            leaveRequestsAsClassIncharge={classInchargeRequest}
-            leaveRequestsAsMentor={mentorRequests}
+              leaveRequestsAsClassIncharge={classInchargeRequest}
+              leaveRequestsAsMentor={mentorRequests}
             />
           );
         case "Mentee List":
