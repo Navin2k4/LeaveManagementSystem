@@ -29,7 +29,7 @@ function HomePage() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <motion.div initial="initial" animate="animate" variants={{ animate: { transition: { staggerChildren: 0.1 } } }}>
             <motion.h1
-              className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-[#1f3a6e] mb-6"
+              className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-blue-600 mb-6"
               variants={fadeInUp}
             >
               VCET Connect
