@@ -27,6 +27,7 @@ function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
+<<<<<<< HEAD
           <motion.div initial="initial" animate="animate" variants={{ animate: { transition: { staggerChildren: 0.1 } } }}>
             <motion.h1
               className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-blue-600 mb-6"
@@ -41,6 +42,33 @@ function HomePage() {
               Welcome to VCET CONNECT, your all-in-one platform for seamless college management. Designed for VCET's academic community, our system integrates Leave Management, 
               Defaulter Management, and On-Duty Management into a single, efficient solution. Experience streamlined processes and enhanced communication—making college management effortless for students, faculty, and administrators alike.
             </motion.p>
+=======
+          {/* Left Column - Main Content */}
+          <motion.div
+            initial="initial"
+            animate="animate"
+            variants={staggerContainer}
+            className="space-y-8"
+          >
+            <motion.div variants={fadeInUp} className="space-y-4">
+              <motion.h1
+                className="text-5xl font-bold bg-clip-text text-transparent bg-blue-600"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                VCET Connect
+              </motion.h1>
+              <motion.p
+                className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed"
+                variants={fadeInUp}
+              >
+                Experience a seamless leave management system designed for
+                VCET's academic community. Streamline your requests, track
+                status updates, and stay connected.
+              </motion.p>
+            </motion.div>
+>>>>>>> 3a371bc1309039be708fb018825f3ee4cebb16a9
 
             <motion.div className="grid sm:grid-cols-2 gap-4 mb-8" variants={fadeInUp}>
               {features.map((feature, index) => (
