@@ -197,7 +197,7 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
           ...formData,
           toDate: forOneDay ? formData.leaveStartDate : formData.leaveEndDate,
           forMedical: forMedical ? true : false,
-          mentorId: classInchargeId === mentorId ? null : mentorId,
+          mentorId: classInchargeId === mentorId ? mentorId : mentorId,
         }),
       });
 

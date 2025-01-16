@@ -27,6 +27,9 @@ export default function LeaveRequests({
   leaveRequestsAsMentor,
   leaveRequestsAsClassIncharge,
 }) {
+
+  console.log('LR:',leaveRequestsAsMentor);
+  console.log('LR_C:',leaveRequestsAsClassIncharge);
   const [classInchargemodalType, setClassInchargeModalType] = useState(null); // 'approve', 'reject', or 'taken'
   const [mentormodalType, setMentorModalType] = useState(null); // 'approve', 'reject', or 'taken'
   const [currentRequestId, setCurrentRequestId] = useState(null);
@@ -66,6 +69,7 @@ export default function LeaveRequests({
   };
 
   const fetchLeaveRequestsMentor = async () => {
+    console.log('called')
     setIsFetching(true);
     try {
       const response = await fetch(
@@ -163,6 +167,10 @@ export default function LeaveRequests({
     }
   };
 
+  const filteredMenteeRequests = menteeRequests.filter(menteeReq => 
+    !classInchargeRequests.some(classReq => classReq._id === menteeReq._id)
+  );
+
   return (
     <>
       <>
@@ -170,11 +178,11 @@ export default function LeaveRequests({
           <div className="p-4 rounded-lg mb-4">
             <TableSkeleton />
           </div>
-        ) : menteeRequests.length > 0 ? (
+        ) : filteredMenteeRequests.length > 0 ? (
           <div>
             <div className=" mb-4">
               <h2 className="text-xl px-3 py-2 tracking-wider font-semibold">
-                Mentee requests ({menteeRequests.length})
+                Mentee requests ({filteredMenteeRequests.length})
               </h2>
             </div>
             <div className="overflow-x-auto">
