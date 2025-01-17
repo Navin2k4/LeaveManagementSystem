@@ -31,7 +31,7 @@ const SideMenu = ({ open }) => {
 
   return (
     <div
-      className={`lg:hidden fixed top-0 right-0 bg-gray-800 bg-opacity-30 backdrop-blur-md text-white h-full w-[60%] transition-transform  ${
+      className={`lg:hidden fixed top-0 right-0 bg-gray-800 bg-opacity-30 backdrop-blur-md text-white h-full w-[60%] transition-transform duration-500 ease-in-out ${
         open ? "translate-x-0" : "translate-x-full"
       } flex flex-col items-center text-xl p-4 shadow-lg z-50`}
     >

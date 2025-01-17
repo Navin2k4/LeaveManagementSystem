@@ -100,7 +100,7 @@ const DashboardSidebar = ({
                   <img
                     src="/vcet.jpeg"
                     alt="VCET Logo"
-                    className="w-10 h-1 0 rounded-full flex-shrink-0"
+                    className="w-10 h-10 rounded-full flex-shrink-0"
                   />
                   <span
                     className={`ml-3 font-semibold text-sm text-gray-800 dark:text-white whitespace-nowrap
@@ -258,7 +258,7 @@ const DashboardSidebar = ({
       {/* Mobile Floating Action Button */}
       <button
         onClick={() => setIsMobileMenuOpen(true)}
-        className="fixed right-4 bottom-4 lg:hidden z-40 p-4 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-200"
+        className="fixed right-4 top-4 lg:hidden z-40 p-4 bg-blue-300 text-black rounded-full shadow-lg hover:bg-blue-400 hover:text-white transition-colors duration-300"
       >
         <Menu className="w-6 h-6" />
       </button>
@@ -273,7 +273,7 @@ const DashboardSidebar = ({
           />
 
           {/* Sidebar */}
-          <div className="fixed inset-y-0 right-0 w-[280px] bg-white dark:bg-gray-800 shadow-xl z-50 lg:hidden">
+          <div className="fixed  inset-y-0 right-0  w-[280px] bg-white dark:bg-gray-800 shadow-xl z-50 lg:hidden">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-3">
