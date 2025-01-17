@@ -1,6 +1,7 @@
 import Student from "../models/student.model.js"; // Assuming you have a Student model
 import Defaulter from "../models/defaulter.model.js"; //
 import Staff from "../models/staff.model.js"; //
+
 export const getStudentDetailsByRollNo = async (req, res) => {
   //.log('entered getStudentDetailsByRollNo');
   //.log('Received roll_no:', req.params.roll_no); // Log roll_no to verify
@@ -274,6 +275,7 @@ export const getDefaulters = async (req, res) => {
 
     return res.status(200).json({
       defaulters: defaulters.map((d) => ({
+        _id: d._id,
         studentId: d.studentId,
         roll_no: d.roll_no,
         name: d.name,
@@ -284,6 +286,9 @@ export const getDefaulters = async (req, res) => {
         entryDate: d.entryDate,
         mentorName: d.mentorId?.staff_name || "N/A",
         remarks: d.remarks,
+        observation: d.observation,
+        timeIn: d.timeIn,
+        isDone: d.isDone,
       })),
     });
   } catch (error) {
@@ -303,11 +308,9 @@ export const getDefaulterByStudentId = async (req, res) => {
 
 export const assignWork = async (req, res) => {
   try {
-    const { defaulterId } = req.params;
-    const { remarks } = req.body;
-
+    const { id, remarks } = req.body;
     const updatedDefaulter = await Defaulter.findOneAndUpdate(
-      { studentId: defaulterId },
+      { _id: id },
       { remarks },
       { new: true }
     );
@@ -326,6 +329,24 @@ export const assignWork = async (req, res) => {
   }
 };
 
+export const markAsDone = async (req, res) => {
+  const { workId } = req.body;
+  try {
+    const work = Defaulter.findOneAndUpdate(
+      { _id: workId },
+      { isDone: true },
+      { new: true }
+    );
+    res.status(200).json({
+      message: "Work marked as done successfully",
+      defaulter: work,
+    });
+  } catch (error) {
+    console.error("Error Saving Assigned:", error);
+    res.status(500).json({ message: "Error Saving Assigned" });
+  }
+};
+
 export const getPendingWorksByStudentId = async (req, res) => {
   try {
     const { studentId } = req.params;
@@ -333,9 +354,7 @@ export const getPendingWorksByStudentId = async (req, res) => {
     const defaulters = await Defaulter.find({
       studentId: studentId,
       remarks: { $exists: true, $ne: "" }, // Only get entries with remarks
-    })
-      .sort({ entryDate: -1 }) // Most recent first
-      .select("defaulterType entryDate remarks");
+    }).sort({ entryDate: -1 });
 
     res.status(200).json({
       success: true,

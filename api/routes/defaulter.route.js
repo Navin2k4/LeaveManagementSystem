@@ -5,6 +5,7 @@ import {
   markDefaulter,
   getDefaulters,
   assignWork,
+  markAsDone,
   getPendingWorksByStudentId,
 } from "../controllers/defaulter.controller.js";
 
@@ -26,6 +27,7 @@ router.get("/getDefaulters", getDefaulters);
 
 router.post("/assignwork/:defaulterId", assignWork);
 
+router.post("/markasdone/:defaulterId", markAsDone);
 router.get("/pendingworks/:studentId", getPendingWorksByStudentId);
 
 export default router;

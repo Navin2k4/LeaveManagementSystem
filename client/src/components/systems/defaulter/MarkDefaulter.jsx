@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import PTGenerateReport from "./PTGenerateReport";
 import { Modal, Button } from "flowbite-react";
+import { format, startOfWeek, addDays, isSameDay } from "date-fns";
 
 const MarkDefaulterAndLate = () => {
   const [activeTab, setActiveTab] = useState("list");
@@ -46,6 +47,8 @@ const MarkDefaulterAndLate = () => {
   const [isWorkModalOpen, setIsWorkModalOpen] = useState(false);
   const [selectedDefaulter, setSelectedDefaulter] = useState(null);
   const [workRemarks, setWorkRemarks] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [weekDates, setWeekDates] = useState([]);
 
   // Fetch defaulters list
   const fetchDefaulters = async () => {
@@ -274,189 +277,282 @@ const MarkDefaulterAndLate = () => {
     }
   };
 
-  const ListDefaulters = () => (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Roll No
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Student Name
-            </th>
-            {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Department
-            </th> */}
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Type
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Date
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Mentor
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Assigned Work
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {defaulters.map((defaulter, index) => (
-            <tr key={index} className="hover:bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap">
-                {defaulter.roll_no}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">{defaulter.name}</td>
-              {/* <td className="px-6 py-4 whitespace-nowrap">
-                {defaulter.departmentName}
-              </td> */}
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span
-                  className={`px-2 py-1 rounded-full text-xs ${
-                    defaulter.defaulterType === "Late"
-                      ? "bg-yellow-100 text-yellow-800"
-                      : defaulter.defaulterType === "Both"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-blue-100 text-blue-800"
-                  }`}
-                >
-                  {defaulter.defaulterType}
-                </span>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {new Date(defaulter.entryDate).toLocaleDateString()}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {defaulter.mentorName}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {defaulter.remarks ? (
-                  <span className="text-sm text-gray-600 line-clamp-2">
-                    {defaulter.remarks}
-                  </span>
-                ) : (
-                  <span className="text-sm text-gray-400 italic">
-                    No work assigned
-                  </span>
-                )}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <button
-                  onClick={() => {
-                    setSelectedDefaulter(defaulter);
-                    setWorkRemarks(defaulter.remarks || "");
-                    setIsWorkModalOpen(true);
-                  }}
-                  className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
-                >
-                  {defaulter.remarks ? "Edit Work" : "Assign Work"}
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+  const ListDefaulters = () => {
+    const filteredDefaulters = defaulters.filter((defaulter) =>
+      isSameDay(new Date(defaulter.entryDate), selectedDate)
+    );
 
-      {/* Work Assignment Modal */}
-      <Modal
-        show={isWorkModalOpen}
-        onClose={() => {
-          setIsWorkModalOpen(false);
-          setSelectedDefaulter(null);
-        }}
-        size="md"
-      >
-        <Modal.Header>
-          {selectedDefaulter?.remarks ? "Edit Assigned Work" : "Assign Work"}
-        </Modal.Header>
-        <Modal.Body>
-          <div className="space-y-4">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-500">Student:</span>
-                  <p className="font-medium">{selectedDefaulter?.name}</p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Type:</span>
-                  <p className="font-medium">
-                    {selectedDefaulter?.defaulterType}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-gray-500">Date:</span>
-                  <p className="font-medium">
-                    {selectedDefaulter &&
-                      new Date(
-                        selectedDefaulter.entryDate
-                      ).toLocaleDateString()}
-                  </p>
+    return (
+      <div className="space-y-4">
+        {/* Week Day Selection */}
+        <div className="bg-white rounded-lg shadow p-4 mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-gray-700">Select Date</h3>
+            <button
+              onClick={() => setSelectedDate(new Date())}
+              className="text-sm text-blue-600 hover:text-blue-800"
+            >
+              Today
+            </button>
+          </div>
+          <div className="grid grid-cols-7 gap-1">
+            {weekDates.map((date) => {
+              const isSelected = isSameDay(date, selectedDate);
+              const isToday = isSameDay(date, new Date());
+
+              return (
+                <button
+                  key={date.toString()}
+                  onClick={() => setSelectedDate(date)}
+                  className={`flex flex-col items-center p-2 rounded-lg transition-colors
+                    hover:bg-gray-50
+                    ${
+                      isSelected
+                        ? "bg-blue-50 text-blue-700 ring-1 ring-blue-600"
+                        : "text-gray-900"
+                    }
+                    ${isToday ? "font-semibold" : ""}`}
+                >
+                  <span className="text-xs uppercase">
+                    {format(date, "EEE")}
+                  </span>
+                  <span
+                    className={`mt-1 text-sm ${isToday ? "text-blue-600" : ""}`}
+                  >
+                    {format(date, "d")}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Defaulters Table */}
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="p-4 border-b">
+            <h3 className="text-lg font-medium text-gray-900">
+              Defaulters for {format(selectedDate, "dd MMM yyyy")}
+            </h3>
+            <p className="text-sm text-gray-500 mt-1">
+              {filteredDefaulters.length} defaulters found
+            </p>
+          </div>
+
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Roll No
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Student Name
+                </th>
+                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Department
+                </th> */}
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Type
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Mentor
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Assigned Work
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredDefaulters.length > 0 ? (
+                filteredDefaulters.map((defaulter, index) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {defaulter.roll_no}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {defaulter.name}
+                    </td>
+                    {/* <td className="px-6 py-4 whitespace-nowrap">
+                      {defaulter.departmentName}
+                    </td> */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          defaulter.defaulterType === "Late"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : defaulter.defaulterType === "Both"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-blue-100 text-blue-800"
+                        }`}
+                      >
+                        {defaulter.defaulterType}
+                      </span>
+                      {defaulter.defaulterType === "Both" && (
+                        <p className="text-sm  font-normal px-1 py-1 text-gray-800">
+                          {defaulter.observation} - {defaulter.timeIn}
+                        </p>
+                      )}
+                      {defaulter.defaulterType === "Late" && (
+                        <p className="text-sm  font-normal px-1 py-1 text-gray-800">
+                          {defaulter.timeIn}
+                        </p>
+                      )}
+                      {defaulter.defaulterType ===
+                        "Discipline and Dresscode" && (
+                        <p className="text-sm  font-normal px-1 py-1 text-gray-800">
+                          {defaulter.observation}
+                        </p>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {new Date(defaulter.entryDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {defaulter.mentorName}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {defaulter.remarks ? (
+                        <span className="text-sm text-gray-600 line-clamp-2">
+                          {defaulter.remarks}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-gray-400 italic">
+                          No work assigned
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {defaulter.isDone ? (
+                        <p className="text-green-500 font-semibold text-sm">Completed</p>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setSelectedDefaulter(defaulter);
+                            setWorkRemarks(defaulter.remarks || "");
+                            setIsWorkModalOpen(true);
+                          }}
+                        className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
+                      >
+                        {defaulter.remarks ? "Edit Work" : "Assign Work"}
+                      </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="7"
+                    className="px-6 py-8 text-center text-gray-500"
+                  >
+                    No defaulters found for this date
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Work Assignment Modal */}
+        <Modal
+          show={isWorkModalOpen}
+          onClose={() => {
+            setIsWorkModalOpen(false);
+            setSelectedDefaulter(null);
+          }}
+          size="md"
+        >
+          <Modal.Header>
+            {selectedDefaulter?.remarks ? "Edit Assigned Work" : "Assign Work"}
+          </Modal.Header>
+          <Modal.Body>
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-500">Student:</span>
+                    <p className="font-medium">{selectedDefaulter?.name}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Type:</span>
+                    <p className="font-medium">
+                      {selectedDefaulter?.defaulterType}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Date:</span>
+                    <p className="font-medium">
+                      {selectedDefaulter &&
+                        new Date(
+                          selectedDefaulter.entryDate
+                        ).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Assign Work/Remarks
-              </label>
-              <textarea
-                rows="4"
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter the work to be done..."
-                value={workRemarks}
-                onChange={(e) => setWorkRemarks(e.target.value)}
-                ref={(textarea) => {
-                  if (
-                    isWorkModalOpen &&
-                    textarea &&
-                    !textarea.matches(":focus")
-                  ) {
-                    focusTextareaAtEnd(textarea);
-                  }
-                }}
-              ></textarea>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Assign Work/Remarks
+                </label>
+                <textarea
+                  rows="4"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter the work to be done..."
+                  value={workRemarks}
+                  onChange={(e) => setWorkRemarks(e.target.value)}
+                  ref={(textarea) => {
+                    if (
+                      isWorkModalOpen &&
+                      textarea &&
+                      !textarea.matches(":focus")
+                    ) {
+                      focusTextareaAtEnd(textarea);
+                    }
+                  }}
+                ></textarea>
+              </div>
             </div>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            className="bg-blue-100 text-black hover:bg-blue-200"
-            onClick={() =>
-              handleAssignWork(selectedDefaulter.studentId, workRemarks)
-            }
-          >
-            {selectedDefaulter?.remarks ? "Update Work" : "Assign Work"}
-          </Button>
-          <Button
-            color="gray"
-            onClick={() => {
-              setIsWorkModalOpen(false);
-              setSelectedDefaulter(null);
-              setWorkRemarks("");
-            }}
-          >
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
-  );
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              className="bg-blue-100 text-black hover:bg-blue-200"
+              onClick={() =>
+                handleAssignWork(selectedDefaulter._id, workRemarks)
+              }
+            >
+              {selectedDefaulter?.remarks ? "Update Work" : "Assign Work"}
+            </Button>
+            <Button
+              color="gray"
+              onClick={() => {
+                setIsWorkModalOpen(false);
+                setSelectedDefaulter(null);
+                setWorkRemarks("");
+              }}
+            >
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
+    );
+  };
 
-  const handleAssignWork = async (defaulterId, remarks) => {
+  const handleAssignWork = async (id, remarks) => {
     if (!remarks.trim()) return;
-
     try {
-      const response = await fetch(`/api/defaulter/assignwork/${defaulterId}`, {
+      const response = await fetch(`/api/defaulter/assignwork/${id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ remarks }),
+        body: JSON.stringify({ id, remarks }),
       });
 
       if (response.ok) {
@@ -476,6 +572,14 @@ const MarkDefaulterAndLate = () => {
     setSelectedDefaulter(null);
     setWorkRemarks("");
   };
+
+  useEffect(() => {
+    const start = startOfWeek(new Date(), { weekStartsOn: 1 }); // Start from Monday
+    const dates = Array.from({ length: 7 }).map((_, index) =>
+      addDays(start, index)
+    );
+    setWeekDates(dates);
+  }, []);
 
   return (
     <motion.div

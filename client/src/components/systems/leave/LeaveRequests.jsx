@@ -188,7 +188,7 @@ export default function LeaveRequests({
                       <div
                         className={`text-gray-600 dark:text-gray-300 line-clamp-2 capitalize ${
                           req.forMedical === true
-                            ? " bg-red-50 p-1 rounded-full text-red-600 border border-red-200"
+                            ? "text-red-600"
                             : "text-blue-600"
                         }`}
                       >
@@ -218,16 +218,16 @@ export default function LeaveRequests({
                     {req.noOfDays}
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center justify-center status-dots">
+                    <div className="flex items-center justify-center">
                       <StatusDot
                         status={req.approvals.mentor.status}
-                        role="mentor"
                         showLine={true}
-                      />
+                        by="M"
+                        />
                       <StatusDot
                         status={req.approvals.classIncharge.status}
-                        role="classIncharge"
                         showLine={false}
+                        by="CI"
                       />
                     </div>
                   </td>
@@ -586,16 +586,16 @@ const DetailsModal = ({ isOpen, onClose, request }) => (
         <div className="flex items-center gap-2">
           <h3 className="font-medium">Approval Status</h3>
           <div className="">
-            <div className="flex items-center gap-4">
+            <div className="flex">
               <StatusDot
                 status={request.approvals.mentor.status}
-                role="mentor"
                 showLine={true}
-              />
+                by="M"
+                />
               <StatusDot
                 status={request.approvals.classIncharge.status}
-                role="classIncharge"
                 showLine={false}
+                by="CI"
               />
             </div>
           </div>

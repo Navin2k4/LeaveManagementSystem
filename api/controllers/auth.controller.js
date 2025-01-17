@@ -161,8 +161,8 @@ export const studentsignin = async (req, res, next) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
+  
   identifier = identifier.toUpperCase();
-
   try {
     const student = await Student.findOne({
       $or: [{ roll_no: identifier }, { register_no: identifier }],

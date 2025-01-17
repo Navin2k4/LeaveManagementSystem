@@ -24,6 +24,18 @@ import About from "./pages/About";
 
 const AppWrapper = () => {
   const location = useLocation();
+
+  // Pages that use DashboardSidebar
+  const dashboardPages = [
+    "/profile",
+    "/staffdashboard",
+    "/hoddash",
+    // Add other dashboard pages here
+  ];
+
+  // Only show navbar on non-dashboard pages
+  const showNavbar = !dashboardPages.includes(location.pathname);
+
   const showFooter = [
     "/",
     "/studentsignup",
@@ -36,7 +48,7 @@ const AppWrapper = () => {
 
   return (
     <>
-      <Navbar />
+      {showNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<HomePage />} />
         {/* <Route path='/studentsignup' element={<SignUp />} /> */}

@@ -23,10 +23,10 @@ mongoose
     socketTimeoutMS: 45000, // 45 seconds
   })
   .then(() => {
-    console.log("MongoDb is connected");
+    console.log("DB 🚀");
   })
   .catch((err) => {
-    console.log("MongoDb not connected", err);
+    console.log("DB ❌", err);
   });
 
 const __dirname = path.resolve();
@@ -68,5 +68,5 @@ app.use((err, req, res, next) => {
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`VCET 🚀 on port ${port}`);
 });

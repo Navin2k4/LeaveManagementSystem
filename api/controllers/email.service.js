@@ -1,21 +1,13 @@
-import nodemailer from 'nodemailer';
-import schedule from 'node-schedule';
+import nodemailer from "nodemailer";
+import schedule from "node-schedule";
 import LeaveRequest from "../models/leave.model.js";
+import transporter from "../utils/transporter.js";
 
-
-let hours=0,minutes=0;
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  host: 'smtp.gmail.com',
-  secure: false,
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
+let hours = 0,
+  minutes = 0;
 
 export const changeMailSendTiming = (req, res) => {
-  const { time } = req.body; 
+  const { time } = req.body;
   if (!time) {
     return res.status(400).json({
       success: false,
@@ -42,25 +34,31 @@ export const changeMailSendTiming = (req, res) => {
   }
 };
 
-
 const sendEmail = async (to, subject, htmlContent) => {
   try {
     await transporter.sendMail({
-      from: `"VCET CONNECT" <${process.env.EMAIL}>`,
+      from: `"VCET Connect" <${process.env.EMAIL}>`,
       to,
       subject,
       html: htmlContent,
     });
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
   }
 };
 
-const generateEmailContent = (name, status, fromDate, toDate, comments,who) => {
-    const formattedFromDate = new Date(fromDate).toISOString().split('T')[0];
-    const formattedToDate = new Date(toDate).toISOString().split('T')[0];
-    
-    return `
+const generateEmailContent = (
+  name,
+  status,
+  fromDate,
+  toDate,
+  comments,
+  who
+) => {
+  const formattedFromDate = new Date(fromDate).toISOString().split("T")[0];
+  const formattedToDate = new Date(toDate).toISOString().split("T")[0];
+
+  return `
       <html>
       <head>
         <style>
@@ -108,11 +106,17 @@ const generateEmailContent = (name, status, fromDate, toDate, comments,who) => {
       <body>
         <div class="container">
           <div class="header">
-            <h1>Leave Request ${status.charAt(0).toUpperCase() + status.slice(1)} by ${who}</h1>
+            <h1>Leave Request ${
+              status.charAt(0).toUpperCase() + status.slice(1)
+            } by ${who}</h1>
           </div>
           <div class="content">
             <p>Dear ${name},</p>
-            <p>Your leave request has been ${status} by ${who} ${formattedFromDate === formattedToDate ? `for ${formattedFromDate}` : `from ${formattedFromDate} to ${formattedToDate}`}. </p>
+            <p>Your leave request has been ${status} by ${who} ${
+    formattedFromDate === formattedToDate
+      ? `for ${formattedFromDate}`
+      : `from ${formattedFromDate} to ${formattedToDate}`
+  }. </p>
             <p><strong>Comments:</strong> ${comments || "No Comments Yet"}</p>
           </div>
           <div class="footer">
@@ -124,19 +128,52 @@ const generateEmailContent = (name, status, fromDate, toDate, comments,who) => {
       </body>
       </html>
     `;
-  };
-  
+};
 
-export const notifyLeaveRequestStatus = async (email, name, status, fromDate, toDate, comments,who) => {
-  const emailSubject = `Leave Request ${status.charAt(0).toUpperCase() + status.slice(1)} by ${who}`;
-  const emailContent = generateEmailContent(name, status, fromDate, toDate, comments,who);
+export const notifyLeaveRequestStatus = async (
+  email,
+  name,
+  status,
+  fromDate,
+  toDate,
+  comments,
+  who
+) => {
+  const emailSubject = `Leave Request ${
+    status.charAt(0).toUpperCase() + status.slice(1)
+  } by ${who}`;
+  const emailContent = generateEmailContent(
+    name,
+    status,
+    fromDate,
+    toDate,
+    comments,
+    who
+  );
 
   await sendEmail(email, emailSubject, emailContent);
 };
 
-export const notifyOdRequestStatus = async (email, name, status, fromDate, toDate, comments,who) => {
-  const emailSubject = `Leave Request ${status.charAt(0).toUpperCase() + status.slice(1)} by ${who}`;
-  const emailContent = generateEmailContent(name, status, fromDate, toDate, comments,who);
+export const notifyOdRequestStatus = async (
+  email,
+  name,
+  status,
+  fromDate,
+  toDate,
+  comments,
+  who
+) => {
+  const emailSubject = `Leave Request ${
+    status.charAt(0).toUpperCase() + status.slice(1)
+  } by ${who}`;
+  const emailContent = generateEmailContent(
+    name,
+    status,
+    fromDate,
+    toDate,
+    comments,
+    who
+  );
 
   await sendEmail(email, emailSubject, emailContent);
 };
@@ -148,7 +185,9 @@ const sendConsolidatedEmails = async () => {
   try {
     const leaveRequests = await LeaveRequest.find({
       status: { $in: ["pending", "approved", "rejected"] },
-      createdAt: { $gte: new Date(new Date().setDate(new Date().getDate() - 1)) }, // Fetch requests in the last day
+      createdAt: {
+        $gte: new Date(new Date().setDate(new Date().getDate() - 1)),
+      }, // Fetch requests in the last day
     })
       .populate("mentorId", "staff_mail staff_name")
       .populate("classInchargeId", "staff_mail staff_name")
@@ -190,16 +229,16 @@ const sendConsolidatedEmails = async () => {
       }
     });
 
-
-    const groupedByClassIncharge={}
+    const groupedByClassIncharge = {};
     leaveRequests.forEach((request) => {
-    if (request.classInchargeId) {
-      const classInchargeEmail = request.classInchargeId.staff_mail;
-      if (!groupedByClassIncharge[classInchargeEmail]) {
-        groupedByClassIncharge[classInchargeEmail] = [];
+      if (request.classInchargeId) {
+        const classInchargeEmail = request.classInchargeId.staff_mail;
+        if (!groupedByClassIncharge[classInchargeEmail]) {
+          groupedByClassIncharge[classInchargeEmail] = [];
+        }
+        groupedByClassIncharge[classInchargeEmail].push(request);
       }
-      groupedByClassIncharge[classInchargeEmail].push(request);
-    }});
+    });
 
     // Grouping leave requests by department, batch, and section for department heads
     const groupedByDeptHeads = {};
@@ -226,8 +265,6 @@ const sendConsolidatedEmails = async () => {
         groupedByDeptHeads[deptHeadEmail][batchName][sectionName].push(request);
       }
     });
-
-
 
     // Send emails to mentors
     for (const [email, batches] of Object.entries(groupedByMentors)) {
@@ -281,12 +318,26 @@ const generateMentorEmailContent = (batches) => {
       requests.forEach((req) => {
         content += `
           <li style="border-bottom: 1px solid #ddd; padding: 15px 0;">
-            <p style="margin: 0; font-size: 14px;"><strong>Name:</strong> ${req.name}</p>
-            <p style="margin: 0; font-size: 14px;"><strong>From:</strong> ${new Date(req.fromDate).toLocaleDateString()}</p>
-            <p style="margin: 0; font-size: 14px;"><strong>To:</strong> ${new Date(req.toDate).toLocaleDateString()}</p>
-            <p style="margin: 0; font-size: 14px;"><strong>Reason:</strong> ${req.reason}</p>
+            <p style="margin: 0; font-size: 14px;"><strong>Name:</strong> ${
+              req.name
+            }</p>
+            <p style="margin: 0; font-size: 14px;"><strong>From:</strong> ${new Date(
+              req.fromDate
+            ).toLocaleDateString()}</p>
+            <p style="margin: 0; font-size: 14px;"><strong>To:</strong> ${new Date(
+              req.toDate
+            ).toLocaleDateString()}</p>
+            <p style="margin: 0; font-size: 14px;"><strong>Reason:</strong> ${
+              req.reason
+            }</p>
             <p style="margin: 0; font-size: 14px;"><strong>Status:</strong> 
-              <span style="color: ${req.status === 'approved' ? '#4CAF50' : req.status === 'rejected' ? '#F44336' : '#FF9800'};">
+              <span style="color: ${
+                req.status === "approved"
+                  ? "#4CAF50"
+                  : req.status === "rejected"
+                  ? "#F44336"
+                  : "#FF9800"
+              };">
                 ${req.status.charAt(0).toUpperCase() + req.status.slice(1)}
               </span>
             </p>
@@ -316,7 +367,7 @@ const generateMentorEmailContent = (batches) => {
   return content;
 };
 
-const generateClassInchargeEmailContent = (requests)=>{
+const generateClassInchargeEmailContent = (requests) => {
   let content = `
   <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
     <div style="background-color: #4CAF50; color: white; padding: 15px 20px; text-align: center;">
@@ -326,26 +377,38 @@ const generateClassInchargeEmailContent = (requests)=>{
       <p style="font-size: 16px; margin-bottom: 20px;">
         Dear ClassIncharge, here is the summary of leave requests submitted in the last 24 hours:
       </p>
-      <ul style="list-style: none; padding: 0; margin: 0;">`
+      <ul style="list-style: none; padding: 0; margin: 0;">`;
 
-requests.forEach((req) => {
-  content += `
+  requests.forEach((req) => {
+    content += `
         <li style="border-bottom: 1px solid #ddd; padding: 15px 0;">
-          <p style="margin: 0; font-size: 14px;"><strong>Name:</strong> ${req.name}</p>
-          <p style="margin: 0; font-size: 14px;"><strong>From:</strong> ${new Date(req.fromDate).toLocaleDateString()}</p>
-          <p style="margin: 0; font-size: 14px;"><strong>To:</strong> ${new Date(req.toDate).toLocaleDateString()}</p>
-          <p style="margin: 0; font-size: 14px;"><strong>Reason:</strong> ${req.reason}</p>
+          <p style="margin: 0; font-size: 14px;"><strong>Name:</strong> ${
+            req.name
+          }</p>
+          <p style="margin: 0; font-size: 14px;"><strong>From:</strong> ${new Date(
+            req.fromDate
+          ).toLocaleDateString()}</p>
+          <p style="margin: 0; font-size: 14px;"><strong>To:</strong> ${new Date(
+            req.toDate
+          ).toLocaleDateString()}</p>
+          <p style="margin: 0; font-size: 14px;"><strong>Reason:</strong> ${
+            req.reason
+          }</p>
           <p style="margin: 0; font-size: 14px;"><strong>Status:</strong> 
-            <span style="color: ${req.status === 'approved' ? '#4CAF50' : req.status === 'rejected' ? '#F44336' : '#FF9800'};">
+            <span style="color: ${
+              req.status === "approved"
+                ? "#4CAF50"
+                : req.status === "rejected"
+                ? "#F44336"
+                : "#FF9800"
+            };">
               ${req.status.charAt(0).toUpperCase() + req.status.slice(1)}
             </span>
           </p>
-        </li>`
-  ;
-});
+        </li>`;
+  });
 
-content += 
-      `</ul>
+  content += `</ul>
       <p style="margin-top: 20px; font-size: 14px; color: #555;">
         Thank you for your attention. Please log in to the system to review further details.
       </p>
@@ -358,9 +421,8 @@ content +=
     <div style="background-color: #f9f9f9; text-align: center; padding: 15px; border-top: 1px solid #ddd;">
       <p style="margin: 0; font-size: 12px; color: #999;">This is an automated message. Please do not reply to this email.</p>
     </div>
-  </div>`
-;
-return content;
+  </div>`;
+  return content;
 };
 
 const generateDeptHeadEmailContent = (batches) => {
@@ -389,12 +451,26 @@ const generateDeptHeadEmailContent = (batches) => {
       requests.forEach((req) => {
         content += `
           <li style="border-bottom: 1px solid #ddd; padding: 15px 0;">
-            <p style="margin: 0; font-size: 14px;"><strong>Name:</strong> ${req.name}</p>
-            <p style="margin: 0; font-size: 14px;"><strong>From:</strong> ${new Date(req.fromDate).toLocaleDateString()}</p>
-            <p style="margin: 0; font-size: 14px;"><strong>To:</strong> ${new Date(req.toDate).toLocaleDateString()}</p>
-            <p style="margin: 0; font-size: 14px;"><strong>Reason:</strong> ${req.reason}</p>
+            <p style="margin: 0; font-size: 14px;"><strong>Name:</strong> ${
+              req.name
+            }</p>
+            <p style="margin: 0; font-size: 14px;"><strong>From:</strong> ${new Date(
+              req.fromDate
+            ).toLocaleDateString()}</p>
+            <p style="margin: 0; font-size: 14px;"><strong>To:</strong> ${new Date(
+              req.toDate
+            ).toLocaleDateString()}</p>
+            <p style="margin: 0; font-size: 14px;"><strong>Reason:</strong> ${
+              req.reason
+            }</p>
             <p style="margin: 0; font-size: 14px;"><strong>Status:</strong> 
-              <span style="color: ${req.status === 'approved' ? '#4CAF50' : req.status === 'rejected' ? '#F44336' : '#FF9800'};">
+              <span style="color: ${
+                req.status === "approved"
+                  ? "#4CAF50"
+                  : req.status === "rejected"
+                  ? "#F44336"
+                  : "#FF9800"
+              };">
                 ${req.status.charAt(0).toUpperCase() + req.status.slice(1)}
               </span>
             </p>
@@ -423,9 +499,8 @@ const generateDeptHeadEmailContent = (batches) => {
   `;
   return content;
 };
-export const scheduleMail=(hours,minutes)=>{
-  console.log("H:"+hours)
-  console.log("M:"+minutes)
+export const scheduleMail = (hours, minutes) => {
+  console.log("H:" + hours);
+  console.log("M:" + minutes);
   schedule.scheduleJob(`${minutes}  ${hours} * * *`, sendConsolidatedEmails);
-}
-
+};

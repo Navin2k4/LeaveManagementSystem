@@ -117,16 +117,16 @@ const ODStatus = ({ ODRequests }) => {
             Status:
           </span>
           <div className="flex-1">
-            <div className="flex items-center gap-4">
+            <div className="flex">
               <StatusDot
                 status={request.approvals.mentor.status}
-                role="mentor"
                 showLine={true}
+                by="M"
               />
               <StatusDot
                 status={request.approvals.classIncharge.status}
-                role="classIncharge"
                 showLine={false}
+                by="CI"
               />
             </div>
           </div>

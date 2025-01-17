@@ -17,6 +17,7 @@ import GenerateReport from "../components/systems/defaulter/PTGenerateReport";
 import MenteeList from "../components/systems/MenteeList";
 import StaffProfile from "../components/user/StaffProfile";
 import ODRequests from "../components/systems/od/ODRequests";
+import DashboardSidebar from "../components/layout/DashboardSidebar";
 
 const StaffDashBoard = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -33,6 +34,8 @@ const StaffDashBoard = () => {
     currentUser.userId,
     currentUser.classInchargeSectionId
   );
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
   const renderComponent = () => {
     if (currentUser.isPEStaff === true) {
       switch (tab) {
@@ -118,65 +121,23 @@ const StaffDashBoard = () => {
   ];
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Sidebar */}
-      <div className="md:w-64 bg-white dark:bg-gray-800 shadow-md md:sticky top-0 md:h-screen">
-        {/* Mobile Toggle */}
-        {isMobileView && (
-          <button
-            onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-            className="w-full p-4 flex items-center justify-between text-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-          >
-            <span className="font-medium">Dashboard Menu</span>
-            <ChevronDown
-              className={`transition-transform duration-200 ${
-                isProfileMenuOpen ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-        )}
-
-        {/* Menu Items */}
-        <nav
-          className={`overflow-hidden transition-all duration-200 ${
-            isMobileView
-              ? isProfileMenuOpen
-                ? "max-h-96"
-                : "max-h-0"
-              : "max-h-full"
-          }`}
-        >
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setTab(item.id)}
-              className={`w-full p-4 flex items-center space-x-3 text-sm ${
-                tab === item.id
-                  ? "bg-blue-100 text-[#1f3a6e] dark:bg-blue-900/20 dark:text-blue-400 font-medium"
-                  : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-              } transition-all duration-200`}
-            >
-              <span className="w-5">{item.icon}</span>
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-      </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <DashboardSidebar
+        menuItems={menuItems}
+        currentTab={tab}
+        onTabChange={setTab}
+        userInfo={currentUser}
+        title={currentUser.isPEStaff ? "PE Staff Dashboard" : "Staff Dashboard"}
+        onSidebarToggle={setIsSidebarOpen}
+      />
 
       {/* Main Content */}
-      <div className="flex-1 p-4">
-        {/* Header Card */}
-        {/* <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-4">
-          <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-            {currentUser.isPEStaff ? "PE Staff Dashboard" : "Staff Dashboard"}
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Manage and monitor student activities
-          </p>
-        </div> */}
-
-        {/* Rendered Component */}
-        {renderComponent()}
+      <div
+        className={`transition-all duration-300 ${
+          isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
+        }`}
+      >
+        <div className="p-4">{renderComponent()}</div>
       </div>
     </div>
   );

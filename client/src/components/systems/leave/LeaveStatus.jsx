@@ -230,33 +230,20 @@ const LeaveStatus = ({ leaveRequests }) => {
                 </div>
                 <div className="flex items-center gap-2 my-2 mt-6">
                   <div className="font-bold text-black">Status :</div>
-                  {currentUser.userType === "Staff" ? (
-                    <div className="status-dots">
-                      <StatusDot
-                        status={request.approvals.hod.status}
-                        role="hod"
-                        showLine={false}
-                      />
-                    </div>
-                  ) : (
-                    <div className="status-dots">
-                      <StatusDot
-                        status={request.approvals.mentor.status}
-                        role="mentor"
-                        showLine={true}
-                      />
-                      <StatusDot
-                        status={request.approvals.classIncharge.status}
-                        role="classIncharge"
-                        showLine={false}
-                      />
-                      {/* <StatusDot
-                        status={request.approvals.hod.status}
-                        role="hod"
-                        showLine={false}
-                      /> */}
-                    </div>
-                  )}
+                  <div className="flex">
+                    <StatusDot
+                      status={request.approvals.mentor.status}
+                      role="mentor"
+                      showLine={true}
+                      by="M"
+                    />
+                    <StatusDot
+                      status={request.approvals.classIncharge.status}
+                      role="classIncharge"
+                      showLine={false}
+                      by="CI"
+                    />
+                  </div>
                 </div>
                 <div className="flex items-center justify-between pt-1">
                   <div className="pending-status">Pending</div>{" "}
@@ -344,37 +331,19 @@ const LeaveStatus = ({ leaveRequests }) => {
                 <div className="flex items-center gap-2 my-2 mt-6">
                   <div className="font-bold">Status :</div>
 
-                  <div className="status-dots">
-                    {currentUser.userType === "Staff" ? (
-                      <div className="status-dots">
-                        {/* <StatusDot
-                          status={request.approvals.hod.status}
-                          role="hod"
-                          showLine={false}
-                        /> */}
-                      </div>
-                    ) : (
-                      <div className="status-dots">
-                        <StatusDot
-                          status={request.approvals.mentor.status}
-                          role="mentor"
-                          showLine={true}
-                          comment={request.mentorcomment}
+                  <div className="">
+                    <div className="">
+                      <StatusDot
+                        status={request.approvals.mentor.status}
+                        showLine={true}
+                        by="M"
                         />
-                        <StatusDot
-                          status={request.approvals.classIncharge.status}
-                          role="classIncharge"
-                          showLine={false}
-                          comment={request.classIncharge}
-                        />
-                        {/* <StatusDot
-                          status={request.approvals.hod.status}
-                          role="hod"
-                          showLine={false}
-                          comment={request.hodComment}
-                        /> */}
-                      </div>
-                    )}
+                      <StatusDot
+                        status={request.approvals.classIncharge.status}
+                        showLine={false}
+                        by="CI"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between">

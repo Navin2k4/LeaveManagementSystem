@@ -138,13 +138,13 @@ async function processStudentExcelFile(filePath) {
 
         // Create student record
         const studentData = {
-          roll_no,
-          register_no,
+          roll_no: roll_no.trim(),
+          register_no: register_no.trim(),
           password: hashedPassword,
           name,
-          email,
-          phone,
-          parent_phone,
+          email: email.trim(),
+          phone: phone.trim(),
+          parent_phone: parent_phone.trim(),
           departmentId: departmentDoc._id,
           batchId: batchDoc._id,
           sectionId: sectionDoc._id,

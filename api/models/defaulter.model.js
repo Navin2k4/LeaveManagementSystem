@@ -66,6 +66,10 @@ const defaulterSchema = new mongoose.Schema(
     remarks: {
       type: String,
     },
+    isDone: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -54,7 +54,6 @@ export default function ODRequests({
   };
 
   const fetchODRequestsMentor = async () => {
-
     setIsFetching(true);
     try {
       const response = await fetch(
@@ -198,7 +197,7 @@ export default function ODRequests({
                   <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
                     <div className="flex items-center gap-2">
                       {req.odType === "Internal" ? (
-                        <div className="max-w-xs truncate capitalize">
+                        <div className="max-w-xs text-sm font-medium capitalize">
                           {req.reason}
                         </div>
                       ) : (
@@ -206,9 +205,6 @@ export default function ODRequests({
                           <div className="flex gap-2 items-center">
                             <p className="text-sm font-medium">
                               {req.collegeName}, {req.city}
-                            </p>
-                            <p className="text-sm font-normal text-gray-500">
-                              {req.eventName}
                             </p>
                           </div>
                         </div>
@@ -237,16 +233,16 @@ export default function ODRequests({
                     {req.noOfDays}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center justify-center status-dots">
+                    <div className="flex">
                       <StatusDot
                         status={req.approvals.mentor.status}
-                        role="mentor"
                         showLine={true}
+                        by="M"
                       />
                       <StatusDot
                         status={req.approvals.classIncharge.status}
-                        role="classIncharge"
                         showLine={false}
+                        by="CI"
                       />
                     </div>
                   </td>

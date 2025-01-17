@@ -489,7 +489,7 @@ const Hoddashboard = () => {
                                 {req.noOfDays}
                               </TableCell>
                               <TableCell className="flex  justify-center items-center border border-gray-400/20 p-4 text-black font-semibold sm:tracking-normal lg:tracking-wide">
-                                <div className="status-dots mt-4 ">
+                                <div className="mt-4 ">
                                   <StatusDot
                                     status={req.approvals.mentor.status}
                                     role="mentor"

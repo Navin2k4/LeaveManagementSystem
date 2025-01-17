@@ -70,6 +70,8 @@ export default function SignIn() {
         return;
       }
 
+      console.log(identifier, password);
+
       const res = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -103,7 +105,7 @@ export default function SignIn() {
 
   return (
     <div className="flex justify-center items-center min-h-[80vh] bg-gray-50">
-      <div className="w-full max-w-md p-8 bg-slate-200 rounded-lg shadow-lg">
+      <div className="w-full max-w-md p-8 bg-gray-50 shadow-none md:bg-slate-200 rounded-lg md:shadow-lg">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
           <p className="text-gray-600 mt-2">Please sign in to continue</p>
