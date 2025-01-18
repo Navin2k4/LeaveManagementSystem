@@ -574,16 +574,19 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-        {/* Header */}
-        <div className="bg-slate-200 p-4">
-          <h2 className="text-lg font-semibold text-black">Request OD</h2>
-          <p className="text-black/80 text-sm mt-1">
+    <div className="w-full mx-auto p-4">
+      {/* Page Header */}
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            OD Request
+          </h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
             Fill in the details below to submit your OD request
           </p>
         </div>
-
+      </div>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
         {errorMessage && (
           <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
             <AlertCircle size={16} />

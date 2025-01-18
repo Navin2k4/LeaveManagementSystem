@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from "react";
-import LeaveStatsCard from "../components/systems/leave/LeaveStatsCard";
 import { useFetchDepartments } from "../../hooks/useFetchData";
-import { Link } from "react-router-dom";
 import UploadExcel from "../components/systems/excelUpload";
+import {
+  Building2,
+  Upload,
+  School,
+  Users,
+  Trash2,
+  PlusCircle,
+  ChevronRight,
+  Settings,
+  BookOpen,
+  UserPlus,
+  GraduationCap,
+} from "lucide-react";
+import DashboardSidebar from "../components/layout/DashboardSidebar";
 
 const SuperAdmin = () => {
   const departments = useFetchDepartments();
@@ -26,6 +38,7 @@ const SuperAdmin = () => {
   const [newBatchName, setNewBatchName] = useState("");
   const [batchAlertMessage, setBatchAlertMessage] = useState("");
   const [uploadType, setUploadType] = useState("student");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
     if (selectedDepartment) {
@@ -200,7 +213,7 @@ const SuperAdmin = () => {
         throw new Error("Failed to fetch batches");
       }
       const data = await response.json();
-      setBatches(data);
+      setBatches(data.sort((b, a) => a.batch_name.localeCompare(b.batch_name)));
     } catch (error) {
       console.error("Error fetching batches:", error.message);
     } finally {
@@ -216,7 +229,9 @@ const SuperAdmin = () => {
         throw new Error("Failed to fetch sections");
       }
       const data = await response.json();
-      setSections(data);
+      setSections(
+        data.sort((a, b) => a.section_name.localeCompare(b.section_name))
+      );
     } catch (error) {
       console.error("Error fetching sections:", error.message);
     } finally {
@@ -281,292 +296,374 @@ const SuperAdmin = () => {
     }
   };
 
+  const menuItems = [
+    {
+      id: "overview",
+      icon: <Settings size={18} />,
+      label: "Overview",
+    },
+    {
+      id: "departments",
+      icon: <Building2 size={18} />,
+      label: "Departments",
+    },
+    {
+      id: "upload",
+      icon: <Upload size={18} />,
+      label: "Data Upload",
+    },
+  ];
+
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-200">
-      {/* Sidebar for departments */}
-      <div className="bg-[#1f3a6e] text-white lg:sticky top-0 md:h-screen overflow-y-auto p-4 space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">All Departments</h2>
+    <div className="min-h-screen bg-[#f3f4f6]">
+      <DashboardSidebar
+        menuItems={menuItems}
+        currentTab={uploadType}
+        onTabChange={setUploadType}
+        title="Super Admin Dashboard"
+        onSidebarToggle={setIsSidebarOpen}
+      />
+
+      <div
+        className={`transition-all duration-300 ${
+          isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
+        } p-6`}
+      >
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-gray-800">
+            Welcome, Super Admin
+          </h1>
+          <p className="text-gray-600">
+            Manage your institution's departments and data
+          </p>
         </div>
-
-        <div className="flex items-center justify-center gap-3">
-          <input
-            type="text"
-            value={newDepartment}
-            onChange={(e) => setNewDepartment(e.target.value)}
-            placeholder="Department Name"
-            className="text-black px-4 py-2 border rounded-md"
-          />
-          <button
-            onClick={handleAddDepartment}
-            className="bg-green-400 text-white font-bold hover:bg-orange-300 hover:text-black transition-all duration-300 px-4 py-2 rounded-md"
-          >
-            Add Department
-          </button>
-          {departmentAlertMessage &&
-            window.alert(`Department ${departmentAlertMessage}`)}
-        </div>
-
-        <ul className="space-y-2">
-          {departments.map((dept, index) => (
-            <li
-              key={index}
-              onClick={() => handleDepartmentSelect(dept)}
-              className={`flex items-center justify-between cursor-pointer py-2 px-4 transition-all duration-300 rounded-md ${
-                selectedDepartment === dept
-                  ? "bg-white/60 text-black font-bold"
-                  : "hover:bg-white/20 text-white font-bold"
-              }`}
-            >
-              {dept.dept_name}
-              <button
-                className="bg-red-500 text-white hover:bg-red-600 px-2 py-1 rounded-md"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteDepartment(dept._id);
-                }}
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="flex-1 p-4 md:p-8 overflow-y-auto">
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">Data Upload</h2>
-
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+          <h2 className="text-xl font-semibold mb-6">Data Upload</h2>
           <div className="flex gap-4 mb-6">
             <button
               onClick={() => setUploadType("student")}
-              className={`px-4 py-2 rounded-md transition duration-200 ${
+              className={`flex-1 px-4 py-3 rounded-lg transition-colors ${
                 uploadType === "student"
                   ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
               Student Upload
             </button>
             <button
               onClick={() => setUploadType("staff")}
-              className={`px-4 py-2 rounded-md transition duration-200 ${
+              className={`flex-1 px-4 py-3 rounded-lg transition-colors ${
                 uploadType === "staff"
                   ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
               Staff Upload
             </button>
           </div>
-
           <UploadExcel type={uploadType} />
         </div>
 
-        {selectedDepartment && (
-          <>
-            <div className="bg-[#1f3a6e] mt-4 mb-4 md:mb-8 p-6 rounded-lg">
-              <div className="flex flex-row items-center justify-between mb-5 ">
-                <h2 className="text-lg text-white font-semibold">
-                  Batches for {selectedDepartment.dept_name}
-                </h2>
-                <div className="">
-                  <div className="flex gap-3">
+        <div
+          className={`grid grid-cols-1 ${
+            isSidebarOpen ? "lg:grid-cols-3" : "lg:grid-cols-4"
+          } gap-6`}
+        >
+          <div
+            className={`${isSidebarOpen ? "lg:col-span-1" : "lg:col-span-1"}`}
+          >
+            <div className="bg-white rounded-xl shadow-sm p-6 sticky top-6">
+              <div className="flex flex-col gap-4">
+                {/* Add Department Form */}
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Departments
+                  </h2>
+                  <div className="flex gap-2">
                     <input
                       type="text"
-                      value={newBatchName}
-                      onChange={(e) => setNewBatchName(e.target.value)}
-                      placeholder="New Batch Name"
-                      className="border rounded-md"
+                      value={newDepartment}
+                      onChange={(e) => setNewDepartment(e.target.value)}
+                      placeholder="New Department"
+                      className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
                     />
                     <button
-                      onClick={handleAddBatch}
-                      className="bg-green-400 text-white font-bold hover:bg-orange-300 hover:text-black transition-all duration-300 px-4 py-2 rounded-md"
+                      onClick={handleAddDepartment}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
                     >
-                      Add Batch
+                      <PlusCircle size={18} />
+                      Add
                     </button>
                   </div>
-                  {batchAlertMessage && (
-                    <div className="mt-2 text-sm text-red-500">
-                      {batchAlertMessage}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <ul className="space-y-3">
-                {batches.map((batch, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-center"
-                  >
-                    <li
-                      onClick={() => handleBatchSelect(batch)}
-                      className={`cursor-pointer py-2 px-4 rounded-md transition-all duration-300 flex-1 ${
-                        selectedBatch === batch
-                          ? "bg-white/60 text-black font-bold"
-                          : "hover:bg-white/20 text-white font-bold"
+                  {departmentAlertMessage && (
+                    <p
+                      className={`text-sm ${
+                        departmentAlertMessage.includes("failed")
+                          ? "text-red-500"
+                          : "text-green-500"
                       }`}
                     >
-                      {batch.batch_name}
-                    </li>
-                    <button
-                      className="bg-red-500 text-white hover:bg-red-600 px-3 py-1 rounded-md ml-3"
-                      onClick={() => handleDeleteBatch(batch._id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                ))}
-              </ul>
-            </div>
-
-            {/* Sections list */}
-            {selectedBatch && (
-              <div className="bg-gray-100 mb-4 md:mb-8 p-4 rounded-lg">
-                <div className="flex flex-row items-center justify-between mb-5 ">
-                  <h2 className="text-lg text-gray-800 font-semibold ">
-                    Sections for {selectedBatch.batch_name} Batch
-                  </h2>
-
-                  <div className="flex items-center justify-center gap-3">
-                    {sectionAlertMessage && (
-                      <div className="text-sm text-red-500 font-bold">{`Section ${sectionAlertMessage}`}</div>
-                    )}
-                    <input
-                      type="text"
-                      value={newSection}
-                      onChange={(e) => setNewSection(e.target.value)}
-                      placeholder="New Section"
-                      className="border rounded-md focus:ring-0"
-                    />
-                    <button
-                      onClick={handleAddSection}
-                      className="bg-[#1f3a6e] text-white hover:bg-secondary-blue/80 transition-all duration-300  hover: px-4 py-2 rounded-md"
-                    >
-                      Add Section
-                    </button>
-                  </div>
+                      {departmentAlertMessage}
+                    </p>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                  {sections.map((section, index) => (
+                {/* Departments List */}
+                <div className="space-y-3 max-h-[calc(100vh-300px)] overflow-y-auto custom-scrollbar">
+                  {departments.map((dept) => (
                     <div
-                      key={index}
-                      className={`bg-white shadow-md px-6 py-4 rounded-lg border-l-4 transition-all duration-300
-                        ${
-                          selectedSection && selectedSection._id === section._id
-                            ? "border-gray-800"
-                            : "border-transparent"
-                        }
-                      `}
+                      key={dept._id}
+                      onClick={() => handleDepartmentSelect(dept)}
+                      className={`flex items-center justify-between p-4 rounded-lg cursor-pointer transition-all duration-200 ${
+                        selectedDepartment === dept
+                          ? "bg-blue-50 border-l-4 border-blue-500 shadow-md"
+                          : "bg-gray-50 hover:bg-gray-100 hover:shadow-md"
+                      }`}
                     >
-                      <div className="flex items-center justify-center gap-4">
-                        <h3 className="text-lg font-semibold">
-                          Section {section.section_name}
-                        </h3>
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium">{dept.dept_acronym}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <ChevronRight
+                          size={18}
+                          className={`text-gray-400 transition-transform ${
+                            selectedDepartment === dept ? "rotate-90" : ""
+                          }`}
+                        />
                         <button
-                          className="bg-gradient-to-br from-blue-500 to-[#0f172a] text-white shadow-md px-3 py-3 rounded-lg border-l-4 transition-all duration-300"
-                          onClick={() => handleSectionSelect(section)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (
+                              window.confirm(
+                                `Are you sure you want to delete ${dept.dept_name}?`
+                              )
+                            ) {
+                              handleDeleteDepartment(dept._id);
+                            }
+                          }}
+                          className="p-1 hover:bg-red-100 rounded-full text-red-500 transition-colors"
                         >
-                          View {section.section_name} Details
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
+                <div className="grid grid-cols-1 gap-6 mb-8">
+                  <div className="bg-white rounded-lg shadow-md p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-gray-500">Total Departments</p>
+                        <h3 className="text-2xl font-bold">
+                          {departments.length}
+                        </h3>
+                      </div>
+                      <Building2 className="text-blue-500" size={32} />
+                    </div>
+                  </div>
 
-            {/* Section details */}
-            {selectedSection && (
-              <div className="bg-gray-100 mb-4 md:mb-8 p-6 rounded-lg shadow-md">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg text-gray-800 font-semibold">
-                    Details for {selectedSection.section_name}
+                  <div className="bg-white rounded-lg shadow-md p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-gray-500">Total Batches</p>
+                        <h3 className="text-2xl font-bold">{batches.length}</h3>
+                      </div>
+                      <School className="text-green-500" size={32} />
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg shadow-md p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-gray-500">Total Sections</p>
+                        <h3 className="text-2xl font-bold">
+                          {sections.length}
+                        </h3>
+                      </div>
+                      <Users className="text-purple-500" size={32} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className={`${isSidebarOpen ? "lg:col-span-2" : "lg:col-span-3"}`}
+          >
+            {selectedDepartment && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    {selectedDepartment.dept_name} Management
                   </h2>
-                  <button
-                    className="bg-red-500 text-white hover:bg-red-600 px-3 py-2 rounded-md"
-                    onClick={() => handleDeleteClass(selectedSection._id)}
-                  >
-                    Delete Section
-                  </button>
                 </div>
 
-                {MentorAlertMessage && (
-                  <div className="text-green-600 mb-4">
-                    {MentorAlertMessage}
-                  </div>
-                )}
-
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                    Mentors:
-                  </h3>
-                  <ul className="space-y-2">
-                    {classDetails.mentors.map((mentor, index) => (
-                      <li
-                        key={index}
-                        className="flex justify-between items-center bg-white p-2 rounded-md shadow-sm"
-                      >
-                        <span>{mentor.staff_name}</span>
+                <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6`}>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-medium text-gray-700">
+                        Batches
+                      </h3>
+                      <div className="flex gap-3">
+                        <input
+                          type="text"
+                          value={newBatchName}
+                          onChange={(e) => setNewBatchName(e.target.value)}
+                          placeholder="New Batch"
+                          className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                        />
                         <button
-                          className="text-red-500 hover:text-red-700"
-                          onClick={() => {
-                            if (
-                              window.confirm(
-                                `Are you sure you want to delete ${mentor.staff_name}?`
-                              )
-                            ) {
-                              handleDeleteMentor(mentor._id);
-                            }
-                          }}
+                          onClick={handleAddBatch}
+                          className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
                         >
-                          Delete
+                          Add
                         </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {classInchargeMessage && (
-                  <div className="text-green-600 mb-4">
-                    {classInchargeMessage}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      {batches.map((batch) => (
+                        <div
+                          key={batch._id}
+                          onClick={() => handleBatchSelect(batch)}
+                          className={`flex items-center justify-between p-4 rounded-lg cursor-pointer transition-colors ${
+                            selectedBatch === batch
+                              ? "bg-green-50 border-l-4 border-green-500"
+                              : "bg-gray-50 hover:bg-gray-100"
+                          }`}
+                        >
+                          <span className="font-medium">
+                            {batch.batch_name}
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteBatch(batch._id);
+                            }}
+                            className="text-red-500 hover:text-red-600"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                )}
 
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                    Class Incharges:
-                  </h3>
-                  <ul className="space-y-2">
-                    {classDetails.classIncharges.map((incharge, index) => (
-                      <li
-                        key={index}
-                        className="flex justify-between items-center bg-white p-2 rounded-md shadow-sm"
-                      >
-                        <span>{incharge.staff_name}</span>
-                        <button
-                          className="text-red-500 hover:text-red-700"
-                          onClick={() => {
-                            if (
-                              window.confirm(
-                                `Are you sure you want to delete ${incharge.staff_name}?`
-                              )
-                            ) {
-                              handleDeleteClassIncharge(incharge._id);
-                            }
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+                  {selectedBatch && (
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Sections
+                        </h3>
+                        <div className="flex gap-3">
+                          <input
+                            type="text"
+                            value={newSection}
+                            onChange={(e) => setNewSection(e.target.value)}
+                            placeholder="New Section"
+                            className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                          />
+                          <button
+                            onClick={handleAddSection}
+                            className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors"
+                          >
+                            Add
+                          </button>
+                        </div>
+                      </div>
+                      <div className="grid gap-4 max-h-[300px] overflow-y-auto">
+                        {sections.map((section) => (
+                          <div
+                            key={section._id}
+                            className={`bg-gray-50 rounded-lg p-4 ${
+                              selectedSection === section
+                                ? "border-l-4 border-purple-500"
+                                : ""
+                            }`}
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="font-semibold">
+                                Section {section.section_name}
+                              </h3>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => handleSectionSelect(section)}
+                                  className="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-colors"
+                                >
+                                  View Details
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteClass(section._id)}
+                                  className="text-red-500 hover:text-red-600"
+                                >
+                                  <Trash2 size={18} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
-          </>
-        )}
+
+            {selectedSection && (
+              <div className="mt-6 bg-white rounded-xl shadow-sm p-6">
+                <div
+                  className={`grid grid-cols-1 ${
+                    isSidebarOpen ? "lg:grid-cols-1" : "lg:grid-cols-2"
+                  } gap-6`}
+                >
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Mentors</h3>
+                    <div className="space-y-2">
+                      {classDetails.mentors.map((mentor) => (
+                        <div
+                          key={mentor._id}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        >
+                          <span>{mentor.staff_name}</span>
+                          <button
+                            onClick={() => handleDeleteMentor(mentor._id)}
+                            className="text-red-500 hover:text-red-600"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">
+                      Class Incharges
+                    </h3>
+                    <div className="space-y-2">
+                      {classDetails.classIncharges.map((incharge) => (
+                        <div
+                          key={incharge._id}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        >
+                          <span>{incharge.staff_name}</span>
+                          <button
+                            onClick={() =>
+                              handleDeleteClassIncharge(incharge._id)
+                            }
+                            className="text-red-500 hover:text-red-600"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

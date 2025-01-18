@@ -126,8 +126,19 @@ const LeaveStatus = ({ leaveRequests }) => {
   ];
 
   return (
-    <>
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 shadow-md rounded-3xl p-8 m-4 max-w-4xl mx-auto">
+    <div className="w-full mx-auto p-4">
+    {/* Page Header */}
+    <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Your Leave Requests
+          </h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            View and manage your leave requests
+          </p>
+        </div>
+      </div>
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 shadow-md rounded-3xl p-8 m-4 max-w-3xl mx-auto">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
           <h1 className="text-3xl font-bold text-blue-800 mb-2 sm:mb-0">
             Leave Summary
@@ -386,7 +397,7 @@ const LeaveStatus = ({ leaveRequests }) => {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

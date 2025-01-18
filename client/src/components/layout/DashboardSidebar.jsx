@@ -121,7 +121,7 @@ const DashboardSidebar = ({
                   <Link
                     key={item.id}
                     to={item.path}
-                    className="flex items-center px-3 py-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                    className="flex items-center px-5 py-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
                   >
                     <span className="w-5 flex-shrink-0">{item.icon}</span>
                     <span
@@ -140,8 +140,8 @@ const DashboardSidebar = ({
             </div>
 
             {/* Scrollable Menu Section */}
-            <div className="flex-1 overflow-y-auto sidebar-scroll">
-              <nav className="px-2 py-4">
+            <div className="flex-1">
+              <nav className="px-4 py-4">
                 {menuItems.map((item) => (
                   <div key={item.id}>
                     {item.submenu ? (
@@ -235,7 +235,7 @@ const DashboardSidebar = ({
                       </div>
                       <button
                         onClick={handleSignout}
-                        className="flex-shrink-0 p-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md"
+                        className="flex-shrink-0 p-2 hover:text-gray-600 transition-all duration-300 bg-red-400 text-white hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md"
                       >
                         <LogOut size={18} />
                       </button>
@@ -244,7 +244,7 @@ const DashboardSidebar = ({
                 ) : (
                   <button
                     onClick={handleSignout}
-                    className="w-full flex justify-center p-2 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-md"
+                    className="w-full flex justify-center p-2  hover:text-gray-600 bg-red-400 text-white transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-md"
                   >
                     <LogOut size={20} />
                   </button>
@@ -375,7 +375,7 @@ const DashboardSidebar = ({
             </div>
 
             {/* Logout Button */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="absolute bottom-0 bg-red-300 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={handleSignout}
                 className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"

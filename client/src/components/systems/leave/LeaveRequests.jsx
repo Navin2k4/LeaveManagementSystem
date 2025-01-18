@@ -165,6 +165,7 @@ export default function LeaveRequests({
             <tr>
               <th className="px-6 py-4 w-[18%]">Student</th>
               <th className="px-6 py-4 w-[20%]">Reason</th>
+              <th className="px-6 py-4 w-[20%]">Reason</th>
               <th className="px-6 py-4 w-[15%]">Dates</th>
               <th className="px-6 py-4 w-[8%] text-center">Days</th>
               <th className="px-6 py-4 w-[12%]">Status</th>
@@ -296,7 +297,18 @@ export default function LeaveRequests({
   };
 
   return (
-    <>
+    <div className="w-full mx-auto p-4">
+      {/* Page Header */}
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Students Leave Requests
+          </h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            View and manage leave requests
+          </p>
+        </div>
+      </div>
       {/* Mentor Requests Section */}
       {menteeRequests?.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
@@ -511,7 +523,7 @@ export default function LeaveRequests({
           request={selectedRequest}
         />
       )}
-    </>
+    </div>
   );
 }
 

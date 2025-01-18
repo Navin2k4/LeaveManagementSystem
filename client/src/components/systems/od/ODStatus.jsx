@@ -180,7 +180,18 @@ const ODStatus = ({ ODRequests }) => {
   );
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="w-full mx-auto p-4">
+      {/* Page Header */}
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            OD Request
+          </h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            View and manage your OD requests
+          </p>
+        </div>
+      </div>
       <div className="flex justify-center gap-4 mb-6">
         <ViewToggleButton
           active={view === "pending"}
@@ -209,7 +220,7 @@ const ODStatus = ({ ODRequests }) => {
         </Select>
       </div>
 
-      <div className="space-y-4">
+      <div className="max-w-3xl mx-auto space-y-4">
         {view === "pending" ? (
           pendingRequests.length > 0 ? (
             pendingRequests.map((request) => (

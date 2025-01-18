@@ -36,7 +36,6 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
     noOfDays: 0,
     typeOfLeave: "",
   });
-
   const handleForMedicalChange = (e) => {
     setForMedical(e.target.checked);
     setFormData({ ...formData, forMedical: e.target.checked });
@@ -232,16 +231,19 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-        {/* Header */}
-        <div className="bg-slate-200 p-4">
-          <h2 className="text-lg font-semibold text-black">Request Leave</h2>
-          <p className="text-black/80 text-sm mt-1">
+    <div className="w-full mx-auto p-4">
+      {/* Page Header */}
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Leave Request
+          </h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
             Fill in the details below to submit your leave request
           </p>
         </div>
-
+      </div>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
         <form className="p-4 space-y-4" onSubmit={handleSubmit}>
           {/* Date Selection Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

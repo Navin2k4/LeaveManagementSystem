@@ -24,7 +24,6 @@ const ProfilePage = () => {
   const [mentor, setMentor] = useState({});
   const [classIncharge, setClassIncharge] = useState({});
   const [tab, setTab] = useState("EditProfile");
-  const [isOpen, setIsOpen] = useState(true);
   const [pendingWorksCount, setPendingWorksCount] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
@@ -82,7 +81,7 @@ const ProfilePage = () => {
           />
         );
       case "EditProfile":
-        return <EditProfile setTab={setTab} />;
+        return <EditProfile setTab={setTab} mentor={mentor} classIncharge={classIncharge} />;
       case "Your Leave Requests":
         return <DashBoard setTab={setTab} />;
       case "Your OD Requests":
@@ -146,42 +145,6 @@ const ProfilePage = () => {
         }`}
       >
         <div className="p-4">
-          {/* Staff Info Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
-                  <FaChalkboardTeacher size={20} />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Your Class Incharge
-                  </p>
-                  <p className="font-medium text-gray-900 dark:text-gray-100">
-                    {classIncharge ? classIncharge.staff_name : "Loading..."}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
-                  <MdSupervisorAccount size={20} />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Your Mentor
-                  </p>
-                  <p className="font-medium text-gray-900 dark:text-gray-100">
-                    {mentor ? mentor.staff_name : "Loading..."}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Rendered Component */}
           {renderComponent()}
         </div>
       </div>

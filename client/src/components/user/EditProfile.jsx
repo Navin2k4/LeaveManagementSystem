@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Modal, Button, Spinner } from "flowbite-react";
 import { Eye, EyeOff, User, Mail, Phone, Hash, BookOpen } from "lucide-react";
 import axios from "axios";
+import { FaChalkboardTeacher } from "react-icons/fa";
+import { MdSupervisorAccount } from "react-icons/md";
 
-const EditProfile = () => {
+const EditProfile = ({ mentor, classIncharge }) => {
   const { currentUser } = useSelector((state) => state.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showOldPassword, setShowOldPassword] = useState(false);
@@ -51,56 +53,127 @@ const EditProfile = () => {
 
   return (
     <div className="w-full mx-auto p-4">
+      {/* Page Header */}
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Profile
+          </h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            View and manage your profile information
+          </p>
+        </div>
+        <Button
+          onClick={toggleModal}
+          size="sm"
+          className="rounded-lg bg-[#1f3a6e] hover:bg-[#0b1f44] transition-all duration-300"
+        >
+          <p className="text-white text-sm font-semibold">Change Password</p>
+        </Button>
+      </div>
+
+      {/* Main Dashboard Card */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+        {/* Card Content */}
+        <div className="p-6">
+          <div className="space-y-8">
+            {/* Personal Information */}
+            <div>
+              <h3 className="text-md font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <User className="w-4 h-4" />
+                Personal Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <ProfileCard
+                  icon={<User className="w-4 h-4" />}
+                  label="Name"
+                  value={currentUser.name}
+                />
+                <ProfileCard
+                  icon={<Mail className="w-4 h-4" />}
+                  label="Email"
+                  value={currentUser.email}
+                />
+                <ProfileCard
+                  icon={<Phone className="w-4 h-4" />}
+                  label="Phone"
+                  value={currentUser.phone}
+                />
+                <ProfileCard
+                  icon={<Phone className="w-4 h-4" />}
+                  label="Parent Phone"
+                  value={currentUser.parent_phone}
+                />
+              </div>
+            </div>
 
-        {/* Profile Content */}
-        <div className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <ProfileCard
-              icon={<User className="w-4 h-4" />}
-              label="Name"
-              value={currentUser.name}
-            />
-            <ProfileCard
-              icon={<Mail className="w-4 h-4" />}
-              label="Email"
-              value={currentUser.email}
-            />
-            <ProfileCard
-              icon={<Phone className="w-4 h-4" />}
-              label="Phone"
-              value={currentUser.phone}
-            />
-            <ProfileCard
-              icon={<Phone className="w-4 h-4" />}
-              label="Parent Phone"
-              value={currentUser.parent_phone}
-            />
-            <ProfileCard
-              icon={<Hash className="w-4 h-4" />}
-              label="Register No"
-              value={currentUser.register_no}
-            />
-            <ProfileCard
-              icon={<Hash className="w-4 h-4" />}
-              label="Roll No"
-              value={currentUser.roll_no}
-            />
-            <ProfileCard
-              icon={<BookOpen className="w-4 h-4" />}
-              label="Section"
-              value={currentUser.section_name}
-            />
-          </div>
+            {/* Academic Information */}
+            <div>
+              <h3 className="text-md font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <BookOpen className="w-4 h-4" />
+                Academic Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <ProfileCard
+                  icon={<Hash className="w-4 h-4" />}
+                  label="Register No"
+                  value={currentUser.register_no}
+                />
+                <ProfileCard
+                  icon={<Hash className="w-4 h-4" />}
+                  label="Roll No"
+                  value={currentUser.roll_no}
+                />
+                <ProfileCard
+                  icon={<BookOpen className="w-4 h-4" />}
+                  label="Section"
+                  value={currentUser.section_name}
+                />
+              </div>
+            </div>
 
-          <div className="mt-4 flex justify-end">
-            <Button
-              onClick={toggleModal}
-              size="sm"
-              className="rounded-lg bg-[#1f3a6e] hover:bg-[#0b1f44] transition-all duration-300"
-            >
-              <p className="text-white text-sm font-semibold">Change Password</p>
-            </Button>
+            {/* Faculty Information */}
+            <div>
+              <h3 className="text-md font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <FaChalkboardTeacher className="w-4 h-4" />
+                Faculty Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                      <FaChalkboardTeacher size={20} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Your Class Incharge
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-gray-100">
+                        {classIncharge
+                          ? classIncharge.staff_name
+                          : "Loading..."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                      <MdSupervisorAccount size={20} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Your Mentor
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-gray-100">
+                        {mentor ? mentor.staff_name : "Loading..."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -174,7 +247,11 @@ const EditProfile = () => {
             size="sm"
             className="rounded-lg"
           >
-            {loading ? <Spinner size="sm" /> : <p className="text-white">Save Changes</p>}
+            {loading ? (
+              <Spinner size="sm" />
+            ) : (
+              <p className="text-white">Save Changes</p>
+            )}
           </Button>
           <Button
             onClick={toggleModal}

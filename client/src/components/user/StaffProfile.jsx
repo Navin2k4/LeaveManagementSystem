@@ -95,8 +95,18 @@ const StaffProfile = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="w-full mx-auto p-4">
       {/* Profile Header */}
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Profile
+          </h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            View and manage your profile
+          </p>
+        </div>
+      </div>
       <div className="bg-white flex items-center justify-between dark:bg-gray-800 rounded-lg shadow-sm p-6">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
           <div className="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-full">
@@ -330,7 +340,7 @@ const StaffProfile = () => {
       {/* Roles */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
         <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
-          Roles
+          Currently Assigned Roles
         </h2>
         <div className="flex flex-wrap gap-2">
           {staffProfile?.roles?.isMentor && (

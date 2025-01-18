@@ -311,7 +311,18 @@ export default function ODRequests({
   };
 
   return (
-    <>
+    <div className="w-full mx-auto p-4">
+      {/* Page Header */}
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Students OD Requests
+          </h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            View and manage OD requests
+          </p>
+        </div>
+      </div>
       {/* Mentor Requests Section */}
       {menteeRequests?.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
@@ -526,7 +537,7 @@ export default function ODRequests({
           request={selectedRequest}
         />
       )}
-    </>
+    </div>
   );
 }
 

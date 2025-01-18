@@ -139,10 +139,20 @@ const PendingWorks = () => {
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-semibold mb-4">Your Pending Works</h2>
- {/* Incomplete Works Section */}
- <div>
+    <div className="w-full mx-auto p-4">
+      {/* Page Header */}
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Your Pending Works
+          </h1>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            View and manage your pending works
+          </p>
+        </div>
+      </div>{" "}
+      {/* Incomplete Works Section */}
+      <div>
         <div className="flex items-center gap-2 mb-4">
           <h2 className="text-lg font-semibold">Incomplete Works</h2>
           <span className="px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">
@@ -159,7 +169,6 @@ const PendingWorks = () => {
           <p className="text-gray-500 text-sm">No incomplete works</p>
         )}
       </div>
-
       {/* Completed Works Section */}
       <div>
         <div className="flex items-center gap-2 mb-4">
@@ -178,7 +187,6 @@ const PendingWorks = () => {
           <p className="text-gray-500 text-sm">No works to complete yet</p>
         )}
       </div>
-      
       <Modal
         show={showConfirmModal}
         onClose={() => {

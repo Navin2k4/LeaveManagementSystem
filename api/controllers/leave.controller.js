@@ -4,6 +4,7 @@ import { notifyLeaveRequestStatus } from "./email.service.js";
 
 export const createLeaveRequest = async (req, res) => {
   try {
+    console.log(req.body);
     const {
       name,
       email,
@@ -47,83 +48,32 @@ export const createLeaveRequest = async (req, res) => {
       });
     }
 
-    if (userType === "Staff") {
-      const staffLeaveRequest = new LeaveRequest({
-        name,
-        email,
-        userId,
-        userType,
-        rollNo,
-        regNo: null,
-        forMedical,
-        batchId: null,
-        sectionId: null,
-        section_name,
-        departmentId,
-        reason,
-        classInchargeId: null,
-        mentorId: null,
-        fromDate: leaveStartDate,
-        toDate: leaveEndDate,
-        noOfDays,
-        isHalfDay,
-        typeOfLeave, // Include these fields for staff leave request
-        isStaff: true,
-        approvals: {
-          mentor: {
-            status: "approved",
-            date: new Date(),
-          },
-          classIncharge: {
-            status: "approved",
-            date: new Date(),
-          },
-          // hod: {
-          //   status: "pending", // Example: Set hod status to pending
-          //   date: null, // Example: Set hod date to null initially
-          // },
-        },
-      });
-
-      await staffLeaveRequest.save();
-
-      res.status(201).json({
-        success: true,
-        message: "Staff leave request submitted successfully",
-      });
-    } else if (userType === "Student") {
-      const studentLeaveRequest = new LeaveRequest({
-        name,
-        email,
-        userId,
-        userType,
-        rollNo,
-        regNo,
-        forMedical,
-        batchId,
-        sectionId,
-        section_name,
-        departmentId,
-        reason,
-        classInchargeId,
-        mentorId,
-        fromDate: leaveStartDate,
-        toDate: leaveEndDate,
-        noOfDays,
-        isHalfDay,
-        isStaff: false,
-      });
-      await studentLeaveRequest.save();
-      res.status(201).json({
-        success: true,
-        message: "Student leave request submitted successfully",
-      });
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid userType specified",
-      });
-    }
+    const studentLeaveRequest = new LeaveRequest({
+      name,
+      email,
+      userId,
+      userType,
+      rollNo,
+      regNo,
+      forMedical,
+      batchId,
+      sectionId,
+      section_name,
+      departmentId,
+      reason,
+      classInchargeId,
+      mentorId,
+      fromDate: leaveStartDate,
+      toDate: leaveEndDate,
+      noOfDays,
+      isHalfDay,
+      isStaff: false,
+    });
+    await studentLeaveRequest.save();
+    res.status(201).json({
+      success: true,
+      message: "Student leave request submitted successfully",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -371,9 +321,11 @@ export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
 export const getleaverequestsbySectionId = async (req, res, next) => {
   try {
     const { id } = req.params;
+    console.log(id);
     const data = await LeaveRequest.find({ sectionId: id }).sort({
       createdAt: -1,
     });
+    console.log(data);
     res.status(200).json(data);
   } catch (error) {
     console.error("Error fetching leave requests:", error);

@@ -30,6 +30,7 @@ const AppWrapper = () => {
     "/profile",
     "/staffdashboard",
     "/hoddash",
+    "/superadmin",
     // Add other dashboard pages here
   ];
 
@@ -55,7 +56,6 @@ const AppWrapper = () => {
         {/* <Route path='/staffsignup' element={<StaffSignUp />} /> */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/wardDetails" element={<WardDetails />} />
-        <Route path="/superadmin" element={<SuperAdmin />} />
         <Route path="/know-about-us" element={<About />} />
         <Route path="/hidden/changeMailTiming" element={<MailTiming />} />
         <Route element={<PrivateRoute />}>
@@ -64,6 +64,7 @@ const AppWrapper = () => {
           <Route path="/leaverequest" element={<LeaveRequestForm />} />
         </Route>
         <Route element={<HodPrivateRoute />}>
+          <Route path="/superadmin" element={<SuperAdmin />} />
           <Route path="/hoddash" element={<Hoddashboard />} />
         </Route>
         <Route element={<StaffPrivateRoute />}>
