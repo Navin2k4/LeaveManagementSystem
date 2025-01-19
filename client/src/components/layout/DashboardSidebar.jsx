@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
 import {
-  Menu,
-  X,
-  ChevronRight,
   ChevronLeft,
+  ChevronRight,
   Home,
-  Users,
   LogOut,
+  Menu,
+  Users,
+  X
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { signOutSuccess } from "../../redux/user/userSlice";
 
 const DashboardSidebar = ({
@@ -19,13 +19,10 @@ const DashboardSidebar = ({
   userInfo,
   title = "Dashboard",
   onSidebarToggle,
-  isMobileOpen,
-  setIsMobileOpen,
-  onSignOut,
-  isMainNav = false,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [showText, setShowText] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -76,7 +73,7 @@ const DashboardSidebar = ({
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block transition-all duration-300">
         <div
           className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 
                      transition-all duration-300 ease-in-out z-40
@@ -124,7 +121,7 @@ const DashboardSidebar = ({
                   <Link
                     key={item.id}
                     to={item.path}
-                    className="flex items-center px-5 py-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                    className="flex items-center px-3 py-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
                   >
                     <span className="w-5 flex-shrink-0">{item.icon}</span>
                     <span
@@ -143,8 +140,8 @@ const DashboardSidebar = ({
             </div>
 
             {/* Scrollable Menu Section */}
-            <div className="flex-1">
-              <nav className="px-4 py-4">
+            <div className="flex-1 overflow-y-auto sidebar-scroll">
+              <nav className="px-2 py-4">
                 {menuItems.map((item) => (
                   <div key={item.id}>
                     {item.submenu ? (
@@ -175,7 +172,7 @@ const DashboardSidebar = ({
                                 key={subItem.id}
                                 onClick={() => {
                                   onTabChange(subItem.id);
-                                  setIsMobileOpen(false);
+                                  setIsMobileMenuOpen(false);
                                 }}
                                 className={`w-full px-3 py-2 text-sm rounded-md ${
                                   currentTab === subItem.id
@@ -238,7 +235,7 @@ const DashboardSidebar = ({
                       </div>
                       <button
                         onClick={handleSignout}
-                        className="flex-shrink-0 p-2 hover:text-gray-600 transition-all duration-300 bg-red-400 text-white hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md"
+                        className="flex-shrink-0 p-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md"
                       >
                         <LogOut size={18} />
                       </button>
@@ -247,7 +244,7 @@ const DashboardSidebar = ({
                 ) : (
                   <button
                     onClick={handleSignout}
-                    className="w-full flex justify-center p-2  hover:text-gray-600 bg-red-400 text-white transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-md"
+                    className="w-full flex justify-center p-2 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-md"
                   >
                     <LogOut size={20} />
                   </button>
@@ -260,23 +257,23 @@ const DashboardSidebar = ({
 
       {/* Mobile Floating Action Button */}
       <button
-        onClick={() => setIsMobileOpen(true)}
-        className="fixed right-4 top-4 lg:hidden z-40 p-4 bg-blue-300 text-black rounded-full shadow-lg hover:bg-blue-400 hover:text-white transition-colors duration-300"
+        onClick={() => setIsMobileMenuOpen(true)}
+        className="fixed right-4 top-4 lg:hidden z-40 p-3 bg-slate-100 text-black rounded-md shadow-md hover:bg-blue-400 hover:text-white transition-colors duration-300"
       >
         <Menu className="w-6 h-6" />
       </button>
 
       {/* Mobile Slide-out Menu */}
-      {isMobileOpen && (
+      {isMobileMenuOpen && (
         <>
           {/* Overlay */}
           <div
             className="fixed inset-0 bg-black/50 z-50 lg:hidden"
-            onClick={() => setIsMobileOpen(false)}
+            onClick={() => setIsMobileMenuOpen(false)}
           />
 
           {/* Sidebar */}
-          <div className="fixed  inset-y-0 right-0  w-[280px] bg-white dark:bg-gray-800 shadow-xl z-50 lg:hidden">
+          <div className="fixed  transition-all duration-300 inset-y-0 right-0  w-[280px] bg-white dark:bg-gray-800 shadow-xl z-50 lg:hidden">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-3">
@@ -288,7 +285,7 @@ const DashboardSidebar = ({
                 <span className="font-semibold text-sm">VCET Connect</span>
               </div>
               <button
-                onClick={() => setIsMobileOpen(false)}
+                onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700/50"
               >
                 <X className="w-5 h-5" />
@@ -306,50 +303,86 @@ const DashboardSidebar = ({
             {/* Menu */}
             <div className="overflow-y-auto h-[calc(100vh-200px)]">
               <nav className="px-2 py-4">
-                {isMainNav
-                  ? // Main navigation items
-                    menuItems.map((item) => (
-                      <Link
-                        key={item.id}
-                        to={item.path}
-                        className={`flex items-center space-x-3 px-3 py-2 rounded-md ${
-                          currentTab === item.path
+                {/* Common Navigation Links */}
+                {commonNavItems.map((item) => (
+                  <Link
+                    key={item.id}
+                    to={item.path}
+                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <span className="w-5">{item.icon}</span>
+                    <span className="text-sm">{item.label}</span>
+                  </Link>
+                ))}
+
+                {/* Divider */}
+                <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
+
+                {/* Menu Items */}
+                {menuItems.map((item) => (
+                  <div key={item.id}>
+                    {item.submenu ? (
+                      <div className="mb-1">
+                        <div className="px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300">
+                          {item.label}
+                        </div>
+                        <div className="ml-4">
+                          {item.submenuItems.map((subItem) => (
+                            <button
+                              key={subItem.id}
+                              onClick={() => {
+                                onTabChange(subItem.id);
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className={`w-full px-3 py-2 text-sm rounded-md ${
+                                currentTab === subItem.id
+                                  ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20"
+                                  : "text-gray-600 dark:text-gray-300"
+                              }`}
+                            >
+                              {subItem.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          onTabChange(item.id);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md ${
+                          currentTab === item.id
                             ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20"
-                            : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                            : "text-gray-600 dark:text-gray-300"
                         }`}
-                        onClick={() => setIsMobileOpen(false)}
                       >
-                        <span className="w-5">{item.icon}</span>
-                        <span className="text-sm">{item.label}</span>
-                      </Link>
-                    ))
-                  : // Existing dashboard menu items code
-                    commonNavItems.map((item) => (
-                      <Link
-                        key={item.id}
-                        to={item.path}
-                        className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                        onClick={() => setIsMobileOpen(false)}
-                      >
-                        <span className="w-5">{item.icon}</span>
-                        <span className="text-sm">{item.label}</span>
-                      </Link>
-                    ))}
+                        <div className="flex items-center space-x-3">
+                          <span className="w-5">{item.icon}</span>
+                          <span>{item.label}</span>
+                        </div>
+                        {item.badge && (
+                          <span className="flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-red-500 rounded-full">
+                            {item.badge}
+                          </span>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                ))}
               </nav>
             </div>
 
             {/* Logout Button */}
-            {userInfo && (
-              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
-                <button
-                  onClick={onSignOut}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
-                >
-                  <LogOut size={20} />
-                  <span className="font-medium">Logout</span>
-                </button>
-              </div>
-            )}
+            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={handleSignout}
+                className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </>
       )}

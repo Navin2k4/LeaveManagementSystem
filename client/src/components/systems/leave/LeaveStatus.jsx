@@ -1,22 +1,34 @@
-import { Button, Select, Modal } from "flowbite-react";
 import React, { useState } from "react";
-import { CgTrash } from "react-icons/cg";
 import { useSelector } from "react-redux";
-import "./LeaveStatus.scss";
+import { Modal } from "flowbite-react";
+import {
+  Calendar,
+  Clock,
+  Trash2,
+  AlertCircle,
+  MessageCircle,
+  CheckCircle2,
+  History,
+  Filter,
+  FileText,
+  Loader2,
+} from "lucide-react";
 import StatusDot from "../../general/StatusDot";
-import { BeatLoader, SyncLoader } from "react-spinners";
 
 const LeaveStatus = ({ leaveRequests }) => {
   const [filter, setFilter] = useState("all");
   const [view, setView] = useState("pending");
   const [openModal, setOpenModal] = useState(false);
-  const [deletingLeave, setdeletingLeave] = useState(false);
+  const [deletingLeave, setDeletingLeave] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
   const { currentUser } = useSelector((state) => state.user);
 
   if (!Array.isArray(leaveRequests)) {
     return (
-      <div className="flex items-center justify-center">
-        <h1 className="text-center">No leave requests found.</h1>
+      <div className="flex items-center justify-center p-8">
+        <p className="text-gray-500 dark:text-gray-400">
+          No leave requests found.
+        </p>
       </div>
     );
   }
@@ -34,22 +46,144 @@ const LeaveStatus = ({ leaveRequests }) => {
     }
   });
 
-  const pendingRequests = filteredRequests.filter(
-    (request) =>
+  const pendingRequests = filteredRequests.filter((request) => {
+    return (
       (request.approvals.mentor.status === "pending" ||
         request.approvals.classIncharge.status === "pending") &&
       request.approvals.mentor.status !== "rejected" &&
       request.approvals.classIncharge.status !== "rejected"
-  );
+    );
+  });
 
-  const approvedRequests = filteredRequests.filter(
-    (request) =>
+  const approvedRequests = filteredRequests.filter((request) => {
+    return (
       request.approvals.mentor.status === "rejected" ||
       request.approvals.classIncharge.status === "rejected" ||
       (request.approvals.mentor.status === "approved" &&
         request.approvals.classIncharge.status === "approved")
+    );
+  });
+
+  const handleDeleteLeave = async (id) => {
+    setDeletingLeave(true);
+    try {
+      const response = await fetch(`/api/deleteleave/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Error deleting leave request:", error);
+    } finally {
+      setDeletingLeave(false);
+      setOpenModal(false);
+    }
+  };
+
+  const LeaveRequestCard = ({ request, isPending }) => (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 border-b dark:border-gray-700">
+        <div className="space-y-2">
+          <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+            <Calendar size={16} />
+            From Date
+          </p>
+          <p className="font-medium">
+            {new Date(request.fromDate).toLocaleDateString()}
+          </p>
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+            <Calendar size={16} />
+            To Date
+          </p>
+          <p className="font-medium">
+            {new Date(request.toDate).toLocaleDateString()}
+          </p>
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+            <FileText size={16} />
+            Leave Type
+          </p>
+          <p className="font-medium">
+            {request.isMedical ? "Medical Leave" : "Casual Leave"}
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {request.isHalfDay ? " (Half Day)" : " (Full Day)"}
+            </span>
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+            Status:
+          </span>
+          <div className="flex-1">
+            <div className="flex">
+              <StatusDot
+                status={request.approvals.mentor.status}
+                showLine={true}
+                by="M"
+              />
+              <StatusDot
+                status={request.approvals.classIncharge.status}
+                showLine={false}
+                by="CI"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 space-y-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Clock size={16} className="text-gray-400" />
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {request.noOfDays} {request.noOfDays === 1 ? "day" : "days"}
+            </span>
+          </div>
+          <span className="text-xs text-gray-400">
+            Applied on {new Date(request.createdAt).toLocaleDateString()}
+          </span>
+        </div>
+
+        <div className="mt-4 space-y-3 grid grid-cols-2 gap-4">
+          {request.mentorcomment !== "No Comments" && (
+            <CommentBox
+              title="Mentor Comment"
+              comment={request.mentorcomment}
+            />
+          )}
+          {request.classInchargeComment !== "No Comments" && (
+            <CommentBox
+              title="Class Incharge Comment"
+              comment={request.classInchargeComment}
+            />
+          )}
+        </div>
+
+        <div className="flex justify-between items-center pt-2">
+          <StatusBadge status={request.status} />
+          {isPending && (
+            <button
+              onClick={() => {
+                setSelectedRequest(request);
+                setOpenModal(true);
+              }}
+              className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors duration-200"
+            >
+              <Trash2 size={18} />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 
+  // Add leave summary calculation
   const getStartOfWeek = (date) => {
     const start = new Date(date);
     const day = start.getDay();
@@ -79,71 +213,47 @@ const LeaveStatus = ({ leaveRequests }) => {
     (request) => request.status === "approved"
   );
 
-  const totalApprovedDaysThisWeek = getTotalApprovedDays(
-    allotedLeave,
-    getStartOfWeek
-  );
-  const totalApprovedDaysThisMonth = getTotalApprovedDays(
-    allotedLeave,
-    getStartOfMonth
-  );
-  const totalApprovedDaysThisSemester = getTotalApprovedDays(
-    allotedLeave,
-    getStartOfSemester
-  );
-  const totalApprovedDaysThisYear = getTotalApprovedDays(
-    allotedLeave,
-    getStartOfYear
-  );
-
-  const handleDeleteLeave = async (id) => {
-    setdeletingLeave(true);
-    try {
-      const response = await fetch(`/api/deleteleave/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        console.log("Leave request deleted successfully");
-        window.location.reload();
-      } else {
-        console.log("Failed to delete leave request");
-      }
-    } catch (error) {
-      console.log("Error deleting leave request:", error);
-    } finally {
-      setdeletingLeave(false);
-    }
-  };
   const summaryItems = [
-    { title: "Week", value: totalApprovedDaysThisWeek },
-    { title: "Month", value: totalApprovedDaysThisMonth, maxValue: 3 },
-    { title: "Semester", value: totalApprovedDaysThisSemester },
-    { title: "Year", value: totalApprovedDaysThisYear },
+    {
+      title: "Week",
+      value: getTotalApprovedDays(allotedLeave, getStartOfWeek),
+    },
+    {
+      title: "Month",
+      value: getTotalApprovedDays(allotedLeave, getStartOfMonth),
+      maxValue: 3,
+    },
+    {
+      title: "Semester",
+      value: getTotalApprovedDays(allotedLeave, getStartOfSemester),
+    },
+    {
+      title: "Year",
+      value: getTotalApprovedDays(allotedLeave, getStartOfYear),
+    },
   ];
 
   return (
     <div className="w-full mx-auto p-4">
-    {/* Page Header */}
-    <div className="flex justify-between items-center mb-6">
+      {/* Page Header */}
+      <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Your Leave Requests
+            Leave Requests
           </h1>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
             View and manage your leave requests
           </p>
         </div>
       </div>
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 shadow-md rounded-3xl p-8 m-4 max-w-3xl mx-auto">
+
+      {/* Leave Summary */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700 shadow-md rounded-3xl p-8 mb-8 max-w-3xl mx-auto">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
-          <h1 className="text-3xl font-bold text-blue-800 mb-2 sm:mb-0">
+          <h2 className="text-2xl font-bold text-blue-800 dark:text-blue-300 mb-2 sm:mb-0">
             Leave Summary
-          </h1>
-          <p className="text-sm text-indigo-600 bg-white px-3 py-1 rounded-full shadow">
+          </h2>
+          <p className="text-sm text-indigo-600 dark:text-indigo-300 bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow">
             Max 3 leaves per month
           </p>
         </div>
@@ -152,253 +262,181 @@ const LeaveStatus = ({ leaveRequests }) => {
           {summaryItems.map((item) => (
             <div
               key={item.title}
-              className="bg-white rounded-2xl p-2 shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+              className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
             >
-              <h2 className="text-sm font-medium text-indigo-400 mb-1">
+              <h3 className="text-sm font-medium text-indigo-400 dark:text-indigo-300 mb-1">
                 {item.title}
-              </h2>
+              </h3>
               <p
                 className={`text-2xl font-bold ${
                   item.maxValue && item.value > item.maxValue
-                    ? "text-red-500"
-                    : "text-indigo-700"
+                    ? "text-red-500 dark:text-red-400"
+                    : "text-indigo-700 dark:text-indigo-300"
                 }`}
               >
                 {item.value}
               </p>
               {item.maxValue && item.value > item.maxValue && (
-                <p className="text-xs text-red-500 mt-1">Limit Exceeded</p>
+                <p className="text-xs text-red-500 dark:text-red-400 mt-1">
+                  Limit Exceeded
+                </p>
               )}
             </div>
           ))}
         </div>
       </div>
 
-      <div className="leave-status p-5">
-        <div className="flex gap-2">
-          <button
-            className={`${
-              view === "pending" ? "active bg-green-500 " : "bg-[#244784]"
-            } transition-all duration-500 p-3 rounded-lg`}
-            onClick={() => setView("pending")}
-          >
-            <h2 className="text-white">Pending Requests</h2>
-          </button>
-
-          <button
-            className={` ${
-              view === "approved" ? "active bg-green-500 " : "bg-[#244784]"
-            } transition-all duration-500 p-3 rounded-lg`}
-            onClick={() => setView("approved")}
-          >
-            <h2 className="text-white">Completed Requests</h2>
-          </button>
-        </div>
-
-        <div className={`container ${view === "pending" ? "active" : ""} `}>
-          <div className="filter-dropdown justify-between flex gap-3 items-center mb-6">
-            <label>Filter by:</label>
-            <Select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="ring-0 focus:ring"
-            >
-              <option value="all">All</option>
-              <option value="past7days">Past 7 Days</option>
-              <option value="past1month">Past 1 Month</option>
-            </Select>
-          </div>
-
-          {pendingRequests.length > 0 ? (
-            pendingRequests.map((request) => (
-              <div key={request._id} className="leave-status-item">
-                <div className="grid grid-cols-2 gap-2">
-                  <p className="p-3  border rounded-xl text-black font-bold">
-                    Leave From: <br />{" "}
-                    <span className="font-medium text-black">
-                      {new Date(request.fromDate).toLocaleDateString()}
-                    </span>
-                  </p>
-                  <p className="p-3  border rounded-xl text-black font-bold">
-                    Leave To: <br />{" "}
-                    <span className="font-medium text-black">
-                      {new Date(request.toDate).toLocaleDateString()}
-                    </span>
-                  </p>
-
-                  <p className="p-3  border rounded-xl text-black font-bold">
-                    Apply Date: <br />{" "}
-                    <span className="font-medium text-black">
-                      {new Date(request.createdAt).toLocaleDateString()}
-                    </span>
-                  </p>
-                  <p className="p-3  border rounded-xl text-black font-bold">
-                    No. of Days: <br />{" "}
-                    <span className="font-medium text-black">
-                      {request.noOfDays}
-                    </span>
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 my-2 mt-6">
-                  <div className="font-bold text-black">Status :</div>
-                  <div className="flex">
-                    <StatusDot
-                      status={request.approvals.mentor.status}
-                      role="mentor"
-                      showLine={true}
-                      by="M"
-                    />
-                    <StatusDot
-                      status={request.approvals.classIncharge.status}
-                      role="classIncharge"
-                      showLine={false}
-                      by="CI"
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center justify-between pt-1">
-                  <div className="pending-status">Pending</div>{" "}
-                  <button
-                    onClick={() => setOpenModal(true)}
-                    className="p-2 mt-2 hover:bg-red-600 transition-colors duration-300 bg-red-400 rounded-full text-white"
-                  >
-                    <CgTrash />
-                  </button>
-                  <Modal show={openModal} onClose={() => setOpenModal(false)}>
-                    <Modal.Header>Delete Leave Request</Modal.Header>
-                    <Modal.Body>
-                      <div className="">
-                        <h2>Sure to delete submitted leave ?</h2>
-                      </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                      <button
-                        className=" p-2 rounded-lg hover:bg-red-800 transition-colors duration-300 bg-red-600"
-                        onClick={() => handleDeleteLeave(request._id)}
-                      >
-                        <h1 className="text-white ">
-                          {deletingLeave ? (
-                            <BeatLoader color="white" size={5} />
-                          ) : (
-                            "Yes Delete"
-                          )}
-                        </h1>
-                      </button>
-                      <button
-                        className=" p-2 rounded-lg hover:underline transition-all duration-300"
-                        color="gray"
-                        onClick={() => setOpenModal(false)}
-                      >
-                        Cancel
-                      </button>
-                    </Modal.Footer>
-                  </Modal>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="flex items-center justify-center">
-              <h1 className="text-center mb-7">No Pending requests found.</h1>
-            </div>
-          )}
-        </div>
-
-        <div className={`container ${view === "approved" ? "active" : ""}`}>
-          <div className="filter-dropdown justify-between flex gap-3 items-center mb-6">
-            <label>Filter by:</label>
-            <Select value={filter} onChange={(e) => setFilter(e.target.value)}>
-              <option value="all">All</option>
-              <option value="past7days">Past 7 Days</option>
-              <option value="past1month">Past 1 Month</option>
-            </Select>
-          </div>
-
-          {approvedRequests.length > 0 ? (
-            approvedRequests.map((request) => (
-              <div key={request._id} className="leave-status-item max-w-xl">
-                <div className="grid grid-cols-2 ">
-                  <p className="p-3  border rounded-xl text-black font-bold">
-                    Leave From: <br />{" "}
-                    <span>
-                      {new Date(request.fromDate).toLocaleDateString()}
-                    </span>
-                  </p>
-                  <p className="p-3  border rounded-xl text-black font-bold">
-                    Leave To: <br />{" "}
-                    <span>{new Date(request.toDate).toLocaleDateString()}</span>
-                  </p>
-                </div>
-                <div className="grid grid-cols-2">
-                  <p className="p-3  border rounded-xl text-black font-bold">
-                    Apply Date: <br />{" "}
-                    <span>
-                      {new Date(request.createdAt).toLocaleDateString()}
-                    </span>
-                  </p>
-                  <p className="p-3  border rounded-xl text-black font-bold">
-                    No. of Days: <br /> <span>{request.noOfDays}</span>
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 my-2 mt-6">
-                  <div className="font-bold">Status :</div>
-
-                  <div className="">
-                    <div className="">
-                      <StatusDot
-                        status={request.approvals.mentor.status}
-                        showLine={true}
-                        by="M"
-                        />
-                      <StatusDot
-                        status={request.approvals.classIncharge.status}
-                        showLine={false}
-                        by="CI"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    {request.approvals.mentor.status === "rejected" ||
-                    request.approvals.classIncharge.status === "rejected" ? (
-                      // || request.approvals.hod.status === "rejected"
-                      <div className="rejected-status">Rejected</div>
-                    ) : (
-                      <div className="accepted-status">Approved</div>
-                    )}
-                  </div>
-                  <div className="bg-gray-100 px-3 py-3 rounded-2xl">
-                    {request.mentorcomment !== "No Comments" && (
-                      <div className="comments">
-                        <p className="font-bold">Mentor Comment</p>
-                        <p>{request.mentorcomment}</p>
-                      </div>
-                    )}
-                    {request.classInchargeComment !== "No Comments" && (
-                      <div className="comments">
-                        <p className="font-bold">ClassIncharge Comment</p>
-                        <p>{request.classInchargeComment}</p>
-                      </div>
-                    )}
-                    {request.hodComment !== "No Comments" && (
-                      <div className="comments">
-                        <p className="font-bold">Hod Comment</p>
-                        <p>{request.hodComment}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="flex items-center justify-center">
-              <h1 className="text-center mb-3">No Approved requests found.</h1>
-            </div>
-          )}
-        </div>
+      {/* View Toggle Buttons */}
+      <div className="flex justify-center gap-4 mb-6">
+        <ViewToggleButton
+          active={view === "pending"}
+          onClick={() => setView("pending")}
+          icon={<History size={18} />}
+          text="Pending Requests"
+        />
+        <ViewToggleButton
+          active={view === "approved"}
+          onClick={() => setView("approved")}
+          icon={<CheckCircle2 size={18} />}
+          text="Completed Requests"
+        />
       </div>
+
+      {/* Filter */}
+      <div className="flex items-center justify-end gap-3 mb-6">
+        <Filter size={16} className="text-gray-400" />
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="w-40 rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
+        >
+          <option value="all">All Time</option>
+          <option value="past7days">Past 7 Days</option>
+          <option value="past1month">Past Month</option>
+        </select>
+      </div>
+
+      {/* Leave Request Cards */}
+      <div className="max-w-3xl mx-auto space-y-4">
+        {view === "pending" ? (
+          pendingRequests.length > 0 ? (
+            pendingRequests.map((request) => (
+              <LeaveRequestCard
+                key={request._id}
+                request={request}
+                isPending={true}
+              />
+            ))
+          ) : (
+            <EmptyState text="No pending requests" />
+          )
+        ) : approvedRequests.length > 0 ? (
+          approvedRequests.map((request) => (
+            <LeaveRequestCard
+              key={request._id}
+              request={request}
+              isPending={false}
+            />
+          ))
+        ) : (
+          <EmptyState text="No completed requests" />
+        )}
+      </div>
+
+      {/* Delete Modal */}
+      <DeleteConfirmationModal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        onConfirm={() => handleDeleteLeave(selectedRequest?._id)}
+        isLoading={deletingLeave}
+      />
     </div>
   );
 };
+
+const ViewToggleButton = ({ active, onClick, icon, text }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+      active
+        ? "bg-blue-200 text-black"
+        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+    }`}
+  >
+    {icon}
+    <span className="font-medium">{text}</span>
+  </button>
+);
+
+const StatusBadge = ({ status }) => {
+  const styles = {
+    pending: "bg-yellow-50 text-yellow-600 border-yellow-200",
+    approved: "bg-green-50 text-green-600 border-green-200",
+    rejected: "bg-red-50 text-red-600 border-red-200",
+  };
+
+  return (
+    <span
+      className={`px-3 py-1 rounded-full text-sm font-medium border ${styles[status]}`}
+    >
+      {status.charAt(0).toUpperCase() + status.slice(1)}
+    </span>
+  );
+};
+
+const CommentBox = ({ title, comment }) => (
+  <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+    <div className="flex items-center gap-2 mb-1">
+      <MessageCircle size={14} className="text-gray-400" />
+      <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+        {title}
+      </p>
+    </div>
+    <p className="text-sm text-gray-600 dark:text-gray-400">{comment}</p>
+  </div>
+);
+
+const EmptyState = ({ text }) => (
+  <div className="flex flex-col items-center justify-center py-8">
+    <History size={48} className="text-gray-300 mb-2" />
+    <p className="text-gray-500 dark:text-gray-400">{text}</p>
+  </div>
+);
+
+const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, isLoading }) => (
+  <Modal show={isOpen} onClose={onClose} size="sm">
+    <Modal.Header className="border-b border-gray-200 dark:border-gray-700">
+      Delete Leave Request
+    </Modal.Header>
+    <Modal.Body>
+      <div className="flex items-center gap-3 text-gray-600">
+        <AlertCircle size={20} className="text-red-500" />
+        <p>Are you sure you want to delete this leave request?</p>
+      </div>
+    </Modal.Body>
+    <Modal.Footer>
+      <button
+        onClick={onConfirm}
+        disabled={isLoading}
+        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200"
+      >
+        {isLoading ? (
+          <div className="flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Deleting...</span>
+          </div>
+        ) : (
+          "Delete Request"
+        )}
+      </button>
+      <button
+        onClick={onClose}
+        className="px-4 py-2 text-gray-500 hover:text-gray-700"
+      >
+        Cancel
+      </button>
+    </Modal.Footer>
+  </Modal>
+);
 
 export default LeaveStatus;
