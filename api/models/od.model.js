@@ -10,6 +10,9 @@ const odRequestSchema = new Schema(
       type: String,
       required: true,
     },
+    parent_phone: {
+      type: String,
+    },
     rollNo: {
       type: String,
     },

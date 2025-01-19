@@ -3,12 +3,8 @@ import Defaulter from "../models/defaulter.model.js"; //
 import Staff from "../models/staff.model.js"; //
 
 export const getStudentDetailsByRollNo = async (req, res) => {
-  //.log('entered getStudentDetailsByRollNo');
-  //.log('Received roll_no:', req.params.roll_no); // Log roll_no to verify
-
   try {
     const { roll_no } = req.params;
-    // Find the student entry based on roll_no in the Student collection
     const studentdata = await Student.findOne({ roll_no })
       .populate("departmentId", "dept_name")
       .populate("batchId", "batch_name")
@@ -79,6 +75,7 @@ export const getStudentDetailsByRollNo = async (req, res) => {
     return res.status(200).json({
       studentId: studentdata._id,
       name: studentdata.name,
+      parent_phone: studentdata.parent_phone,
       sectionName: studentdata.section_name,
       batch_name: studentdata.batchId ? studentdata.batchId.batch_name : "N/A",
       department_name: studentdata.departmentId
@@ -107,6 +104,7 @@ export const markDefaulter = async (req, res) => {
   const {
     studentId,
     name,
+    parent_phone,
     departmentName,
     batchName,
     sectionName,
@@ -137,6 +135,7 @@ export const markDefaulter = async (req, res) => {
       roll_no: rollNumber,
       studentId,
       name,
+      parent_phone,
       departmentName,
       batchName,
       sectionName,
@@ -279,6 +278,7 @@ export const getDefaulters = async (req, res) => {
         studentId: d.studentId,
         roll_no: d.roll_no,
         name: d.name,
+        parent_phone: d.parent_phone,
         departmentName: d.departmentName,
         batchName: d.batchName,
         sectionName: d.sectionName,

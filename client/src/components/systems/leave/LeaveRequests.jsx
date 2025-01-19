@@ -7,7 +7,8 @@ import { SiTicktick } from "react-icons/si";
 import { TiTick } from "react-icons/ti";
 import { useSelector } from "react-redux";
 import StatusDot from "../../general/StatusDot";
-import { GiMedicines } from "react-icons/gi";
+import { GiConsoleController, GiMedicines } from "react-icons/gi";
+import { ChevronRight } from "lucide-react";
 
 export default function LeaveRequests({
   leaveRequestsAsMentor,
@@ -76,6 +77,7 @@ export default function LeaveRequests({
         `/api/getleaverequestbyclassinchargeid/${currentUser.userId}`
       );
       const data = await response.json();
+      console.log(data);
       setClassInchargeRequests(data);
     } catch (error) {
       console.error("Error fetching leave requests:", error);
@@ -157,142 +159,286 @@ export default function LeaveRequests({
       !classInchargeRequests.some((classReq) => classReq._id === menteeReq._id)
   );
 
-  const renderRequestTable = (requests, role) => {
+  // Add this new component for mobile view
+  const MobileRequestCard = ({ request, role, onAction }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
     return (
-      <div className="overflow-x-auto">
-        <table className="w-full text-left">
-          <thead className="bg-gray-50 dark:bg-gray-700/50">
-            <tr>
-              <th className="px-6 py-4 w-[18%]">Student</th>
-              <th className="px-6 py-4 w-[20%]">Reason</th>
-              <th className="px-6 py-4 w-[20%]">Reason</th>
-              <th className="px-6 py-4 w-[15%]">Dates</th>
-              <th className="px-6 py-4 w-[8%] text-center">Days</th>
-              <th className="px-6 py-4 w-[12%]">Status</th>
-              <th className="px-6 py-4 w-[15%]">Comments</th>
-              <th className="px-6 py-4 w-[10%]">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y dark:divide-gray-700">
-            {requests.map((req) => {
-              const { status } = req.approvals[role];
-              return (
-                <tr
-                  key={req._id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                >
-                  <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
-                    {req.name}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`text-gray-600 dark:text-gray-300 line-clamp-2 capitalize ${
-                          req.forMedical === true
-                            ? "text-red-600"
-                            : "text-blue-600"
-                        }`}
-                      >
-                        {req.reason}
-                      </div>
-                      <button
-                        onClick={() => {
-                          setSelectedRequest(req);
-                          setShowDetails(true);
-                        }}
-                        className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                      >
-                        <Info
-                          size={16}
-                          className="text-gray-400 hover:text-gray-600"
-                        />
-                      </button>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
-                    <div className="flex flex-col items-center min-w-max justify-center gap-2">
-                      <div>{formatDate(req.fromDate)}</div>
-                      <div>{formatDate(req.toDate)}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center text-gray-600 dark:text-gray-300">
-                    {req.noOfDays}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-center">
-                      <StatusDot
-                        status={req.approvals.mentor.status}
-                        showLine={true}
-                        by="M"
-                        />
-                      <StatusDot
-                        status={req.approvals.classIncharge.status}
-                        showLine={false}
-                        by="CI"
-                      />
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <CommentsCell
-                      mentorComment={req.mentorcomment}
-                      classInchargeComment={req.classInchargeComment}
-                    />
-                  </td>
-                  <td className="px-6 py-4">
-                    {status === "pending" ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() =>
-                            role === "mentor"
-                              ? handleRequest("approved", req._id)
-                              : handleRequestClassIncharge("approved", req._id)
-                          }
-                          className="bg-green-400 hover:bg-green-600 text-white p-1 rounded-full transition-all duration-300"
-                        >
-                          <TiTick size={30} />
-                        </button>
-                        <button
-                          onClick={() =>
-                            role === "mentor"
-                              ? handleRequest("rejected", req._id)
-                              : handleRequestClassIncharge("rejected", req._id)
-                          }
-                          className="bg-red-400 hover:bg-red-600 text-white p-1 rounded-full transition-all duration-300"
-                        >
-                          <RxCross2 size={30} />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() =>
-                            role === "mentor"
-                              ? handleRequest("taken", req._id)
-                              : handleRequestClassIncharge("taken", req._id)
-                          }
-                          className={`text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
-                            status === "approved"
-                              ? "bg-green-400"
-                              : status === "rejected"
-                              ? "bg-red-400"
-                              : ""
+      <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+        <div className="flex justify-between items-start">
+          <div>
+            <div className="flex items-center gap-2">
+              <p className="font-medium text-gray-900 dark:text-gray-200">
+                {request.name}
+              </p>
+              {request.forMedical && (
+                <span className="bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full">
+                  Medical
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {request.noOfDays} day(s) • {formatDate(request.fromDate)}
+              {request.fromDate !== request.toDate &&
+                ` to ${formatDate(request.toDate)}`}
+            </p>
+          </div>
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors"
+          >
+            <ChevronRight
+              size={20}
+              className={`transform transition-transform ${
+                isExpanded ? "rotate-90" : ""
+              }`}
+            />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <StatusDot
+              status={request.approvals.mentor.status}
+              showLine={true}
+              by="M"
+            />
+            <StatusDot
+              status={request.approvals.classIncharge.status}
+              showLine={false}
+              by="CI"
+            />
+          </div>
+          {request.approvals[role].status === "pending" ? (
+            <div className="flex gap-2">
+              <button
+                onClick={() => onAction("approved", request._id)}
+                className="bg-green-400 hover:bg-green-500 text-white p-1.5 rounded-full transition-all duration-300"
+              >
+                <TiTick size={20} />
+              </button>
+              <button
+                onClick={() => onAction("rejected", request._id)}
+                className="bg-red-400 hover:bg-red-500 text-white p-1.5 rounded-full transition-all duration-300"
+              >
+                <RxCross2 size={20} />
+              </button>
+            </div>
+          ) : (
+            <span
+              className={`px-3 py-1 rounded-full text-xs ${
+                request.approvals[role].status === "approved"
+                  ? "bg-green-100 text-green-600"
+                  : "bg-red-100 text-red-600"
+              }`}
+            >
+              {request.approvals[role].status === "approved"
+                ? "Approved"
+                : "Rejected"}
+            </span>
+          )}
+        </div>
+
+        {isExpanded && (
+          <div className="space-y-3 pt-2 border-t border-gray-200 dark:border-gray-600">
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Reason</p>
+              <p className="text-sm text-gray-900 dark:text-gray-200">
+                {request.reason}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Contact
+              </p>
+              <p className="text-sm text-gray-900 dark:text-gray-200">
+                {request.parent_phone}
+              </p>
+            </div>
+            {(request.mentorcomment !== "No Comments" ||
+              request.classInchargeComment !== "No Comments") && (
+              <div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Comments
+                </p>
+                <CommentsCell
+                  mentorComment={request.mentorcomment}
+                  classInchargeComment={request.classInchargeComment}
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Modify the renderRequestTable function to include mobile view
+  const renderRequestTable = (requests, role, handleRequest) => {
+    return (
+      <>
+        {/* Desktop view */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-gray-50 dark:bg-gray-700/50">
+              <tr className="text-center">
+                <th className="px-6 py-4 w-[18%]">Student</th>
+                <th className="px-6 py-4 w-[18%]">Reason</th>
+                <th className="px-6 py-4 w-[10%]">Phone</th>
+                <th className="px-6 py-4 w-[15%]">Dates</th>
+                <th className="px-6 py-4 w-[12%]">Status</th>
+                <th className="px-6 py-4 w-[15%]">Comments</th>
+                <th className="px-6 py-4 w-[10%]">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y dark:divide-gray-700">
+              {requests.map((req) => {
+                const { status } = req.approvals[role];
+                return (
+                  <tr
+                    key={req._id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                  >
+                    <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
+                      {req.name}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`text-gray-600 dark:text-gray-300 line-clamp-2 capitalize ${
+                            req.forMedical === true
+                              ? "text-red-600"
+                              : "text-blue-600"
                           }`}
                         >
-                          {status === "approved"
-                            ? "Approved"
-                            : status === "rejected"
-                            ? "Rejected"
-                            : "Taken"}
+                          {req.reason}
+                        </div>
+                        <button
+                          onClick={() => {
+                            setSelectedRequest(req);
+                            setShowDetails(true);
+                          }}
+                          className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                        >
+                          <Info
+                            size={16}
+                            className="text-gray-400 hover:text-gray-600"
+                          />
                         </button>
                       </div>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center text-gray-600 dark:text-gray-300">
+                      {req.parent_phone}
+                    </td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
+                      <div className="flex items-center min-w-max justify-center gap-2">
+                        <span className="bg-blue-200 px-1 rounded-full text-xs">
+                          {req.noOfDays}
+                        </span>
+                        {req.fromDate === req.toDate ? (
+                          <div>{formatDate(req.fromDate)}</div>
+                        ) : (
+                          <div className="flex gap-2">
+                            <div>{formatDate(req.fromDate)}</div>
+                            <div>{formatDate(req.toDate)}</div>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center">
+                        <StatusDot
+                          status={req.approvals.mentor.status}
+                          showLine={true}
+                          by="M"
+                        />
+                        <StatusDot
+                          status={req.approvals.classIncharge.status}
+                          showLine={false}
+                          by="CI"
+                        />
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <CommentsCell
+                        mentorComment={req.mentorcomment}
+                        classInchargeComment={req.classInchargeComment}
+                      />
+                    </td>
+                    <td className="px-6 py-4">
+                      {status === "pending" ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() =>
+                              role === "mentor"
+                                ? handleRequest("approved", req._id)
+                                : handleRequestClassIncharge(
+                                    "approved",
+                                    req._id
+                                  )
+                            }
+                            className="bg-green-400 hover:bg-green-600 text-white p-1 rounded-full transition-all duration-300"
+                          >
+                            <TiTick size={30} />
+                          </button>
+                          <button
+                            onClick={() =>
+                              role === "mentor"
+                                ? handleRequest("rejected", req._id)
+                                : handleRequestClassIncharge(
+                                    "rejected",
+                                    req._id
+                                  )
+                            }
+                            className="bg-red-400 hover:bg-red-600 text-white p-1 rounded-full transition-all duration-300"
+                          >
+                            <RxCross2 size={30} />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() =>
+                              role === "mentor"
+                                ? handleRequest("taken", req._id)
+                                : handleRequestClassIncharge("taken", req._id)
+                            }
+                            className={`text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
+                              status === "approved"
+                                ? "bg-green-400"
+                                : status === "rejected"
+                                ? "bg-red-400"
+                                : ""
+                            }`}
+                          >
+                            {status === "approved"
+                              ? "Approved"
+                              : status === "rejected"
+                              ? "Rejected"
+                              : "Taken"}
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile view */}
+        <div className="md:hidden space-y-4">
+          {requests.map((request) => (
+            <MobileRequestCard
+              key={request._id}
+              request={request}
+              role={role}
+              onAction={handleRequest}
+            />
+          ))}
+        </div>
+      </>
     );
   };
 
@@ -317,7 +463,7 @@ export default function LeaveRequests({
               Leave Requests From Your Class Mentees
             </h2>
           </div>
-          {renderRequestTable(menteeRequests, "mentor")}
+          {renderRequestTable(menteeRequests, "mentor", handleRequest)}
         </div>
       )}
 
@@ -329,7 +475,11 @@ export default function LeaveRequests({
               Leave Requests From Your Class Students
             </h2>
           </div>
-          {renderRequestTable(classInchargeRequests, "classIncharge")}
+          {renderRequestTable(
+            classInchargeRequests,
+            "classIncharge",
+            handleRequestClassIncharge
+          )}
         </div>
       )}
 
@@ -603,7 +753,7 @@ const DetailsModal = ({ isOpen, onClose, request }) => (
                 status={request.approvals.mentor.status}
                 showLine={true}
                 by="M"
-                />
+              />
               <StatusDot
                 status={request.approvals.classIncharge.status}
                 showLine={false}

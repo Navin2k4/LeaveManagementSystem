@@ -7,6 +7,7 @@ export const createLeaveRequest = async (req, res) => {
     console.log(req.body);
     const {
       name,
+      parent_phone,
       email,
       userId,
       userType,
@@ -50,6 +51,7 @@ export const createLeaveRequest = async (req, res) => {
 
     const studentLeaveRequest = new LeaveRequest({
       name,
+      parent_phone,
       email,
       userId,
       userType,
@@ -69,6 +71,7 @@ export const createLeaveRequest = async (req, res) => {
       isHalfDay,
       isStaff: false,
     });
+    console.log(studentLeaveRequest);
     await studentLeaveRequest.save();
     res.status(201).json({
       success: true,
@@ -126,7 +129,10 @@ export const getleaverequestbyMentorId = async (req, res, next) => {
 export const getleaverequestbyclassinchargeid = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const data = await LeaveRequest.find({ classInchargeId: id }).sort({
+    const data = await LeaveRequest.find({
+      classInchargeId: id,
+      'approvals.mentor.status': 'approved'
+    }).sort({
       createdAt: -1,
     });
     res.status(200).json(data);

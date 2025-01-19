@@ -6,6 +6,7 @@ import { Calendar, Clock, FileText, AlertCircle } from "lucide-react";
 
 export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
   const { currentUser } = useSelector((state) => state.user);
+  console.log(currentUser);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [errors, setErrors] = useState({});
@@ -15,6 +16,7 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
 
   const [formData, setFormData] = useState({
     name: currentUser.name,
+    parent_phone: currentUser.parent_phone,
     email: currentUser.email,
     userId:
       currentUser.userType === "Staff" ? currentUser.userId : currentUser.id,

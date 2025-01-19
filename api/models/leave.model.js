@@ -6,6 +6,9 @@ const leaveRequestSchema = new Schema(
       type: String,
       required: true,
     },
+    parent_phone: {
+      type: String,
+    },
     email: {
       type: String,
     },
@@ -132,13 +135,13 @@ leaveRequestSchema.pre("save", function (next) {
   if (this.isModified("approvals")) {
     if (
       this.approvals.mentor.status === "rejected" ||
-      this.approvals.classIncharge.status === "rejected" 
+      this.approvals.classIncharge.status === "rejected"
       // || this.approvals.hod.status === "rejected"
     ) {
       this.status = "rejected";
     } else if (
       this.approvals.mentor.status === "approved" &&
-      this.approvals.classIncharge.status === "approved" 
+      this.approvals.classIncharge.status === "approved"
       // && this.approvals.hod.status === "approved"
     ) {
       this.status = "approved";
@@ -153,13 +156,13 @@ leaveRequestSchema.pre("save", function (next) {
 leaveRequestSchema.methods.computeStatus = function () {
   if (
     this.approvals.mentor.status === "rejected" ||
-    this.approvals.classIncharge.status === "rejected" 
+    this.approvals.classIncharge.status === "rejected"
     // || this.approvals.hod.status === "rejected"
   ) {
     return "rejected";
   } else if (
     this.approvals.mentor.status === "approved" &&
-    this.approvals.classIncharge.status === "approved" 
+    this.approvals.classIncharge.status === "approved"
     // && this.approvals.hod.status === "approved"
   ) {
     return "approved";

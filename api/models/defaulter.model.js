@@ -15,6 +15,9 @@ const defaulterSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    parent_phone: {
+      type: String,
+    },
     departmentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Department",

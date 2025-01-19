@@ -52,6 +52,7 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
 
   const [formData, setFormData] = useState({
     name: currentUser.name,
+    parent_phone: currentUser.parent_phone,
     email: currentUser.email,
     studentId:
       currentUser.userType === "Staff" ? currentUser.userId : currentUser.id,

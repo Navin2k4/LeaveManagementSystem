@@ -27,6 +27,7 @@ const MarkDefaulterAndLate = () => {
   const [formData, setFormData] = useState({
     studentId: "",
     studentName: "",
+    parent_phone: "",
     academicYear: "",
     semester: "",
     year: "",
@@ -42,6 +43,7 @@ const MarkDefaulterAndLate = () => {
     defaulterType: "",
     rollNumber: "",
   });
+  console.log(formData);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -86,11 +88,11 @@ const MarkDefaulterAndLate = () => {
       }
 
       const data = await response.json();
-
       if (data && data.name) {
         setFormData((prev) => ({
           ...prev,
           studentName: data.name || "N/A",
+          parent_phone: data.parent_phone || "N/A",
           studentId: data.studentId || "N/A",
           academicYear: data.batch_name || "N/A",
           semester: data.semester || "N/A",
@@ -108,6 +110,7 @@ const MarkDefaulterAndLate = () => {
         setFormData((prev) => ({
           ...prev,
           studentName: "N/A",
+          parent_phone: "N/A",
           studentId: "N/A",
           academicYear: "N/A",
           semester: "N/A",
@@ -159,6 +162,7 @@ const MarkDefaulterAndLate = () => {
       const data = {
         rollNumber: formData.rollNumber,
         name: formData.studentName,
+        parent_phone: formData.parent_phone,
         studentId: formData.studentId,
         departmentName: formData.department,
         batchName: formData.academicYear,
@@ -233,40 +237,42 @@ const MarkDefaulterAndLate = () => {
 
   // Tab Components
   const TabNavigation = () => (
-    <div className="flex space-x-2 mb-6 border-b">
-      <button
-        onClick={() => setActiveTab("list")}
-        className={`flex items-center px-4 py-2 ${
-          activeTab === "list"
-            ? "border-b-2 border-blue-500 text-blue-600"
-            : "text-gray-500 hover:text-gray-700"
-        }`}
-      >
-        <List className="w-4 h-4 mr-2" />
-        List Defaulters
-      </button>
-      <button
-        onClick={() => setActiveTab("add")}
-        className={`flex items-center px-4 py-2 ${
-          activeTab === "add"
-            ? "border-b-2 border-blue-500 text-blue-600"
-            : "text-gray-500 hover:text-gray-700"
-        }`}
-      >
-        <PlusCircle className="w-4 h-4 mr-2" />
-        Add Defaulter
-      </button>
-      <button
-        onClick={() => setActiveTab("generate")}
-        className={`flex items-center px-4 py-2 ${
-          activeTab === "generate"
-            ? "border-b-2 border-blue-500 text-blue-600"
-            : "text-gray-500 hover:text-gray-700"
-        }`}
-      >
-        <FileText className="w-4 h-4 mr-2" />
-        Generate Report
-      </button>
+    <div className="overflow-x-auto">
+      <div className="flex min-w-max border-b">
+        <button
+          onClick={() => setActiveTab("list")}
+          className={`flex items-center px-4 py-2 text-sm ${
+            activeTab === "list"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          <List className="w-4 h-4 mr-2" />
+          List Defaulters
+        </button>
+        <button
+          onClick={() => setActiveTab("add")}
+          className={`flex items-center px-4 py-2 text-sm ${
+            activeTab === "add"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          <PlusCircle className="w-4 h-4 mr-2" />
+          Add Defaulter
+        </button>
+        <button
+          onClick={() => setActiveTab("generate")}
+          className={`flex items-center px-4 py-2 text-sm ${
+            activeTab === "generate"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          <FileText className="w-4 h-4 mr-2" />
+          Generate Report
+        </button>
+      </div>
     </div>
   );
 
@@ -281,6 +287,17 @@ const MarkDefaulterAndLate = () => {
   const MobileDefaulterRow = ({ defaulter }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
+    const getBadgeColor = (type) => {
+      switch (type) {
+        case "Late":
+          return "bg-yellow-50 text-yellow-700 border-yellow-200";
+        case "Both":
+          return "bg-red-50 text-red-700 border-red-200";
+        default:
+          return "bg-blue-50 text-blue-700 border-blue-200";
+      }
+    };
+
     return (
       <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
         <div className="flex justify-between items-start">
@@ -291,22 +308,18 @@ const MarkDefaulterAndLate = () => {
                 ({defaulter.roll_no})
               </span>
             </p>
-            <div className="mt-1 flex items-center gap-2">
+            <div className="mt-1 flex flex-wrap items-center gap-2">
               <span
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  defaulter.defaulterType === "Late"
-                    ? "bg-yellow-100 text-yellow-800"
-                    : defaulter.defaulterType === "Both"
-                    ? "bg-red-100 text-red-800"
-                    : "bg-blue-100 text-blue-800"
-                }`}
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getBadgeColor(
+                  defaulter.defaulterType
+                )}`}
               >
                 {defaulter.defaulterType}
               </span>
               <span className="text-xs text-gray-500">
                 {defaulter.defaulterType === "Both" && (
                   <>
-                    {defaulter.observation} - {defaulter.timeIn}
+                    {defaulter.observation} • {defaulter.timeIn}
                   </>
                 )}
                 {defaulter.defaulterType === "Late" && defaulter.timeIn}
@@ -477,32 +490,30 @@ const MarkDefaulterAndLate = () => {
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm">
                         {defaulter.name}
+                        <p>{defaulter.parent_phone}</p>
                       </td>
                       <td className="px-4 py-4">
-                        <div className="flex items-center justify-between space-x-2">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              defaulter.defaulterType === "Late"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : defaulter.defaulterType === "Both"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-blue-100 text-blue-800"
-                            }`}
-                          >
-                            {defaulter.defaulterType}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            {defaulter.defaulterType === "Both" && (
-                              <>
-                                {defaulter.observation} - {defaulter.timeIn}
-                              </>
-                            )}
-                            {defaulter.defaulterType === "Late" &&
-                              defaulter.timeIn}
-                            {defaulter.defaulterType ===
-                              "Discipline and Dresscode" &&
-                              defaulter.observation}
-                          </span>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                            defaulter.defaulterType === "Late"
+                              ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                              : defaulter.defaulterType === "Both"
+                              ? "bg-red-50 text-red-700 border-red-200"
+                              : "bg-blue-50 text-blue-700 border-blue-200"
+                          }`}
+                        >
+                          {defaulter.defaulterType}
+                        </span>
+                        <div className="text-sm text-gray-500 mt-1">
+                          {defaulter.defaulterType === "Both" && (
+                            <>
+                              {defaulter.observation} • {defaulter.timeIn}
+                            </>
+                          )}
+                          {defaulter.defaulterType === "Late" &&
+                            defaulter.timeIn}
+                          {defaulter.defaulterType ===
+                            "Discipline and Dresscode" && defaulter.observation}
                         </div>
                       </td>
                       <td className="hidden md:table-cell px-4 py-4 whitespace-nowrap text-sm text-gray-500">

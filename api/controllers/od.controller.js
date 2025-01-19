@@ -6,6 +6,7 @@ export const createOdRequest = async (req, res) => {
   try {
     const {
       name,
+      parent_phone,
       email,
       studentId,
       userType,
@@ -62,6 +63,7 @@ export const createOdRequest = async (req, res) => {
 
     const studentOdRequest = new OdRequest({
       name,
+      parent_phone,
       email,
       studentId,
       userType,
@@ -147,7 +149,10 @@ export const getodrequestbyMentorId = async (req, res, next) => {
 export const getodrequestbyclassinchargeid = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const data = await OdRequest.find({ classInchargeId: id }).sort({
+    const data = await OdRequest.find({
+      classInchargeId: id,
+      "approvals.mentor.status": "approved",
+    }).sort({
       createdAt: -1,
     });
     res.status(200).json(data);
