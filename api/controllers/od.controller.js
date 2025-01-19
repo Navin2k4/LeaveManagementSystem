@@ -374,19 +374,3 @@ export const mentors = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch mentors" });
   }
 };
-
-export const getWardDetailsByRollNumber = async (req, res, next) => {
-  const { rollNo } = req.params;
-  const currentDate = new Date();
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(currentDate.getMonth() - 1);
-  try {
-    const response = await OdRequest.find({
-      rollNo: rollNo,
-      fromDate: { $gte: oneMonthAgo },
-    });
-    res.status(200).json(response);
-  } catch (error) {
-    next("Error in Fetching the Ward Details", error.message);
-  }
-};

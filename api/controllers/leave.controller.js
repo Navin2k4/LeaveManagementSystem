@@ -356,33 +356,3 @@ export const mentors = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch mentors" });
   }
 };
-
-// export const getStaffLeaveRequests = async (req, res) => {
-//   const { deptId } = req.query;
-//   try {
-//     const response = await LeaveRequest.find({
-//       departmentId: deptId,
-//       isStaff: true,
-//     }).sort({ createdAt: -1 });
-//     res.status(200).json(response);
-//   } catch (error) {
-//     console.error("Error in Finding the Staff's Leave Request ", error.message);
-//     res.status(500).json({ error: "Failed to get Staff's Leave Request" });
-//   }
-// };
-
-export const getWardDetailsByRollNumber = async (req, res, next) => {
-  const { rollNo } = req.params;
-  const currentDate = new Date();
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(currentDate.getMonth() - 1);
-  try {
-    const response = await LeaveRequest.find({
-      rollNo: rollNo,
-      fromDate: { $gte: oneMonthAgo },
-    });
-    res.status(200).json(response);
-  } catch (error) {
-    next("Error in Fetching the Ward Details", error.message);
-  }
-};

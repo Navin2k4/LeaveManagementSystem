@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import SideMenu from "../general/SideMenu";
 import { signOutSuccess } from "../../redux/user/userSlice";
-import { RiParentFill } from "react-icons/ri";
+import { motion } from "framer-motion";
+import { Menu, LogOut, Home, User, BookOpen } from "lucide-react";
 
 function Navbar() {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentUser } = useSelector((state) => state.user);
 
   const handleSignout = async () => {
     try {
-      const res = await fetch("/api/user/signout", {
+      const res = await fetch("/api/auth/signout", {
         method: "POST",
       });
       const data = await res.json();
@@ -28,127 +30,119 @@ function Navbar() {
     }
   };
 
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (event.target.classList.contains("backdrop")) {
-        setOpen(false);
-      }
-    };
+  const isActive = (path) => location.pathname === path;
 
-    if (open) {
-      document.addEventListener("click", handleOutsideClick);
-    } else {
-      document.removeEventListener("click", handleOutsideClick);
-    }
-
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
-  }, [open]);
+  const NavLink = ({ to, children }) => (
+    <Link
+      to={to}
+      className={`relative px-4 py-2 rounded-lg transition-all duration-200 ${
+        isActive(to)
+          ? "text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400"
+          : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+      }`}
+    >
+      {children}
+      {isActive(to) && (
+        <motion.div
+          layoutId="active-pill"
+          className="absolute -bottom-1 left-2 right-2 h-0.5 bg-blue-600 dark:bg-blue-400"
+          transition={{ type: "spring", duration: 0.6 }}
+        />
+      )}
+    </Link>
+  );
 
   return (
-    <nav className="bg-slate-100 flex justify-between items-center  p-4 lg:px-8">
-      <div className="flex items-center flex-3">
-        <a
-          href="/"
-          className="flex items-center font-bold text-xl text-black  gap-2"
-        >
-          <img
-            src="/vcet.jpeg"
-            alt="VCET Logo"
-            className="w-12 h-12 rounded-full"
-          />
-          <span className="hidden md:inline md:text-xl text-black sm:text-sm">
-            Velammal College of Engineering and Technology
-          </span>
-        </a>
-      </div>
-      <div className="hidden lg:flex gap-10 items-center justify-evenly text-lg text-black h-full">
-        <Link to="/" className="transition-all duration-200 hover:scale-105">
-          Home
-        </Link>
-        {!currentUser && 
-        <Link
-        to="/signin"
-        className="transition-all duration-200 text-black hover:scale-105"
-        >
-          Sign In
-        </Link>
-        }
-        <Link
-          to="/wardDetails"
-          className="transition-all duration-200 text-black hover:scale-105"
-        >
-          Wards Detail
-        </Link>
+    <nav className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo Section */}
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center space-x-3">
+              <img
+                src="/vcet.jpeg"
+                alt="VCET Logo"
+                className="w-10 h-10 rounded-full"
+              />
+              <span className="hidden md:inline font-semibold text-xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-[#1f3a6e]">
+                VCET Connect
+              </span>
+            </Link>
+          </div>
 
-        {currentUser ? (
-          currentUser.userType === "Staff" ? (
-            <Link
-              to="/staffdashboard"
-              className="flex items-center transition-all duration-200 hover:scale-105"
-            >
-              <div className="flex items-center">
-                <span className="tracking-wider uppercase  text-black font-semibold">
-                  {currentUser.name.split(" ")[0]}
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-4">
+            <NavLink to="/">
+              <span className="flex items-center gap-2">
+                <Home size={18} />
+                Home
+              </span>
+            </NavLink>
+
+            <NavLink to="/wardDetails">
+              <span className="flex items-center gap-2">
+                <BookOpen size={18} />
+                Wards Detail
+              </span>
+            </NavLink>
+
+            {currentUser ? (
+              <>
+                <NavLink
+                  to={
+                    currentUser.userType === "Staff"
+                      ? "/staffdashboard"
+                      : currentUser.userType === "Student"
+                      ? "/profile"
+                      : "/hoddash"
+                  }
+                >
+                  <span className="flex items-center gap-2">
+                    <User size={18} />
+                    {currentUser.name.split(" ")[0]}
+                  </span>
+                </NavLink>
+
+                <button
+                  onClick={handleSignout}
+                  className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
+                >
+                  <LogOut size={18} />
+                  <span>Logout</span>
+                </button>
+              </>
+            ) : (
+              <NavLink to="/signin">
+                <span className="flex items-center gap-2">
+                  <User size={18} />
+                  Sign In
                 </span>
-              </div>
-            </Link>
-          ) : currentUser.userType === "Student" ? (
-            <Link
-              to="/profile"
-              className="flex items-center transition-all duration-200 hover:scale-105"
+              </NavLink>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="lg:hidden">
+            <button
+              onClick={() => setOpen(true)}
+              className="p-2 rounded-lg text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800 transition-all duration-200"
             >
-              <div className="flex items-center">
-                <span className="tracking-wider uppercase text-black font-semibold">
-                  {currentUser.name.split(" ")[0]}
-                </span>
-              </div>
-            </Link>
-          ) : (
-            <Link
-              to="/hoddash"
-              className="flex items-center transition-all duration-200 hover:scale-105"
-            >
-              <div className="flex items-center">
-                <span className="tracking-wider uppercase text-black font-semibold">
-                  {currentUser.name.split(" ")[0]}
-                </span>
-              </div>
-            </Link>
-          )
-        ) : null}
-        {currentUser && (
-          <button
-            onClick={handleSignout}
-            className="px-3 py-1 rounded-md border text-black bg-white border-primary-blue hover:bg-primary-blue hover:text-white transition-all duration-200"
-          >
-            Logout
-          </button>
-        )}
+              <Menu size={24} />
+            </button>
+          </div>
+        </div>
       </div>
-      <div className="lg:hidden">
-        <button onClick={() => setOpen((prev) => !prev)} className="p-2 ">
-          <svg
-            className="w-9 h-9 cursor-pointer text-black"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16m-7 6h7"
-            />
-          </svg>
-        </button>
-      </div>
+
+      {/* Mobile Menu Backdrop */}
       {open && (
-        <div className="backdrop fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+        <div
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setOpen(false)}
+        />
       )}
-      <SideMenu open={open} />
+
+      {/* Mobile Menu */}
+      <SideMenu open={open} setOpen={setOpen} />
     </nav>
   );
 }

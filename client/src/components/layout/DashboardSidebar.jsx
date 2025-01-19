@@ -19,10 +19,13 @@ const DashboardSidebar = ({
   userInfo,
   title = "Dashboard",
   onSidebarToggle,
+  isMobileOpen,
+  setIsMobileOpen,
+  onSignOut,
+  isMainNav = false,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [showText, setShowText] = useState(true);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -39,7 +42,7 @@ const DashboardSidebar = ({
 
   const handleSignout = async () => {
     try {
-      const res = await fetch("/api/user/signout", {
+      const res = await fetch("/api/auth/signout", {
         method: "POST",
       });
       const data = await res.json();
@@ -172,7 +175,7 @@ const DashboardSidebar = ({
                                 key={subItem.id}
                                 onClick={() => {
                                   onTabChange(subItem.id);
-                                  setIsMobileMenuOpen(false);
+                                  setIsMobileOpen(false);
                                 }}
                                 className={`w-full px-3 py-2 text-sm rounded-md ${
                                   currentTab === subItem.id
@@ -257,19 +260,19 @@ const DashboardSidebar = ({
 
       {/* Mobile Floating Action Button */}
       <button
-        onClick={() => setIsMobileMenuOpen(true)}
+        onClick={() => setIsMobileOpen(true)}
         className="fixed right-4 top-4 lg:hidden z-40 p-4 bg-blue-300 text-black rounded-full shadow-lg hover:bg-blue-400 hover:text-white transition-colors duration-300"
       >
         <Menu className="w-6 h-6" />
       </button>
 
       {/* Mobile Slide-out Menu */}
-      {isMobileMenuOpen && (
+      {isMobileOpen && (
         <>
           {/* Overlay */}
           <div
             className="fixed inset-0 bg-black/50 z-50 lg:hidden"
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={() => setIsMobileOpen(false)}
           />
 
           {/* Sidebar */}
@@ -285,7 +288,7 @@ const DashboardSidebar = ({
                 <span className="font-semibold text-sm">VCET Connect</span>
               </div>
               <button
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => setIsMobileOpen(false)}
                 className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700/50"
               >
                 <X className="w-5 h-5" />
@@ -303,86 +306,50 @@ const DashboardSidebar = ({
             {/* Menu */}
             <div className="overflow-y-auto h-[calc(100vh-200px)]">
               <nav className="px-2 py-4">
-                {/* Common Navigation Links */}
-                {commonNavItems.map((item) => (
-                  <Link
-                    key={item.id}
-                    to={item.path}
-                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <span className="w-5">{item.icon}</span>
-                    <span className="text-sm">{item.label}</span>
-                  </Link>
-                ))}
-
-                {/* Divider */}
-                <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
-
-                {/* Menu Items */}
-                {menuItems.map((item) => (
-                  <div key={item.id}>
-                    {item.submenu ? (
-                      <div className="mb-1">
-                        <div className="px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300">
-                          {item.label}
-                        </div>
-                        <div className="ml-4">
-                          {item.submenuItems.map((subItem) => (
-                            <button
-                              key={subItem.id}
-                              onClick={() => {
-                                onTabChange(subItem.id);
-                                setIsMobileMenuOpen(false);
-                              }}
-                              className={`w-full px-3 py-2 text-sm rounded-md ${
-                                currentTab === subItem.id
-                                  ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20"
-                                  : "text-gray-600 dark:text-gray-300"
-                              }`}
-                            >
-                              {subItem.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          onTabChange(item.id);
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md ${
-                          currentTab === item.id
+                {isMainNav
+                  ? // Main navigation items
+                    menuItems.map((item) => (
+                      <Link
+                        key={item.id}
+                        to={item.path}
+                        className={`flex items-center space-x-3 px-3 py-2 rounded-md ${
+                          currentTab === item.path
                             ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20"
-                            : "text-gray-600 dark:text-gray-300"
+                            : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
                         }`}
+                        onClick={() => setIsMobileOpen(false)}
                       >
-                        <div className="flex items-center space-x-3">
-                          <span className="w-5">{item.icon}</span>
-                          <span>{item.label}</span>
-                        </div>
-                        {item.badge && (
-                          <span className="flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-red-500 rounded-full">
-                            {item.badge}
-                          </span>
-                        )}
-                      </button>
-                    )}
-                  </div>
-                ))}
+                        <span className="w-5">{item.icon}</span>
+                        <span className="text-sm">{item.label}</span>
+                      </Link>
+                    ))
+                  : // Existing dashboard menu items code
+                    commonNavItems.map((item) => (
+                      <Link
+                        key={item.id}
+                        to={item.path}
+                        className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                        onClick={() => setIsMobileOpen(false)}
+                      >
+                        <span className="w-5">{item.icon}</span>
+                        <span className="text-sm">{item.label}</span>
+                      </Link>
+                    ))}
               </nav>
             </div>
 
             {/* Logout Button */}
-            <div className="absolute bottom-0 bg-red-300 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
-              <button
-                onClick={handleSignout}
-                className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
-              >
-                Logout
-              </button>
-            </div>
+            {userInfo && (
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={onSignOut}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
+                >
+                  <LogOut size={20} />
+                  <span className="font-medium">Logout</span>
+                </button>
+              </div>
+            )}
           </div>
         </>
       )}

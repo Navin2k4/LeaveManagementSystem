@@ -1,24 +1,19 @@
-import express from 'express';
-import { studentsignup, verifyOTP, changePassword } from '../controllers/auth.controller.js';
-import { studentsignin } from '../controllers/auth.controller.js';
-import { staffsignup } from '../controllers/auth.controller.js';
-import { staffsignin } from '../controllers/auth.controller.js';
-import { hodsignup } from '../controllers/auth.controller.js';
-import { hodsignin } from '../controllers/auth.controller.js';
+import express from "express";
+import {
+  changePassword,
+  studentsignin,
+  staffsignin,
+  signout,
+} from "../controllers/auth.controller.js";
 
 const router = express.Router();
 
-router.post('/studentsignup',studentsignup);
-router.post('/studentsignin',studentsignin);
+router.post("/studentsignin", studentsignin);
 
-router.post('/staffsignup',staffsignup);
-router.post('/staffsignin',staffsignin);
+router.post("/staffsignin", staffsignin);
 
-router.post('/hodsignup',hodsignup);
-router.post('/hodsignin',hodsignin);
+router.put("/changePassword/:userType/:id", changePassword);
 
-router.post('/verifyOTP', verifyOTP);
-
-router.put('/changePassword/:userType/:id', changePassword);
+router.post("/signout", signout);
 
 export default router;

@@ -72,7 +72,7 @@ const About = () => {
               transition={{ duration: 0.8 }}
               className="text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600"
             >
-              Welcome to VCET Connect
+              About VCET Connect
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 50 }}

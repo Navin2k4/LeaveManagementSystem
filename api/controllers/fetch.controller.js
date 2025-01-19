@@ -1,5 +1,9 @@
 import Staff from "../models/staff.model.js";
 import Student from "../models/student.model.js";
+import Leave from "../models/leave.model.js";
+import OD from "../models/od.model.js";
+import Defaulter from "../models/defaulter.model.js";
+
 export const getClassInchargeBySectionId = async (req, res, next) => {
   try {
     const { sectionId } = req.params;
@@ -57,6 +61,54 @@ export const getMenteeByMentorId = async (req, res, next) => {
     res.status(200).json(mentees);
   } catch (error) {
     console.error("Error in getMenteeByMentorId:", error);
+    next(error);
+  }
+};
+
+export const getWardDetailsByRollNumber = async (req, res, next) => {
+  try {
+    const { rollNo } = req.params;
+
+    // First get the student ID from roll number
+    const student = await Student.findOne({ roll_no: rollNo });
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Fetch leaves, ODs and defaulters in parallel
+    const [leaves, ods, defaulters] = await Promise.all([
+      Leave.find({ userId: student._id }),
+      OD.find({ studentId: student._id }),
+      Defaulter.find({ studentId: student._id }),
+    ]);
+
+    // Combine and format all records
+    const allRecords = [
+      ...leaves.map((leave) => ({
+        ...leave.toObject(),
+        type: "Leave",
+        status: leave.approvals.classIncharge.status,
+      })),
+      ...ods.map((od) => ({
+        ...od.toObject(),
+        type: "OD",
+        status: od.approvals.classIncharge.status,
+      })),
+      ...defaulters.map((defaulter) => ({
+        ...defaulter.toObject(),
+        type: "Defaulter",
+        status: "Marked",
+        fromDate: defaulter.entryDate,
+        toDate: defaulter.entryDate,
+        noOfDays: 1,
+      })),
+    ];
+
+    // Sort by date (most recent first)
+    allRecords.sort((a, b) => new Date(b.fromDate) - new Date(a.fromDate));
+
+    res.status(200).json(allRecords);
+  } catch (error) {
     next(error);
   }
 };

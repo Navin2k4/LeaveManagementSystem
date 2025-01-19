@@ -4,8 +4,6 @@ import PageNotFound from "./pages/PageNotFound";
 import StaffDashBoard from "./pages/StaffDashBoard";
 import HomePage from "./pages/HomePage";
 import Navbar from "./components/general/NavBar";
-// import SignUp from "./components/auth/SignUp";
-// import StaffSignUp from "./components/auth/StaffSignUp";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import StaffPrivateRoute from "./components/auth/StaffPrivateRoute";
 import ProfilePage from "./pages/ProfilePage";
@@ -14,27 +12,21 @@ import DashBoard from "./pages/DashBoard";
 import Hoddashboard from "./pages/HodDashBoard";
 import HodPrivateRoute from "./components/auth/HodPrivateRoute";
 import WardDetails from "./pages/WardDetails";
-import VerifyOtp from "./components/general/VerifyOTP";
 import SignIn from "./components/auth/SignIn";
 import Footer from "./components/general/Footer";
 import MailTiming from "./components/systems/MailTiming";
 import About from "./pages/About";
 
-// TODO:OTP IS WORKING BUT WE CAN CANCEL CERIFICATION AND STILL SIGN IT TO ENSURE THAT ONLY AFTER VERIFICATION THE STUDENT ATA IS SAVED IN THE DB COLLECTION  ( Actually no need to worry however going to remove signup idk ) ❌
-
 const AppWrapper = () => {
   const location = useLocation();
 
-  // Pages that use DashboardSidebar
   const dashboardPages = [
     "/profile",
     "/staffdashboard",
     "/hoddash",
     "/superadmin",
-    // Add other dashboard pages here
   ];
 
-  // Only show navbar on non-dashboard pages
   const showNavbar = !dashboardPages.includes(location.pathname);
 
   const showFooter = [
@@ -44,7 +36,6 @@ const AppWrapper = () => {
     "/signin",
     "/wardDetails",
     "*",
-    "/verify-otp",
   ].includes(location.pathname);
 
   return (
@@ -52,8 +43,6 @@ const AppWrapper = () => {
       {showNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<HomePage />} />
-        {/* <Route path='/studentsignup' element={<SignUp />} /> */}
-        {/* <Route path='/staffsignup' element={<StaffSignUp />} /> */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/wardDetails" element={<WardDetails />} />
         <Route path="/know-about-us" element={<About />} />
@@ -71,7 +60,6 @@ const AppWrapper = () => {
           <Route path="/staffdashboard" element={<StaffDashBoard />} />
         </Route>
         <Route path="*" element={<PageNotFound />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
       </Routes>
       {showFooter && <Footer />}
     </>

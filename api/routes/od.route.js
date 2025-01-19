@@ -9,7 +9,6 @@ import {
   mentors,
   getodrequestsbySectionId,
   updateOdRequestStatusByHODId,
-  getWardDetailsByRollNumber,
   deleteodbyId,
 } from "../controllers/od.controller.js";
 
@@ -22,7 +21,6 @@ router.get("/getodrequestbymentorid/:id", getodrequestbyMentorId);
 router.get("/getodrequestbyclassinchargeid/:id", getodrequestbyclassinchargeid);
 
 router.get("/mentors", mentors);
-// router.get('/getStaffOdRequests', getStaffOdRequests);
 router.get("/odrequestsbysectionid/:id", getodrequestsbySectionId);
 
 router.post(
@@ -35,6 +33,5 @@ router.post(
 );
 router.post("/od-requestsbyhodid/:id/status", updateOdRequestStatusByHODId);
 
-router.get("/getWardDetailsByRollNumber/:rollNo", getWardDetailsByRollNumber);
 
 export default router;

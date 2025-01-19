@@ -9,7 +9,6 @@ import {
   mentors,
   getleaverequestsbySectionId,
   updateLeaveRequestStatusByHODId,
-  getWardDetailsByRollNumber,
   deleteleavebyId,
 } from "../controllers/leave.controller.js";
 
@@ -40,7 +39,5 @@ router.post(
   "/leave-requestsbyhodid/:id/status",
   updateLeaveRequestStatusByHODId
 );
-
-router.get("/getWardDetailsByRollNumber/:rollNo", getWardDetailsByRollNumber);
 
 export default router;
