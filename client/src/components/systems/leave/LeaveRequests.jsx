@@ -1,6 +1,6 @@
 import { Button, Modal, ModalBody, ModalHeader, Spinner } from "flowbite-react";
 import { Info } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { MdOutlineDownloadDone } from "react-icons/md";
 import { RxCross2, RxCrossCircled } from "react-icons/rx";
 import { SiTicktick } from "react-icons/si";
@@ -18,6 +18,7 @@ export default function LeaveRequests({
   const [currentRequestId, setCurrentRequestId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [menteeRequests, setMenteeRequests] = useState(leaveRequestsAsMentor);
+  const [parentsPhone, setParentsPhone] = useState({}); // Parents Phone numbers
   const [classInchargeRequests, setClassInchargeRequests] = useState(
     leaveRequestsAsClassIncharge
   );
@@ -44,6 +45,17 @@ export default function LeaveRequests({
     fetchLeaveRequestsClassIncharge();
   }, []);
 
+  //Using Mentee and Class Incharge Requests, fetching Parent Phones.
+  useEffect(() => {
+    const allRollNos = [
+      ...new Set([
+        ...menteeRequests.map((req) => req.rollNo),
+        ...classInchargeRequests.map((req) => req.rollNo),
+      ]),
+    ];
+    fetchParentPhones(allRollNos);
+  }, [menteeRequests, classInchargeRequests]);
+
   const handleRequest = (type, id) => {
     setMentorModalType(type);
     setCurrentRequestId(id);
@@ -52,6 +64,21 @@ export default function LeaveRequests({
   const handleClose = () => {
     setMentorModalType(null);
     setCurrentRequestId(null);
+  };
+
+  //Fetching the Parent Phones For the respective Roll Numbers
+  const fetchParentPhones = async (rollNos) => {
+    try {
+      const res = await fetch(`/api/fetch/students/phones`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roll_nos: rollNos }),
+      });
+      const data = await res.json();
+      setParentsPhone(data);
+    } catch (error) {
+      console.error("Error fetching parent phones:", error);
+    }
   };
 
   const fetchLeaveRequestsMentor = async () => {
@@ -165,7 +192,7 @@ export default function LeaveRequests({
             <tr>
               <th className="px-6 py-4 w-[18%]">Student</th>
               <th className="px-6 py-4 w-[20%]">Reason</th>
-              <th className="px-6 py-4 w-[20%]">Reason</th>
+              <th className="px-6 py-4 w-[12%]">Parent Phone</th>
               <th className="px-6 py-4 w-[15%]">Dates</th>
               <th className="px-6 py-4 w-[8%] text-center">Days</th>
               <th className="px-6 py-4 w-[12%]">Status</th>
@@ -208,6 +235,9 @@ export default function LeaveRequests({
                         />
                       </button>
                     </div>
+                  </td>
+                  <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
+                    { parentsPhone[req.rollNo] | "N/A" }
                   </td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
                     <div className="flex flex-col items-center min-w-max justify-center gap-2">

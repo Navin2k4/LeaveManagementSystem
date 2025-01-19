@@ -60,3 +60,34 @@ export const getMenteeByMentorId = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getParentPhoneNumberById = async(req, res, next) => {
+  try {
+    const { roll_nos } = req.body;
+    if (!Array.isArray(roll_nos) || roll_nos.length === 0) {
+      return res.status(400).json({ message: "Roll No's are required." });
+    }
+    if ( roll_nos.some((r) => typeof r !== "string")) {
+      return res.status(400).json({ message: "Invalid Roll No format." });
+    }
+    const students = await Student.find({ roll_no: {$in: roll_nos} });
+
+    const studentMap = students.reduce((acc, student) => {
+      acc[student.roll_no] = student.parent_phone;
+      return acc;
+    }, {});
+    
+    const phoneNumbers = roll_nos.reduce((acc, rollNo) => {
+      acc[rollNo] = studentMap[rollNo] | null;
+      return acc;
+    }, {});
+
+    console.log(phoneNumbers);
+    
+
+    res.status(200).json(phoneNumbers);
+  } catch (error) {
+    console.error("Error fetching parent phone numbers: ", error);
+    next(error);
+  }
+};

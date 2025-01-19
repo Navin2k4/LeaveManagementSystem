@@ -48,6 +48,7 @@ const MarkDefaulterAndLate = () => {
   const [isWorkModalOpen, setIsWorkModalOpen] = useState(false);
   const [selectedDefaulter, setSelectedDefaulter] = useState(null);
   const [workRemarks, setWorkRemarks] = useState("");
+  const [parentsPhone, setParentsPhone] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [weekDates, setWeekDates] = useState([]);
 
@@ -71,6 +72,30 @@ const MarkDefaulterAndLate = () => {
       fetchDefaulters();
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    const rollNos = [
+      ...new Set([
+        ...defaulters.map((defaulter) => defaulter.roll_no),
+      ]),
+    ];
+    fetchParentPhones(rollNos)
+  }, [defaulters]);
+
+  //Fetching the Parent Phones For the respective Roll Numbers
+  const fetchParentPhones = async (rollNos) => {
+    try {
+      const res = await fetch(`/api/fetch/students/phones`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roll_nos: rollNos }),
+      });
+      const data = await res.json();
+      setParentsPhone(data);
+    } catch (error) {
+      console.error("Error fetching parent phones:", error);
+    }
+  };
 
   // Student data fetching
   const fetchStudentData = async () => {
@@ -454,6 +479,9 @@ const MarkDefaulterAndLate = () => {
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Type
                   </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Parent Phone
+                  </th>
                   <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Date
                   </th>
@@ -504,6 +532,9 @@ const MarkDefaulterAndLate = () => {
                               defaulter.observation}
                           </span>
                         </div>
+                      </td>
+                      <td className= "px-4 py-4 whitespace-nowrap text-sm">
+                        { parentsPhone[defaulter.roll_no] | "N/A" }
                       </td>
                       <td className="hidden md:table-cell px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(defaulter.entryDate).toLocaleDateString()}

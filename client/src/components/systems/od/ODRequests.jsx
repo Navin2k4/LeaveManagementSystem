@@ -25,6 +25,7 @@ export default function ODRequests({
   const [mentorComment, setmentorComment] = useState("");
   const [classInchargeComment, setclassInchargeComment] = useState("");
   const [showDetails, setShowDetails] = useState(false);
+  const [parentsPhone, setParentsPhone] = useState({});
   const [selectedRequest, setSelectedRequest] = useState(null);
 
   const formatDate = (dateString) => {
@@ -43,6 +44,16 @@ export default function ODRequests({
     fetchODRequestsClassIncharge();
   }, []);
 
+  useEffect(() => {
+    const allRollNos = [
+      ...new Set([
+        ...menteeRequests.map((req) => req.rollNo),
+        ...classInchargeRequests.map((req) => req.rollNo),
+      ]),
+    ];
+    fetchParentPhones(allRollNos);
+  }, [menteeRequests, classInchargeRequests]);
+
   const handleRequest = (type, id) => {
     setMentorModalType(type);
     setCurrentRequestId(id);
@@ -51,6 +62,20 @@ export default function ODRequests({
   const handleClose = () => {
     setMentorModalType(null);
     setCurrentRequestId(null);
+  };
+
+  const fetchParentPhones = async (rollNos) => {
+    try {
+      const res = await fetch(`/api/fetch/students/phones`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roll_nos: rollNos }),
+      });
+      const data = await res.json();
+      setParentsPhone(data);
+    } catch (error) {
+      console.error("Error fetching parent phones:", error);
+    }
   };
 
   const fetchODRequestsMentor = async () => {
@@ -165,6 +190,7 @@ export default function ODRequests({
               <th className="px-4 py-3">Student</th>
               <th className="px-4 py-3">OD Type</th>
               <th className="px-4 py-3">Details</th>
+              <th className="px-4 py-3">Parent Phone</th>
               <th className="px-4 py-3">Dates</th>
               <th className="px-4 py-3 text-center">Days</th>
               <th className="px-4 py-3">Status</th>
@@ -222,6 +248,9 @@ export default function ODRequests({
                         />
                       </button>
                     </div>
+                  </td>
+                  <td className="px-4 py-3 text-gray-900 dark:text-gray-200">
+                    { parentsPhone[req.rollNo] | "N/A" }
                   </td>
                   <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
                     <div className="flex flex-col items-center min-w-max justify-center gap-2">
