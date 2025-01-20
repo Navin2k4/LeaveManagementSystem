@@ -18,6 +18,7 @@ import MenteeList from "../components/systems/MenteeList";
 import StaffProfile from "../components/user/StaffProfile";
 import ODRequests from "../components/systems/od/ODRequests";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
+import StudentAcademicData from "../components/systems/studentacademics/StudentAcademicData";
 
 const StaffDashBoard = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -75,6 +76,8 @@ const StaffDashBoard = () => {
           );
         case "Mentee List":
           return <MenteeList />;
+        case "Student's Academics":
+          return <StudentAcademicData userId={currentUser.userId} />;
         default:
           return <LeaveRequestForm />;
       }
@@ -107,6 +110,11 @@ const StaffDashBoard = () => {
       id: "Leave Reports",
       icon: <FileBarChart size={18} />,
       label: "Reports",
+    },
+    {
+      id: "Student's Academics",
+      icon: <UserRoundPlus size={18} />,
+      label: "Student's Academics",
     },
     {
       id: "Mentee List",

@@ -13,7 +13,7 @@ import defaulterRoutes from "./routes/defaulter.route.js";
 import dataRoutes from "./routes/data.route.js";
 import mailRoutes from "./routes/mail.route.js";
 import fetchRoutes from "./routes/fetch.route.js";
-
+import cgpaRoutes from "./routes/cgpa.route.js";
 dotenv.config();
 
 // MongoDB connection setup
@@ -36,6 +36,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Routes
+app.use("/api/cgpa", cgpaRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api", leaveRequestRoutes);

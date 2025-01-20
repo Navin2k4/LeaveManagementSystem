@@ -77,7 +77,6 @@ export default function LeaveRequests({
         `/api/getleaverequestbyclassinchargeid/${currentUser.userId}`
       );
       const data = await response.json();
-      console.log(data);
       setClassInchargeRequests(data);
     } catch (error) {
       console.error("Error fetching leave requests:", error);

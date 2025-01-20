@@ -63,6 +63,10 @@ const studentSchema = new mongoose.Schema(
       enum: ["pending", "active"],
       default: "pending",
     },
+    semester_results: {
+      type: Object,
+      default: {},
+    },
   },
   {
     timestamps: true,

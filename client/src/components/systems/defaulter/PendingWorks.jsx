@@ -7,8 +7,6 @@ const PendingWorks = () => {
   const [pendingWorks, setPendingWorks] = useState([]);
   const completedWorks = pendingWorks.filter((work) => work.isDone);
   const incompleteWorks = pendingWorks.filter((work) => !work.isDone);
-
-  console.log(pendingWorks);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -40,7 +38,6 @@ const PendingWorks = () => {
   }, [currentUser.id]);
 
   const handleMarkAsDone = async (workId) => {
-    console.log(`Calling API for ${workId}`);
     try {
       const response = await fetch(`/api/defaulter/markasdone/${workId}`, {
         method: "POST",

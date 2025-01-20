@@ -41,17 +41,12 @@ export const useFetchLeaveRequests = ({ id }) => {
 // XXX : Remove this file and place the useFetch where it is used more ofter=n it may solve the issue in loading the leave requests
 // that getting displayed to the staff and mentor more faster it may!
 
-
 export const useFetchLeaveRequestForMentor = (id) => {
-  console.log("useFetchLeaveRequestForMentor invoked with id:", id);
-  
   const [leaveRequestsAsMentor, setLeaveRequestsAsMentor] = useState([]);
   useEffect(() => {
     const fetchLeaveRequestsForMentor = async () => {
       try {
-        console.log("Attempting to fetch leave requests for ID:", id);
         const res = await fetch(`/api/getleaverequestbymentorid/${id}`);
-        console.log("Fetch initiated");
 
         if (!res.ok) {
           console.error("Error in response:", res.status, res.statusText);
@@ -59,7 +54,6 @@ export const useFetchLeaveRequestForMentor = (id) => {
         }
 
         const data = await res.json();
-        console.log("Fetch data received:", data);
         setLeaveRequestsAsMentor(data);
       } catch (error) {
         console.error("Error during fetch:", error);
@@ -67,12 +61,11 @@ export const useFetchLeaveRequestForMentor = (id) => {
     };
 
     if (id) {
-      console.log("Valid ID provided, calling fetchLeaveRequestsForMentor");
       fetchLeaveRequestsForMentor();
     } else {
       console.warn("ID is undefined or invalid; fetch skipped");
     }
-  }, (id));
+  }, id);
 
   return leaveRequestsAsMentor;
 };
@@ -121,17 +114,13 @@ export const useFetchLeaveRequestForClassIncharge = (id, sectionId) => {
   return leaveRequestsAsClassIncharge;
 };
 
-
 export const useFetchODRequestForMentor = (id) => {
-  console.log("useFetchODRequestForMentor invoked with id:", id);
-  
+
   const [odRequestsAsMentor, setODRequestsAsMentor] = useState([]);
   useEffect(() => {
     const fetchODRequestsForMentor = async () => {
       try {
-        console.log("Attempting to fetch OD requests for ID:", id);
         const res = await fetch(`/api/getodrequestbymentorid/${id}`);
-        console.log("Fetch initiated");
 
         if (!res.ok) {
           console.error("Error in response:", res.status, res.statusText);
@@ -139,7 +128,6 @@ export const useFetchODRequestForMentor = (id) => {
         }
 
         const data = await res.json();
-        console.log("Fetch data received:", data);
         setODRequestsAsMentor(data);
       } catch (error) {
         console.error("Error during fetch:", error);
@@ -147,19 +135,19 @@ export const useFetchODRequestForMentor = (id) => {
     };
 
     if (id) {
-      console.log("Valid ID provided, calling fetchODRequestsForMentor");
       fetchODRequestsForMentor();
     } else {
       console.warn("ID is undefined or invalid; fetch skipped");
     }
-  }, (id));
+  }, id);
 
   return odRequestsAsMentor;
 };
 
 export const useFetchODRequestForClassIncharge = (id, sectionId) => {
-    const [odRequestsAsClassIncharge, setODRequestsAsClassIncharge] =
-    useState([]);
+  const [odRequestsAsClassIncharge, setODRequestsAsClassIncharge] = useState(
+    []
+  );
 
   useEffect(() => {
     const fetchODRequestsForClassIncharge = async () => {

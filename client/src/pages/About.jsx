@@ -13,8 +13,11 @@ import { Carousel } from "flowbite-react";
 
 const systems = [
   {
-    name: "Leave Management System",
+    name: "Leave Management System / CGPA System",
+    description:
+      "Streamlined academic and leave management for enhanced efficiency",
     icon: FileText,
+    color: "from-blue-400 to-blue-600",
     developers: [
       "Navin Kumaran - 22CSEB48",
       "Vinoth Kumar - 22CSEB59",
@@ -24,7 +27,9 @@ const systems = [
   },
   {
     name: "OD Management System",
+    description: "Simplified On-Duty request and approval workflow",
     icon: Clock,
+    color: "from-purple-400 to-purple-600",
     developers: [
       "Manasha Devi T G - 22CSEB16",
       "Ritika Sachdeva - 22CSEB22",
@@ -33,24 +38,30 @@ const systems = [
   },
   {
     name: "Defaulter Management System",
+    description: "Efficient tracking and management of academic defaulters",
     icon: AlertTriangle,
+    color: "from-red-400 to-red-600",
     developers: [
-      "Developer 5 - ID5",
-      "Developer 6 - ID6",
-      "Developer 7 - ID7",
-      "Developer 8 - ID8",
-    ],
-  },
-  {
-    name: "Our Project Coordinators",
-    icon: Users,
-    developers: [
-      "Mrs.S.Padmadevi - Assistant Professor, CSE",
-      "Ms.J. Shanthalakshmi Revathy - Assistant Professor, CSE",
-      "Dr.A.M.Rajeswari - Associate Professor, CSE",
+      "Sanjana R - 22CSEC23",
+      "Muthieswari - 22CSEC15",
+      "Abitha Sri G - 22CSEC03",
     ],
   },
 ];
+
+const coordinators = {
+  name: "Project Coordinators",
+  description: "Our guiding mentors and project supervisors",
+  icon: Users,
+  color: "from-green-400 to-green-600",
+  members: [
+    "Dr.R. Perumalraja - Professor & HOD, CSE",
+    "Mrs.S.Padma Devi - Assistant Professor II, CSE",
+    "Ms.J. Shanthalakshmi Revathy - Assistant Professor II, CSE",
+    "Dr.A.M. Rajeswari - Associate Professor, CSE",
+    "Mr.S. Murali - Assistant Professor II, CSE",
+  ],
+};
 
 const About = () => {
   const { scrollYProgress } = useScroll();
@@ -95,46 +106,130 @@ const About = () => {
           </motion.div>
         </section>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-          <div className="bg-slate-200 flex items-center gap-2 p-4">
-            <Computer className="text-[#1f3a6e]" />
-            <h2 className="text-lg font-semibold text-black">
-              Systems Implemented
+        {/* Systems Section - New Design */}
+        <div className="max-w-7xl mx-auto mt-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              Our Systems
             </h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              Innovative solutions designed and developed by our students
+            </p>
           </div>
 
-          {/* Systems Grid */}
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {systems.map((system, index) => (
               <motion.div
                 key={system.name}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 hover:shadow-md transition-all duration-200"
+                className="relative group h-full"
               >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-[#1f3a6e] dark:text-blue-400">
-                    <system.icon size={20} />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                    {system.name}
-                  </h3>
-                </div>
-                <div className="space-y-2">
-                  {system.developers.map((developer, idx) => (
-                    <p
-                      key={idx}
-                      className="text-md text-gray-600 dark:text-gray-300 pl-11"
-                    >
-                      {developer}
+                <div
+                  className="absolute inset-0 bg-gradient-to-r w-full h-full blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-300"
+                  style={{
+                    background: `linear-gradient(to right, ${
+                      system.color.split(" ")[1]
+                    }, ${system.color.split(" ")[3]})`,
+                  }}
+                />
+                <div className="relative h-full bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                  <div className="p-6 flex flex-col h-full">
+                    {/* Icon Header */}
+                    <div className="flex items-center gap-4 mb-6">
+                      <div
+                        className={`inline-flex p-3 rounded-lg bg-gradient-to-r ${system.color}`}
+                      >
+                        <system.icon className="h-6 w-6 text-white" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                        {system.name}
+                      </h3>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                      {system.description}
                     </p>
-                  ))}
+
+                    {/* Developers Section - Push to bottom using flex-grow */}
+                    <div className="mt-auto">
+                      <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+                          Development Team:
+                        </p>
+                        <div className="space-y-2">
+                          {system.developers.map((dev, idx) => (
+                            <div
+                              key={idx}
+                              className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"
+                            >
+                              <div className="h-1.5 w-1.5 rounded-full bg-gray-400"></div>
+                              <span>{dev}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             ))}
           </div>
         </div>
+
+        {/* Coordinators Section - New Design */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-16"
+        >
+          <div className="text-center my-5">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              Project Coordinators
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              Our guiding mentors and project supervisors
+            </p>
+          </div>
+
+          <div className="relative">
+            {/* Background Decoration */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800/50 dark:to-gray-700/50 rounded-3xl -z-10" />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-8">
+              {coordinators.members.map((member, idx) => {
+                const [name, role] = member.split(" - ");
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: idx * 0.1 }}
+                    className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
+                  >
+                    <div className="flex items-center text-center justify-center gap-4">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          {name}
+                        </h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          {role}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Decorative Elements */}
+            <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-r from-purple-200 to-pink-200 rounded-full blur-2xl opacity-50 -z-20" />
+            <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-r from-blue-200 to-cyan-200 rounded-full blur-2xl opacity-50 -z-20" />
+          </div>
+        </motion.div>
 
         {/* Vision Mission Section */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">

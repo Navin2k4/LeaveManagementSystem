@@ -1,23 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { FcLeave } from "react-icons/fc";
-import { TbBrandDaysCounter } from "react-icons/tb";
+import React, { useEffect, useState } from "react";
 import { FaCalendarDay } from "react-icons/fa6";
+import { TbBrandDaysCounter } from "react-icons/tb";
+import { useSelector } from "react-redux";
 
-import { Menu, X, ChevronRight } from "lucide-react";
-import EditProfile from "../components/user/EditProfile";
-import LeaveRequestForm from "../components/systems/leave/LeaveRequestForm";
-import ODRequestForm from "../components/systems/od/ODRequestForm";
-import DashBoard from "./DashBoard";
-import ODDashBoard from "./ODDashBoard";
-import { CiCirclePlus } from "react-icons/ci";
 import { FiEdit3 } from "react-icons/fi";
 import { IoDocumentOutline } from "react-icons/io5";
-import { FaChalkboardTeacher } from "react-icons/fa";
-import { MdSupervisorAccount } from "react-icons/md";
-import { ChevronDown } from "lucide-react";
-import PendingWorks from "../components/systems/defaulter/PendingWorks";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
+import PendingWorks from "../components/systems/defaulter/PendingWorks";
+import LeaveRequestForm from "../components/systems/leave/LeaveRequestForm";
+import ODRequestForm from "../components/systems/od/ODRequestForm";
+import EditProfile from "../components/user/EditProfile";
+import DashBoard from "./DashBoard";
+import ODDashBoard from "./ODDashBoard";
+import Academics from "../components/systems/studentacademics/Academics";
+import { FaChalkboardTeacher } from "react-icons/fa";
 
 const ProfilePage = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -81,11 +77,19 @@ const ProfilePage = () => {
           />
         );
       case "EditProfile":
-        return <EditProfile setTab={setTab} mentor={mentor} classIncharge={classIncharge} />;
+        return (
+          <EditProfile
+            setTab={setTab}
+            mentor={mentor}
+            classIncharge={classIncharge}
+          />
+        );
       case "Your Leave Requests":
         return <DashBoard setTab={setTab} />;
       case "Your OD Requests":
         return <ODDashBoard setTab={setTab} />;
+      case "Academics":
+        return <Academics setTab={setTab} student={currentUser} />;
       default:
         return <LeaveRequestForm setTab={setTab} />;
     }
@@ -96,6 +100,12 @@ const ProfilePage = () => {
       id: "EditProfile",
       icon: <FiEdit3 size={18} />,
       label: "Profile",
+      submenu: false,
+    },
+    {
+      id: "Academics",
+      icon: <FaChalkboardTeacher size={20} />,
+      label: "Academics",
       submenu: false,
     },
     {
@@ -144,9 +154,7 @@ const ProfilePage = () => {
           isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
         }`}
       >
-        <div className="p-4">
-          {renderComponent()}
-        </div>
+        <div className="p-4">{renderComponent()}</div>
       </div>
     </div>
   );

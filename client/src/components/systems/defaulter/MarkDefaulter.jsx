@@ -43,7 +43,6 @@ const MarkDefaulterAndLate = () => {
     defaulterType: "",
     rollNumber: "",
   });
-  console.log(formData);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
