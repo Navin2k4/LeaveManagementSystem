@@ -42,13 +42,6 @@ function Navbar() {
       }`}
     >
       {children}
-      {isActive(to) && (
-        <motion.div
-          layoutId="active-pill"
-          className="absolute -bottom-1 left-2 right-2 h-0.5 bg-blue-600 dark:bg-blue-400"
-          transition={{ type: "spring", duration: 0.6 }}
-        />
-      )}
     </Link>
   );
 

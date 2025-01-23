@@ -1,19 +1,118 @@
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import {
-  ArrowRight,
-  CheckCircle,
-  Clock,
-  Shield,
-  Calendar,
-  Award,
-  UserCheck,
-  ClipboardCheck,
-  Bell,
-  BarChart,
   ArrowDown,
+  ArrowRight,
+  Award,
+  BarChart,
+  Bell,
+  Calendar,
+  CheckCircle,
+  ClipboardCheck,
+  UserCheck,
 } from "lucide-react";
+import React from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+
+// New component for the particle animation
+function ConstellationNetwork() {
+  const [points, setPoints] = React.useState([]);
+  const svgRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const generatePoints = () => {
+      const newPoints = [];
+      const count = 50;
+      for (let i = 0; i < count; i++) {
+        newPoints.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * (window.innerHeight * 0.7), // Keep within hero section
+          vx: (Math.random() - 0.5) * 0.5, // Velocity X
+          vy: (Math.random() - 0.5) * 0.5, // Velocity Y
+        });
+      }
+      setPoints(newPoints);
+    };
+
+    generatePoints();
+    const interval = setInterval(() => {
+      setPoints((prevPoints) => {
+        return prevPoints.map((point) => ({
+          ...point,
+          x: point.x + point.vx,
+          y: point.y + point.vy,
+          vx:
+            point.x + point.vx < 0 || point.x + point.vx > window.innerWidth
+              ? -point.vx
+              : point.vx,
+          vy:
+            point.y + point.vy < 0 ||
+            point.y + point.vy > window.innerHeight * 0.7
+              ? -point.vy
+              : point.vy,
+        }));
+      });
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const getLines = () => {
+    const lines = [];
+    const maxDistance = 150;
+
+    points.forEach((point, i) => {
+      points.slice(i + 1).forEach((point2, j) => {
+        const distance = Math.hypot(point.x - point2.x, point.y - point2.y);
+        if (distance < maxDistance) {
+          const opacity = (maxDistance - distance) / maxDistance;
+          lines.push({
+            x1: point.x,
+            y1: point.y,
+            x2: point2.x,
+            y2: point2.y,
+            opacity,
+          });
+        }
+      });
+    });
+
+    return lines;
+  };
+
+  return (
+    <div className="absolute inset-0 z-0">
+      <svg ref={svgRef} className="w-full h-[70vh]">
+        {getLines().map((line, i) => (
+          <motion.line
+            key={i}
+            x1={line.x1}
+            y1={line.y1}
+            x2={line.x2}
+            y2={line.y2}
+            stroke="rgba(59, 130, 246, 0.2)"
+            strokeWidth="1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: line.opacity }}
+            transition={{ duration: 0.5 }}
+          />
+        ))}
+        {points.map((point, i) => (
+          <motion.circle
+            key={i}
+            cx={point.x}
+            cy={point.y}
+            r="2"
+            fill="rgba(59, 130, 246, 0.5)"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          />
+        ))}
+      </svg>
+    </div>
+  );
+}
 
 function HomePage() {
   const { currentUser } = useSelector((state) => state.user);
@@ -27,182 +126,55 @@ function HomePage() {
   const staggerContainer = {
     animate: {
       transition: {
-        staggerChildren: 0.2,
+        staggerChildren: 0.1,
       },
     },
   };
 
   const features = [
     {
-      icon: <Calendar size={20} />,
+      icon: <Calendar size={24} />,
       title: "Leave Management",
       text: "Streamlined leave application process with automated tracking and approvals",
     },
     {
-      icon: <Award size={20} />,
+      icon: <Award size={24} />,
       title: "OD Management",
       text: "Efficient handling of On-Duty requests for academic and professional activities",
     },
     {
-      icon: <UserCheck size={20} />,
+      icon: <UserCheck size={24} />,
       title: "Defaulter Management",
       text: "Systematic tracking of attendance and disciplinary records",
     },
     {
-      icon: <ClipboardCheck size={20} />,
+      icon: <ClipboardCheck size={24} />,
       title: "Real-time Processing",
       text: "Instant updates on request status and approvals",
     },
     {
-      icon: <Bell size={20} />,
+      icon: <Bell size={24} />,
       title: "Smart Notifications",
       text: "Automated alerts for status changes and pending actions",
     },
     {
-      icon: <BarChart size={20} />,
+      icon: <BarChart size={24} />,
       title: "Analytics & Reports",
       text: "Comprehensive reports and insights for better decision-making",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center">
-        {/* Animated SVG Background */}
-        <div className="absolute inset-0 z-0">
-          <svg
-            className="w-full h-full opacity-30 dark:opacity-10"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="xMidYMid slice"
-          >
-            <defs>
-              <radialGradient
-                id="Gradient1"
-                cx="50%"
-                cy="50%"
-                fx="0.441602%"
-                fy="50%"
-                r=".5"
-              >
-                <animate
-                  attributeName="fx"
-                  dur="34s"
-                  values="0%;3%;0%"
-                  repeatCount="indefinite"
-                />
-                <stop offset="0%" stopColor="rgba(66, 153, 225, 0.3)" />
-                <stop offset="100%" stopColor="rgba(66, 153, 225, 0)" />
-              </radialGradient>
-              <radialGradient
-                id="Gradient2"
-                cx="50%"
-                cy="50%"
-                fx="2.68147%"
-                fy="50%"
-                r=".5"
-              >
-                <animate
-                  attributeName="fx"
-                  dur="23.5s"
-                  values="0%;3%;0%"
-                  repeatCount="indefinite"
-                />
-                <stop offset="0%" stopColor="rgba(99, 179, 237, 0.3)" />
-                <stop offset="100%" stopColor="rgba(99, 179, 237, 0)" />
-              </radialGradient>
-              <radialGradient
-                id="Gradient3"
-                cx="50%"
-                cy="50%"
-                fx="0.836536%"
-                fy="50%"
-                r=".5"
-              >
-                <animate
-                  attributeName="fx"
-                  dur="21.5s"
-                  values="0%;3%;0%"
-                  repeatCount="indefinite"
-                />
-                <stop offset="0%" stopColor="rgba(144, 205, 244, 0.3)" />
-                <stop offset="100%" stopColor="rgba(144, 205, 244, 0)" />
-              </radialGradient>
-            </defs>
-            <rect x="0" y="0" width="100%" height="100%" fill="url(#Gradient1)">
-              <animate
-                attributeName="x"
-                dur="20s"
-                values="25%;0%;25%"
-                repeatCount="indefinite"
-              />
-              <animate
-                attributeName="y"
-                dur="21s"
-                values="0%;25%;0%"
-                repeatCount="indefinite"
-              />
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from="0 50 50"
-                to="360 50 50"
-                dur="17s"
-                repeatCount="indefinite"
-              />
-            </rect>
-            <rect x="0" y="0" width="100%" height="100%" fill="url(#Gradient2)">
-              <animate
-                attributeName="x"
-                dur="23s"
-                values="-25%;0%;-25%"
-                repeatCount="indefinite"
-              />
-              <animate
-                attributeName="y"
-                dur="24s"
-                values="0%;50%;0%"
-                repeatCount="indefinite"
-              />
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from="0 50 50"
-                to="360 50 50"
-                dur="18s"
-                repeatCount="indefinite"
-              />
-            </rect>
-            <rect x="0" y="0" width="100%" height="100%" fill="url(#Gradient3)">
-              <animate
-                attributeName="x"
-                dur="25s"
-                values="0%;25%;0%"
-                repeatCount="indefinite"
-              />
-              <animate
-                attributeName="y"
-                dur="26s"
-                values="0%;25%;0%"
-                repeatCount="indefinite"
-              />
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from="360 50 50"
-                to="0 50 50"
-                dur="19s"
-                repeatCount="indefinite"
-              />
-            </rect>
-          </svg>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-100 dark:from-gray-900 dark:to-blue-900 relative overflow-hidden">
+      <ConstellationNetwork />
 
+      {/* Hero Section */}
+      <section className="relative min-h-[70vh] flex items-center">
         {/* Hero Content */}
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.h1
-              className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-[#1f3a6e] mb-6"
+              className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 mb-6"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
@@ -210,10 +182,10 @@ function HomePage() {
               VCET Connect
             </motion.h1>
             <motion.p
-              className="text-xl text-gray-600 leading-relaxed mb-8"
+              className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-8"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
             >
               A comprehensive academic management platform designed for VCET's
               ecosystem. Streamline administrative processes, enhance
@@ -234,7 +206,7 @@ function HomePage() {
                       ? "/profile"
                       : "/hoddash"
                   }
-                  className="group inline-flex items-center gap-2 px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-[#1f3a6e] rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                  className="group inline-flex items-center gap-2 px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300"
                 >
                   {currentUser.userType === "Staff"
                     ? "Access Dashboard"
@@ -246,15 +218,18 @@ function HomePage() {
               </motion.div>
             )}
           </div>
-
-          {/* Scroll Indicator */}
-          <motion.div
-            className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-          >
-            <ArrowDown className="text-blue-600 w-6 h-6" />
-          </motion.div>
+          {!currentUser && (
+            <>
+              {/* Scroll Indicator */}
+              <motion.div
+                className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+                animate={{ y: [0, 10, 0] }}
+                transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.5 }}
+              >
+                <ArrowDown className="text-blue-600 dark:text-blue-400 w-6 h-6" />
+              </motion.div>
+            </>
+          )}
         </div>
       </section>
 
@@ -262,13 +237,25 @@ function HomePage() {
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            <motion.h2
+              className="text-3xl font-bold text-gray-900 dark:text-white mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+            >
               Comprehensive Management System
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            </motion.h2>
+            <motion.p
+              className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              viewport={{ once: true }}
+            >
               Experience a unified platform that integrates various academic
               processes into one seamless system.
-            </p>
+            </motion.p>
           </div>
 
           <motion.div
@@ -319,30 +306,48 @@ function HomePage() {
                 academic ecosystem.
               </p>
               <ul className="space-y-4">
-                <li className="flex items-center gap-3">
+                <motion.li
+                  className="flex items-center gap-3"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                >
                   <span className="p-1 bg-green-100 rounded-full text-green-600">
                     <CheckCircle size={16} />
                   </span>
                   <span className="text-gray-700 dark:text-gray-300">
                     Seamless Integration
                   </span>
-                </li>
-                <li className="flex items-center gap-3">
+                </motion.li>
+                <motion.li
+                  className="flex items-center gap-3"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4, duration: 0.5 }}
+                >
                   <span className="p-1 bg-green-100 rounded-full text-green-600">
                     <CheckCircle size={16} />
                   </span>
                   <span className="text-gray-700 dark:text-gray-300">
                     Real-time Updates
                   </span>
-                </li>
-                <li className="flex items-center gap-3">
+                </motion.li>
+                <motion.li
+                  className="flex items-center gap-3"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.6, duration: 0.5 }}
+                >
                   <span className="p-1 bg-green-100 rounded-full text-green-600">
                     <CheckCircle size={16} />
                   </span>
                   <span className="text-gray-700 dark:text-gray-300">
                     Comprehensive Analytics
                   </span>
-                </li>
+                </motion.li>
               </ul>
             </motion.div>
 
