@@ -161,3 +161,27 @@ export const getStaffProfile = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getStudent = async (req, res, next) => {
+  try {
+    const student = await Student.findById(req.params.id);
+    if (!student) return next(errorHandler(404, "Student not found"));
+    
+    const { password, ...rest } = student._doc;
+    res.status(200).json(rest);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getStaff = async (req, res, next) => {
+  try {
+    const staff = await Staff.findById(req.params.id);
+    if (!staff) return next(errorHandler(404, "Staff not found"));
+    
+    const { password, ...rest } = staff._doc;
+    res.status(200).json(rest);
+  } catch (error) {
+    next(error);
+  }
+};

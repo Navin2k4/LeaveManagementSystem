@@ -185,3 +185,53 @@ export const signout = (req, res, next) => {
     next(error);
   }
 };
+
+export const updateProfile = async (req, res, next) => {
+  const { userType, id } = req.params;
+  const { email, phone, portfolio_url, resume_url, linkedin_url, github_url, hackerrank_url, leetcode_url } = req.body;
+  console.log(id,email,phone);
+  
+  try {
+    if (userType === "Staff") {
+      const staff = await Staff.findById(id);
+      if (email) staff.staff_mail = email;
+      if (phone) staff.staff_phone = phone;
+      await staff.save();
+      res.status(200).json({ 
+        message: "Profile updated successfully",
+        user: {
+          email: staff.staff_mail,
+          phone: staff.staff_phone
+        }
+      });
+    } else if (userType === "Student") {
+      const student = await Student.findById({_id:id});
+      if (email) student.email = email;
+      if (phone) student.phone = phone;
+      if (portfolio_url) student.portfolio_url = portfolio_url;
+      if (resume_url) student.resume_url = resume_url;
+      if (linkedin_url) student.linkedin_url = linkedin_url;
+      if (github_url) student.github_url = github_url;
+      if (hackerrank_url) student.hackerrank_url = hackerrank_url;
+      if (leetcode_url) student.leetcode_url = leetcode_url;
+      await student.save();
+      res.status(200).json({ 
+        message: "Profile updated successfully",
+        user: {
+          email: student.email,
+          phone: student.phone,
+          portfolio_url: student.portfolio_url,
+          resume_url: student.resume_url,
+          linkedin_url: student.linkedin_url,
+          github_url: student.github_url,
+          hackerrank_url: student.hackerrank_url,
+          leetcode_url: student.leetcode_url,
+        }
+      });
+    } else {
+      return next(errorHandler(400, "Invalid User Type"));
+    }
+  } catch (error) {
+    next(error);
+  }
+};

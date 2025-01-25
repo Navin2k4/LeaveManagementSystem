@@ -266,48 +266,7 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
       setLoading(false);
     }
   };
-
-  // Calculate overall CGPA from all semesters with grades
-  const calculateOverallCGPA = () => {
-    let totalPoints = 0;
-    let totalCredits = 0;
-
-    courseData?.regular_courses.forEach((semester) => {
-      semester.courses.forEach((course) => {
-        const grade =
-          selectedGrades[`${semester.semester_no}-${course.course_code}`];
-        if (grade) {
-          // Skip NA grades for elective courses
-          if (
-            grade === "NA" &&
-            (course.vertical_type === "PE" || course.vertical_type === "OE")
-          ) {
-            return;
-          }
-
-          const gradePoint = GRADE_POINTS[grade];
-          if (gradePoint !== null) {
-            totalPoints += gradePoint * course.course_credits;
-            totalCredits += course.course_credits;
-          }
-        }
-      });
-    });
-
-    return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "N/A";
-  };
-
-  // Add this function to display saved grades
-  const getSavedGrade = (courseCode, semester) => {
-    const semesterData = savedResults[semester];
-    if (!semesterData?.courses) return "";
-
-    const course = semesterData.courses.find(
-      (c) => c.course_code === courseCode
-    );
-    return course?.grade || "";
-  };
-
+ 
   // Modify the renderCourseRow function to show saved grades
   const renderCourseRow = (course, semester) => {
     const savedGrade = savedResults[semester]?.courses?.find(
@@ -580,9 +539,7 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
         <h2 className="text-xl font-semibold mb-2 md:mb-0">Semester Results</h2>
         <div className="flex items-center gap-4">
-          <p className="text-sm font-medium">
-            Overall CGPA: {courseData ? calculateOverallCGPA() : "N/A"}
-          </p>
+     
           {Object.keys(savedResults).length > 0 && (
             <Button
               className="bg-purple-500 hover:bg-purple-600 transition-all duration-300"

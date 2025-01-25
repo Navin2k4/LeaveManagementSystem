@@ -63,6 +63,24 @@ const studentSchema = new mongoose.Schema(
       enum: ["pending", "active"],
       default: "pending",
     },
+    portfolio_url: {
+      type: String,
+    },
+    resume_url: {
+      type: String,
+    },
+    linkedin_url: {
+      type: String,
+    },
+    github_url: {
+      type: String,
+    },
+    hackerrank_url: {
+      type: String,
+    },
+    leetcode_url: {
+      type: String,
+    },
     semester_results: {
       type: Object,
       default: {},

@@ -575,7 +575,7 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
   };
 
   return (
-    <div className="w-full mx-auto p-4">
+    <div className="max-w-4xl mx-auto p-4">
       {/* Page Header */}
       <div className="flex justify-between items-center mb-6">
         <div>

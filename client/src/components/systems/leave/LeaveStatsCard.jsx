@@ -17,7 +17,6 @@ const LeaveStatsCard = ({
   leaveRequestsAsMentor,
   leaveRequestsAsClassIncharge,
 }) => {
-
   const [menteeRequests, setMenteeRequests] = useState(leaveRequestsAsMentor);
   const [classInchargeRequests, setClassInchargeRequests] = useState(
     leaveRequestsAsClassIncharge
@@ -71,13 +70,11 @@ const LeaveStatsCard = ({
     }
   };
 
-
   useEffect(() => {
     const fetchMenteeList = async () => {
       try {
         const response = await fetch(`/api/fetch/mentee/${currentUser.userId}`);
         const data = await response.json();
-      
 
         if (response.ok) {
           setMenteeList(data);
@@ -343,7 +340,6 @@ const LeaveStatsCard = ({
       </div>
     </div>
   );
-
 
   return (
     <div className="w-full mx-auto p-4">

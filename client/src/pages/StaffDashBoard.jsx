@@ -19,6 +19,8 @@ import StaffProfile from "../components/user/StaffProfile";
 import ODRequests from "../components/systems/od/ODRequests";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
 import StudentAcademicData from "../components/systems/studentacademics/StudentAcademicData";
+import RequestCalendar from "../components/systems/calendar/RequestCalendar";
+import { Calendar } from "lucide-react";
 
 const StaffDashBoard = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -67,17 +69,24 @@ const StaffDashBoard = () => {
           );
         case "Defaulter":
           return <MarkDefaulterandLate />;
-        case "Leave Reports":
-          return (
-            <LeaveStatsCard
-              leaveRequestsAsClassIncharge={classInchargeRequest}
-              leaveRequestsAsMentor={mentorRequests}
-            />
-          );
+        // case "Leave Reports":
+        //   return (
+        //     <LeaveStatsCard
+        //       leaveRequestsAsClassIncharge={classInchargeRequest}
+        //       leaveRequestsAsMentor={mentorRequests}
+        //     />
+        //   );
         case "Mentee List":
           return <MenteeList />;
         case "Student's Academics":
           return <StudentAcademicData userId={currentUser.userId} />;
+        case "Calendar":
+          return (
+            <RequestCalendar
+              leaveRequests={[...mentorRequests, ...classInchargeRequest]}
+              odRequests={[...mentorODRequests, ...classInchargeODRequests]}
+            />
+          );
         default:
           return <LeaveRequestForm />;
       }
@@ -107,10 +116,15 @@ const StaffDashBoard = () => {
       label: "Defaulter",
     },
     {
-      id: "Leave Reports",
-      icon: <FileBarChart size={18} />,
-      label: "Reports",
+      id: "Calendar",
+      icon: <Calendar size={18} />,
+      label: "Calendar View",
     },
+    // {
+    //   id: "Leave Reports",
+    //   icon: <FileBarChart size={18} />,
+    //   label: "Reports",
+    // },
     {
       id: "Student's Academics",
       icon: <UserRoundPlus size={18} />,
@@ -126,6 +140,7 @@ const StaffDashBoard = () => {
       icon: <User size={18} />,
       label: "Profile",
     },
+
   ];
 
   return (

@@ -289,82 +289,102 @@ function HomePage() {
       </section>
 
       {/* Image Section */}
-      <section className="py-20 relative overflow-hidden">
+      <section className="py-20 relative overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+          <div className="text-center mb-16">
+            <motion.h2 
+              className="text-3xl font-bold text-gray-900 dark:text-white mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="space-y-6"
+              transition={{ duration: 0.5 }}
             >
-              <p className="text-gray-600 dark:text-gray-400">
-                Experience a unified platform that integrates leave management,
-                OD requests, and defaulter tracking with real-time updates and
-                comprehensive analytics. Designed specifically for VCET's
-                academic ecosystem.
-              </p>
-              <ul className="space-y-4">
-                <motion.li
-                  className="flex items-center gap-3"
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2, duration: 0.5 }}
-                >
-                  <span className="p-1 bg-green-100 rounded-full text-green-600">
-                    <CheckCircle size={16} />
-                  </span>
-                  <span className="text-gray-700 dark:text-gray-300">
-                    Seamless Integration
-                  </span>
-                </motion.li>
-                <motion.li
-                  className="flex items-center gap-3"
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.4, duration: 0.5 }}
-                >
-                  <span className="p-1 bg-green-100 rounded-full text-green-600">
-                    <CheckCircle size={16} />
-                  </span>
-                  <span className="text-gray-700 dark:text-gray-300">
-                    Real-time Updates
-                  </span>
-                </motion.li>
-                <motion.li
-                  className="flex items-center gap-3"
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.6, duration: 0.5 }}
-                >
-                  <span className="p-1 bg-green-100 rounded-full text-green-600">
-                    <CheckCircle size={16} />
-                  </span>
-                  <span className="text-gray-700 dark:text-gray-300">
-                    Comprehensive Analytics
-                  </span>
-                </motion.li>
-              </ul>
-            </motion.div>
+              Empowering Education Through Technology
+            </motion.h2>
+            <motion.p
+              className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+            >
+              Building the future of academic management at VCET
+            </motion.p>
+          </div>
 
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
               className="relative"
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                <img
-                  className="w-full h-[500px] object-cover transform hover:scale-110 transition-transform duration-1000"
-                  src="https://content3.jdmagicbox.com/comp/madurai/31/0452p452std2000631/catalogue/velammal-college-of-engineering-and-technology-munichalai-road-madurai-engineering-colleges-dxevz9.jpg"
-                  alt="Velammal College of Engineering and Technology"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="absolute -top-4 -left-4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
+              <div className="relative z-10 bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-4 p-6 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                    <BarChart className="w-8 h-8 text-blue-500" />
+                    <h3 className="font-semibold">Analytics Dashboard</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Real-time insights into academic performance</p>
+                  </div>
+                  <div className="space-y-4 p-6 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                    <Bell className="w-8 h-8 text-purple-500" />
+                    <h3 className="font-semibold">Smart Notifications</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Stay updated with instant alerts</p>
+                  </div>
+                  <div className="space-y-4 p-6 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                    <Calendar className="w-8 h-8 text-green-500" />
+                    <h3 className="font-semibold">Leave Management</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Streamlined absence tracking</p>
+                  </div>
+                  <div className="space-y-4 p-6 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                    <UserCheck className="w-8 h-8 text-red-500" />
+                    <h3 className="font-semibold">Attendance System</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Automated attendance monitoring</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="space-y-8"
+            >
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Transform Your Academic Experience</h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Our integrated platform revolutionizes academic management with cutting-edge features designed specifically for VCET's ecosystem. Experience seamless coordination between students, faculty, and administration.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <motion.div 
+                  className="flex items-center gap-4 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <Award className="w-10 h-10 text-blue-500" />
+                  <div>
+                    <h4 className="font-semibold">Excellence</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Promoting academic achievement</p>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  className="flex items-center gap-4 p-4 bg-green-50 dark:bg-green-900/30 rounded-xl"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <ClipboardCheck className="w-10 h-10 text-green-500" />
+                  <div>
+                    <h4 className="font-semibold">Efficiency</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Streamlined processes</p>
+                  </div>
+                </motion.div>
               </div>
             </motion.div>
           </div>
