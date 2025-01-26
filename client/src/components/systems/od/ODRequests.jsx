@@ -506,32 +506,39 @@ export default function ODRequests({
         </div>
       </div>
       {/* Mentor Requests Section */}
-      {menteeRequests?.length > 0 && (
+
+      {currentUser.isMentor?( menteeRequests?.length > 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
           <div className="p-4 border-b dark:border-gray-700">
             <h2 className="text-lg font-semibold">
-              OD Requests From Your Class Mentees
+              OD Requests From Your Mentees
             </h2>
           </div>
           {renderRequestTable(menteeRequests, "mentor", handleRequest)}
         </div>
-      )}
+      ) : (
+        <h2 className="font-semibold text-center p-6">No Od Requests from Your Mentees Yet!</h2>
+      )):null}
 
       {/* Class Incharge Requests Section */}
-      {classInchargeRequests?.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-          <div className="p-4 border-b dark:border-gray-700">
-            <h2 className="text-lg font-semibold">
-              OD Requests From Your Class Students
-            </h2>
+      {currentUser.isClassIncharge ? (
+        classInchargeRequests?.length > 0 ? (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+            <div className="p-4 border-b dark:border-gray-700">
+              <h2 className="text-lg font-semibold">
+                OD Requests From Your Class Students
+              </h2>
+            </div>
+            {renderRequestTable(
+              classInchargeRequests,
+              "classIncharge",
+              handleRequestClassIncharge
+            )}
           </div>
-          {renderRequestTable(
-            classInchargeRequests,
-            "classIncharge",
-            handleRequestClassIncharge
-          )}
-        </div>
-      )}
+        ) : (
+          <h2 className="font-semibold text-center p-6">No Od Requests from Your Students Yet!</h2>
+        )
+      ) : null}
 
       {/* Mentor Modal */}
       <Modal

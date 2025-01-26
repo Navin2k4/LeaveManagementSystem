@@ -10,6 +10,7 @@ import {
   getleaverequestsbySectionId,
   updateLeaveRequestStatusByHODId,
   deleteleavebyId,
+  updateLeaveRequestStatusByMentorIdForBothRoles,
 } from "../controllers/leave.controller.js";
 
 const router = express.Router();
@@ -28,10 +29,6 @@ router.get("/mentors", mentors);
 router.get("/leaverequestsbysectionid/:id", getleaverequestsbySectionId);
 
 router.post(
-  "/leave-requestsbymentorid/:id/status",
-  updateLeaveRequestStatusByMentorId
-);
-router.post(
   "/leave-requestsbyclassinchargeid/:id/status",
   updateLeaveRequestStatusByClassInchargeId
 );
@@ -39,5 +36,11 @@ router.post(
   "/leave-requestsbyhodid/:id/status",
   updateLeaveRequestStatusByHODId
 );
+router.post(
+  "/leave-requestsbymentorid/:requestId/status",
+  updateLeaveRequestStatusByMentorIdForBothRoles
+);
 
 export default router;
+
+

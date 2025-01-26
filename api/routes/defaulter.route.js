@@ -7,6 +7,8 @@ import {
   assignWork,
   markAsDone,
   getPendingWorksByStudentId,
+  getDefaultersByMentorId,
+  getDefaultersByClassInchargeId,
 } from "../controllers/defaulter.controller.js";
 
 const router = express.Router();
@@ -24,7 +26,8 @@ router.get(
 );
 
 router.get("/getDefaulters", getDefaulters);
-
+router.get("/getDefaultersByMentorId/:mentorId", getDefaultersByMentorId);
+router.get("/getDefaultersByClassInchargeId/:classInchargeId", getDefaultersByClassInchargeId);
 router.post("/assignwork/:defaulterId", assignWork);
 
 router.post("/markasdone/:defaulterId", markAsDone);
