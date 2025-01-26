@@ -36,7 +36,6 @@ const EditProfile = ({ mentor, classIncharge }) => {
   const [pageLoading, setPageLoading] = useState(true);
   const [feedback, setFeedback] = useState({ message: "", success: false });
   const [userData, setUserData] = useState(null);
-  console.log(userData);
   const [editData, setEditData] = useState({
     email: "",
     phone: "",
