@@ -127,9 +127,10 @@ export const getleaverequestbyMentorId = async (req, res, next) => {
 export const getleaverequestbyclassinchargeid = async (req, res, next) => {
   try {
     const { id } = req.params;
+    // Only fetch requests where mentor has taken action (approved or rejected)
     const data = await LeaveRequest.find({
       classInchargeId: id,
-      'approvals.mentor.status': 'approved'
+      'approvals.mentor.status': { $ne: 'pending' }  // Show when mentor has taken action
     }).sort({
       createdAt: -1,
     });
@@ -323,6 +324,7 @@ export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
 };
 
 export const getleaverequestsbySectionId = async (req, res, next) => {
+
   try {
     const { id } = req.params;
     const data = await LeaveRequest.find({ sectionId: id }).sort({
@@ -336,12 +338,9 @@ export const getleaverequestsbySectionId = async (req, res, next) => {
   }
 };
 
-// BUG: Not Working but in use in the hoddash to be fixed
-
 export const mentors = async (req, res) => {
-  const { ids } = req.query; // Correctly extract the ids query parameter
-  const sectionIDs = ids.split(","); // Assuming ids are sent as a comma-separated string
-
+  const { ids } = req.query; 
+  const sectionIDs = ids.split(","); 
   try {
     const response = await Staff.find({
       staff_handle_section: { $in: sectionIDs },
@@ -350,5 +349,71 @@ export const mentors = async (req, res) => {
   } catch (error) {
     console.error("Error in Fetching the Data ", error.message);
     res.status(500).json({ error: "Failed to fetch mentors" });
+  }
+};
+
+export const updateLeaveRequestStatusByMentorIdForBothRoles = async (req, res, next) => {
+  try {
+    const { requestId } = req.params;
+    const { status, mentorcomment, isStaffBothRoles } = req.body;
+
+    const validStatuses = ["approved", "rejected"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status. Status must be 'approved' or 'rejected'.",
+      });
+    }
+
+    const updateData = {
+      "approvals.mentor.status": status,
+      "mentorcomment": mentorcomment || "No Comments",
+    };
+
+    // If staff has both roles, update both statuses
+    if (isStaffBothRoles) {
+      updateData["approvals.classIncharge.status"] = status;
+      updateData["classInchargeComment"] = mentorcomment || "No Comments";
+    }
+
+    const updatedRequest = await LeaveRequest.findByIdAndUpdate(
+      requestId,
+      { $set: updateData },
+      { new: true }
+    );
+
+    if (!updatedRequest) {
+      return res.status(404).json({
+        success: false,
+        message: "Leave request not found",
+      });
+    }
+
+    // Compute overall status
+    await updatedRequest.computeStatus();
+    await updatedRequest.save();
+
+    // Send email notification
+    const who = isStaffBothRoles ? "Mentor & Class Incharge" : "Mentor";
+    await notifyLeaveRequestStatus(
+      updatedRequest.email,
+      updatedRequest.name,
+      status,
+      updatedRequest.fromDate,
+      updatedRequest.toDate,
+      mentorcomment,
+      who
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `Leave request ${status} successfully`,
+      leaveRequest: updatedRequest,
+    });
+
+  } catch (error) {
+    console.error("Error updating leave request status:", error);
+    const customError = errorHandler(500, "Internal Server Error");
+    next(customError);
   }
 };

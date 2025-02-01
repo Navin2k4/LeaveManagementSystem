@@ -368,3 +368,28 @@ export const getPendingWorksByStudentId = async (req, res) => {
     });
   }
 };
+
+export const getDefaultersByMentorId = async (req, res) => {
+  console.log("MENTOR ID", req.params);
+  const { mentorId } = req.params;
+  const defaulters = await Defaulter.find({mentorId:mentorId})
+  .populate("mentorId", "staff_name")
+  .populate("departmentId", "dept_name")
+  .sort({ entryDate: -1 })
+  .limit(50);  
+  
+  console.log("DEFUALTERS", defaulters);
+  return res.status(200).json({ defaulters });
+};
+
+export const getDefaultersByClassInchargeId = async (req, res) => {
+  const { classInchargeId } = req.params;
+  const defaulters = await Defaulter.find({ classInchargeId: classInchargeId })
+  .populate("mentorId", "staff_name")
+  .populate("departmentId", "dept_name")
+  .sort({ entryDate: -1 })
+  .limit(50);  
+
+   return res.status(200).json({ defaulters });
+};
+

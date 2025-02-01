@@ -233,6 +233,43 @@ const LeaveStatus = ({ leaveRequests }) => {
     },
   ];
 
+  const CommentsCell = ({ mentorcomment, classInchargeComment }) => {
+    return (
+      <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+        {mentorcomment ? (
+          <div className="bg-gray-50 p-2 rounded">
+            <p>
+              <span className="font-semibold text-gray-700">Mentor:</span>{" "}
+              {mentorcomment}
+            </p>
+          </div>
+        ) : (
+          <div className="bg-gray-50 p-2 rounded">
+            <p>
+              <span className="font-semibold text-gray-700">Mentor:</span> No
+              Comments
+            </p>
+          </div>
+        )}
+        {classInchargeComment ? (
+          <div className="bg-gray-50 p-2 rounded">
+            <p>
+              <span className="font-semibold text-gray-700">CI:</span>{" "}
+              {classInchargeComment}
+            </p>
+          </div>
+        ) : (
+          <div className="bg-gray-50 p-2 rounded">
+            <p>
+              <span className="font-semibold text-gray-700">CI:</span> No
+              Comments
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="w-full mx-auto p-4">
       {/* Page Header */}

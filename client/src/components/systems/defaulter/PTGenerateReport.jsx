@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
+import collegelogo from "../../../../public/vcet.jpeg";
+import { FileText, Download, Filter, X } from "lucide-react";
 
 export default function PTGenerateReport() {
   const [defaulterType, setDefaulterType] = useState("");
@@ -47,7 +49,7 @@ export default function PTGenerateReport() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const apiUrl = `http://localhost:3000/api/defaulter/getDefaulterReport/${defaulterType}/${fromDate}/${toDate}`;
+    const apiUrl = `/api/defaulter/getDefaulterReport/${defaulterType}/${fromDate}/${toDate}`;
     try {
       const response = await fetch(apiUrl);
       if (!response.ok) {
@@ -60,40 +62,133 @@ export default function PTGenerateReport() {
       setFilteredData(data.defaulterReport);
     } catch (error) {
       console.error("Error generating report:", error);
-      setError("An error occurred while generating the report.");
+      setError("Details Not Found");
     } finally {
       setLoading(false);
     }
   };
 
   const downloadPDF = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF("l", "mm", "a4");
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 10;
+
+    doc.addImage(collegelogo, "PNG", margin, margin, 25, 25);
+
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(
+      "VELAMMAL COLLEGE OF ENGINEERING AND TECHNOLOGY",
+      pageWidth / 2,
+      margin + 10,
+      {
+        align: "center",
+      }
+    );
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text("(An Autonomous Institution)", pageWidth / 2, margin + 15, {
+      align: "center",
+    });
+    doc.text(
+      "Velammal Nagar Viraganoor - Madurai 625009",
+      pageWidth / 2,
+      margin + 20,
+      {
+        align: "center",
+      }
+    );
+
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    const title = `Defaulters Report - ${defaulterType}`;
+    doc.text(title, pageWidth / 2, margin + 35, { align: "center" });
+
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      `Period: ${new Date(fromDate).toLocaleDateString()} to ${new Date(
+        toDate
+      ).toLocaleDateString()}`,
+      pageWidth / 2,
+      margin + 42,
+      { align: "center" }
+    );
+
+    let filterText = "";
+    if (departmentFilter) filterText += `Department: ${departmentFilter} `;
+    if (sectionFilter) filterText += `Section: ${sectionFilter}`;
+    if (filterText) {
+      doc.text(filterText, pageWidth / 2, margin + 48, { align: "center" });
+    }
+
     doc.autoTable({
+      startY: margin + 55,
       head: [
         [
-          "Roll Number",
-          "Student Name",
-          "Department",
-          "Batch",
-          "Year",
-          "Section",
-          "Mentor Name",
-          "Date",
-          "Type",
+          { content: "S.No", styles: { halign: "center" } },
+          { content: "Roll No", styles: { halign: "center" } },
+          { content: "Student Name", styles: { halign: "left" } },
+          { content: "Department", styles: { halign: "center" } },
+          { content: "Year", styles: { halign: "center" } },
+          { content: "Section", styles: { halign: "center" } },
+          { content: "Mentor", styles: { halign: "left" } },
+          { content: "Date", styles: { halign: "center" } },
+          { content: "Type", styles: { halign: "center" } },
         ],
       ],
-      body: filteredData.map((item) => [
-        item.roll_no,
-        item.studentName,
-        item.departmentName,
-        item.batchName,
-        item.year,
-        item.section_name,
-        item.mentorName,
-        new Date(item.entryDate).toLocaleDateString(),
-        item.defaulterType,
+      body: filteredData.map((item, index) => [
+        { content: index + 1, styles: { halign: "center" } },
+        { content: item.roll_no, styles: { halign: "center" } },
+        { content: item.studentName, styles: { halign: "left" } },
+        { content: item.departmentName, styles: { halign: "center" } },
+        { content: item.year, styles: { halign: "center" } },
+        { content: item.section_name, styles: { halign: "center" } },
+        { content: item.mentorName, styles: { halign: "left" } },
+        {
+          content: new Date(item.entryDate).toLocaleDateString(),
+          styles: { halign: "center" },
+        },
+        { content: item.defaulterType, styles: { halign: "center" } },
       ]),
+      styles: {
+        fontSize: 10,
+        cellPadding: 3,
+      },
+      headStyles: {
+        fillColor: [71, 85, 105],
+        textColor: 255,
+        fontSize: 11,
+        fontStyle: "bold",
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252],
+      },
+      tableLineColor: [226, 232, 240],
+      tableLineWidth: 0.1,
+      margin: { top: margin, right: margin, bottom: margin, left: margin },
     });
+
+    const pageCount = doc.internal.getNumberOfPages();
+    doc.setFontSize(8);
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.text(
+        `Page ${i} of ${pageCount}`,
+        pageWidth - margin,
+        pageHeight - margin,
+        { align: "right" }
+      );
+      doc.text(
+        `Generated on: ${new Date().toLocaleString()}`,
+        margin,
+        pageHeight - margin,
+        { align: "left" }
+      );
+    }
+
     doc.save("defaulters_report.pdf");
   };
 
@@ -111,171 +206,252 @@ export default function PTGenerateReport() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">Generate Report</h2>
-      <form onSubmit={handleGenerateReport} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label
-              htmlFor="defaulterType"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Defaulters type:
-            </label>
-            <select
-              id="defaulterType"
-              value={defaulterType}
-              onChange={(e) => setDefaulterType(e.target.value)}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="">--Select--</option>
-              <option value="Discipline and Dresscode">
-                Discipline (Dresscode)
-              </option>
-              <option value="Late">Latecomers</option>
-              <option value="Both">Dresscode and Latecomers</option>
-              <option value="All">All</option>
-            </select>
-          </div>
-          <div>
-            <label
-              htmlFor="fromDate"
-              className="block text-sm font-medium text-gray-700"
-            >
-              From Date:
-            </label>
-            <input
-              type="date"
-              id="fromDate"
-              name="fromDate"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="toDate"
-              className="block text-sm font-medium text-gray-700"
-            >
-              To Date:
-            </label>
-            <input
-              type="date"
-              id="toDate"
-              name="toDate"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
+    <div className="space-y-6 pt-5">
+      {/* Header Section */}
+      <div className="bg-white rounded-lg shadow">
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <FileText className="h-6 w-6 text-gray-600" />
+              <h2 className="text-xl font-semibold text-gray-800">
+                Generate Defaulters Report
+              </h2>
+            </div>
           </div>
         </div>
-        <div className="flex justify-center mt-6">
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            disabled={loading}
-          >
-            {loading ? "Generating..." : "Generate Report"}
-          </button>
-        </div>
-      </form>
-      {error && <p className="text-red-500 text-center mt-4">{error}</p>}
-      {reportData.length > 0 && (
-        <div className="mt-8">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-semibold">Defaulters Report</h3>
-            <div className="space-x-2">
+
+        {/* Form Section */}
+        <div className="p-6">
+          <form onSubmit={handleGenerateReport} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label
+                  htmlFor="defaulterType"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Defaulters Type
+                </label>
+                <select
+                  id="defaulterType"
+                  value={defaulterType}
+                  onChange={(e) => setDefaulterType(e.target.value)}
+                  required
+                  className="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Select Type</option>
+                  <option value="Discipline and Dresscode">
+                    Dresscode
+                  </option>
+                  <option value="Late">Latecomers</option>
+                  <option value="Both">Dresscode and Latecomers</option>
+                  <option value="All">All</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="fromDate"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  From Date
+                </label>
+                <input
+                  type="date"
+                  id="fromDate"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  required
+                  className="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="toDate"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  To Date
+                </label>
+                <input
+                  type="date"
+                  id="toDate"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                  required
+                  className="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end">
               <button
-                onClick={downloadPDF}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                type="submit"
+                disabled={loading}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
               >
-                Download PDF
+                {loading ? (
+                  <>
+                    <span className="animate-spin">⌛</span>
+                    <span>Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <FileText className="h-4 w-4" />
+                    <span>Generate Report</span>
+                  </>
+                )}
               </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          {error}
+        </div>
+      )}
+
+      {/* Results Section */}
+      {reportData.length > 0 && (
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-800">
+                Report Results
+              </h3>
+              <div className="flex space-x-2">
+                <button
+                  onClick={downloadPDF}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex items-center space-x-2"
+                >
+                  <Download className="h-4 w-4" />
+                  <span>PDF</span>
+                </button>
+                <button
+                  onClick={downloadExcel}
+                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center space-x-2"
+                >
+                  <Download className="h-4 w-4" />
+                  <span>Excel</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Filters Section */}
+          <div className="p-4 border-b border-gray-200 bg-gray-50">
+            <div className="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-4 md:space-y-0">
+              <div className="flex-1">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Filter by Mentor"
+                    value={mentorFilter}
+                    onChange={(e) => setMentorFilter(e.target.value)}
+                    className="w-full rounded-lg border-gray-300 pl-10 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Filter by Department"
+                    value={departmentFilter}
+                    onChange={(e) => setDepartmentFilter(e.target.value)}
+                    className="w-full rounded-lg border-gray-300 pl-10 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Filter by Section"
+                    value={sectionFilter}
+                    onChange={(e) => setSectionFilter(e.target.value)}
+                    className="w-full rounded-lg border-gray-300 pl-10 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                </div>
+              </div>
               <button
-                onClick={downloadExcel}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                onClick={clearFilters}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 flex items-center space-x-2"
               >
-                Download Excel
+                <X className="h-4 w-4" />
+                <span>Clear</span>
               </button>
             </div>
           </div>
-          <div className="mb-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-            <input
-              type="text"
-              placeholder="Filter by Mentor Name"
-              value={mentorFilter}
-              onChange={(e) => setMentorFilter(e.target.value)}
-              className="p-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Filter by Department"
-              value={departmentFilter}
-              onChange={(e) => setDepartmentFilter(e.target.value)}
-              className="p-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Filter by Section"
-              value={sectionFilter}
-              onChange={(e) => setSectionFilter(e.target.value)}
-              className="p-2 border rounded"
-            />
-            <button
-              onClick={clearFilters}
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-            >
-              Clear Filters
-            </button>
-          </div>
+
+          {/* Table Section */}
           <div className="overflow-x-auto">
-            <table className="min-w-full mx-auto bg-white border border-gray-300">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="py-2 px-4 border-b">Roll Number</th>
-                  <th className="py-2 px-4 border-b">Student Name</th>
-                  <th className="py-2 px-4 border-b">Department</th>
-                  <th className="py-2 px-4 border-b">Batch</th>
-                  <th className="py-2 px-4 border-b">Year</th>
-                  <th className="py-2 px-4 border-b">Section</th>
-                  <th className="py-2 px-4 border-b">Mentor Name</th>
-                  <th className="py-2 px-4 border-b">Date</th>
-                  <th className="py-2 px-4 border-b">Type</th>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  {[
+                    "Roll Number",
+                    "Student Name",
+                    "Department",
+                    "Batch",
+                    "Year",
+                    "Section",
+                    "Mentor Name",
+                    "Date",
+                    "Type",
+                  ].map((header) => (
+                    <th
+                      key={header}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      {header}
+                    </th>
+                  ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white divide-y divide-gray-200">
                 {filteredData.length > 0 ? (
                   filteredData.map((item, index) => (
-                    <tr
-                      key={index}
-                      className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                    >
-                      <td className="py-2 px-4 border-b">{item.roll_no}</td>
-                      <td className="py-2 px-4 border-b">{item.studentName}</td>
-                      <td className="py-2 px-4 border-b">
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.roll_no}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.studentName}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {item.departmentName}
                       </td>
-                      <td className="py-2 px-6 border-b">{item.batchName}</td>
-                      <td className="py-2 px-4 border-b">{item.year}</td>
-                      <td className="py-2 px-4 border-b">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.batchName}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.year}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {item.section_name}
                       </td>
-                      <td className="py-2 px-4 border-b">{item.mentorName}</td>
-                      <td className="py-2 px-4 border-b">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.mentorName}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {new Date(item.entryDate).toLocaleDateString()}
                       </td>
-                      <td className="py-2 px-7 border-b">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {item.defaulterType}
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="9" className="py-4 px-4 border-b text-center">
+                    <td
+                      colSpan="9"
+                      className="px-6 py-4 text-center text-gray-500"
+                    >
                       No data found
                     </td>
                   </tr>

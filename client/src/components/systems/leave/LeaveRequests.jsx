@@ -28,6 +28,8 @@ export default function LeaveRequests({
   const [classInchargeComment, setclassInchargeComment] = useState("");
   const [showDetails, setShowDetails] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const isStaffBothMentorAndCI =
+    currentUser.isMentor && currentUser.isClassIncharge;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -37,13 +39,13 @@ export default function LeaveRequests({
     return `${day}-${month}-${year}`;
   };
 
-  useEffect(() => {
-    fetchLeaveRequestsMentor();
-  }, []);
+  // useEffect(() => {
+  //   fetchLeaveRequestsMentor();
+  // }, []);
 
-  useEffect(() => {
-    fetchLeaveRequestsClassIncharge();
-  }, []);
+  // useEffect(() => {
+  //   fetchLeaveRequestsClassIncharge();
+  // }, []);
 
   const handleRequest = (type, id) => {
     setMentorModalType(type);
@@ -99,25 +101,33 @@ export default function LeaveRequests({
     setLoading(true);
     try {
       const backendUrl = `/api/leave-requestsbymentorid/${currentRequestId}/status`;
+      const requestBody = {
+        status: mentormodalType,
+        mentorcomment: mentorComment,
+        isStaffBothRoles: isStaffBothMentorAndCI,
+      };
+
       const response = await fetch(backendUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          status: mentormodalType,
-          mentorcomment: mentorComment,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
-      if (response.ok) {
-        await fetchLeaveRequestsMentor();
-      } else {
-        alert(`Failed to ${mentormodalType} request`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update status");
       }
+
+      // Refresh both lists to show updated status
+      await Promise.all([
+        fetchLeaveRequestsMentor(),
+        fetchLeaveRequestsClassIncharge(),
+      ]);
     } catch (error) {
       console.error("Error updating request:", error);
-      alert(`Failed to ${mentormodalType} request`);
+      alert(`Failed to update request: ${error.message}`);
     } finally {
       setLoading(false);
       handleClose();
@@ -153,12 +163,97 @@ export default function LeaveRequests({
     }
   };
 
-  const filteredMenteeRequests = menteeRequests.filter(
-    (menteeReq) =>
-      !classInchargeRequests.some((classReq) => classReq._id === menteeReq._id)
+  // Update the filtered class incharge requests logic
+  const filteredClassInchargeRequests = classInchargeRequests.filter(
+    (request) => {
+      // If the staff is both mentor and CI for this student
+      const isStaffMentorForStudent = menteeRequests.some(
+        (menteeReq) => menteeReq._id === request._id
+      );
+
+      if (isStaffMentorForStudent) {
+        const mentorStatus = request.approvals.mentor.status;
+        // Show in CI section if mentor has taken action (either approved or rejected)
+        return mentorStatus !== "pending";
+      }
+
+      // Show all requests where staff is only CI (not mentor)
+      return true;
+    }
   );
 
-  // Add this new component for mobile view
+  // Update the isActionDisabled function
+  const isActionDisabled = (request) => {
+    if (currentUser.isClassIncharge) {
+      // For CI view, disable actions if mentor rejected
+      return request.approvals.mentor.status === "rejected";
+    }
+    return false; // Enable all actions for mentor
+  };
+
+  // Update the status display in renderRequestTable
+  const getStatusDisplay = (request, role) => {
+    const status = request.approvals[role].status;
+    const mentorStatus = request.approvals.mentor.status;
+
+    if (role === "classIncharge" && mentorStatus === "rejected") {
+      return (
+        <span className="px-4 py-1 rounded-full text-sm bg-red-100 text-red-600">
+          Rejected
+        </span>
+      );
+    }
+
+    return (
+      <span
+        className={`px-3 py-1 rounded-full text-sm ${
+          status === "approved"
+            ? "bg-green-100 text-green-600"
+            : status === "rejected"
+            ? "bg-red-100 text-red-600"
+            : "bg-gray-100 text-gray-600"
+        }`}
+      >
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </span>
+    );
+  };
+
+  // Update the action buttons display
+  const renderActionButtons = (request, role, handleRequest) => {
+    const status = request.approvals[role].status;
+
+    if (status === "pending" && !isActionDisabled(request)) {
+      return (
+        <div className="flex items-center justify-center gap-2">
+          <button
+            onClick={() =>
+              role === "mentor"
+                ? handleRequest("approved", request._id)
+                : handleRequestClassIncharge("approved", request._id)
+            }
+            className="bg-green-400 hover:bg-green-600 text-white p-1 rounded-full transition-all duration-300"
+          >
+            <TiTick size={30} />
+          </button>
+          <button
+            onClick={() =>
+              role === "mentor"
+                ? handleRequest("rejected", request._id)
+                : handleRequestClassIncharge("rejected", request._id)
+            }
+            className="bg-red-400 hover:bg-red-600 text-white p-1 rounded-full transition-all duration-300"
+          >
+            <RxCross2 size={30} />
+          </button>
+        </div>
+      );
+    }
+
+    return getStatusDisplay(request, role);
+  };
+
+  // Add this component after the isActionDisabled function
   const MobileRequestCard = ({ request, role, onAction }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -208,7 +303,8 @@ export default function LeaveRequests({
               by="CI"
             />
           </div>
-          {request.approvals[role].status === "pending" ? (
+          {request.approvals[role].status === "pending" &&
+          !isActionDisabled(request) ? (
             <div className="flex gap-2">
               <button
                 onClick={() => onAction("approved", request._id)}
@@ -231,9 +327,8 @@ export default function LeaveRequests({
                   : "bg-red-100 text-red-600"
               }`}
             >
-              {request.approvals[role].status === "approved"
-                ? "Approved"
-                : "Rejected"}
+              {request.approvals[role].status.charAt(0).toUpperCase() +
+                request.approvals[role].status.slice(1)}
             </span>
           )}
         </div>
@@ -254,26 +349,36 @@ export default function LeaveRequests({
                 {request.parent_phone}
               </p>
             </div>
-            {(request.mentorcomment !== "No Comments" ||
-              request.classInchargeComment !== "No Comments") && (
-              <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Comments
-                </p>
-                <CommentsCell
-                  mentorComment={request.mentorcomment}
-                  classInchargeComment={request.classInchargeComment}
-                />
-              </div>
-            )}
+            {/* {(request.mentorcomment !== "No Comments" ||
+              request.classInchargeComment !== "No Comments") && ( */}
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Comments
+              </p>
+              <CommentsCell
+                mentorcomment={request.mentorcomment}
+                classInchargeComment={request.classInchargeComment}
+                isBothRoles={isStaffBothMentorAndCI}
+              />
+            </div>
           </div>
         )}
       </div>
     );
   };
 
-  // Modify the renderRequestTable function to include mobile view
+  // Update the renderRequestTable function to include mobile view
   const renderRequestTable = (requests, role, handleRequest) => {
+    // Add this to check what data we're receiving
+    console.log(
+      "Request data:",
+      requests.map((req) => ({
+        id: req._id,
+        mentorcomment: req.mentorcomment,
+        classInchargeComment: req.classInchargeComment,
+      }))
+    );
+
     return (
       <>
         {/* Desktop view */}
@@ -344,7 +449,7 @@ export default function LeaveRequests({
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center">
                         <StatusDot
                           status={req.approvals.mentor.status}
@@ -359,65 +464,15 @@ export default function LeaveRequests({
                       </div>
                     </td>
                     <td className="px-6 py-4">
+                      {console.log(req.mentorcomment)}{" "}
                       <CommentsCell
-                        mentorComment={req.mentorcomment}
+                        mentorcomment={req.mentorcomment}
                         classInchargeComment={req.classInchargeComment}
+                        isBothRoles={isStaffBothMentorAndCI}
                       />
                     </td>
-                    <td className="px-6 py-4">
-                      {status === "pending" ? (
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() =>
-                              role === "mentor"
-                                ? handleRequest("approved", req._id)
-                                : handleRequestClassIncharge(
-                                    "approved",
-                                    req._id
-                                  )
-                            }
-                            className="bg-green-400 hover:bg-green-600 text-white p-1 rounded-full transition-all duration-300"
-                          >
-                            <TiTick size={30} />
-                          </button>
-                          <button
-                            onClick={() =>
-                              role === "mentor"
-                                ? handleRequest("rejected", req._id)
-                                : handleRequestClassIncharge(
-                                    "rejected",
-                                    req._id
-                                  )
-                            }
-                            className="bg-red-400 hover:bg-red-600 text-white p-1 rounded-full transition-all duration-300"
-                          >
-                            <RxCross2 size={30} />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() =>
-                              role === "mentor"
-                                ? handleRequest("taken", req._id)
-                                : handleRequestClassIncharge("taken", req._id)
-                            }
-                            className={`text-white py-1 px-3 min-w-[90px] rounded-lg transition-all duration-300 ${
-                              status === "approved"
-                                ? "bg-green-400"
-                                : status === "rejected"
-                                ? "bg-red-400"
-                                : ""
-                            }`}
-                          >
-                            {status === "approved"
-                              ? "Approved"
-                              : status === "rejected"
-                              ? "Rejected"
-                              : "Taken"}
-                          </button>
-                        </div>
-                      )}
+                    <td className="px-6 py-4 text-center">
+                      {renderActionButtons(req, role, handleRequest)}
                     </td>
                   </tr>
                 );
@@ -427,7 +482,7 @@ export default function LeaveRequests({
         </div>
 
         {/* Mobile view */}
-        <div className="md:hidden space-y-4">
+        <div className="md:hidden space-y-4 p-4">
           {requests.map((request) => (
             <MobileRequestCard
               key={request._id}
@@ -455,32 +510,44 @@ export default function LeaveRequests({
         </div>
       </div>
       {/* Mentor Requests Section */}
-      {menteeRequests?.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
-          <div className="p-4 border-b dark:border-gray-700">
-            <h2 className="text-lg font-semibold">
-              Leave Requests From Your Class Mentees
-            </h2>
+      {currentUser.isMentor ? (
+        menteeRequests?.length > 0 ? (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
+            <div className="p-4 border-b dark:border-gray-700">
+              <h2 className="text-lg font-semibold">
+                Leave Requests From Your Class Mentees
+              </h2>
+            </div>
+            {renderRequestTable(menteeRequests, "mentor", handleRequest)}
           </div>
-          {renderRequestTable(menteeRequests, "mentor", handleRequest)}
-        </div>
-      )}
+        ) : (
+          <h2 className="font-semibold text-center p-6">
+            No Leave Requests from Your Mentees Yet!
+          </h2>
+        )
+      ) : null}
 
       {/* Class Incharge Requests Section */}
-      {classInchargeRequests?.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-          <div className="p-4 border-b dark:border-gray-700">
-            <h2 className="text-lg font-semibold">
-              Leave Requests From Your Class Students
-            </h2>
+      {currentUser.isClassIncharge ? (
+        filteredClassInchargeRequests?.length > 0 ? (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+            <div className="p-4 border-b dark:border-gray-700">
+              <h2 className="text-lg font-semibold">
+                Leave Requests From Your Class Students
+              </h2>
+            </div>
+            {renderRequestTable(
+              filteredClassInchargeRequests,
+              "classIncharge",
+              handleRequestClassIncharge
+            )}
           </div>
-          {renderRequestTable(
-            classInchargeRequests,
-            "classIncharge",
-            handleRequestClassIncharge
-          )}
-        </div>
-      )}
+        ) : (
+          <h2 className="font-semibold text-center p-6">
+            No Leave Requests from Your Students Yet!
+          </h2>
+        )
+      ) : null}
 
       {/* Mentor Modal */}
       <Modal
@@ -491,78 +558,47 @@ export default function LeaveRequests({
       >
         <ModalHeader />
         <ModalBody>
-          <div className="text-center">
-            {mentormodalType === "approved" ? (
-              <SiTicktick className="mx-auto mb-4 h-14 w-14 text-green-400 dark:text-white" />
-            ) : mentormodalType === "rejected" ? (
-              <RxCrossCircled className="mx-auto mb-4 h-14 w-14 text-red-400 dark:text-white" />
-            ) : (
-              <MdOutlineDownloadDone className="mx-auto mb-4 h-14 w-14 text-secondary-blue dark:text-white" />
-            )}
-
-            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-              {mentormodalType === "approved" ? (
-                <div>
-                  Are you to approve this request?
-                  <div className="w-full my-4 border border-gray-200 rounded-lg bg-gray-50">
-                    <div className="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
-                      <textarea
-                        id="mentor_comment"
-                        rows="4"
-                        className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
-                        placeholder="Write your comments..."
-                        onChange={(e) => setmentorComment(e.target.value)}
-                      ></textarea>
-                    </div>
+          <h3 className="text-lg font-semibold mb-4">
+            {mentormodalType === "approved" ? "Approve" : "Reject"} Request
+            {isStaffBothMentorAndCI && " (as Mentor & Class Incharge)"}
+          </h3>
+          <div>
+            <div className="mb-4">
+              <label
+                htmlFor="mentor_comment"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Add your comment
+                {isStaffBothMentorAndCI && " (will apply for both roles)"}
+              </label>
+              <textarea
+                id="mentor_comment"
+                rows="4"
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="Write your comments..."
+                onChange={(e) => setmentorComment(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-center gap-4">
+              <Button
+                color={mentormodalType === "approved" ? "success" : "failure"}
+                onClick={confirmRequestMentor}
+              >
+                {loading ? (
+                  <div className="flex items-center">
+                    <Spinner size="sm" className="mr-2" />
+                    <span>Processing...</span>
                   </div>
-                </div>
-              ) : mentormodalType === "rejected" ? (
-                <div>
-                  Are you sure you want to reject this request?
-                  <div className="w-full my-4 border border-gray-200 rounded-lg bg-gray-50">
-                    <div className="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
-                      <textarea
-                        id="mentor_comment"
-                        rows="4"
-                        className="w-full px-0 text-sm text-gray-900 bg-white border-0  focus:ring-0 dark:text-white"
-                        placeholder="Write your comments..."
-                        onChange={(e) => setmentorComment(e.target.value)}
-                      ></textarea>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                "This action has already been taken."
-              )}
-            </h3>
-            {mentormodalType !== "taken" && (
-              <div className="flex justify-center gap-4">
-                <Button
-                  color={mentormodalType === "approved" ? "success" : "failure"}
-                  className={`${
-                    mentormodalType === "approved"
-                      ? "bg-green-400 hover:bg-green-500"
-                      : "bg-red-400 hover:bg-red-500"
-                  }`}
-                  onClick={confirmRequestMentor}
-                >
-                  {loading ? (
-                    <div className="flex items-center">
-                      <Spinner size="sm" className="mr-2" />
-                      <span className="text-white">Loading...</span>
-                    </div>
-                  ) : (
-                    <span className="text-white">
-                      {mentormodalType === "approved" ? "Approve" : "Reject"}
-                    </span>
-                  )}
-                </Button>
-
-                <Button color="gray" outline onClick={handleClose}>
-                  Cancel
-                </Button>
-              </div>
-            )}
+                ) : (
+                  <span>
+                    {mentormodalType === "approved" ? "Approve" : "Reject"}
+                  </span>
+                )}
+              </Button>
+              <Button color="gray" onClick={handleClose}>
+                Cancel
+              </Button>
+            </div>
           </div>
         </ModalBody>
       </Modal>
@@ -677,22 +713,42 @@ export default function LeaveRequests({
 }
 
 // Helper Components
-const CommentsCell = ({ mentorComment, classInchargeComment }) => (
-  <div className="flex flex-col gap-1 max-w-xs">
-    {mentorComment !== "No Comments" && (
-      <div className="text-xs">
-        <span className="font-medium text-gray-700">Mentor:</span>{" "}
-        <span className="text-gray-600">{mentorComment}</span>
-      </div>
-    )}
-    {classInchargeComment !== "No Comments" && (
-      <div className="text-xs">
-        <span className="font-medium text-gray-700">CI:</span>{" "}
-        <span className="text-gray-600">{classInchargeComment}</span>
-      </div>
-    )}
-  </div>
-);
+
+const CommentsCell = ({ mentorcomment, classInchargeComment, isBothRoles }) => {
+  return (
+    <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+      {mentorcomment ? (
+        <div className="bg-gray-50 p-2 rounded">
+          <p>
+            <span className="font-semibold text-gray-700">Mentor:</span>{" "}
+            {mentorcomment}
+          </p>
+        </div>
+      ) : (
+        <div className="bg-gray-50 p-2 rounded">
+          <p>
+            <span className="font-semibold text-gray-700">Mentor:</span> No
+            Comments
+          </p>
+        </div>
+      )}
+      {classInchargeComment ? (
+        <div className="bg-gray-50 p-2 rounded">
+          <p>
+            <span className="font-semibold text-gray-700">CI:</span>{" "}
+            {classInchargeComment}
+          </p>
+        </div>
+      ) : (
+        <div className="bg-gray-50 p-2 rounded">
+          <p>
+            <span className="font-semibold text-gray-700">CI:</span> No Comments
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const DetailsModal = ({ isOpen, onClose, request }) => (
   <Modal show={isOpen} onClose={onClose} size="lg">
