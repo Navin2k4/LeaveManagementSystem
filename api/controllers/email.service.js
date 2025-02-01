@@ -19,8 +19,6 @@ export const changeMailSendTiming = (req, res) => {
   try {
     const [hours, minutes] = time.split(":");
 
-    console.log("Hours:", hours);
-    console.log("Minutes:", minutes);
 
     res.status(200).json({
       success: true,
@@ -48,7 +46,6 @@ const sendEmail = async (to, subject, htmlContent) => {
         Importance: "high",
       },
     });
-    console.log(`Email sent to ${to}`);
   } catch (error) {
     console.error("Error sending email:", error);
   }
@@ -68,7 +65,6 @@ const sendEmailWithAttachments = async (to, subject, htmlContent) => {
         Importance: "high",
       },
     });
-    console.log(`Email sent to ${to}`);
   } catch (error) {
     console.error("Error sending email:", error);
     throw new Error("Failed to send email");
@@ -241,7 +237,6 @@ const generateEmailTemplate = (title, content) => {
 };
 
 const generateRequestRow = (request, isOd) => {
-  console.log("request from generateRequestRow", request);
   const row = `
     <tr>
       <td>${request.studentName}</td>
@@ -466,8 +461,6 @@ const sendHodConsolidatedEmails = async () => {
   try {
     // Find all HODs
     const hods = await Staff.find({ isHod: true }).lean();
-    console.log(`Found ${hods.length} HODs`);
-
     // Fetch all types of requests
     const leaveRequests = await LeaveRequest.find()
       .populate({
@@ -505,9 +498,6 @@ const sendHodConsolidatedEmails = async () => {
       .populate("sectionId")
       .lean();
 
-    console.log(
-      `HOD: Found ${leaveRequests.length} leave requests, ${odRequests.length} OD requests, and ${defaulterRequests.length} defaulter requests`
-    );
 
     // Process for each HOD
     for (const hod of hods) {
@@ -643,9 +633,7 @@ const sendHodConsolidatedEmails = async () => {
         html
       );
 
-      console.log(
-        `Summary email sent to HOD ${hod.staff_name} (${hod.staff_mail})`
-      );
+     
     }
   } catch (error) {
     console.error("Error sending HOD consolidated emails:", error);
@@ -665,8 +653,6 @@ const sendStaffConsolidatedEmails = async () => {
       .populate("sectionId")
       .lean();
 
-    console.log(`Found ${leaveRequests.length} leave requests`);
-
     // Fetch all OD requests
     const odRequests = await ODRequest.find()
       .populate({
@@ -678,7 +664,6 @@ const sendStaffConsolidatedEmails = async () => {
       .populate("sectionId")
       .lean();
 
-    console.log(`Found ${odRequests.length} OD requests`);
 
     const defaulterRequests = await Defaulter.find()
       .populate("studentId")
@@ -686,8 +671,6 @@ const sendStaffConsolidatedEmails = async () => {
       .populate("mentorId")
       .populate("classInchargeId")
       .lean();
-
-    console.log("defaulterRequests", defaulterRequests);
 
     const staffRequests = {};
 
@@ -821,11 +804,7 @@ const sendStaffConsolidatedEmails = async () => {
         `Daily Request Summary - ${role}`,
         html
       );
-
-      console.log(`Summary email sent to ${role} ${name} (${email})`);
     }
-
-    console.log("All staff emails sent successfully");
   } catch (error) {
     console.error("Error sending staff consolidated emails:", error);
   }
@@ -833,15 +812,12 @@ const sendStaffConsolidatedEmails = async () => {
 
 // sendStaffConsolidatedEmails();
 // sendHodConsolidatedEmails();
-// console.log("Scheduled emails sent successfully");
 
 export const scheduleEmails = () => {
   schedule.scheduleJob("10 9 * * *", async () => {
-    console.log("Starting scheduled email sending...");
     try {
       await sendStaffConsolidatedEmails();
       await sendHodConsolidatedEmails();
-      console.log("Scheduled emails sent successfully");
     } catch (error) {
       console.error("Error in scheduled email sending:", error);
     }

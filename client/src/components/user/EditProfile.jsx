@@ -26,6 +26,7 @@ import { TbBrandLeetcode } from "react-icons/tb";
 import LeetStats from "./LeetStats";
 import PortfolioPage from "./PortfolioPage";
 import ResumeViewer from "./ResumeVewer";
+import GitStats from "./GitStats";
 
 const EditProfile = ({ mentor, classIncharge }) => {
   const { currentUser } = useSelector((state) => state.user);
@@ -36,7 +37,6 @@ const EditProfile = ({ mentor, classIncharge }) => {
   const [pageLoading, setPageLoading] = useState(true);
   const [feedback, setFeedback] = useState({ message: "", success: false });
   const [userData, setUserData] = useState(null);
-  console.log(userData);
   const [editData, setEditData] = useState({
     email: "",
     phone: "",
@@ -471,16 +471,10 @@ const EditProfile = ({ mentor, classIncharge }) => {
                 </h3>
                 <div className="grid grid-cols-3 gap-4">
                   <ProfessionalLink
-                    icon={<FaGlobe className="w-5 h-5" />}
-                    label="Portfolio"
-                    url={userData?.portfolio_url}
-                    bgColor="bg-blue-500"
-                  />
-                  <ProfessionalLink
-                    icon={<FaFileAlt className="w-5 h-5" />}
-                    label="Resume"
-                    url={userData?.resume_url}
-                    bgColor="bg-green-500"
+                    icon={<TbBrandLeetcode className="w-5 h-5" />}
+                    label="LeetCode"
+                    url={userData?.leetcode_url}
+                    bgColor="bg-yellow-500"
                   />
                   <ProfessionalLink
                     icon={<FaLinkedin className="w-5 h-5" />}
@@ -501,27 +495,31 @@ const EditProfile = ({ mentor, classIncharge }) => {
                     bgColor="bg-green-600"
                   />
                   <ProfessionalLink
-                    icon={<TbBrandLeetcode className="w-5 h-5" />}
-                    label="LeetCode"
-                    url={userData?.leetcode_url}
-                    bgColor="bg-yellow-500"
+                    icon={<FaFileAlt className="w-5 h-5" />}
+                    label="Resume"
+                    url={userData?.resume_url}
+                    bgColor="bg-green-500"
+                  />
+                  <ProfessionalLink
+                    icon={<FaGlobe className="w-5 h-5" />}
+                    label="Your Site"
+                    url={userData?.portfolio_url}
+                    bgColor="bg-blue-500"
                   />
                 </div>
               </div>
 
-              {/* LeetCode Stats */}
               {userData?.leetcode_url && (
                 <LeetStats leetcode_url={userData?.leetcode_url} />
               )}
-
-              {/* Portfolio */}
-              {userData?.portfolio_url && (
-                <PortfolioPage portfolio_url={userData?.portfolio_url} />
+              {userData?.github_url && (
+                <GitStats github_url={userData?.github_url} />
               )}
-
-              {/* Resume */}
               {userData?.resume_url && (
                 <ResumeViewer resume_url={userData?.resume_url} />
+              )}
+              {userData?.portfolio_url && (
+                <PortfolioPage portfolio_url={userData?.portfolio_url} />
               )}
             </div>
           </div>

@@ -21,6 +21,8 @@ import { TiTick } from "react-icons/ti";
 import { RxCross2 } from "react-icons/rx";
 import { User, ClipboardList, BookOpen } from "lucide-react";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const Hoddashboard = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -144,16 +146,20 @@ const Hoddashboard = () => {
   const fetchLeaveRequests = async (sectionId) => {
     try {
       setIsFetching(true);
-      const response = await fetch(
-        `/api/leaverequestsbysectionid/${sectionId}`
-      );
+      const response = await fetch(`/api/leaverequestsbysectionid/${sectionId}`);
       if (!response.ok) {
         throw new Error("Failed to fetch leave requests");
       }
       const data = await response.json();
-      setLeaveRequests(data);
+      setLeaveRequests(prevRequests => {
+        // Combine new requests with existing ones, avoiding duplicates
+        const newRequests = data.filter(newReq => 
+          !prevRequests.some(prevReq => prevReq._id === newReq._id)
+        );
+        return [...prevRequests, ...newRequests];
+      });
     } catch (error) {
-      console.error("Error fetching leave requests:", error.message);
+      console.error("Error fetching leave requests:", error);
     } finally {
       setIsFetching(false);
     }
@@ -285,6 +291,137 @@ const Hoddashboard = () => {
     }
   };
 
+  // Add this new function to fetch all leave requests for a batch
+  const fetchAllLeaveRequestsForBatch = async (batchId) => {
+    try {
+      // First get all sections for this batch
+      const sectionsResponse = await fetch(`/api/batches/${batchId}/sections`);
+      if (!sectionsResponse.ok) throw new Error("Failed to fetch sections");
+      const batchSections = await sectionsResponse.json();
+
+      // Then fetch leave requests for each section
+      const requests = [];
+      for (const section of batchSections) {
+        const requestsResponse = await fetch(`/api/leaverequestsbysectionid/${section._id}`);
+        if (!requestsResponse.ok) throw new Error("Failed to fetch leave requests");
+        const sectionRequests = await requestsResponse.json();
+        requests.push({
+          section: section.section_name,
+          requests: sectionRequests
+        });
+      }
+      return { sections: batchSections, requests };
+    } catch (error) {
+      console.error("Error fetching leave requests:", error);
+      return null;
+    }
+  };
+
+  // Modify the generatePDF function
+  const generatePDF = async () => {
+    // Find the 2022-2026 batch
+    const targetBatch = batches.find(batch => batch.batch_name === "2022-2026");
+    
+    if (!targetBatch) {
+      alert("2022-2026 batch not found");
+      return;
+    }
+
+    // Show loading state
+    setLoading(true);
+
+    try {
+      // Fetch all leave requests for the batch
+      const allData = await fetchAllLeaveRequestsForBatch(targetBatch._id);
+      
+      if (!allData) {
+        alert("Failed to fetch leave requests");
+        return;
+      }
+
+      const doc = new jsPDF();
+      
+      // Add title
+      doc.setFontSize(16);
+      doc.text(`${deptName} - Leave Requests Report`, 14, 15);
+      doc.setFontSize(11);
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 25);
+
+      // Initialize starting y position
+      let yPos = 35;
+
+      // Add batch header
+      doc.setFontSize(14);
+      doc.text(`Batch: 2022-2026`, 14, yPos);
+      yPos += 10;
+
+      // Process each section's data
+      allData.requests.forEach(({ section, requests }) => {
+        if (requests.length > 0) {
+          // Add section header
+          doc.setFontSize(12);
+          doc.text(`Section ${section}`, 14, yPos);
+          yPos += 10;
+
+          // Create table for this section's requests
+          const tableData = requests.map(req => [
+            req.name,
+            req.reason,
+            `${formatDate(req.fromDate)} to ${formatDate(req.toDate)}`,
+            req.noOfDays.toString(),
+            req.approvals.mentor.status,
+            req.approvals.classIncharge.status,
+            req.approvals.hod?.status || 'pending',
+            req.hodComment !== "No Comments" ? req.hodComment : ""
+          ]);
+
+          doc.autoTable({
+            startY: yPos,
+            head: [['Student', 'Reason', 'Dates', 'Days', 'Mentor', 'CI', 'HOD', 'Comments']],
+            body: tableData,
+            theme: 'grid',
+            styles: { 
+              fontSize: 8,
+              cellPadding: 2,
+            },
+            columnStyles: {
+              0: { cellWidth: 25 }, // Student name
+              1: { cellWidth: 25 }, // Reason
+              2: { cellWidth: 30 }, // Dates
+              3: { cellWidth: 10 }, // Days
+              4: { cellWidth: 15 }, // Mentor
+              5: { cellWidth: 15 }, // CI
+              6: { cellWidth: 15 }, // HOD
+              7: { cellWidth: 25 }, // Comments
+            },
+            headStyles: { 
+              fillColor: [31, 58, 110],
+              textColor: [255, 255, 255],
+              fontStyle: 'bold'
+            },
+            margin: { left: 14, right: 14 },
+          });
+
+          yPos = doc.lastAutoTable.finalY + 15;
+
+          // Add new page if needed
+          if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+          }
+        }
+      });
+
+      // Save the PDF
+      doc.save(`${deptName}_Leave_Requests_${new Date().toLocaleDateString()}.pdf`);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Failed to generate PDF");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Replace the old sidebar with DashboardSidebar */}
@@ -306,6 +443,29 @@ const Hoddashboard = () => {
         <div className="p-4">
           {studentRequest && (
             <>
+              {/* Add Generate PDF button */}
+              <div className="mb-6">
+                <button
+                  onClick={generatePDF}
+                  disabled={loading}
+                  className="bg-[#1f3a6e] hover:bg-[#162951] text-white px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <Spinner size="sm" />
+                      <span>Generating PDF...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586L7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clipRule="evenodd" />
+                      </svg>
+                      Generate PDF Report
+                    </>
+                  )}
+                </button>
+              </div>
+
               {/* Batch Selection Section */}
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
                 <div className="flex items-center gap-2 mb-4">

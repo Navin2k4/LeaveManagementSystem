@@ -188,9 +188,7 @@ export const signout = (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   const { userType, id } = req.params;
-  const { email, phone, portfolio_url, resume_url, linkedin_url, github_url, hackerrank_url, leetcode_url } = req.body;
-  console.log(id,email,phone);
-  
+  const { email, phone, portfolio_url, resume_url, linkedin_url, github_url, hackerrank_url, leetcode_url } = req.body;  
   try {
     if (userType === "Staff") {
       const staff = await Staff.findById(id);
