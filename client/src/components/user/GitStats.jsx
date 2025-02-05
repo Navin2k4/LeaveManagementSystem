@@ -109,13 +109,13 @@ const GitStats = ({ github_url }) => {
             className="w-12 h-12 rounded-full ring-2 ring-gray-200 dark:ring-gray-700"
           />
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               {gitStats.name}
-            </h3>
+          </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               @{gitStats.login}
             </p>
-          </div>
+        </div>
         </div>
         <a
           href={github_url}
@@ -156,7 +156,7 @@ const GitStats = ({ github_url }) => {
           label="Followers"
           value={gitStats.followers}
         />
-      </div>
+          </div>
 
       {repoStats?.mostStarredRepo && (
         <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
@@ -204,7 +204,7 @@ const GitStats = ({ github_url }) => {
                   className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded-full text-gray-700 dark:text-gray-300"
                 >
                   {language} ({count})
-                </span>
+              </span>
               ))}
           </div>
         </div>
@@ -249,7 +249,7 @@ const GitStats = ({ github_url }) => {
               value={gitStats.email}
             />
           )}
-        </div>
+            </div>
         <div className="space-y-3">
           <InfoItem
             icon={<Activity className="w-4 h-4" />}
