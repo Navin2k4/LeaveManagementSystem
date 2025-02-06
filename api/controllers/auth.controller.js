@@ -45,12 +45,6 @@ export const studentsignin = async (req, res, next) => {
   try {
     const student = await Student.findOne({
       $or: [{ roll_no: identifier }, { register_no: identifier }],
-    }).populate({
-      path: 'departmentId',
-      select: 'dept_acronym'
-    }).populate({
-      path: 'batchId',
-      select: 'batch_name'
     });
 
     if (!student) {
@@ -84,9 +78,6 @@ export const studentsignin = async (req, res, next) => {
       userType,
     } = student;
 
-    const departmentAcronym = student.departmentId.dept_acronym;
-    const batchName = student.batchId.batch_name;
-
     res
       .status(200)
       .cookie("access_token", token, {
@@ -107,8 +98,6 @@ export const studentsignin = async (req, res, next) => {
         sectionId,
         section_name,
         userType,
-        departmentAcronym,
-        batchName
       });
   } catch (error) {
     next(error);

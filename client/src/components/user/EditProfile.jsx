@@ -512,9 +512,9 @@ const EditProfile = ({ mentor, classIncharge }) => {
               {userData?.leetcode_url && (
                 <LeetStats leetcode_url={userData?.leetcode_url} />
               )}
-              {userData?.github_url && (
+              {/* {userData?.github_url && (
                 <GitStats github_url={userData?.github_url} />
-              )}
+              )} */}
               {userData?.resume_url && (
                 <ResumeViewer resume_url={userData?.resume_url} />
               )}

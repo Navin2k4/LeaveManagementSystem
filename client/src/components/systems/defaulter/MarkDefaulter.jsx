@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import PTGenerateReport from "./PTGenerateReport";
 import { Modal, Button } from "flowbite-react";
-import { format, startOfWeek, addDays, isSameDay } from "date-fns";
+import { format, startOfWeek, addDays, isSameDay, subWeeks, addWeeks, startOfMonth, endOfMonth, subMonths, addMonths, eachDayOfInterval } from "date-fns";
 import { useSelector } from "react-redux";
 
 const MarkDefaulterAndLate = () => {
@@ -57,6 +57,8 @@ const MarkDefaulterAndLate = () => {
   const [classDefaulters, setClassDefaulters] = useState([]);
   const [isMentorSectionOpen, setIsMentorSectionOpen] = useState(true);
   const [isClassSectionOpen, setIsClassSectionOpen] = useState(true);
+  const [viewMode, setViewMode] = useState('week'); // 'week' or 'month'
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const fetchDefaulters = async () => {
     try {
@@ -425,48 +427,126 @@ const MarkDefaulterAndLate = () => {
       isSameDay(new Date(defaulter.entryDate), selectedDate)
     );
 
+    // Get dates based on view mode
+    const getDates = () => {
+      if (viewMode === 'week') {
+        const start = startOfWeek(currentDate, { weekStartsOn: 1 });
+        return Array.from({ length: 7 }).map((_, index) => addDays(start, index));
+      } else {
+        const start = startOfMonth(currentDate);
+        const end = endOfMonth(currentDate);
+        return eachDayOfInterval({ start, end });
+      }
+    };
+
+    // Navigation handlers
+    const handlePrevious = () => {
+      if (viewMode === 'week') {
+        setCurrentDate(prev => subWeeks(prev, 1));
+      } else {
+        setCurrentDate(prev => subMonths(prev, 1));
+      }
+    };
+
+    const handleNext = () => {
+      if (viewMode === 'week') {
+        setCurrentDate(prev => addWeeks(prev, 1));
+      } else {
+        setCurrentDate(prev => addMonths(prev, 1));
+      }
+    };
+
+    const handleToday = () => {
+      setCurrentDate(new Date());
+      setSelectedDate(new Date());
+    };
+
     return (
       <div className="space-y-4">
-        {/* Date Selection Component - Keep existing code */}
-        <div className="bg-white rounded-lg shadow p-4 mb-4 overflow-x-auto">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-700">Select Date</h3>
-            <button
-              onClick={() => setSelectedDate(new Date())}
-              className="text-sm text-blue-600 hover:text-blue-800"
-            >
-              Today
-            </button>
+        {/* Date Selection Component */}
+        <div className="bg-white rounded-lg shadow p-4 mb-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-2">
+              <h3 className="text-sm font-medium text-gray-700">
+                {viewMode === 'week' ? 'Week View' : 'Month View'}
+              </h3>
+              <select
+                value={viewMode}
+                onChange={(e) => setViewMode(e.target.value)}
+                className="text-sm border rounded-md px-2 py-1"
+              >
+                <option value="week">Week</option>
+                <option value="month">Month</option>
+              </select>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={handlePrevious}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                ←
+              </button>
+              <button
+                onClick={handleToday}
+                className="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100"
+              >
+                Today
+              </button>
+              <button
+                onClick={handleNext}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                →
+              </button>
+            </div>
           </div>
-          <div className="grid grid-cols-7 gap-1 min-w-[500px]">
-            {weekDates.map((date) => {
-              const isSelected = isSameDay(date, selectedDate);
-              const isToday = isSameDay(date, new Date());
 
-              return (
-                <button
-                  key={date.toString()}
-                  onClick={() => setSelectedDate(date)}
-                  className={`flex flex-col items-center p-2 rounded-lg transition-colors
-                    hover:bg-gray-50
-                    ${
-                      isSelected
-                        ? "bg-blue-50 text-blue-700 ring-1 ring-blue-600"
-                        : "text-gray-900"
-                    }
-                    ${isToday ? "font-semibold" : ""}`}
-                >
-                  <span className="text-xs uppercase">
-                    {format(date, "EEE")}
-                  </span>
-                  <span
-                    className={`mt-1 text-sm ${isToday ? "text-blue-600" : ""}`}
+          <div className="overflow-x-auto">
+            <div className={`grid ${viewMode === 'week' ? 'grid-cols-7' : 'grid-cols-7'} gap-1 min-w-[500px]`}>
+              {/* Day headers */}
+              {viewMode === 'month' && (
+                <>
+                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                    <div
+                      key={day}
+                      className="text-xs font-medium text-gray-500 text-center py-2"
+                    >
+                      {day}
+                    </div>
+                  ))}
+                </>
+              )}
+              
+              {/* Date cells */}
+              {getDates().map((date) => {
+                const isSelected = isSameDay(date, selectedDate);
+                const isToday = isSameDay(date, new Date());
+                const isCurrentMonth = date.getMonth() === currentDate.getMonth();
+
+                return (
+                  <button
+                    key={date.toString()}
+                    onClick={() => setSelectedDate(date)}
+                    className={`
+                      flex flex-col items-center p-2 rounded-lg transition-colors
+                      ${!isCurrentMonth && viewMode === 'month' ? 'text-gray-400' : 'text-gray-900'}
+                      ${isSelected ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-600' : 'hover:bg-gray-50'}
+                      ${isToday ? 'font-semibold' : ''}
+                    `}
+                    disabled={!isCurrentMonth && viewMode === 'month'}
                   >
-                    {format(date, "d")}
-                  </span>
-                </button>
-              );
-            })}
+                    {viewMode === 'week' && (
+                      <span className="text-xs uppercase">
+                        {format(date, 'EEE')}
+                      </span>
+                    )}
+                    <span className={`${viewMode === 'week' ? 'mt-1' : ''} text-sm ${isToday ? 'text-blue-600' : ''}`}>
+                      {format(date, 'd')}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
