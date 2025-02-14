@@ -372,54 +372,87 @@ const EditProfile = ({ mentor, classIncharge }) => {
           <div className="lg:sticky lg:top-0 h-fit">
             {/* Profile Card */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
-              <div className="p-6 flex flex-col items-center justify-center text-center border-b border-gray-200 dark:border-gray-700">
-                <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl mx-auto flex items-center justify-center mb-4">
-                  <User className="w-12 h-12 text-white" />
+              {/* Profile Header */}
+              <div className="relative">
+                <div className="h-32 bg-gradient-to-r from-blue-600 to-blue-800"></div>
+                <div className="absolute -bottom-12 inset-x-0 flex justify-center">
+                  <div className="w-24 h-24 bg-white dark:bg-gray-700 rounded-full p-1 shadow-xl">
+                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                      <User className="w-12 h-12 text-white" />
+                    </div>
+                  </div>
                 </div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                  {userData?.name || userData?.staff_name}
-                </h2>
-                <Button
-                  onClick={toggleModal}
-                  size="sm"
-                  className="mt-4 bg-blue-500 hover:bg-blue-600 text-white rounded-xl"
-                >
-                  Edit Profile
-                </Button>
               </div>
 
-              {/* Basic Information */}
-              <div className="p-6 space-y-4">
-                <InfoGroup
-                  icon={<Hash className="w-5 h-5 text-blue-600" />}
-                  label="Academic Info"
-                  items={[
-                    { label: "Register No", value: currentUser.register_no },
-                    { label: "Roll No", value: currentUser.roll_no },
-                    { label: "Section", value: currentUser.section_name },
-                  ]}
-                />
+              {/* Profile Content */}
+              <div className="pt-16 px-6 pb-6">
+                <div className="text-center mb-8 flex flex-col items-center justify-between">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                    {userData?.name || userData?.staff_name}
+                  </h2>
+                  <Button
+                    onClick={toggleModal}
+                    size="sm"
+                    className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6 py-2 transition-all duration-200 shadow-md hover:shadow-lg"
+                  >
+                    Edit Profile
+                  </Button>
+                </div>
 
-                <InfoGroup
-                  icon={<Mail className="w-5 h-5 text-purple-600" />}
-                  label="Contact Info"
-                  items={[
-                    {
-                      label: "Email",
-                      value: userData?.email || userData?.staff_mail,
-                    },
-                    {
-                      label: "Phone",
-                      value: formatPhone(
-                        userData?.phone || userData?.staff_phone
-                      ),
-                    },
-                    {
-                      label: "Parent Phone",
-                      value: formatPhone(userData?.parent_phone),
-                    },
-                  ]}
-                />
+                {/* Information Cards */}
+                <div className="space-y-6">
+                  {/* Academic Info Card */}
+                  <div className="border dark:border-gray-700 rounded-xl overflow-hidden">
+                    <div className="bg-blue-50 dark:bg-gray-700 px-4 py-3 flex items-center gap-2">
+                      <Hash className="w-5 h-5 text-blue-500" />
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        Academic Information
+                      </h3>
+                    </div>
+                    <div className="p-4 grid gap-3">
+                      <div className="flex justify-between items-center px-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Register No</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{currentUser.register_no}</span>
+                      </div>
+                      <div className="flex justify-between items-center px-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Roll No</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{currentUser.roll_no}</span>
+                      </div>
+                      <div className="flex justify-between items-center px-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Section</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{currentUser.section_name}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Contact Info Card */}
+                  <div className="border dark:border-gray-700 rounded-xl overflow-hidden">
+                    <div className="bg-purple-50 dark:bg-gray-700 px-4 py-3 flex items-center gap-2">
+                      <Mail className="w-5 h-5 text-purple-500" />
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        Contact Information
+                      </h3>
+                    </div>
+                    <div className="p-4 grid gap-3">
+                      <div className="flex justify-between items-center px-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Email</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{userData?.email || userData?.staff_mail}</span>
+                      </div>
+                      <div className="flex justify-between items-center px-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Phone</span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {formatPhone(userData?.phone || userData?.staff_phone)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center px-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Parent Phone</span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {formatPhone(userData?.parent_phone)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -469,7 +502,7 @@ const EditProfile = ({ mentor, classIncharge }) => {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Professional Links
                 </h3>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                   <ProfessionalLink
                     icon={<TbBrandLeetcode className="w-5 h-5" />}
                     label="LeetCode"
@@ -509,17 +542,32 @@ const EditProfile = ({ mentor, classIncharge }) => {
                 </div>
               </div>
 
-              {userData?.leetcode_url && (
-                <LeetStats leetcode_url={userData?.leetcode_url} />
-              )}
+              {/* GitHub Stats */}
               {/* {userData?.github_url && (
-                <GitStats github_url={userData?.github_url} />
+                <div className="lg:col-span-2">
+                  <GitStats github_url={userData.github_url} />
+                </div>
               )} */}
-              {userData?.resume_url && (
-                <ResumeViewer resume_url={userData?.resume_url} />
+
+              {/* LeetCode Stats */}
+              {userData?.leetcode_url && (
+                <div className="lg:col-span-2">
+                  <LeetStats leetcode_url={userData.leetcode_url} />
+                </div>
               )}
+
+              {/* Resume Viewer */}
+              {userData?.resume_url && (
+                <div className="col-span-1">
+                  <ResumeViewer resume_url={userData.resume_url} />
+                </div>
+              )}
+
+              {/* Portfolio Page */}
               {userData?.portfolio_url && (
-                <PortfolioPage portfolio_url={userData?.portfolio_url} />
+                <div className="col-span-1">
+                  <PortfolioPage portfolio_url={userData.portfolio_url} />
+                </div>
               )}
             </div>
           </div>

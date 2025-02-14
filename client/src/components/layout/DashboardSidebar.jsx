@@ -5,7 +5,7 @@ import {
   LogOut,
   Menu,
   Users,
-  X
+  X,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -75,82 +75,85 @@ const DashboardSidebar = ({
       {/* Desktop Sidebar */}
       <div className="hidden lg:block transition-all duration-300">
         <div
-          className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 
-                     transition-all duration-300 ease-in-out z-40
-                     ${isOpen ? "w-64" : "w-20"}`}
+          className={`fixed top-0 left-0 h-screen bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 
+                     transition-all duration-300 ease-in-out z-40 overflow-x-hidden
+                     ${isOpen ? "w-64" : "w-16"}`}
         >
-          <div className="flex flex-col h-full">
-            {/* Top Section */}
-            <div className="flex-shrink-0">
-              {/* Toggle Button */}
-              <button
-                onClick={handleToggle}
-                className="w-full flex items-center justify-center p-4 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-200"
-              >
-                {isOpen ? (
-                  <ChevronLeft size={20} />
-                ) : (
-                  <ChevronRight size={20} />
-                )}
-              </button>
+          <div className="flex flex-col h-full text-white">
+            {/* Toggle Button */}
+            <button
+              onClick={handleToggle}
+              className="w-full flex items-center justify-center p-4 hover:bg-blue-700/50 transition-colors duration-200"
+            >
+              {isOpen ? (
+                <ChevronLeft size={20} className="text-white/80" />
+              ) : (
+                <ChevronRight size={20} className="text-white/80" />
+              )}
+            </button>
 
-              {/* Logo/Header */}
-              <div className="flex items-center p-4 border-b border-gray-200 dark:border-gray-700">
-                <Link to="/" className="flex items-center">
+            {/* Logo/Header */}
+            <div className="flex mx-3 border-b border-white/10">
+              <Link to="/" className="flex items-center">
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
                   <img
                     src="/vcet.jpeg"
                     alt="VCET Logo"
-                    className="w-10 h-10 rounded-full flex-shrink-0"
+                    className="w-8 h-8 rounded-full"
                   />
+                </div>
+                <span
+                  className={` font-semibold text-sm text-white whitespace-nowrap
+                           transition-all duration-200 ${
+                             isOpen && showText
+                               ? "opacity-100 ml-2"
+                               : "opacity-0 w-0"
+                           }`}
+                >
+                 VCET Connect
+                </span>
+              </Link>
+            </div>
+
+            {/* Common Navigation Links */}
+            <nav className="px-2 py-2 border-b border-white/10">
+              {commonNavItems.map((item) => (
+                <Link
+                  key={item.id}
+                  to={item.path}
+                  className="flex items-center px-3 py-2 rounded-md text-white/80 hover:bg-white/10 transition-colors duration-200"
+                >
+                  <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+                    {item.icon}
+                  </span>
                   <span
-                    className={`ml-3 font-semibold text-sm text-gray-800 dark:text-white whitespace-nowrap
-                             transition-all duration-200 ${
+                    className={`ml-3 text-sm whitespace-nowrap transition-all duration-200 
+                             ${
                                isOpen && showText
                                  ? "opacity-100"
                                  : "opacity-0 w-0"
                              }`}
                   >
-                    VCET Connect
+                    {item.label}
                   </span>
                 </Link>
-              </div>
-
-              {/* Common Navigation Links */}
-              <nav className="px-2 py-2 border-b border-gray-200 dark:border-gray-700">
-                {commonNavItems.map((item) => (
-                  <Link
-                    key={item.id}
-                    to={item.path}
-                    className="flex items-center px-3 py-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                  >
-                    <span className="w-5 flex-shrink-0">{item.icon}</span>
-                    <span
-                      className={`ml-3 text-sm whitespace-nowrap transition-all duration-200 
-                               ${
-                                 isOpen && showText
-                                   ? "opacity-100"
-                                   : "opacity-0 w-0"
-                               }`}
-                    >
-                      {item.label}
-                    </span>
-                  </Link>
-                ))}
-              </nav>
-            </div>
+              ))}
+            </nav>
 
             {/* Scrollable Menu Section */}
-            <div className="flex-1 overflow-y-auto sidebar-scroll">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden sidebar-scroll">
               <nav className="px-2 py-4">
                 {menuItems.map((item) => (
                   <div key={item.id}>
                     {item.submenu ? (
                       <div className="mb-1">
                         <button
-                          className="w-full flex items-center p-3 text-sm text-gray-600 dark:text-gray-300 
-                                   hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-md"
+                          className="w-full flex items-center p-3 text-sm text-white/80 
+                                   hover:bg-white/10 rounded-md transition-colors duration-200"
                         >
-                          <span className="w-5 flex-shrink-0">{item.icon}</span>
+                          <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+                            {item.icon}
+                          </span>
                           <span
                             className={`ml-3 whitespace-nowrap transition-all duration-200 
                                      ${
@@ -162,7 +165,7 @@ const DashboardSidebar = ({
                             {item.label}
                           </span>
                           {isOpen && showText && (
-                            <ChevronRight className="w-4 h-4 ml-auto" />
+                            <ChevronRight className="w-4 h-4 ml-auto opacity-80" />
                           )}
                         </button>
                         {isOpen && showText && (
@@ -174,10 +177,10 @@ const DashboardSidebar = ({
                                   onTabChange(subItem.id);
                                   setIsMobileMenuOpen(false);
                                 }}
-                                className={`w-full px-3 py-2 text-sm rounded-md ${
+                                className={`w-full px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
                                   currentTab === subItem.id
-                                    ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20"
-                                    : "text-gray-600 dark:text-gray-300"
+                                    ? "bg-white/20 text-white"
+                                    : "text-white/80 hover:bg-white/10"
                                 }`}
                               >
                                 {subItem.label}
@@ -189,10 +192,16 @@ const DashboardSidebar = ({
                     ) : (
                       <button
                         onClick={() => onTabChange(item.id)}
-                        className="w-full flex items-center p-3 rounded-md text-sm text-gray-600 dark:text-gray-300 
-                                 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                        className={`w-full flex items-center p-3 rounded-md text-sm transition-colors duration-200
+                                 ${
+                                   currentTab === item.id
+                                     ? "bg-white/20 text-white"
+                                     : "text-white/80 hover:bg-white/10"
+                                 }`}
                       >
-                        <span className="w-5 flex-shrink-0">{item.icon}</span>
+                        <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+                          {item.icon}
+                        </span>
                         <span
                           className={`ml-3 whitespace-nowrap transition-all duration-200 
                                    ${
@@ -204,7 +213,7 @@ const DashboardSidebar = ({
                           {item.label}
                         </span>
                         {item.badge && isOpen && showText && (
-                          <span className="ml-auto flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-red-500 rounded-full">
+                          <span className="ml-auto flex items-center justify-center w-5 h-5 text-xs font-medium bg-red-500 rounded-full">
                             {item.badge}
                           </span>
                         )}
@@ -216,7 +225,7 @@ const DashboardSidebar = ({
             </div>
 
             {/* Bottom Section */}
-            <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex-shrink-0 border-t border-white/10">
               <div className="p-4">
                 {isOpen ? (
                   <div
@@ -226,27 +235,31 @@ const DashboardSidebar = ({
                   >
                     <div className="flex items-center justify-between">
                       <div className="truncate mr-2">
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">
+                        <p className="text-sm font-medium text-white truncate">
                           {userInfo?.name}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        <p className="text-xs text-white/70 truncate">
                           {userInfo?.email}
                         </p>
                       </div>
                       <button
                         onClick={handleSignout}
-                        className="flex-shrink-0 p-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-md"
+                        className="flex-shrink-0 p-2 text-white/80 hover:bg-white/10 rounded-md transition-colors duration-200"
                       >
-                        <LogOut size={18} />
+                        <span className="w-5 h-5 flex items-center justify-center">
+                          <LogOut size={18} />
+                        </span>
                       </button>
                     </div>
                   </div>
                 ) : (
                   <button
                     onClick={handleSignout}
-                    className="w-full flex justify-center p-2 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-md"
+                    className="w-full flex justify-center p-2 text-white/80 hover:bg-white/10 rounded-md transition-colors duration-200"
                   >
-                    <LogOut size={20} />
+                    <span className="w-5 h-5 flex items-center justify-center">
+                      <LogOut size={20} />
+                    </span>
                   </button>
                 )}
               </div>
@@ -258,7 +271,7 @@ const DashboardSidebar = ({
       {/* Mobile Floating Action Button */}
       <button
         onClick={() => setIsMobileMenuOpen(true)}
-        className="fixed right-4 top-4 lg:hidden z-40 p-3 bg-slate-100 text-black rounded-md shadow-md hover:bg-blue-400 hover:text-white transition-colors duration-300"
+        className="fixed right-4 top-4 lg:hidden z-40 p-3 bg-blue-600 text-white rounded-md shadow-lg hover:bg-blue-700 transition-colors duration-300"
       >
         <Menu className="w-6 h-6" />
       </button>
@@ -273,20 +286,24 @@ const DashboardSidebar = ({
           />
 
           {/* Sidebar */}
-          <div className="fixed  transition-all duration-300 inset-y-0 right-0  w-[280px] bg-white dark:bg-gray-800 shadow-xl z-50 lg:hidden">
+          <div className="fixed transition-all duration-300 inset-y-0 right-0 w-[280px] bg-gradient-to-b from-blue-600 to-blue-800 shadow-xl z-50 lg:hidden">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between p-4 border-b border-white/10">
               <div className="flex items-center space-x-3">
-                <img
-                  src="/vcet.jpeg"
-                  alt="VCET Logo"
-                  className="w-8 h-8 rounded-full"
-                />
-                <span className="font-semibold text-sm">VCET Connect</span>
+                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                  <img
+                    src="/vcet.jpeg"
+                    alt="VCET Logo"
+                    className="w-6 h-6 rounded-full"
+                  />
+                </div>
+                <span className="font-semibold text-sm text-white">
+                  VCET Connect
+                </span>
               </div>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700/50"
+                className="p-2 rounded-md text-white/80 hover:bg-white/10"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -294,21 +311,23 @@ const DashboardSidebar = ({
 
             {/* User Info */}
             {userInfo && (
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                <p className="font-medium text-sm">{userInfo.name}</p>
-                <p className="text-xs text-gray-500">{userInfo.email}</p>
+              <div className="p-4 border-b border-white/10">
+                <p className="font-medium text-sm text-white">
+                  {userInfo.name}
+                </p>
+                <p className="text-xs text-white/70">{userInfo.email}</p>
               </div>
             )}
 
             {/* Menu */}
             <div className="overflow-y-auto h-[calc(100vh-200px)]">
-              <nav className="px-2 py-4">
+              <nav className="px-2 py-4 text-white">
                 {/* Common Navigation Links */}
                 {commonNavItems.map((item) => (
                   <Link
                     key={item.id}
                     to={item.path}
-                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-white/80 hover:bg-white/10 transition-colors duration-200"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <span className="w-5">{item.icon}</span>
@@ -317,14 +336,14 @@ const DashboardSidebar = ({
                 ))}
 
                 {/* Divider */}
-                <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
+                <div className="my-2 border-t border-white/10" />
 
                 {/* Menu Items */}
                 {menuItems.map((item) => (
                   <div key={item.id}>
                     {item.submenu ? (
                       <div className="mb-1">
-                        <div className="px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300">
+                        <div className="px-3 py-2 text-sm font-medium text-white/80">
                           {item.label}
                         </div>
                         <div className="ml-4">
@@ -335,10 +354,10 @@ const DashboardSidebar = ({
                                 onTabChange(subItem.id);
                                 setIsMobileMenuOpen(false);
                               }}
-                              className={`w-full px-3 py-2 text-sm rounded-md ${
+                              className={`w-full px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
                                 currentTab === subItem.id
-                                  ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20"
-                                  : "text-gray-600 dark:text-gray-300"
+                                  ? "bg-white/20 text-white"
+                                  : "text-white/80 hover:bg-white/10"
                               }`}
                             >
                               {subItem.label}
@@ -352,10 +371,10 @@ const DashboardSidebar = ({
                           onTabChange(item.id);
                           setIsMobileMenuOpen(false);
                         }}
-                        className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md ${
+                        className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
                           currentTab === item.id
-                            ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20"
-                            : "text-gray-600 dark:text-gray-300"
+                            ? "bg-white/20 text-white"
+                            : "text-white/80 hover:bg-white/10"
                         }`}
                       >
                         <div className="flex items-center space-x-3">
@@ -363,7 +382,7 @@ const DashboardSidebar = ({
                           <span>{item.label}</span>
                         </div>
                         {item.badge && (
-                          <span className="flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-red-500 rounded-full">
+                          <span className="flex items-center justify-center w-5 h-5 text-xs font-medium bg-red-500 rounded-full">
                             {item.badge}
                           </span>
                         )}
@@ -375,10 +394,10 @@ const DashboardSidebar = ({
             </div>
 
             {/* Logout Button */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
               <button
                 onClick={handleSignout}
-                className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
+                className="w-full px-3 py-2 text-sm text-white hover:bg-white/10 rounded-md transition-colors duration-200"
               >
                 Logout
               </button>

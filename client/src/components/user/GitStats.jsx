@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Github, 
-  ExternalLink, 
-  Users, 
+import {
+  Github,
+  ExternalLink,
+  Users,
   BookOpen,
   MapPin,
   Globe,
@@ -13,7 +13,7 @@ import {
   Code,
   Activity,
   Building,
-  Mail
+  Mail,
 } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
@@ -49,21 +49,28 @@ const GitStats = ({ github_url }) => {
           `https://api.github.com/users/${username}/repos`
         );
         const reposData = await reposResponse.json();
-        
+
         // Calculate additional stats
         const stats = {
-          totalStars: reposData.reduce((acc, repo) => acc + repo.stargazers_count, 0),
-          totalForks: reposData.reduce((acc, repo) => acc + repo.forks_count, 0),
+          totalStars: reposData.reduce(
+            (acc, repo) => acc + repo.stargazers_count,
+            0
+          ),
+          totalForks: reposData.reduce(
+            (acc, repo) => acc + repo.forks_count,
+            0
+          ),
           languages: {},
-          mostStarredRepo: reposData.reduce((prev, current) => 
-            (prev.stargazers_count > current.stargazers_count) ? prev : current
+          mostStarredRepo: reposData.reduce((prev, current) =>
+            prev.stargazers_count > current.stargazers_count ? prev : current
           ),
         };
 
         // Calculate language statistics
-        reposData.forEach(repo => {
+        reposData.forEach((repo) => {
           if (repo.language) {
-            stats.languages[repo.language] = (stats.languages[repo.language] || 0) + 1;
+            stats.languages[repo.language] =
+              (stats.languages[repo.language] || 0) + 1;
           }
         });
 
@@ -92,36 +99,36 @@ const GitStats = ({ github_url }) => {
   }
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-4">
-          <img 
-            src={gitStats.avatar_url} 
-            alt={gitStats.name} 
+          <img
+            src={gitStats.avatar_url}
+            alt={gitStats.name}
             className="w-12 h-12 rounded-full ring-2 ring-gray-200 dark:ring-gray-700"
           />
           <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               {gitStats.name}
-          </h3>
+            </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               @{gitStats.login}
             </p>
-        </div>
+          </div>
         </div>
         <a
           href={github_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-800 dark:bg-gray-700 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-800 dark:bg-gray-700 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
         >
           <Github className="w-4 h-4" />
           View Profile
@@ -130,12 +137,10 @@ const GitStats = ({ github_url }) => {
       </div>
 
       {gitStats.bio && (
-        <p className="text-gray-600 dark:text-gray-300 mb-6">
-          {gitStats.bio}
-        </p>
+        <p className="text-gray-600 dark:text-gray-300 mb-6">{gitStats.bio}</p>
       )}
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
         <StatCard
           icon={<BookOpen className="w-5 h-5" />}
           label="Repositories"
@@ -156,7 +161,7 @@ const GitStats = ({ github_url }) => {
           label="Followers"
           value={gitStats.followers}
         />
-          </div>
+      </div>
 
       {repoStats?.mostStarredRepo && (
         <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
@@ -196,7 +201,7 @@ const GitStats = ({ github_url }) => {
           </h4>
           <div className="flex flex-wrap gap-2">
             {Object.entries(repoStats.languages)
-              .sort(([,a], [,b]) => b - a)
+              .sort(([, a], [, b]) => b - a)
               .slice(0, 5)
               .map(([language, count]) => (
                 <span
@@ -204,13 +209,13 @@ const GitStats = ({ github_url }) => {
                   className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded-full text-gray-700 dark:text-gray-300"
                 >
                   {language} ({count})
-              </span>
+                </span>
               ))}
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="space-y-3">
           {gitStats.location && (
             <InfoItem
@@ -224,7 +229,7 @@ const GitStats = ({ github_url }) => {
               icon={<Globe className="w-4 h-4" />}
               label="Website"
               value={
-                <a 
+                <a
                   href={gitStats.blog}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -249,7 +254,7 @@ const GitStats = ({ github_url }) => {
               value={gitStats.email}
             />
           )}
-            </div>
+        </div>
         <div className="space-y-3">
           <InfoItem
             icon={<Activity className="w-4 h-4" />}

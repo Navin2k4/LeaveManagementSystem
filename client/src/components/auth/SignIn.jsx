@@ -104,48 +104,6 @@ export default function SignIn() {
   return (
     <div className="min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-lg w-full space-y-8 flex gap-8">
-        {/* <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex-1 hidden lg:flex flex-col justify-center space-y-6 p-8"
-        >
-          <img
-            src="/vcet.jpeg"
-            alt="VCET Logo"
-            className="h-20 w-20 rounded-full shadow-lg"
-          />
-          <h1 className="text-4xl font-bold text-gray-900">
-            Welcome to VCET
-            <span className="block text-blue-600">Leave Management</span>
-          </h1>
-          <p className="text-gray-600 text-lg">
-            Streamline your leave and OD requests with our easy-to-use platform.
-          </p>
-          <div className="bg-blue-50 p-6 rounded-xl space-y-4">
-            <h3 className="font-semibold text-blue-900">Quick Features</h3>
-            <ul className="space-y-3">
-              {[
-                "Easy leave & OD request submission",
-                "Real-time request tracking",
-                "Quick approval process",
-                "Automated notifications",
-              ].map((feature, index) => (
-                <motion.li
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 * (index + 1) }}
-                  className="flex items-center text-blue-800"
-                >
-                  <span className="h-2 w-2 bg-blue-500 rounded-full mr-2" />
-                  {feature}
-                </motion.li>
-              ))}
-            </ul>
-          </div>
-        </motion.div> */}
-
         {/* Right Section - Sign In Form */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
@@ -169,6 +127,7 @@ export default function SignIn() {
           <div className="grid grid-cols-2 gap-4">
             {roleOptions.map((role) => (
               <button
+                disabled={loading}
                 key={role.value}
                 onClick={() => setSelectRole(role.value)}
                 className={`relative p-4 rounded-xl border-2 transition-all duration-200

@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { pdf } from "@react-pdf/renderer";
 import GradeSheetPDF from "./GradeSheetPDF";
+import { Award, BookOpen, TrendingUp, Loader2, Save } from "lucide-react";
 
 const SemesterResults = ({ student, department, onResultsSave }) => {
   const [courseData, setCourseData] = useState(null);
@@ -266,7 +267,7 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
       setLoading(false);
     }
   };
- 
+
   // Modify the renderCourseRow function to show saved grades
   const renderCourseRow = (course, semester) => {
     const savedGrade = savedResults[semester]?.courses?.find(
@@ -289,9 +290,11 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
           )}
         </td>
         <td className="px-4 py-2">{course.course_name}</td>
-        <td className="px-4 py-2 text-center">{course.course_credits}</td>
+        <td className="hidden md:table-cell px-4 py-2 text-center">
+          {course.course_credits}
+        </td>
         {semester >= 5 && (
-          <td className="px-4 py-2 text-center">
+          <td className="hidden md:table-cell px-4 py-2 text-center">
             <span
               className={`px-2 py-1 text-xs font-medium rounded-full 
                 ${
@@ -363,6 +366,13 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
     try {
       setSaving(true);
 
+      // Calculate results before saving
+      const result = calculateSemesterGPA(semester);
+      setResults((prev) => ({
+        ...prev,
+        [semester]: result,
+      }));
+
       // Get all courses for this semester
       const semesterCourses = getCoursesBySemester(semester);
 
@@ -377,14 +387,13 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
           isArrear: course.isArrear || false,
           originalSemester: course.originalSemester,
         })),
-        gpa: results[semester].gpa,
-        cgpa: results[semester].cgpa,
-        totalCredits: results[semester].totalCredits,
-        earnedCredits: results[semester].earnedCredits,
+        gpa: result.gpa,
+        cgpa: result.cgpa,
+        totalCredits: result.totalCredits,
+        earnedCredits: result.earnedCredits,
         lastUpdated: new Date(),
       };
 
-      // Update the API endpoint URL
       const response = await fetch("/api/cgpa/saveSemesterResults", {
         method: "POST",
         headers: {
@@ -404,7 +413,7 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
       const data = await response.json();
       if (data.success) {
         setSavedResults(data.data);
-        toast.success("Results saved successfully");
+        toast.success("Results calculated and saved successfully");
         onResultsSave?.(data.data);
       } else {
         throw new Error(data.message || "Failed to save results");
@@ -440,34 +449,76 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
     if (chartData.length === 0) return null;
 
     return (
-      <div className="bg-white p-4 rounded-lg shadow w-full md:w-2/3">
-        <h3 className="text-lg font-semibold mb-4">Academic Progress</h3>
-        <div className="h-[250px]">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 w-full md:w-2/3">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-blue-600" />
+            Academic Progress
+          </h3>
+        </div>
+        <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="semester" />
-              <YAxis domain={[0, 10]} />
-              <Tooltip
-                formatter={(value) => value.toFixed(2)}
-                labelFormatter={(label) => `Semester ${label.split(" ")[1]}`}
+            <LineChart
+              data={chartData}
+              margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="#374151"
+                opacity={0.1}
               />
-              <Legend />
+              <XAxis
+                dataKey="semester"
+                stroke="#6B7280"
+                fontSize={12}
+                tickLine={false}
+                axisLine={{ stroke: "#374151", strokeWidth: 1 }}
+              />
+              <YAxis
+                domain={[0, 10]}
+                stroke="#6B7280"
+                fontSize={12}
+                tickLine={false}
+                axisLine={{ stroke: "#374151", strokeWidth: 1 }}
+                tickFormatter={(value) => value.toFixed(1)}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#1F2937",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  color: "#E5E7EB",
+                }}
+                formatter={(value, name) => [`${value.toFixed(2)}`, name]}
+                labelStyle={{ color: "#E5E7EB", marginBottom: "4px" }}
+                labelFormatter={(label) => `Semester ${label.split(" ")[1]}`}
+                cursor={{ stroke: "#6B7280", strokeWidth: 1 }}
+                wrapperStyle={{ outline: "none" }}
+              />
+              <Legend
+                verticalAlign="top"
+                height={36}
+                iconType="circle"
+                iconSize={8}
+              />
               <Line
                 type="monotone"
                 dataKey="gpa"
-                stroke="#8884d8"
+                stroke="#3B82F6"
                 name="GPA"
-                strokeWidth={2}
-                dot={{ r: 4 }}
+                strokeWidth={2.5}
+                dot={{ r: 4, fill: "#3B82F6" }}
+                activeDot={{ r: 6, fill: "#3B82F6" }}
               />
               <Line
                 type="monotone"
                 dataKey="cgpa"
-                stroke="#82ca9d"
+                stroke="#10B981"
                 name="CGPA"
-                strokeWidth={2}
-                dot={{ r: 4 }}
+                strokeWidth={2.5}
+                dot={{ r: 4, fill: "#10B981" }}
+                activeDot={{ r: 6, fill: "#10B981" }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -484,22 +535,52 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
     const latestResults = savedResults[latestSemester];
 
     return (
-      <div className="bg-white p-4 rounded-lg shadow w-full md:w-1/3">
-        <h3 className="text-lg font-semibold mb-4">Academic Summary</h3>
-        <div className="grid grid-cols-1 gap-4">
-          <div className="bg-gray-50 p-3 rounded">
-            <p className="text-sm text-gray-600">Completed Semesters</p>
-            <p className="text-lg md:text-xl font-bold">
-              {Object.keys(savedResults).length}
-            </p>
+      <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-2xl shadow-lg w-full md:w-1/3">
+        <h3 className="text-xl font-semibold mb-6 text-white flex items-center gap-2">
+          <BookOpen className="w-5 h-5" />
+          Academic Summary
+        </h3>
+        <div className="space-y-4">
+          <div className="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-blue-100">Completed Semesters</p>
+                <p className="text-2xl font-bold text-white mt-1">
+                  {Object.keys(savedResults).length}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-blue-500/30 flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-blue-100" />
+              </div>
+            </div>
           </div>
-          <div className="bg-gray-50 p-3 rounded">
-            <p className="text-sm text-gray-600">Latest GPA</p>
-            <p className="text-lg md:text-xl font-bold">{latestResults.gpa}</p>
+
+          <div className="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-blue-100">Latest GPA</p>
+                <p className="text-2xl font-bold text-white mt-1">
+                  {latestResults.gpa}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-blue-500/30 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-blue-100" />
+              </div>
+            </div>
           </div>
-          <div className="bg-gray-50 p-3 rounded">
-            <p className="text-sm text-gray-600">Current CGPA</p>
-            <p className="text-lg md:text-xl font-bold">{latestResults.cgpa}</p>
+
+          <div className="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-blue-100">Current CGPA</p>
+                <p className="text-2xl font-bold text-white mt-1">
+                  {latestResults.cgpa}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-blue-500/30 flex items-center justify-center">
+                <Award className="w-5 h-5 text-blue-100" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -510,10 +591,7 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
   const handleDownloadReport = async () => {
     try {
       const blob = await pdf(
-        <GradeSheetPDF
-          student={student}
-          results={savedResults}
-        />
+        <GradeSheetPDF student={student} results={savedResults} />
       ).toBlob();
 
       const url = URL.createObjectURL(blob);
@@ -532,17 +610,12 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
 
   return (
     <div className="p-2 md:p-4">
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        {renderProgressChart()}
-        {renderOverallSummary()}
-      </div>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
         <h2 className="text-xl font-semibold mb-2 md:mb-0">Semester Results</h2>
         <div className="flex items-center gap-4">
-     
           {Object.keys(savedResults).length > 0 && (
             <Button
-              className="bg-purple-500 hover:bg-purple-600 transition-all duration-300"
+              className="bg-blue-500 hover:bg-blue-600 text-white transition-all duration-300"
               onClick={handleDownloadReport}
             >
               Download Report
@@ -590,11 +663,11 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
                       <tr>
                         <th className="px-2 md:px-4 py-2">Code</th>
                         <th className="px-2 md:px-4 py-2">Course</th>
-                        <th className="px-2 md:px-4 py-2 text-center">
+                        <th className="hidden md:table-cell px-2 md:px-4 py-2 text-center">
                           Credits
                         </th>
                         {semester.semester_no >= 5 && (
-                          <th className="px-2 md:px-4 py-2 text-center">
+                          <th className="hidden md:table-cell px-2 md:px-4 py-2 text-center">
                             Type
                           </th>
                         )}
@@ -626,28 +699,32 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
                   </div>
                   <div className="flex gap-2 order-1 md:order-2">
                     <Button
-                      className="flex-1 md:flex-none md:w-24 bg-blue-400 hover:bg-blue-500 transition-all duration-300 text-sm"
-                      onClick={() => calculateResults(semester.semester_no)}
-                      disabled={loading}
+                      className="flex-1 md:flex-none  bg-blue-500 hover:bg-blue-600 transition-all duration-300 text-sm"
+                      onClick={() => handleSaveResults(semester.semester_no)}
+                      disabled={saving}
                     >
-                      Calculate
+                      {saving ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Saving...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Save className="w-4 h-4" />
+                          Calculate & Save
+                        </div>
+                      )}
                     </Button>
-                    {results?.[semester.semester_no] && (
-                      <Button
-                        className="flex-1 md:flex-none md:w-24 bg-green-400 hover:bg-green-500 transition-all duration-300 text-sm"
-                        onClick={() => handleSaveResults(semester.semester_no)}
-                        disabled={saving}
-                      >
-                        {saving ? "Saving..." : "Save"}
-                      </Button>
-                    )}
                   </div>
                 </div>
               </Accordion.Content>
             </Accordion.Panel>
           ))}
       </Accordion>
-
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        {renderProgressChart()}
+        {renderOverallSummary()}
+      </div>
       {error && (
         <div className="text-red-500 text-center mt-4 text-sm">{error}</div>
       )}

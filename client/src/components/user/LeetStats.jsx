@@ -52,8 +52,8 @@ const LeetStats = ({ leetcode_url }) => {
   const calculateProgress = (solved, total) => (solved / total) * 100;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <TbBrandLeetcode className="w-6 h-6 text-[#FFA116]" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -65,7 +65,7 @@ const LeetStats = ({ leetcode_url }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Solved Problems Stats */}
         <div className="space-y-4">
           <div className="flex items-center justify-between mb-2">
@@ -144,7 +144,7 @@ const LeetStats = ({ leetcode_url }) => {
         </div>
 
         {/* Additional Stats */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
             <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {leetcodeStats.acceptanceRate}%
