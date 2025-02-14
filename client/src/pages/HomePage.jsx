@@ -273,13 +273,13 @@ function HomePage() {
                     Get Started
                     <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                   </Link>
-                  <Link
+                  {/* <Link
                     to="/know-about-us"
                     className="group inline-flex items-center gap-2 px-8 py-4 text-lg font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                   >
                     Learn More
                     <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                  </Link> */}
                 </motion.div>
               )}
             </motion.div>

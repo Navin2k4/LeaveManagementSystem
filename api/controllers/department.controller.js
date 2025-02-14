@@ -2,6 +2,9 @@ import Department from "../models/department.model.js";
 import Batch from "../models/batch.model.js";
 import Section from "../models/section.model.js";
 import Staff from "../models/staff.model.js";
+import Defaulter from "../models/defaulter.model.js";
+import LeaveRequest from "../models/leave.model.js";
+import ODRequest from "../models/od.model.js";
 
 export const getDepartments = async (req, res, next) => {
   try {
@@ -313,3 +316,89 @@ export const deleteDepartment = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const getLeaveRequests = async (req, res) => {
+  const { departmentId } = req.params;
+
+  try {
+    // Find all batches in the department
+    const department = await Department.findById(departmentId).populate({
+      path: "batches",
+      populate: {
+        path: "sections",
+      },
+    });
+
+    if (!department) {
+      return res.status(404).json({ message: "Department not found" });
+    }
+
+    // Get all section IDs from the department
+    const sectionIds = department.batches.flatMap((batch) =>
+      batch.sections.map((section) => section._id)
+    );
+
+    // Find leave requests for these sections with populated batch and section info
+    const leaveRequests = await LeaveRequest.find({
+      sectionId: { $in: sectionIds },
+    })
+      .populate("sectionId", "section_name Batch")
+      .populate({
+        path: "sectionId",
+        populate: {
+          path: "Batch",
+          select: "batch_name",
+        },
+      })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(leaveRequests);
+  } catch (error) {
+    console.error("Error fetching leave requests:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getODRequests = async (req, res) => {
+  const { departmentId } = req.params;
+
+  try {
+    const odRequests = await ODRequest.find({
+      departmentId: departmentId,
+    })
+      .populate("sectionId", "section_name Batch")
+      .populate({
+        path: "sectionId",
+        populate: {
+          path: "Batch",
+          select: "batch_name",
+        },
+      })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(odRequests);
+  } catch (error) {
+    console.error("Error fetching OD requests:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getDefaulters = async (req, res) => {
+  const { departmentId } = req.params;
+
+  try {
+    const defaulters = await Defaulter.find({
+      departmentId: departmentId,
+      isDone: false,
+    })
+      .populate("studentId", "name roll_no")
+      .populate("mentorId", "name")
+      .populate("classInchargeId", "name");
+
+    res.status(200).json(defaulters);
+  } catch (error) {
+    console.error("Error fetching defaulters:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+

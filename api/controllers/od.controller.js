@@ -1,6 +1,9 @@
 import OdRequest from "../models/od.model.js";
 import { errorHandler } from "../utils/error.js";
 import { notifyOdRequestStatus } from "./email.service.js";
+import Department from "../models/department.model.js";
+import Batch from "../models/batch.model.js";
+import Section from "../models/section.model.js";
 
 export const createOdRequest = async (req, res) => {
   try {
@@ -372,5 +375,38 @@ export const mentors = async (req, res) => {
   } catch (error) {
     console.error("Error in Fetching the Data ", error.message);
     res.status(500).json({ error: "Failed to fetch mentors" });
+  }
+};
+
+export const getFolderPath = async (req, res) => {
+  const { departmentId, batchId, sectionId } = req.body;
+
+  try {
+    const [department, batch, section] = await Promise.all([
+      Department.findById(departmentId).select("dept_acronym"),
+      Batch.findById(batchId).select("batch_name"),
+      Section.findById(sectionId).select("section_name"),
+    ]);
+
+
+    if (!department || !batch || !section) {
+      return res.status(404).json({
+        error: "Could not find all required information",
+        details: { department, batch, section }
+      });
+    }
+
+    const folderPath =
+      `${department.dept_acronym}/${batch.batch_name}/${section.section_name}`
+        .replace(/\s+/g, "_")
+        .toUpperCase();
+
+    res.status(200).json({ folderPath });
+  } catch (error) {
+    console.error("Error in getFolderPath:", error);
+    res.status(500).json({
+      error: "Failed to generate folder path",
+      details: error.message
+    });
   }
 };

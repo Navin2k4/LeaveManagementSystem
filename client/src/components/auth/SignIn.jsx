@@ -22,14 +22,14 @@ export default function SignIn() {
     {
       value: "student",
       label: "Student",
-      icon: <GraduationCap size={20} />,
-      description: "Sign in as a student to manage your requests",
+      icon: <GraduationCap className="h-6 w-6" />,
+      description: "Access your leave & OD requests",
     },
     {
       value: "staff",
       label: "Staff",
-      icon: <MdSupervisorAccount size={20} />,
-      description: "Sign in as staff to manage student requests",
+      icon: <MdSupervisorAccount className="h-6 w-6" />,
+      description: "Manage student requests & approvals",
     },
   ];
 
@@ -102,63 +102,87 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex justify-center"
-          >
-            <img
-              src="/vcet.jpeg"
-              alt="VCET Logo"
-              className="h-16 w-16 rounded-full"
-            />
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="mt-6 text-3xl font-bold text-gray-900"
-          >
-            Welcome Back
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="mt-2 text-sm text-gray-600"
-          >
-            Sign in to access your account
-          </motion.p>
-        </div>
-
-        {/* Role Selection */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-8 space-y-6"
+    <div className="min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-lg w-full space-y-8 flex gap-8">
+        {/* <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex-1 hidden lg:flex flex-col justify-center space-y-6 p-8"
         >
+          <img
+            src="/vcet.jpeg"
+            alt="VCET Logo"
+            className="h-20 w-20 rounded-full shadow-lg"
+          />
+          <h1 className="text-4xl font-bold text-gray-900">
+            Welcome to VCET
+            <span className="block text-blue-600">Leave Management</span>
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Streamline your leave and OD requests with our easy-to-use platform.
+          </p>
+          <div className="bg-blue-50 p-6 rounded-xl space-y-4">
+            <h3 className="font-semibold text-blue-900">Quick Features</h3>
+            <ul className="space-y-3">
+              {[
+                "Easy leave & OD request submission",
+                "Real-time request tracking",
+                "Quick approval process",
+                "Automated notifications",
+              ].map((feature, index) => (
+                <motion.li
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 * (index + 1) }}
+                  className="flex items-center text-blue-800"
+                >
+                  <span className="h-2 w-2 bg-blue-500 rounded-full mr-2" />
+                  {feature}
+                </motion.li>
+              ))}
+            </ul>
+          </div>
+        </motion.div> */}
+
+        {/* Right Section - Sign In Form */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex-1 bg-white p-8 rounded-2xl shadow-xl space-y-6"
+        >
+          <div className="text-center items-center flex flex-col gap-4">
+                    {/* <img
+            src="/vcet.jpeg"
+            alt="VCET Logo"
+            className="h-20 w-20 rounded-full shadow-lg"
+          /> */}
+            <h2 className="text-3xl font-bold text-gray-900">Sign In</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Please select your role and enter your credentials
+            </p>
+          </div>
+
+          {/* Role Selection */}
           <div className="grid grid-cols-2 gap-4">
             {roleOptions.map((role) => (
               <button
                 key={role.value}
                 onClick={() => setSelectRole(role.value)}
-                className={`relative p-4 rounded-lg border-2 transition-all duration-200
+                className={`relative p-4 rounded-xl border-2 transition-all duration-200
                   ${
                     selectRole === role.value
-                      ? "border-blue-500 bg-blue-50 text-blue-700"
-                      : "border-gray-200 hover:border-gray-300 text-gray-700"
+                      ? "border-blue-500 bg-blue-50 text-blue-700 shadow-md"
+                      : "border-gray-200 hover:border-gray-300 text-gray-700 hover:bg-gray-50"
                   }
                 `}
               >
                 <div className="flex flex-col items-center gap-2">
                   {role.icon}
                   <span className="font-medium">{role.label}</span>
+                  <p className="text-xs text-gray-500">{role.description}</p>
                 </div>
               </button>
             ))}
@@ -169,8 +193,8 @@ export default function SignIn() {
           )}
 
           {/* Sign In Form */}
-          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-            <div className="rounded-md shadow-sm space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   {selectRole === "student" ? "Roll Number" : "Staff ID"}
@@ -183,9 +207,9 @@ export default function SignIn() {
                     id="identifier"
                     type="text"
                     onChange={handleChange}
-                    className={`block w-full pl-10 pr-3 py-2 border ${
+                    className={`block w-full pl-10 pr-3 py-2.5 border ${
                       errors.identifier ? "border-red-500" : "border-gray-300"
-                    } rounded-lg focus:ring-blue-500 focus:border-blue-500`}
+                    } rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                     placeholder={
                       selectRole === "student"
                         ? "Enter roll number"
@@ -212,9 +236,9 @@ export default function SignIn() {
                     id="password"
                     type="password"
                     onChange={handleChange}
-                    className={`block w-full pl-10 pr-3 py-2 border ${
+                    className={`block w-full pl-10 pr-3 py-2.5 border ${
                       errors.password ? "border-red-500" : "border-gray-300"
-                    } rounded-lg focus:ring-blue-500 focus:border-blue-500`}
+                    } rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                     placeholder="Enter your password"
                   />
                 </div>
@@ -225,28 +249,26 @@ export default function SignIn() {
             </div>
 
             {errorMessage && (
-              <div className="rounded-md bg-red-50 p-4">
+              <div className="rounded-xl bg-red-50 p-4">
                 <p className="text-sm text-red-600 text-center">
                   {errorMessage}
                 </p>
               </div>
             )}
 
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="group relative w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 disabled:opacity-50"
-              >
-                {loading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  </div>
-                ) : (
-                  "Sign In"
-                )}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : (
+                "Sign In"
+              )}
+            </button>
           </form>
         </motion.div>
       </div>

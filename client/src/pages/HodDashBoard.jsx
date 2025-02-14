@@ -1,28 +1,25 @@
-import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  Table,
-  TableBody,
-  Spinner,
-  TableCell,
-  TableHead,
-  TableHeadCell,
-  TableRow,
-} from "flowbite-react";
-import { SiTicktick } from "react-icons/si";
-import { RxCrossCircled } from "react-icons/rx";
+import { Button, Modal, ModalBody, ModalHeader, Spinner } from "flowbite-react";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import { BookOpen, ClipboardList, User } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { MdOutlineDownloadDone } from "react-icons/md";
+import { RxCrossCircled } from "react-icons/rx";
+import { SiTicktick } from "react-icons/si";
 import { useSelector } from "react-redux";
 import StatusDot from "../components/general/StatusDot";
-import { TiTick } from "react-icons/ti";
-import { RxCross2 } from "react-icons/rx";
-import { User, ClipboardList, BookOpen } from "lucide-react";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import HODGenerativeSummary from "../components/systems/HODGenerativeSummary";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  pdf,
+} from "@react-pdf/renderer";
+import { saveAs } from "file-saver";
 
 const Hoddashboard = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -146,15 +143,18 @@ const Hoddashboard = () => {
   const fetchLeaveRequests = async (sectionId) => {
     try {
       setIsFetching(true);
-      const response = await fetch(`/api/leaverequestsbysectionid/${sectionId}`);
+      const response = await fetch(
+        `/api/leaverequestsbysectionid/${sectionId}`
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch leave requests");
       }
       const data = await response.json();
-      setLeaveRequests(prevRequests => {
+      setLeaveRequests((prevRequests) => {
         // Combine new requests with existing ones, avoiding duplicates
-        const newRequests = data.filter(newReq => 
-          !prevRequests.some(prevReq => prevReq._id === newReq._id)
+        const newRequests = data.filter(
+          (newReq) =>
+            !prevRequests.some((prevReq) => prevReq._id === newReq._id)
         );
         return [...prevRequests, ...newRequests];
       });
@@ -302,12 +302,15 @@ const Hoddashboard = () => {
       // Then fetch leave requests for each section
       const requests = [];
       for (const section of batchSections) {
-        const requestsResponse = await fetch(`/api/leaverequestsbysectionid/${section._id}`);
-        if (!requestsResponse.ok) throw new Error("Failed to fetch leave requests");
+        const requestsResponse = await fetch(
+          `/api/leaverequestsbysectionid/${section._id}`
+        );
+        if (!requestsResponse.ok)
+          throw new Error("Failed to fetch leave requests");
         const sectionRequests = await requestsResponse.json();
         requests.push({
           section: section.section_name,
-          requests: sectionRequests
+          requests: sectionRequests,
         });
       }
       return { sections: batchSections, requests };
@@ -317,103 +320,404 @@ const Hoddashboard = () => {
     }
   };
 
+  // Update the styles
+  const styles = StyleSheet.create({
+    page: {
+      padding: "0.7in",
+      fontSize: 10,
+    },
+    firstPageHeader: {
+      marginBottom: 20,
+      alignItems: "center",
+    },
+    logo: {
+      width: 60,
+      height: 60,
+      marginBottom: 8,
+    },
+    collegeName: {
+      fontSize: 14,
+      fontWeight: "bold",
+      marginBottom: 4,
+      textAlign: "center",
+    },
+    collegeInfo: {
+      fontSize: 9,
+      marginBottom: 2,
+      textAlign: "center",
+      color: "#444",
+    },
+    departmentName: {
+      fontSize: 12,
+      fontWeight: "bold",
+      marginBottom: 12,
+      textAlign: "center",
+    },
+    title: {
+      fontSize: 11,
+      fontWeight: "bold",
+      marginBottom: 15,
+      textAlign: "center",
+      textDecoration: "underline",
+    },
+    headerInfo: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 15,
+      fontSize: 9,
+      borderBottom: 1,
+      paddingBottom: 4,
+    },
+    section: {
+      marginBottom: 15,
+    },
+    sectionTitle: {
+      fontSize: 10,
+      fontWeight: "bold",
+      marginBottom: 6,
+      marginTop: 15,
+      backgroundColor: "#f3f4f6",
+      padding: "6 4",
+      borderWidth: 0.5,
+      borderColor: "#000",
+    },
+    table: {
+      width: "100%",
+      marginBottom: 15,
+    },
+    tableRow: {
+      flexDirection: "row",
+      borderBottomWidth: 0.5,
+      borderBottomColor: "#ccc",
+      minHeight: 24,
+      alignItems: "center",
+    },
+    tableHeader: {
+      backgroundColor: "#1f3a6e",
+      color: "#fff",
+      padding: "6 4",
+      fontSize: 9,
+      fontWeight: "bold",
+    },
+    tableCell: {
+      padding: "6 4",
+      fontSize: 9,
+    },
+    totalRow: {
+      flexDirection: "row",
+      borderTopWidth: 1,
+      borderTopColor: "#000",
+      backgroundColor: "#f3f4f6",
+      minHeight: 24,
+      alignItems: "center",
+    },
+    footer: {
+      position: "absolute",
+      bottom: 30,
+      left: 0,
+      right: 0,
+      paddingHorizontal: "0.7in",
+    },
+    footerContent: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      fontSize: 8,
+      color: "#666",
+      borderTopWidth: 0.5,
+      borderTopColor: "#666",
+      paddingTop: 4,
+    },
+    signature: {
+      position: "absolute",
+      bottom: 60, // Adjusted to be above footer
+      right: 0,
+      width: 200,
+      textAlign: "center",
+    },
+    signatureText: {
+      fontSize: 10,
+      marginBottom: 25,
+    },
+    signatureLine: {
+      width: 150,
+      borderBottomWidth: 0.5,
+      borderBottomColor: "#000",
+      marginBottom: 4,
+      alignSelf: "center",
+    },
+    signatureTitle: {
+      fontSize: 9,
+      fontWeight: "bold",
+    },
+    content: {
+      flex: 1,
+      position: "relative",
+    },
+  });
+
+  // Create a new component for page numbers
+  const PageNumbers = ({ pageNumber, totalPages }) => (
+    <View
+      style={[
+        styles.footer,
+        {
+          flexDirection: "row",
+          justifyContent: "space-between",
+          position: "absolute",
+          bottom: 30,
+          left: 30,
+          right: 30,
+        },
+      ]}
+      fixed
+    >
+      <Text style={{ fontSize: 8, color: "#666" }}>
+        Generated by VCET Connect
+      </Text>
+      <Text style={{ fontSize: 8, color: "#666" }}>
+        Page {pageNumber} of {totalPages}
+      </Text>
+    </View>
+  );
+
+  // Update the Document Component
+  const LeaveRequestsDocument = ({ deptName, filteredData, today }) => {
+    const totalPages = Math.ceil(filteredData.requests.length * 0.5 + 1);
+
+    return (
+      <Document>
+        {Array.from({ length: totalPages }, (_, pageIndex) => (
+          <Page key={pageIndex} size="A4" style={styles.page}>
+            {pageIndex === 0 && (
+              <View style={styles.firstPageHeader}>
+                <Image src="/vcet.jpeg" style={styles.logo} />
+                <Text style={styles.collegeName}>
+                  VELAMMAL COLLEGE OF ENGINEERING AND TECHNOLOGY
+                </Text>
+                <Text style={styles.collegeInfo}>
+                  (An Autonomous Institution)
+                </Text>
+                <Text style={styles.collegeInfo}>Madurai - 625009</Text>
+                <Text style={styles.departmentName}>Department of {deptName}</Text>
+                <Text style={styles.title}>
+                  ON DUTY / LEAVE REQUEST REPORT for {today.toLocaleDateString()}
+                </Text>
+              </View>
+            )}
+
+            <View style={styles.content}>
+              {pageIndex === 0 && (
+                <View style={styles.headerInfo}>
+                  <Text>Date: {today.toLocaleDateString()}</Text>
+                  <Text>Batch: 2022-2026</Text>
+                </View>
+              )}
+
+              {/* Sections and Table */}
+              {filteredData.requests
+                .slice(pageIndex * 2, (pageIndex + 1) * 2)
+                .map((sectionData, sectionIndex) => (
+                  <View key={sectionIndex} wrap={false}>
+                    <Text style={styles.sectionTitle}>
+                      Section {sectionData.section}
+                    </Text>
+
+                    <View style={styles.table}>
+                      {/* Table Header */}
+                      <View style={[styles.tableRow, styles.tableHeader]}>
+                        <Text style={[styles.tableCell, { width: "5%" }]}>
+                          S.No
+                        </Text>
+                        <Text style={[styles.tableCell, { width: "20%" }]}>
+                          Name
+                        </Text>
+                        <Text style={[styles.tableCell, { width: "12%" }]}>
+                          Roll No
+                        </Text>
+                        <Text style={[styles.tableCell, { width: "28%" }]}>
+                          Reason
+                        </Text>
+                        <Text style={[styles.tableCell, { width: "25%" }]}>
+                          Duration
+                        </Text>
+                        <Text
+                          style={[
+                            styles.tableCell,
+                            { width: "10%" },
+                            styles.lastCell,
+                          ]}
+                        >
+                          Days
+                        </Text>
+                      </View>
+
+                      {/* Table Body */}
+                      {sectionData.requests.map((req, index) => (
+                        <View key={index} style={styles.tableRow}>
+                          <Text style={[styles.tableCell, { width: "5%" }]}>
+                            {index + 1}
+                          </Text>
+                          <Text style={[styles.tableCell, { width: "20%" }]}>
+                            {req.name}
+                          </Text>
+                          <Text style={[styles.tableCell, { width: "12%" }]}>
+                            {req.rollNo}
+                          </Text>
+                          <Text style={[styles.tableCell, { width: "28%" }]}>
+                            {req.reason}
+                          </Text>
+                          <Text style={[styles.tableCell, { width: "25%" }]}>
+                            {`${formatDate(req.fromDate)} to ${formatDate(
+                              req.toDate
+                            )}`}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.tableCell,
+                              { width: "10%" },
+                              styles.lastCell,
+                            ]}
+                          >
+                            {req.noOfDays}
+                          </Text>
+                        </View>
+                      ))}
+
+                      {/* Total Row for Section */}
+                      <View style={styles.totalRow}>
+                        <Text style={[styles.totalCell, { width: "90%" }]}>
+                          Total Students on OD/Leave in Section{" "}
+                          {sectionData.section}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.totalCell,
+                            { width: "10%" },
+                            styles.lastCell,
+                          ]}
+                        >
+                          {sectionData.requests.length}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                ))}
+
+              {/* Show signature only on last page */}
+              {pageIndex === totalPages - 1 && (
+                <>
+                  {/* Grand Total Row */}
+                  <View style={[styles.table, { marginBottom: 40 }]}>
+                    <View style={styles.totalRow}>
+                      <Text
+                        style={[
+                          styles.tableCell,
+                          { width: "90%", fontWeight: "bold" },
+                        ]}
+                      >
+                        Total Students on OD/Leave in Batch
+                      </Text>
+                      <Text
+                        style={[
+                          styles.tableCell,
+                          { width: "10%", fontWeight: "bold" },
+                        ]}
+                      >
+                        {filteredData.requests.reduce(
+                          (acc, section) => acc + section.requests.length,
+                          0
+                        )}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Signature */}
+                  <View style={styles.signature}>
+                    <Text style={styles.signatureText}>
+                      For Office Use Only
+                    </Text>
+                    <View style={styles.signatureLine} />
+                    <Text style={styles.signatureTitle}>
+                      HEAD OF THE DEPARTMENT
+                    </Text>
+                  </View>
+                </>
+              )}
+            </View>
+
+            {/* Page numbers */}
+            <View style={styles.footer} fixed>
+              <View style={styles.footerContent}>
+                <Text style={{ fontSize: 8, color: "#666" }}>
+                  Generated by VCET Connect
+                </Text>
+                <Text style={{ fontSize: 8, color: "#666" }}>
+                  Page {pageIndex + 1} of {totalPages}
+                </Text>
+              </View>
+            </View>
+          </Page>
+        ))}
+      </Document>
+    );
+  };
+
   // Modify the generatePDF function
   const generatePDF = async () => {
-    // Find the 2022-2026 batch
-    const targetBatch = batches.find(batch => batch.batch_name === "2022-2026");
-    
+    const targetBatch = batches.find(
+      (batch) => batch.batch_name === "2022-2026"
+    );
     if (!targetBatch) {
       alert("2022-2026 batch not found");
       return;
     }
 
-    // Show loading state
     setLoading(true);
 
     try {
-      // Fetch all leave requests for the batch
       const allData = await fetchAllLeaveRequestsForBatch(targetBatch._id);
-      
       if (!allData) {
         alert("Failed to fetch leave requests");
         return;
       }
 
-      const doc = new jsPDF();
-      
-      // Add title
-      doc.setFontSize(16);
-      doc.text(`${deptName} - Leave Requests Report`, 14, 15);
-      doc.setFontSize(11);
-      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 25);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-      // Initialize starting y position
-      let yPos = 35;
+      const filteredData = {
+        requests: allData.requests
+          .map((sectionData) => ({
+            section: sectionData.section,
+            requests: sectionData.requests.filter(
+              (req) =>
+                req.status === "approved" &&
+                new Date(req.fromDate).toLocaleDateString() ===
+                  new Date().toLocaleDateString()
+            ),
+          }))
+          .filter((sectionData) => sectionData.requests.length > 0),
+      };
 
-      // Add batch header
-      doc.setFontSize(14);
-      doc.text(`Batch: 2022-2026`, 14, yPos);
-      yPos += 10;
+      if (filteredData.requests.length === 0) {
+        setLoading(false);
+        alert("No approved leave requests found");
+        return;
+      }
 
-      // Process each section's data
-      allData.requests.forEach(({ section, requests }) => {
-        if (requests.length > 0) {
-          // Add section header
-          doc.setFontSize(12);
-          doc.text(`Section ${section}`, 14, yPos);
-          yPos += 10;
-
-          // Create table for this section's requests
-          const tableData = requests.map(req => [
-            req.name,
-            req.reason,
-            `${formatDate(req.fromDate)} to ${formatDate(req.toDate)}`,
-            req.noOfDays.toString(),
-            req.approvals.mentor.status,
-            req.approvals.classIncharge.status,
-            req.approvals.hod?.status || 'pending',
-            req.hodComment !== "No Comments" ? req.hodComment : ""
-          ]);
-
-          doc.autoTable({
-            startY: yPos,
-            head: [['Student', 'Reason', 'Dates', 'Days', 'Mentor', 'CI', 'HOD', 'Comments']],
-            body: tableData,
-            theme: 'grid',
-            styles: { 
-              fontSize: 8,
-              cellPadding: 2,
-            },
-            columnStyles: {
-              0: { cellWidth: 25 }, // Student name
-              1: { cellWidth: 25 }, // Reason
-              2: { cellWidth: 30 }, // Dates
-              3: { cellWidth: 10 }, // Days
-              4: { cellWidth: 15 }, // Mentor
-              5: { cellWidth: 15 }, // CI
-              6: { cellWidth: 15 }, // HOD
-              7: { cellWidth: 25 }, // Comments
-            },
-            headStyles: { 
-              fillColor: [31, 58, 110],
-              textColor: [255, 255, 255],
-              fontStyle: 'bold'
-            },
-            margin: { left: 14, right: 14 },
-          });
-
-          yPos = doc.lastAutoTable.finalY + 15;
-
-          // Add new page if needed
-          if (yPos > 270) {
-            doc.addPage();
-            yPos = 20;
-          }
-        }
-      });
+      // Generate PDF
+      const blob = await pdf(
+        <LeaveRequestsDocument
+          deptName={deptName}
+          filteredData={filteredData}
+          today={today}
+        />
+      ).toBlob();
 
       // Save the PDF
-      doc.save(`${deptName}_Leave_Requests_${new Date().toLocaleDateString()}.pdf`);
+      saveAs(
+        blob,
+        `${deptName}_Leave_Requests_${today.toLocaleDateString()}.pdf`
+      );
     } catch (error) {
       console.error("Error generating PDF:", error);
       alert("Failed to generate PDF");
@@ -457,8 +761,17 @@ const Hoddashboard = () => {
                     </>
                   ) : (
                     <>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586L7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clipRule="evenodd" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586L7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       Generate PDF Report
                     </>
@@ -679,12 +992,11 @@ const Hoddashboard = () => {
           )}
 
           {!studentRequest && !staffRequest && (
-            <div className="flex items-center justify-center h-[calc(100vh-2rem)]">
-              <div className="text-center">
-                <User size={48} className="mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-600 dark:text-gray-400">
-                  Select Leave Request type to view requests
-                </p>
+            <div className="">
+              <div>
+                {currentUser && (
+                  <HODGenerativeSummary currentUser={currentUser} />
+                )}
               </div>
             </div>
           )}

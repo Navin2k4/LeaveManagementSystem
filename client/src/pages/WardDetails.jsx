@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 const WardDetails = () => {
   const [rollNo, setRollNo] = useState("");
@@ -144,99 +145,144 @@ const WardDetails = () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-6 min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="w-full max-w-6xl">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Ward Details
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {/* Header Section */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+            Ward Activity Monitor
           </h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Monitor your ward's attendance and activities
+          <p className="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">
+            Track your ward's attendance, leaves, and on-duty activities in one
+            place
           </p>
-        </div>
+        </motion.div>
 
-        {/* Search Form */}
-        <div className="mb-8">
-          <form onSubmit={handleSubmit} className="flex gap-2 max-w-md mx-auto">
-            <input
-              type="text"
-              className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
-              placeholder="Enter Roll Number (e.g., 22CSEB01)"
-              value={rollNo}
-              onChange={handleChange}
-              required
-            />
-            <button
-              type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <div className="flex items-center">
-                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  Loading...
+        {/* Search Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="max-w-xl mx-auto mb-12"
+        >
+          <form onSubmit={handleSubmit} className="relative">
+            <div className="flex gap-3">
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FaSearch className="h-5 w-5 text-gray-400" />
                 </div>
-              ) : (
-                <div className="flex items-center">
-                  <FaSearch className="mr-2" />
-                  Search
-                </div>
-              )}
-            </button>
+                <input
+                  type="text"
+                  className="block w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  placeholder="Enter Roll Number (e.g., 22CSEB01)"
+                  value={rollNo}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Searching...</span>
+                  </>
+                ) : (
+                  <>
+                    <FaSearch className="h-5 w-5" />
+                    <span>Search</span>
+                  </>
+                )}
+              </button>
+            </div>
           </form>
-        </div>
+        </motion.div>
 
-        {/* Results */}
-        <div className="w-full">
+        {/* Results Section */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="space-y-6"
+        >
           {error && (
-            <div className="text-center text-red-600 mb-4">{error}</div>
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+              <p className="text-center text-red-600">{error}</p>
+            </div>
           )}
 
           {searchInitiated &&
             !isLoading &&
             wardDetails.length === 0 &&
             !error && (
-              <div className="text-center text-gray-600 dark:text-gray-400">
-                No records found for Roll Number {rollNo}
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
+                <p className="text-gray-600 text-lg">
+                  No records found for Roll Number{" "}
+                  <span className="font-semibold">{rollNo}</span>
+                </p>
               </div>
             )}
 
           {wardDetails.length > 0 && (
-            <>
-              {/* Desktop view */}
-              <div className="hidden md:block bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div className="space-y-6">
+              {/* Summary Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <SummaryCard
+                  title="Total Leaves"
+                  count={wardDetails.filter((r) => r.type === "Leave").length}
+                  type="leave"
+                />
+                <SummaryCard
+                  title="Total ODs"
+                  count={wardDetails.filter((r) => r.type === "OD").length}
+                  type="od"
+                />
+                <SummaryCard
+                  title="Defaulter Records"
+                  count={
+                    wardDetails.filter((r) => r.type === "Defaulter").length
+                  }
+                  type="defaulter"
+                />
+              </div>
+
+              {/* Desktop Table */}
+              <div className="hidden md:block bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-gray-700">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                          Name
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                          Type
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                          Date Range
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                          Duration
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                          Details
-                        </th>
+                        {[
+                          "Name",
+                          "Type",
+                          "Date Range",
+                          "Duration",
+                          "Status",
+                          "Details",
+                        ].map((header) => (
+                          <th
+                            key={header}
+                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            {header}
+                          </th>
+                        ))}
                       </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white divide-y divide-gray-200">
                       {wardDetails.map((record, index) => (
                         <tr
                           key={index}
-                          className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                          className="hover:bg-gray-50 transition-colors"
                         >
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                             {record.name}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -248,19 +294,13 @@ const WardDetails = () => {
                               {record.type}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900 dark:text-gray-100">
-                              {new Date(record.fromDate).toLocaleDateString()}
-                              {record.fromDate !== record.toDate &&
-                                ` - ${new Date(
-                                  record.toDate
-                                ).toLocaleDateString()}`}
-                            </div>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {formatDate(record.fromDate)}
+                            {record.fromDate !== record.toDate &&
+                              ` - ${formatDate(record.toDate)}`}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900 dark:text-gray-100">
-                              {record.noOfDays} day(s)
-                            </div>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {record.noOfDays} day(s)
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
@@ -272,16 +312,14 @@ const WardDetails = () => {
                               {record.status}
                             </span>
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="text-sm text-gray-900 dark:text-gray-100">
-                              {record.type === "Defaulter"
-                                ? record.defaulterType
-                                : record.reason}
-                            </div>
+                          <td className="px-6 py-4 text-sm text-gray-500">
+                            {record.type === "Defaulter"
+                              ? record.defaulterType
+                              : record.reason}
                             {record.type === "Defaulter" && record.timeIn && (
-                              <div className="text-xs text-gray-500">
+                              <span className="block text-xs text-gray-400">
                                 Time: {record.timeIn}
-                              </div>
+                              </span>
                             )}
                           </td>
                         </tr>
@@ -291,26 +329,58 @@ const WardDetails = () => {
                 </div>
               </div>
 
-              {/* Mobile view */}
+              {/* Mobile Cards */}
               <div className="md:hidden space-y-4">
                 {wardDetails.map((record, index) => (
                   <MobileRecordCard key={index} record={record} />
                 ))}
               </div>
-            </>
-          )}
 
-          {wardDetails.filter(
-            (record) => record.type === "Leave" && record.status === "approved"
-          ).length > 2 && (
-            <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-700 text-center font-medium">
-                Please advise your ward to avoid taking unnecessary leaves
-              </p>
+              {/* Warning Message */}
+              {wardDetails.filter(
+                (record) =>
+                  record.type === "Leave" && record.status === "approved"
+              ).length > 2 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl"
+                >
+                  <p className="text-red-700 text-center font-medium">
+                    ⚠️ Please advise your ward to avoid taking unnecessary
+                    leaves
+                  </p>
+                </motion.div>
+              )}
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
+    </div>
+  );
+};
+
+// New Summary Card Component
+const SummaryCard = ({ title, count, type }) => {
+  const getCardStyle = () => {
+    switch (type) {
+      case "leave":
+        return "bg-blue-50 border-blue-200 text-blue-700";
+      case "od":
+        return "bg-purple-50 border-purple-200 text-purple-700";
+      case "defaulter":
+        return "bg-red-50 border-red-200 text-red-700";
+      default:
+        return "bg-gray-50 border-gray-200 text-gray-700";
+    }
+  };
+
+  return (
+    <div
+      className={`p-6 rounded-xl border ${getCardStyle()} transition-all duration-200 hover:shadow-md`}
+    >
+      <h3 className="text-lg font-semibold">{title}</h3>
+      <p className="text-3xl font-bold mt-2">{count}</p>
     </div>
   );
 };

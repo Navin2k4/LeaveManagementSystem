@@ -121,6 +121,10 @@ const odRequestSchema = new Schema(
     eventDetails: {
       type: String,
     },
+    completionProof: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
@@ -150,21 +154,34 @@ odRequestSchema.pre("save", function (next) {
 
 // Method to compute overall leave request status based on approvals
 odRequestSchema.methods.computeStatus = function () {
+  // If both approvals are approved but no completion proof, keep as pending
+  if (
+    this.approvals.mentor.status === "approved" &&
+    this.approvals.classIncharge.status === "approved" &&
+    this.completionProof === ""
+  ) {
+    return "pending";
+  }
+
+  // If either approval is rejected, mark as rejected
   if (
     this.approvals.mentor.status === "rejected" ||
     this.approvals.classIncharge.status === "rejected"
-    // || this.approvals.hod.status === "rejected"
   ) {
     return "rejected";
-  } else if (
+  }
+
+  // If both approved and has completion proof, mark as approved
+  if (
     this.approvals.mentor.status === "approved" &&
-    this.approvals.classIncharge.status === "approved"
-    // && this.approvals.hod.status === "approved"
+    this.approvals.classIncharge.status === "approved" &&
+    this.completionProof !== ""
   ) {
     return "approved";
-  } else {
-    return "pending";
   }
+
+  // Otherwise keep as pending
+  return "pending";
 };
 
 // Pre-save hook to update status based on approvals

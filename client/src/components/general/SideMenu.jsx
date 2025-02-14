@@ -2,14 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { signOutSuccess } from "../../redux/user/userSlice";
 import { motion } from "framer-motion";
-import {
-  Home,
-  User,
-  LogOut,
-  BookOpen,
-  X,
-  LayoutDashboard,
-} from "lucide-react";
+import { Home, User, LogOut, BookOpen, X, LayoutDashboard } from "lucide-react";
 
 const SideMenu = ({ open, setOpen }) => {
   const { currentUser } = useSelector((state) => state.user);
@@ -120,12 +113,14 @@ const SideMenu = ({ open, setOpen }) => {
       <div className="p-4 space-y-2">
         <MenuItem to="/" icon={Home} label="Home" />
         <MenuItem to="/wardDetails" icon={BookOpen} label="Wards Detail" />
-        
+
         {currentUser ? (
           <>
             <MenuItem
               to={
-                currentUser.userType === "Staff"
+                currentUser.isHod
+                  ? "/hoddash"
+                  : currentUser.userType === "Staff"
                   ? "/staffdashboard"
                   : currentUser.userType === "Student"
                   ? "/profile"

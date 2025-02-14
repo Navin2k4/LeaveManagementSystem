@@ -18,7 +18,11 @@ import {
   addNewBatch,
   deleteBatch,
   deleteDepartment,
-  deleteClassIncharge
+
+  deleteClassIncharge,
+  getLeaveRequests,
+  getODRequests,
+  getDefaulters
 } from '../controllers/department.controller.js';
 
 const router = express.Router();
@@ -45,5 +49,9 @@ router.post('/batches/addBatch',addNewBatch)
 router.delete('/sections/deleteSection/:sectionId',deleteSection);
 router.delete('/batches/deleteBatch/:batchId',deleteBatch);
 router.delete('/departments/deleteDepartment/:deptId',deleteDepartment);
+
+router.get('/department/:departmentId/leaveRequests',getLeaveRequests);
+router.get('/department/:departmentId/odRequests',getODRequests);
+router.get('/department/:departmentId/defaulters',getDefaulters);
 
 export default router;

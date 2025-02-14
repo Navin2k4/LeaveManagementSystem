@@ -83,7 +83,9 @@ function Navbar() {
               <>
                 <NavLink
                   to={
-                    currentUser.userType === "Staff"
+                    currentUser.isHod
+                      ? "/hoddash"
+                      : currentUser.userType === "Staff"
                       ? "/staffdashboard"
                       : currentUser.userType === "Student"
                       ? "/profile"

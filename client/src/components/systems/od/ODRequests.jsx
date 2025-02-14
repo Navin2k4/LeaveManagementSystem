@@ -1,5 +1,5 @@
 import { Button, Modal, ModalBody, ModalHeader, Spinner } from "flowbite-react";
-import { Info, ChevronRight } from "lucide-react";
+import { Info, ChevronRight, Eye } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { MdOutlineDownloadDone } from "react-icons/md";
 import { RxCross2, RxCrossCircled } from "react-icons/rx";
@@ -153,11 +153,34 @@ export default function ODRequests({
   };
 
   const filterRequestsByStatus = (requests, role) => {
-    return requests.filter((request) =>
-      activeTab === "pending"
-        ? request.approvals[role].status === "pending"
-        : request.approvals[role].status !== "pending"
-    );
+    const today = new Date();
+    return requests.filter((request) => {
+      const toDate = new Date(request.toDate);
+      const isPastDue = toDate < today;
+
+      if (activeTab === "pending") {
+        // For pending tab, show:
+        // 1. Pending requests that are not past due
+        // 2. Approved requests without completion proof that are not past due
+        return (
+          (!isPastDue && request.approvals[role].status === "pending") ||
+          (!isPastDue && 
+           request.approvals[role].status === "approved" &&
+           request.completionProof === "")
+        );
+      } else {
+        // For other tabs, show:
+        // 1. Rejected requests
+        // 2. Past due requests
+        // 3. Approved requests with completion proof
+        return (
+          request.approvals[role].status === "rejected" ||
+          isPastDue ||
+          (request.approvals[role].status === "approved" && 
+           request.completionProof !== "")
+        );
+      }
+    });
   };
 
   const filteredMenteeRequests = menteeRequests.filter(
@@ -234,17 +257,27 @@ export default function ODRequests({
               </button>
             </div>
           ) : (
-            <span
-              className={`px-3 py-1 rounded-full text-xs ${
-                request.approvals[role].status === "approved"
-                  ? "bg-green-100 text-green-600"
-                  : "bg-red-100 text-red-600"
-              }`}
-            >
-              {request.approvals[role].status === "approved"
-                ? "Approved"
-                : "Rejected"}
-            </span>
+            <div className="flex items-center gap-2">
+              <span
+                className={`px-3 py-1 rounded-full text-xs ${
+                  request.approvals[role].status === "approved"
+                    ? "bg-green-100 text-green-600"
+                    : "bg-red-100 text-red-600"
+                }`}
+              >
+                {request.approvals[role].status === "approved"
+                  ? "Approved"
+                  : "Rejected"}
+              </span>
+              {request.approvals[role].status === "approved" && request.completionProof && (
+                <button
+                  onClick={() => window.open(request.completionProof, '_blank')}
+                  className="text-blue-500 hover:text-blue-700"
+                >
+                  <Eye size={20} />
+                </button>
+              )}
+            </div>
           )}
         </div>
 
@@ -476,6 +509,14 @@ export default function ODRequests({
                               ? "Rejected"
                               : "Taken"}
                           </button>
+                          {status === "approved" && req.completionProof && (
+                            <button
+                              onClick={() => window.open(req.completionProof, '_blank')}
+                              className="text-blue-500 hover:text-blue-700"
+                            >
+                              <Eye size={20} />
+                            </button>
+                          )}
                         </div>
                       )}
                     </td>

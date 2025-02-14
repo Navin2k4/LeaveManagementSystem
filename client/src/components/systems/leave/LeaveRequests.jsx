@@ -9,6 +9,18 @@ import { useSelector } from "react-redux";
 import StatusDot from "../../general/StatusDot";
 import { GiConsoleController, GiMedicines } from "react-icons/gi";
 import { ChevronRight } from "lucide-react";
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  isToday,
+  startOfWeek,
+  addDays,
+  parseISO,
+  isWithinInterval,
+} from "date-fns";
 
 export default function LeaveRequests({
   leaveRequestsAsMentor,
@@ -370,17 +382,27 @@ export default function LeaveRequests({
 
   // Add this function to filter requests based on status
   const filterRequestsByStatus = (requests, role) => {
-    return requests.filter((request) =>
-      activeTab === "pending"
-        ? request.approvals[role].status === "pending"
-        : request.approvals[role].status !== "pending"
-    );
+    const today = new Date();
+    return requests.filter((request) => {
+      const toDate = new Date(request.toDate);
+      today.setHours(0, 0, 0, 0);
+      const isPastDue = toDate < today;
+
+      if (activeTab === "pending") {
+        // For pending tab, show only pending requests that are not past due
+        return request.approvals[role].status === "pending" && !isPastDue;
+      } else {
+        // For other tabs, show non-pending requests and past due requests
+        return (
+          request.approvals[role].status !== "pending" ||
+          (request.approvals[role].status === "pending" && isPastDue)
+        );
+      }
+    });
   };
 
   // Update the renderRequestTable function to include mobile view
   const renderRequestTable = (requests, role, handleRequest) => {
-
-
     return (
       <>
         {/* Desktop view */}
@@ -497,6 +519,560 @@ export default function LeaveRequests({
     );
   };
 
+  // Add this new custom calendar component
+  const CustomCalendar = ({ requests }) => {
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(null);
+
+    // Create a map of dates to requests
+    const requestsByDate = requests.reduce((acc, request) => {
+      // Handle date range for each request
+      const startDate = parseISO(request.fromDate);
+      const endDate = parseISO(request.toDate);
+
+      // Get all dates in the range
+      const datesInRange = eachDayOfInterval({
+        start: startDate,
+        end: endDate,
+      });
+
+      // Add request to each date in the range
+      datesInRange.forEach((date) => {
+        const dateStr = format(date, "yyyy-MM-dd");
+        if (!acc[dateStr]) {
+          acc[dateStr] = [];
+        }
+        acc[dateStr].push(request);
+      });
+
+      return acc;
+    }, {});
+
+    const monthStart = startOfMonth(currentDate);
+    const monthEnd = endOfMonth(currentDate);
+    const startDate = startOfWeek(monthStart);
+    const endDate = endOfMonth(monthEnd);
+
+    // Get all dates to display (including padding days)
+    const calendarDays = eachDayOfInterval({ start: startDate, end: endDate });
+
+    const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    const previousMonth = () => {
+      setCurrentDate(
+        new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
+      );
+    };
+
+    const nextMonth = () => {
+      setCurrentDate(
+        new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
+      );
+    };
+
+    const handleDateClick = (date, requests) => {
+      if (requests && requests.length > 0) {
+        setSelectedDate(date);
+        // You can add additional handling here, like showing a modal with requests for that date
+      }
+    };
+
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        {/* Calendar Header */}
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={previousMonth}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+          >
+            ←
+          </button>
+          <h2 className="text-lg font-semibold">
+            {format(currentDate, "MMMM yyyy")}
+          </h2>
+          <button
+            onClick={nextMonth}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+          >
+            →
+          </button>
+        </div>
+
+        {/* Calendar Grid */}
+        <div className="grid grid-cols-7 gap-1">
+          {/* Week day headers */}
+          {weekDays.map((day) => (
+            <div
+              key={day}
+              className="text-center text-sm font-medium text-gray-500 dark:text-gray-400 p-2"
+            >
+              {day}
+            </div>
+          ))}
+
+          {/* Calendar days */}
+          {calendarDays.map((day) => {
+            const dateStr = format(day, "yyyy-MM-dd");
+            const dayRequests = requestsByDate[dateStr] || [];
+            const isCurrentMonth = isSameMonth(day, currentDate);
+
+            return (
+              <div
+                key={dateStr}
+                onClick={() => handleDateClick(day, dayRequests)}
+                className={`
+                  relative p-2 min-h-[2.5rem] text-center border border-gray-100 
+                  dark:border-gray-700 cursor-pointer
+                  ${!isCurrentMonth ? "opacity-50" : ""}
+                  ${
+                    isToday(day)
+                      ? "bg-blue-50 dark:bg-blue-900/20"
+                      : "hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                  }
+                  ${
+                    selectedDate &&
+                    format(selectedDate, "yyyy-MM-dd") === dateStr
+                      ? "ring-2 ring-blue-500"
+                      : ""
+                  }
+                `}
+              >
+                <span
+                  className={`
+                  text-sm ${
+                    isToday(day)
+                      ? "font-bold text-blue-600 dark:text-blue-400"
+                      : "text-gray-700 dark:text-gray-300"
+                  }
+                `}
+                >
+                  {format(day, "d")}
+                </span>
+                {dayRequests.length > 0 && (
+                  <span className="absolute top-0 right-0 -mt-1 -mr-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-500 rounded-full">
+                    {dayRequests.length}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Optional: Show selected date's requests */}
+        {selectedDate && requestsByDate[format(selectedDate, "yyyy-MM-dd")] && (
+          <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <h4 className="font-medium mb-2">
+              Requests for {format(selectedDate, "dd MMM yyyy")}
+            </h4>
+            <div className="space-y-2">
+              {requestsByDate[format(selectedDate, "yyyy-MM-dd")].map(
+                (request, index) => (
+                  <div
+                    key={index}
+                    className="text-sm p-2 bg-white dark:bg-gray-600 rounded"
+                  >
+                    <div className="font-medium">{request.name}</div>
+                    <div className="text-gray-500 dark:text-gray-300">
+                      {request.reason}
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Add the Pagination component
+  const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+    return (
+      <div className="flex justify-center items-center space-x-2 mt-4">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`px-3 py-1 rounded-md ${
+            currentPage === 1
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          Previous
+        </button>
+
+        <div className="flex space-x-1">
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => onPageChange(index + 1)}
+              className={`w-8 h-8 rounded-md ${
+                currentPage === index + 1
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`px-3 py-1 rounded-md ${
+            currentPage === totalPages
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          Next
+        </button>
+      </div>
+    );
+  };
+
+  // Update the CompactRequestList component to include pagination
+  const CompactRequestList = ({ requests, role }) => {
+    const [expandedId, setExpandedId] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const requestsPerPage = 10;
+
+    // Calculate pagination values
+    const indexOfLastRequest = currentPage * requestsPerPage;
+    const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
+    const currentRequests = requests.slice(
+      indexOfFirstRequest,
+      indexOfLastRequest
+    );
+    const totalPages = Math.ceil(requests.length / requestsPerPage);
+
+    const handlePageChange = (pageNumber) => {
+      setCurrentPage(pageNumber);
+      setExpandedId(null); // Close any expanded items when changing pages
+    };
+
+    const getStatusColor = (status) => {
+      switch (status) {
+        case "approved":
+          return "bg-green-100 text-green-800";
+        case "rejected":
+          return "bg-red-100 text-red-800";
+        default:
+          return "bg-yellow-100 text-yellow-800";
+      }
+    };
+
+    const formatDate = (date) => {
+      return format(parseISO(date), "dd MMM yy");
+    };
+
+    return (
+      <div>
+        <div className="space-y-2">
+          {currentRequests.map((request) => (
+            <div
+              key={request._id}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden"
+            >
+              {/* Header - Always visible */}
+              <div
+                onClick={() =>
+                  setExpandedId(expandedId === request._id ? null : request._id)
+                }
+                className="p-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="flex-shrink-0">
+                    {request.forMedical ? (
+                      <span className="p-1 bg-red-100 text-red-600 rounded">
+                        <GiMedicines className="h-4 w-4" />
+                      </span>
+                    ) : (
+                      <span className="p-1 bg-blue-100 text-blue-600 rounded">
+                        <Info className="h-4 w-4" />
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                      {request.name}
+                    </h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {formatDate(request.fromDate)}
+                      {request.fromDate !== request.toDate &&
+                        ` - ${formatDate(request.toDate)}`}
+                      {" • "}
+                      {request.noOfDays} day(s)
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span
+                    className={`px-2 py-1 text-xs rounded-full ${getStatusColor(
+                      request.approvals[role].status
+                    )}`}
+                  >
+                    {request.approvals[role].status}
+                  </span>
+                  <ChevronRight
+                    className={`h-4 w-4 transition-transform ${
+                      expandedId === request._id ? "rotate-90" : ""
+                    }`}
+                  />
+                </div>
+              </div>
+
+              {/* Expanded content */}
+              {expandedId === request._id && (
+                <div className="px-3 pb-3 text-sm space-y-2">
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t dark:border-gray-700">
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Reason
+                      </p>
+                      <p className="text-gray-900 dark:text-gray-200">
+                        {request.reason}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Contact
+                      </p>
+                      <p className="text-gray-900 dark:text-gray-200">
+                        {request.parent_phone}
+                      </p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Comments
+                      </p>
+                      <CommentsCell
+                        mentorcomment={request.mentorcomment}
+                        classInchargeComment={request.classInchargeComment}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Show pagination only if there are more than requestsPerPage items */}
+        {requests.length > requestsPerPage && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
+      </div>
+    );
+  };
+
+  // First, let's create separate components for Pending and Action Done sections
+
+  const PendingRequestsSection = ({
+    currentUser,
+    menteeRequests,
+    filteredClassInchargeRequests,
+    handleRequest,
+    handleRequestClassIncharge,
+  }) => {
+    return (
+      <>
+        {/* Mentor Requests Section */}
+        {currentUser.isMentor && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
+            <div className="p-4 border-b dark:border-gray-700">
+              <h2 className="text-lg font-semibold">
+                Pending Leave Requests From Your Class Mentees
+              </h2>
+            </div>
+            {filterRequestsByStatus(menteeRequests, "mentor").length > 0 ? (
+              renderRequestTable(
+                filterRequestsByStatus(menteeRequests, "mentor"),
+                "mentor",
+                handleRequest
+              )
+            ) : (
+              <h2 className="font-semibold text-center p-6">
+                No Pending Leave Requests from Your Mentees
+              </h2>
+            )}
+          </div>
+        )}
+
+        {/* Class Incharge Requests Section */}
+        {currentUser.isClassIncharge && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+            <div className="p-4 border-b dark:border-gray-700">
+              <h2 className="text-lg font-semibold">
+                Pending Leave Requests From Your Class Students
+              </h2>
+            </div>
+            {filterRequestsByStatus(
+              filteredClassInchargeRequests,
+              "classIncharge"
+            ).length > 0 ? (
+              renderRequestTable(
+                filterRequestsByStatus(
+                  filteredClassInchargeRequests,
+                  "classIncharge"
+                ),
+                "classIncharge",
+                handleRequestClassIncharge
+              )
+            ) : (
+              <h2 className="font-semibold text-center p-6">
+                No Pending Leave Requests from Your Students
+              </h2>
+            )}
+          </div>
+        )}
+      </>
+    );
+  };
+
+  const ActionDoneSection = ({
+    currentUser,
+    menteeRequests,
+    filteredClassInchargeRequests,
+    activeTab,
+  }) => {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Calendar Section */}
+        <div className="lg:col-span-1">
+          {currentUser.isMentor && !currentUser.isClassIncharge && (
+            <div className="mb-6">
+              <h3 className="text-sm font-medium mb-2">
+                Mentor Requests Calendar
+              </h3>
+              <CustomCalendar
+                requests={filterRequestsByStatus(menteeRequests, "mentor")}
+              />
+            </div>
+          )}
+          {currentUser.isClassIncharge && !currentUser.isMentor && (
+            <div>
+              <h3 className="text-sm font-medium mb-2">
+                Class Incharge Requests Calendar
+              </h3>
+              <CustomCalendar
+                requests={filterRequestsByStatus(
+                  filteredClassInchargeRequests,
+                  "classIncharge"
+                )}
+              />
+            </div>
+          )}
+          {currentUser.isMentor && currentUser.isClassIncharge && (
+            <div>
+              <h3 className="text-sm font-medium mb-2">
+                All Requests Calendar
+              </h3>
+              <CustomCalendar
+                requests={[
+                  ...filterRequestsByStatus(menteeRequests, "mentor"),
+                  ...filterRequestsByStatus(
+                    filteredClassInchargeRequests,
+                    "classIncharge"
+                  ),
+                ]}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* List Section */}
+        <div className="lg:col-span-2">
+          {currentUser.isMentor && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
+              <div className="p-4 border-b dark:border-gray-700">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-semibold">
+                    Action Done Leave Requests From Your Class Mentees
+                  </h2>
+                  <span className="text-sm text-gray-500">
+                    Total:{" "}
+                    {
+                      filterRequestsByStatus(
+                        menteeRequests,
+                        "mentor",
+                        activeTab
+                      ).length
+                    }
+                  </span>
+                </div>
+              </div>
+              <div className="p-4">
+                {filterRequestsByStatus(menteeRequests, "mentor", activeTab)
+                  .length > 0 ? (
+                  <CompactRequestList
+                    requests={filterRequestsByStatus(
+                      menteeRequests,
+                      "mentor",
+                      activeTab
+                    )}
+                    role="mentor"
+                  />
+                ) : (
+                  <h2 className="text-center text-gray-500">
+                    No Action Done Leave Requests from Your Mentees
+                  </h2>
+                )}
+              </div>
+            </div>
+          )}
+
+          {currentUser.isClassIncharge && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+              <div className="p-4 border-b dark:border-gray-700">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-semibold">
+                    Action Done Leave Requests From Your Class Students
+                  </h2>
+                  <span className="text-sm text-gray-500">
+                    Total:{" "}
+                    {
+                      filterRequestsByStatus(
+                        filteredClassInchargeRequests,
+                        "classIncharge",
+                        activeTab
+                      ).length
+                    }
+                  </span>
+                </div>
+              </div>
+              <div className="p-4">
+                {filterRequestsByStatus(
+                  filteredClassInchargeRequests,
+                  "classIncharge",
+                  activeTab
+                ).length > 0 ? (
+                  <CompactRequestList
+                    requests={filterRequestsByStatus(
+                      filteredClassInchargeRequests,
+                      "classIncharge",
+                      activeTab
+                    )}
+                    role="classIncharge"
+                  />
+                ) : (
+                  <h2 className="text-center text-gray-500">
+                    No Action Done Leave Requests from Your Students
+                  </h2>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="w-full mx-auto p-4">
       {/* Page Header */}
@@ -535,58 +1111,22 @@ export default function LeaveRequests({
         </button>
       </div>
 
-      {/* Mentor Requests Section */}
-      {currentUser.isMentor && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
-          <div className="p-4 border-b dark:border-gray-700">
-            <h2 className="text-lg font-semibold">
-              {activeTab === "pending" ? "Pending" : "Action Done"} Leave
-              Requests From Your Class Mentees
-            </h2>
-          </div>
-          {filterRequestsByStatus(menteeRequests, "mentor").length > 0 ? (
-            renderRequestTable(
-              filterRequestsByStatus(menteeRequests, "mentor"),
-              "mentor",
-              handleRequest
-            )
-          ) : (
-            <h2 className="font-semibold text-center p-6">
-              No {activeTab === "pending" ? "Pending" : "Action Done"} Leave
-              Requests from Your Mentees
-            </h2>
-          )}
-        </div>
-      )}
-
-      {/* Class Incharge Requests Section */}
-      {currentUser.isClassIncharge && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-          <div className="p-4 border-b dark:border-gray-700">
-            <h2 className="text-lg font-semibold">
-              {activeTab === "pending" ? "Pending" : "Action Done"} Leave
-              Requests From Your Class Students
-            </h2>
-          </div>
-          {filterRequestsByStatus(
-            filteredClassInchargeRequests,
-            "classIncharge"
-          ).length > 0 ? (
-            renderRequestTable(
-              filterRequestsByStatus(
-                filteredClassInchargeRequests,
-                "classIncharge"
-              ),
-              "classIncharge",
-              handleRequestClassIncharge
-            )
-          ) : (
-            <h2 className="font-semibold text-center p-6">
-              No {activeTab === "pending" ? "Pending" : "Action Done"} Leave
-              Requests from Your Students
-            </h2>
-          )}
-        </div>
+      {/* Content based on active tab */}
+      {activeTab === "pending" ? (
+        <PendingRequestsSection
+          currentUser={currentUser}
+          menteeRequests={menteeRequests}
+          filteredClassInchargeRequests={filteredClassInchargeRequests}
+          handleRequest={handleRequest}
+          handleRequestClassIncharge={handleRequestClassIncharge}
+        />
+      ) : (
+        <ActionDoneSection
+          currentUser={currentUser}
+          menteeRequests={menteeRequests}
+          filteredClassInchargeRequests={filteredClassInchargeRequests}
+          activeTab={activeTab}
+        />
       )}
 
       {/* Mentor Modal */}
