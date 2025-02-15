@@ -75,11 +75,11 @@ const DashboardSidebar = ({
       {/* Desktop Sidebar */}
       <div className="hidden lg:block transition-all duration-300">
         <div
-          className={`fixed top-0 left-0 h-screen bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 
+          className={`fixed top-0 left-0 h-screen bg-blue-500 
                      transition-all duration-300 ease-in-out z-40 overflow-x-hidden
                      ${isOpen ? "w-64" : "w-16"}`}
         >
-          <div className="flex flex-col h-full text-white">
+          <div className="flex flex-col h-full text-white font-bold">
             {/* Toggle Button */}
             <button
               onClick={handleToggle}

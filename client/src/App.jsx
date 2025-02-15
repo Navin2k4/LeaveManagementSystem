@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import SuperAdmin from "./pages/SuperAdmin";
 import PageNotFound from "./pages/PageNotFound";
 import StaffDashBoard from "./pages/StaffDashBoard";
@@ -17,9 +18,80 @@ import SignIn from "./components/auth/SignIn";
 import Footer from "./components/general/Footer";
 import MailTiming from "./components/systems/MailTiming";
 import About from "./pages/About";
+import "./utils/devtools-detector.js";
 
 const AppWrapper = () => {
   const location = useLocation();
+
+  useEffect(() => {
+    // Disable right-click context menu
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+    };
+
+    // Disable keyboard shortcuts and dev tools
+    const handleKeyDown = (e) => {
+      // Prevent F12 key
+      if (e.key === "F12") {
+        e.preventDefault();
+      }
+
+      // Prevent Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (Dev tools)
+      if (
+        e.ctrlKey &&
+        e.shiftKey &&
+        (e.key === "I" ||
+          e.key === "i" ||
+          e.key === "J" ||
+          e.key === "j" ||
+          e.key === "C" ||
+          e.key === "c")
+      ) {
+        e.preventDefault();
+      }
+
+      // Prevent Ctrl+U (View Source)
+      if (e.ctrlKey && (e.key === "U" || e.key === "u")) {
+        e.preventDefault();
+      }
+
+      // Prevent Alt+F4
+      if (e.altKey && e.key === "F4") {
+        e.preventDefault();
+      }
+    };
+
+    // Add console warning
+    const warningMessage =
+      "This is a protected website. Developer tools are not allowed.";
+    console.log(
+      "%c" + warningMessage,
+      "color: red; font-size: 30px; font-weight: bold; text-shadow: 2px 2px black;"
+    );
+
+    // Clear console periodically
+    const clearConsole = () => {
+      console.clear();
+      console.log(
+        "%c" + warningMessage,
+        "color: red; font-size: 30px; font-weight: bold; text-shadow: 2px 2px black;"
+      );
+    };
+
+    // Add event listeners
+    document.addEventListener("contextmenu", handleContextMenu);
+    document.addEventListener("keydown", handleKeyDown);
+
+    // Clear console periodically
+    const consoleInterval = setInterval(clearConsole, 3000);
+
+    // Cleanup function
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu);
+      document.removeEventListener("keydown", handleKeyDown);
+      clearInterval(consoleInterval);
+    };
+  }, []);
 
   const dashboardPages = [
     "/profile",

@@ -374,7 +374,7 @@ const EditProfile = ({ mentor, classIncharge }) => {
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
               {/* Profile Header */}
               <div className="relative">
-                <div className="h-32 bg-gradient-to-r from-blue-600 to-blue-800"></div>
+                <div className="h-32 bg-slate-100"></div>
                 <div className="absolute -bottom-12 inset-x-0 flex justify-center">
                   <div className="w-24 h-24 bg-white dark:bg-gray-700 rounded-full p-1 shadow-xl">
                     <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
@@ -427,7 +427,7 @@ const EditProfile = ({ mentor, classIncharge }) => {
 
                   {/* Contact Info Card */}
                   <div className="border dark:border-gray-700 rounded-xl overflow-hidden">
-                    <div className="bg-purple-50 dark:bg-gray-700 px-4 py-3 flex items-center gap-2">
+                  <div className="bg-blue-50 dark:bg-gray-700 px-4 py-3 flex items-center gap-2">
                       <Mail className="w-5 h-5 text-purple-500" />
                       <h3 className="font-semibold text-gray-900 dark:text-white">
                         Contact Information
