@@ -10,6 +10,14 @@ import {
   Hash,
   BookOpen,
   Loader2,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  Home,
+  LogOut,
+  Menu,
+  Users,
+  X,
 } from "lucide-react";
 import axios from "axios";
 import { FaChalkboardTeacher } from "react-icons/fa";
@@ -28,15 +36,19 @@ import PortfolioPage from "./PortfolioPage";
 import ResumeViewer from "./ResumeVewer";
 import GitStats from "./GitStats";
 
-const EditProfile = ({ mentor, classIncharge }) => {
+const EditProfile = ({ mentor, classIncharge, initialActiveTab }) => {
   const { currentUser } = useSelector((state) => state.user);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(
+    initialActiveTab ? true : false
+  );
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [feedback, setFeedback] = useState({ message: "", success: false });
   const [userData, setUserData] = useState(null);
+  const [showProfileUpdateModal, setShowProfileUpdateModal] = useState(false);
+  const [activeTab, setActiveTab] = useState(initialActiveTab || "profile");
   const [editData, setEditData] = useState({
     email: "",
     phone: "",
@@ -49,8 +61,8 @@ const EditProfile = ({ mentor, classIncharge }) => {
     hackerrank_url: "",
     leetcode_url: "",
   });
-  const [activeTab, setActiveTab] = useState("profile");
 
+  console.log(currentUser);
   const fetchUserData = async () => {
     try {
       setPageLoading(true);
@@ -69,11 +81,25 @@ const EditProfile = ({ mentor, classIncharge }) => {
         hackerrank_url: response.data.hackerrank_url || "",
         leetcode_url: response.data.leetcode_url || "",
       }));
+
+      // Check if any required profile fields are empty
+      if (
+        !response.data.leetcode_url ||
+        !response.data.linkedin_url ||
+        !response.data.github_url ||
+        !response.data.hackerrank_url ||
+        !response.data.resume_url ||
+        !response.data.portfolio_url
+      ) {
+        setShowProfileUpdateModal(true);
+
+        setActiveTab("links");
+      }
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
       setPageLoading(false);
-    }
+    } 
   };
 
   useEffect(() => {
@@ -82,21 +108,23 @@ const EditProfile = ({ mentor, classIncharge }) => {
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
-    setEditData({
-      email: userData?.email || userData?.staff_mail || "",
-      phone: userData?.phone || userData?.staff_phone || "",
-      oldPassword: "",
-      newPassword: "",
-      portfolio_url: userData?.portfolio_url || "",
-      resume_url: userData?.resume_url || "",
-      linkedin_url: userData?.linkedin_url || "",
-      github_url: userData?.github_url || "",
-      hackerrank_url: userData?.hackerrank_url || "",
-      leetcode_url: userData?.leetcode_url || "",
-    });
-    setShowOldPassword(false);
-    setShowNewPassword(false);
-    setFeedback({ message: "", success: false });
+    if (!isModalOpen) {
+      setEditData({
+        email: userData?.email || userData?.staff_mail || "",
+        phone: userData?.phone || userData?.staff_phone || "",
+        oldPassword: "",
+        newPassword: "",
+        portfolio_url: userData?.portfolio_url || "",
+        resume_url: userData?.resume_url || "",
+        linkedin_url: userData?.linkedin_url || "",
+        github_url: userData?.github_url || "",
+        hackerrank_url: userData?.hackerrank_url || "",
+        leetcode_url: userData?.leetcode_url || "",
+      });
+      setShowOldPassword(false);
+      setShowNewPassword(false);
+      setFeedback({ message: "", success: false });
+    }
   };
 
   const handleInputChange = (e) => {
@@ -271,6 +299,9 @@ const EditProfile = ({ mentor, classIncharge }) => {
       case "links":
         return (
           <div className="space-y-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Go to your profile on each platform and copy the URL to paste here
+            </p>
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Portfolio URL
@@ -387,7 +418,7 @@ const EditProfile = ({ mentor, classIncharge }) => {
               {/* Profile Content */}
               <div className="pt-16 px-6 pb-6">
                 <div className="text-center mb-8 flex flex-col items-center justify-between">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h2 className="text-2xl  text-gray-900 dark:text-white mb-2">
                     {userData?.name || userData?.staff_name}
                   </h2>
                   <Button
@@ -411,23 +442,35 @@ const EditProfile = ({ mentor, classIncharge }) => {
                     </div>
                     <div className="p-4 grid gap-3">
                       <div className="flex justify-between items-center px-2">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Register No</span>
-                        <span className="font-medium text-gray-900 dark:text-white">{currentUser.register_no}</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          Register No
+                        </span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {currentUser.register_no}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center px-2">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Roll No</span>
-                        <span className="font-medium text-gray-900 dark:text-white">{currentUser.roll_no}</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          Roll No
+                        </span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {currentUser.roll_no}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center px-2">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Section</span>
-                        <span className="font-medium text-gray-900 dark:text-white">{currentUser.section_name}</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          Section
+                        </span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {currentUser.section_name}
+                        </span>
                       </div>
                     </div>
                   </div>
 
                   {/* Contact Info Card */}
                   <div className="border dark:border-gray-700 rounded-xl overflow-hidden">
-                  <div className="bg-blue-50 dark:bg-gray-700 px-4 py-3 flex items-center gap-2">
+                    <div className="bg-blue-50 dark:bg-gray-700 px-4 py-3 flex items-center gap-2">
                       <Mail className="w-5 h-5 text-purple-500" />
                       <h3 className="font-semibold text-gray-900 dark:text-white">
                         Contact Information
@@ -435,17 +478,27 @@ const EditProfile = ({ mentor, classIncharge }) => {
                     </div>
                     <div className="p-4 grid gap-3">
                       <div className="flex justify-between items-center px-2">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Email</span>
-                        <span className="font-medium text-gray-900 dark:text-white">{userData?.email || userData?.staff_mail}</span>
-                      </div>
-                      <div className="flex justify-between items-center px-2">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Phone</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          Email
+                        </span>
                         <span className="font-medium text-gray-900 dark:text-white">
-                          {formatPhone(userData?.phone || userData?.staff_phone)}
+                          {userData?.email || userData?.staff_mail}
                         </span>
                       </div>
                       <div className="flex justify-between items-center px-2">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Parent Phone</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          Phone
+                        </span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {formatPhone(
+                            userData?.phone || userData?.staff_phone
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center px-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          Parent Phone
+                        </span>
                         <span className="font-medium text-gray-900 dark:text-white">
                           {formatPhone(userData?.parent_phone)}
                         </span>
@@ -499,46 +552,115 @@ const EditProfile = ({ mentor, classIncharge }) => {
 
               {/* Professional Links Grid */}
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Professional Links
-                </h3>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                  <ProfessionalLink
-                    icon={<TbBrandLeetcode className="w-5 h-5" />}
-                    label="LeetCode"
-                    url={userData?.leetcode_url}
-                    bgColor="bg-yellow-500"
-                  />
-                  <ProfessionalLink
-                    icon={<FaLinkedin className="w-5 h-5" />}
-                    label="LinkedIn"
-                    url={userData?.linkedin_url}
-                    bgColor="bg-blue-600"
-                  />
-                  <ProfessionalLink
-                    icon={<FaGithub className="w-5 h-5" />}
-                    label="GitHub"
-                    url={userData?.github_url}
-                    bgColor="bg-gray-800"
-                  />
-                  <ProfessionalLink
-                    icon={<FaHackerrank className="w-5 h-5" />}
-                    label="HackerRank"
-                    url={userData?.hackerrank_url}
-                    bgColor="bg-green-600"
-                  />
-                  <ProfessionalLink
-                    icon={<FaFileAlt className="w-5 h-5" />}
-                    label="Resume"
-                    url={userData?.resume_url}
-                    bgColor="bg-green-500"
-                  />
-                  <ProfessionalLink
-                    icon={<FaGlobe className="w-5 h-5" />}
-                    label="Your Site"
-                    url={userData?.portfolio_url}
-                    bgColor="bg-blue-500"
-                  />
+                <div className="flex flex-col space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Professional Links
+                    </h3>
+                    {showProfileUpdateModal && (
+                      <Button
+                        onClick={() => {
+                          setIsModalOpen(true);
+                          setActiveTab("links");
+                        }}
+                        size="sm"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors duration-200"
+                      >
+                        Add Missing Links
+                      </Button>
+                    )}
+                  </div>
+
+                  {showProfileUpdateModal && (
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800/50 dark:to-gray-700/50 rounded-xl p-4 mb-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                          <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                          Complete your profile by adding the missing
+                          professional links
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {!userData?.leetcode_url && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white/50 dark:bg-gray-800/50 rounded-lg text-xs text-gray-700 dark:text-gray-300">
+                            <TbBrandLeetcode className="w-3 h-3 text-yellow-600" />
+                            LeetCode
+                          </span>
+                        )}
+                        {!userData?.github_url && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white/50 dark:bg-gray-800/50 rounded-lg text-xs text-gray-700 dark:text-gray-300">
+                            <FaGithub className="w-3 h-3 text-gray-700" />
+                            GitHub
+                          </span>
+                        )}
+                        {!userData?.linkedin_url && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white/50 dark:bg-gray-800/50 rounded-lg text-xs text-gray-700 dark:text-gray-300">
+                            <FaLinkedin className="w-3 h-3 text-blue-600" />
+                            LinkedIn
+                          </span>
+                        )}
+                        {!userData?.hackerrank_url && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white/50 dark:bg-gray-800/50 rounded-lg text-xs text-gray-700 dark:text-gray-300">
+                            <FaHackerrank className="w-3 h-3 text-green-600" />
+                            HackerRank
+                          </span>
+                        )}
+                        {!userData?.resume_url && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white/50 dark:bg-gray-800/50 rounded-lg text-xs text-gray-700 dark:text-gray-300">
+                            <FaFileAlt className="w-3 h-3 text-red-600" />
+                            Resume
+                          </span>
+                        )}
+                        {!userData?.portfolio_url && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-white/50 dark:bg-gray-800/50 rounded-lg text-xs text-gray-700 dark:text-gray-300">
+                            <FaGlobe className="w-3 h-3 text-purple-600" />
+                            Portfolio
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                    <ProfessionalLink
+                      icon={<TbBrandLeetcode className="w-5 h-5" />}
+                      label="LeetCode"
+                      url={userData?.leetcode_url}
+                      bgColor="bg-yellow-500"
+                    />
+                    <ProfessionalLink
+                      icon={<FaLinkedin className="w-5 h-5" />}
+                      label="LinkedIn"
+                      url={userData?.linkedin_url}
+                      bgColor="bg-blue-600"
+                    />
+                    <ProfessionalLink
+                      icon={<FaGithub className="w-5 h-5" />}
+                      label="GitHub"
+                      url={userData?.github_url}
+                      bgColor="bg-gray-800"
+                    />
+                    <ProfessionalLink
+                      icon={<FaHackerrank className="w-5 h-5" />}
+                      label="HackerRank"
+                      url={userData?.hackerrank_url}
+                      bgColor="bg-green-600"
+                    />
+                    <ProfessionalLink
+                      icon={<FaFileAlt className="w-5 h-5" />}
+                      label="Resume"
+                      url={userData?.resume_url}
+                      bgColor="bg-green-500"
+                    />
+                    <ProfessionalLink
+                      icon={<FaGlobe className="w-5 h-5" />}
+                      label="Your Site"
+                      url={userData?.portfolio_url}
+                      bgColor="bg-blue-500"
+                    />
+                  </div>
                 </div>
               </div>
 

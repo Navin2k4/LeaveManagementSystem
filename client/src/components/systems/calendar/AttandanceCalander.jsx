@@ -1,12 +1,35 @@
 import React, { useState } from "react";
-import { Calendar, ChevronLeft, ChevronRight, X, Download } from "lucide-react";
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Download,
+  Users,
+  Clock,
+  AlertTriangle,
+} from "lucide-react";
 import { Tabs, Modal, Button } from "flowbite-react";
 import * as XLSX from "xlsx";
+import {
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+} from "recharts";
 
-const RequestCalendar = ({ leaveRequests, odRequests }) => {
+const AttandanceCalander = ({ leaveRequests, odRequests }) => {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const generateCalendarDays = (
     leaves = [],
@@ -271,6 +294,247 @@ const RequestCalendar = ({ leaveRequests, odRequests }) => {
     XLSX.writeFile(wb, fileName);
   };
 
+  // Analytics Functions
+  const getMonthlyStats = () => {
+    const currentMonth = selectedMonth.getMonth();
+    const currentYear = selectedMonth.getFullYear();
+
+    // Filter requests for current month
+    const monthLeaves = leaveRequests.filter((req) => {
+      const date = new Date(req.fromDate);
+      return (
+        date.getMonth() === currentMonth && date.getFullYear() === currentYear
+      );
+    });
+
+    const monthODs = odRequests.filter((req) => {
+      const date = new Date(req.fromDate);
+      return (
+        date.getMonth() === currentMonth && date.getFullYear() === currentYear
+      );
+    });
+
+    // Calculate total days of absence
+    const totalLeaveDays = monthLeaves.reduce(
+      (acc, req) => acc + req.noOfDays,
+      0
+    );
+    const totalODDays = monthODs.reduce((acc, req) => acc + req.noOfDays, 0);
+
+    // Get unique students who took leaves/ODs
+    const uniqueStudentsLeave = new Set(monthLeaves.map((req) => req.name));
+    const uniqueStudentsOD = new Set(monthODs.map((req) => req.name));
+
+    return {
+      totalLeaveDays,
+      totalODDays,
+      uniqueStudentsLeave: uniqueStudentsLeave.size,
+      uniqueStudentsOD: uniqueStudentsOD.size,
+      totalRequests: monthLeaves.length + monthODs.length,
+      medicalLeaves: monthLeaves.filter((req) => req.forMedical).length,
+    };
+  };
+
+  const getAttendanceDistribution = () => {
+    const stats = getMonthlyStats();
+    return [
+      { name: "Medical Leaves", value: stats.medicalLeaves, color: "#EF4444" },
+      {
+        name: "Regular Leaves",
+        value: stats.totalRequests - stats.medicalLeaves,
+        color: "#3B82F6",
+      },
+      { name: "OD Requests", value: stats.uniqueStudentsOD, color: "#8B5CF6" },
+    ];
+  };
+
+  const getDailyDistribution = () => {
+    const currentMonth = selectedMonth.getMonth();
+    const currentYear = selectedMonth.getFullYear();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    const dailyData = Array.from({ length: daysInMonth }, (_, i) => ({
+      day: i + 1,
+      leaves: 0,
+      ods: 0,
+    }));
+
+    // Count leaves and ODs for each day
+    leaveRequests.forEach((req) => {
+      const startDate = new Date(req.fromDate);
+      const endDate = new Date(req.toDate);
+
+      if (
+        startDate.getMonth() === currentMonth &&
+        startDate.getFullYear() === currentYear
+      ) {
+        for (
+          let d = startDate.getDate();
+          d <= Math.min(endDate.getDate(), daysInMonth);
+          d++
+        ) {
+          dailyData[d - 1].leaves++;
+        }
+      }
+    });
+
+    odRequests.forEach((req) => {
+      const startDate = new Date(req.fromDate);
+      const endDate = new Date(req.toDate);
+
+      if (
+        startDate.getMonth() === currentMonth &&
+        startDate.getFullYear() === currentYear
+      ) {
+        for (
+          let d = startDate.getDate();
+          d <= Math.min(endDate.getDate(), daysInMonth);
+          d++
+        ) {
+          dailyData[d - 1].ods++;
+        }
+      }
+    });
+
+    return dailyData;
+  };
+
+  // Analytics Section Component
+  const AnalyticsSection = () => {
+    const stats = getMonthlyStats();
+    const COLORS = ["#EF4444", "#3B82F6", "#8B5CF6"];
+
+    return (
+      <div className="mb-8 space-y-6">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-500/10 rounded-lg">
+                <Users className="w-6 h-6 text-blue-500" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Total Requests
+                </p>
+                <p className="text-xl font-bold text-blue-600">
+                  {stats.totalRequests}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-500/10 rounded-lg">
+                <Clock className="w-6 h-6 text-purple-500" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Total Days Off
+                </p>
+                <p className="text-xl font-bold text-purple-600">
+                  {stats.totalLeaveDays + stats.totalODDays}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-red-500/10 rounded-lg">
+                <AlertTriangle className="w-6 h-6 text-red-500" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Medical Leaves
+                </p>
+                <p className="text-xl font-bold text-red-600">
+                  {stats.medicalLeaves}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-500/10 rounded-lg">
+                <Users className="w-6 h-6 text-green-500" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Students with OD
+                </p>
+                <p className="text-xl font-bold text-green-600">
+                  {stats.uniqueStudentsOD}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Distribution Chart */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+            <h3 className="text-lg font-semibold mb-4">Request Distribution</h3>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={getAttendanceDistribution()}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={windowWidth < 768 ? 40 : 60}
+                    outerRadius={windowWidth < 768 ? 70 : 100}
+                    paddingAngle={2}
+                  >
+                    {getAttendanceDistribution().map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#ffffff",
+                      border: "none",
+                      borderRadius: "8px",
+                      padding: "12px",
+                      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                    }}
+                  />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Daily Distribution Chart */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+            <h3 className="text-lg font-semibold mb-4">Daily Distribution</h3>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={getDailyDistribution()}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="leaves" name="Leaves" fill="#3B82F6" />
+                  <Bar dataKey="ods" name="OD Requests" fill="#8B5CF6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="w-full mx-auto p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
@@ -278,7 +542,7 @@ const RequestCalendar = ({ leaveRequests, odRequests }) => {
         <div className="p-4 border-b dark:border-gray-700">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Request Calendar
+              Attendance Dashboard
             </h2>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1">
@@ -302,7 +566,11 @@ const RequestCalendar = ({ leaveRequests, odRequests }) => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+          {/* Analytics Section */}
+          <AnalyticsSection />
+
+          {/* Month Navigation */}
+          <div className="flex items-center justify-between mt-6">
             <button
               onClick={() => {
                 const newDate = new Date(selectedMonth);
@@ -470,4 +738,4 @@ const RequestCalendar = ({ leaveRequests, odRequests }) => {
   );
 };
 
-export default RequestCalendar;
+export default AttandanceCalander;

@@ -75,27 +75,27 @@ const DashboardSidebar = ({
       {/* Desktop Sidebar */}
       <div className="hidden lg:block transition-all duration-300">
         <div
-          className={`fixed top-0 left-0 h-screen bg-blue-500 
+          className={`fixed top-0 left-0 h-screen bg-gray-100 shadow-lg 
                      transition-all duration-300 ease-in-out z-40 overflow-x-hidden
                      ${isOpen ? "w-64" : "w-16"}`}
         >
-          <div className="flex flex-col h-full text-white font-bold">
+          <div className="flex flex-col h-full text-black">
             {/* Toggle Button */}
             <button
               onClick={handleToggle}
-              className="w-full flex items-center justify-center p-4 hover:bg-blue-700/50 transition-colors duration-200"
+              className="w-full flex items-center justify-center p-4 hover:bg-slate-700/50 hover:text-white transition-colors duration-200"
             >
               {isOpen ? (
-                <ChevronLeft size={20} className="text-white/80" />
+                <ChevronLeft size={20} />
               ) : (
-                <ChevronRight size={20} className="text-white/80" />
+                <ChevronRight size={20} />
               )}
             </button>
 
             {/* Logo/Header */}
-            <div className="flex mx-3 border-b border-white/10">
+            <div className="flex mx-3 border-b border-black/10">
               <Link to="/" className="flex items-center">
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                <div className="w-10 mt-2 h-10 bg-white rounded-full flex items-center justify-center">
                   <img
                     src="/vcet.jpeg"
                     alt="VCET Logo"
@@ -103,25 +103,25 @@ const DashboardSidebar = ({
                   />
                 </div>
                 <span
-                  className={` font-semibold text-sm text-white whitespace-nowrap
+                  className={` font-semibold text-sm text-black whitespace-nowrap
                            transition-all duration-200 ${
                              isOpen && showText
                                ? "opacity-100 ml-2"
                                : "opacity-0 w-0"
                            }`}
                 >
-                 VCET Connect
+                  VCET Connect
                 </span>
               </Link>
             </div>
 
             {/* Common Navigation Links */}
-            <nav className="px-2 py-2 border-b border-white/10">
+            <nav className="px-2 py-2 border-b border-black/10">
               {commonNavItems.map((item) => (
                 <Link
                   key={item.id}
                   to={item.path}
-                  className="flex items-center px-3 py-2 rounded-md text-white/80 hover:bg-white/10 transition-colors duration-200"
+                  className="flex items-center px-3 py-2 rounded-md text-black hover:bg-white/10 transition-colors duration-200"
                 >
                   <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
                     {item.icon}
@@ -148,7 +148,7 @@ const DashboardSidebar = ({
                     {item.submenu ? (
                       <div className="mb-1">
                         <button
-                          className="w-full flex items-center p-3 text-sm text-white/80 
+                          className="w-full flex items-center p-3 text-sm text-black
                                    hover:bg-white/10 rounded-md transition-colors duration-200"
                         >
                           <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
@@ -179,8 +179,8 @@ const DashboardSidebar = ({
                                 }}
                                 className={`w-full px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
                                   currentTab === subItem.id
-                                    ? "bg-white/20 text-white"
-                                    : "text-white/80 hover:bg-white/10"
+                                    ? "bg-white/20 text-black"
+                                    : "text-black/80 hover:bg-white/10"
                                 }`}
                               >
                                 {subItem.label}
@@ -195,8 +195,8 @@ const DashboardSidebar = ({
                         className={`w-full flex items-center p-3 rounded-md text-sm transition-colors duration-200
                                  ${
                                    currentTab === item.id
-                                     ? "bg-white/20 text-white"
-                                     : "text-white/80 hover:bg-white/10"
+                                     ? "bg-white/20 text-black"
+                                     : "text-black/80 hover:bg-white/10"
                                  }`}
                       >
                         <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
@@ -225,7 +225,7 @@ const DashboardSidebar = ({
             </div>
 
             {/* Bottom Section */}
-            <div className="flex-shrink-0 border-t border-white/10">
+            <div className="flex-shrink-0 border-t border-black/10">
               <div className="p-4">
                 {isOpen ? (
                   <div
@@ -235,16 +235,16 @@ const DashboardSidebar = ({
                   >
                     <div className="flex items-center justify-between">
                       <div className="truncate mr-2">
-                        <p className="text-sm font-medium text-white truncate">
+                        <p className="text-sm font-medium text-black truncate">
                           {userInfo?.name}
                         </p>
-                        <p className="text-xs text-white/70 truncate">
+                        <p className="text-xs text-black/70 truncate">
                           {userInfo?.email}
                         </p>
                       </div>
                       <button
                         onClick={handleSignout}
-                        className="flex-shrink-0 p-2 text-white/80 hover:bg-white/10 rounded-md transition-colors duration-200"
+                        className="flex-shrink-0 p-2 text-black/80 hover:bg-white/10 rounded-md transition-colors duration-200"
                       >
                         <span className="w-5 h-5 flex items-center justify-center">
                           <LogOut size={18} />
@@ -255,7 +255,7 @@ const DashboardSidebar = ({
                 ) : (
                   <button
                     onClick={handleSignout}
-                    className="w-full flex justify-center p-2 text-white/80 hover:bg-white/10 rounded-md transition-colors duration-200"
+                    className="w-full flex justify-center p-2 text-black/80 hover:bg-white/10 rounded-md transition-colors duration-200"
                   >
                     <span className="w-5 h-5 flex items-center justify-center">
                       <LogOut size={20} />
@@ -271,7 +271,7 @@ const DashboardSidebar = ({
       {/* Mobile Floating Action Button */}
       <button
         onClick={() => setIsMobileMenuOpen(true)}
-        className="fixed right-4 top-4 lg:hidden z-40 p-3 bg-blue-600 text-white rounded-md shadow-lg hover:bg-blue-700 transition-colors duration-300"
+        className="fixed right-4 top-4 lg:hidden z-40 p-3 bg-gray-200 text-black rounded-md shadow-lg hover:bg-gray-300 transition-colors duration-300"
       >
         <Menu className="w-6 h-6" />
       </button>
@@ -286,9 +286,9 @@ const DashboardSidebar = ({
           />
 
           {/* Sidebar */}
-          <div className="fixed transition-all duration-300 inset-y-0 right-0 w-[280px] bg-gradient-to-b from-blue-600 to-blue-800 shadow-xl z-50 lg:hidden">
+          <div className="fixed transition-all duration-300 inset-y-0 right-0 w-[280px] bg-gray-100 shadow-xl z-50 lg:hidden">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/10">
+            <div className="flex items-center justify-between p-4 border-b border-black/10">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
                   <img
@@ -297,13 +297,13 @@ const DashboardSidebar = ({
                     className="w-6 h-6 rounded-full"
                   />
                 </div>
-                <span className="font-semibold text-sm text-white">
+                <span className=" text-sm text-black">
                   VCET Connect
                 </span>
               </div>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-2 rounded-md text-white/80 hover:bg-white/10"
+                className="p-2 rounded-md text-black/80 hover:bg-white/10"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -311,23 +311,23 @@ const DashboardSidebar = ({
 
             {/* User Info */}
             {userInfo && (
-              <div className="p-4 border-b border-white/10">
-                <p className="font-medium text-sm text-white">
+              <div className="p-4 border-b border-black/10">
+                <p className="font-medium text-sm text-black">
                   {userInfo.name}
                 </p>
-                <p className="text-xs text-white/70">{userInfo.email}</p>
+                <p className="text-xs text-black/70">{userInfo.email}</p>
               </div>
             )}
 
             {/* Menu */}
             <div className="overflow-y-auto h-[calc(100vh-200px)]">
-              <nav className="px-2 py-4 text-white">
+              <nav className="px-2 py-4 text-black">
                 {/* Common Navigation Links */}
                 {commonNavItems.map((item) => (
                   <Link
                     key={item.id}
                     to={item.path}
-                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-white/80 hover:bg-white/10 transition-colors duration-200"
+                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-black/80 hover:bg-white/10 transition-colors duration-200"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <span className="w-5">{item.icon}</span>
@@ -336,14 +336,14 @@ const DashboardSidebar = ({
                 ))}
 
                 {/* Divider */}
-                <div className="my-2 border-t border-white/10" />
+                <div className="my-2 border-t border-black/10" />
 
                 {/* Menu Items */}
                 {menuItems.map((item) => (
                   <div key={item.id}>
                     {item.submenu ? (
                       <div className="mb-1">
-                        <div className="px-3 py-2 text-sm font-medium text-white/80">
+                        <div className="px-3 py-2 text-sm font-medium text-black/80">
                           {item.label}
                         </div>
                         <div className="ml-4">
@@ -356,8 +356,8 @@ const DashboardSidebar = ({
                               }}
                               className={`w-full px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
                                 currentTab === subItem.id
-                                  ? "bg-white/20 text-white"
-                                  : "text-white/80 hover:bg-white/10"
+                                  ? "bg-white/20 text-black"
+                                  : "text-black/80 hover:bg-white/10"
                               }`}
                             >
                               {subItem.label}
@@ -373,8 +373,8 @@ const DashboardSidebar = ({
                         }}
                         className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
                           currentTab === item.id
-                            ? "bg-white/20 text-white"
-                            : "text-white/80 hover:bg-white/10"
+                            ? "bg-white/20 text-black"
+                            : "text-black/80 hover:bg-white/10"
                         }`}
                       >
                         <div className="flex items-center space-x-3">
@@ -394,10 +394,10 @@ const DashboardSidebar = ({
             </div>
 
             {/* Logout Button */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
+            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-black/10">
               <button
                 onClick={handleSignout}
-                className="w-full px-3 py-2 text-sm text-white hover:bg-white/10 rounded-md transition-colors duration-200"
+                className="w-full px-3 py-2 text-sm text-black hover:bg-white/10 rounded-md transition-colors duration-200"
               >
                 Logout
               </button>

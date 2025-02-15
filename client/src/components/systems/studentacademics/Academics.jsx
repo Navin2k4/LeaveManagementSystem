@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import SemesterResults from "./SemesterResults";
+import StudentAnalytics from "./StudentAnalytics";
 
 const Academics = ({ student }) => {
   const [updatedStudent, setUpdatedStudent] = useState(student);
@@ -23,7 +23,7 @@ const Academics = ({ student }) => {
           </p>
         </div>
       </div>
-      <SemesterResults
+      <StudentAnalytics
         student={updatedStudent}
         department={student.departmentId}
         onResultsSave={handleResultsUpdate}

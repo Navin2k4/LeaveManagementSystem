@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Table, Button, Modal, Spinner } from "flowbite-react";
-import { Info, Award, TrendingUp, Users } from "lucide-react";
+import { Info, Award, TrendingUp, Users, ChevronDown } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { utils as XLSXUtils, write as XLSXWrite } from "xlsx";
 import {
@@ -17,6 +17,10 @@ import {
   CartesianGrid,
   Legend,
 } from "recharts";
+import { FaGithub, FaLinkedin, FaHackerrank } from "react-icons/fa";
+import LeetStats from "../../user/LeetStats";
+import PortfolioPage from "../../user/PortfolioPage";
+import ResumeViewer from "../../user/ResumeVewer";
 
 const StudentAcademicData = ({ userId }) => {
   const [studentResults, setStudentResults] = useState([]);
@@ -24,6 +28,41 @@ const StudentAcademicData = ({ userId }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [leetcodeStats, setLeetcodeStats] = useState({});
+
+  const getUserIdFromUrl = (url) => {
+    if (!url) return null;
+    const cleanUrl = url.endsWith("/") ? url.slice(0, -1) : url;
+    return cleanUrl.split("/").pop();
+  };
+
+  const fetchLeetcodeStats = async (students) => {
+    const statsPromises = students.map(async (student) => {
+      if (!student.leetcode_url) return null;
+      const userId = getUserIdFromUrl(student.leetcode_url);
+      if (!userId) return null;
+
+      try {
+        const response = await fetch(
+          `https://leetcode-stats-api.herokuapp.com/${userId}`
+        );
+        const data = await response.json();
+        return { studentId: student._id, stats: data };
+      } catch (error) {
+        console.error("Error fetching LeetCode stats:", error);
+        return null;
+      }
+    });
+
+    const results = await Promise.all(statsPromises);
+    const statsMap = {};
+    results.forEach((result) => {
+      if (result) {
+        statsMap[result.studentId] = result.stats;
+      }
+    });
+    setLeetcodeStats(statsMap);
+  };
 
   const getStudentResultsForClassIncharge = async () => {
     try {
@@ -41,6 +80,7 @@ const StudentAcademicData = ({ userId }) => {
     setLoading(true);
     getStudentResultsForClassIncharge().then((data) => {
       setStudentResults(data.data);
+      fetchLeetcodeStats(data.data);
       setLoading(false);
     });
   }, [userId]);
@@ -521,7 +561,7 @@ const StudentAcademicData = ({ userId }) => {
       </div>
     );
   };
-
+  console.log(studentResults);
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -563,6 +603,7 @@ const StudentAcademicData = ({ userId }) => {
             <Table.HeadCell>Name</Table.HeadCell>
             <Table.HeadCell>Register No</Table.HeadCell>
             <Table.HeadCell>Current CGPA</Table.HeadCell>
+            <Table.HeadCell>LeetCode Problems</Table.HeadCell>
             <Table.HeadCell>Actions</Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
@@ -582,6 +623,20 @@ const StudentAcademicData = ({ userId }) => {
                 </Table.Cell>
                 <Table.Cell className="font-bold">
                   {calculateLatestCGPA(student.semester_results)}
+                </Table.Cell>
+                <Table.Cell>
+                  {leetcodeStats[student._id]?.status === "success" ? (
+                    <div className="flex items-center space-x-1">
+                      <span className="font-medium">
+                        {leetcodeStats[student._id]?.totalSolved || 0}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        /{leetcodeStats[student._id]?.totalQuestions || 0}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-gray-400">N/A</span>
+                  )}
                 </Table.Cell>
                 <Table.Cell>
                   <Button
@@ -624,9 +679,22 @@ const StudentAcademicData = ({ userId }) => {
                 <Info className="h-4 w-4" />
               </Button>
             </div>
-            <div>
+            <div className="space-y-1">
               <p className="text-sm text-gray-600">
                 CGPA: {calculateLatestCGPA(student.semester_results)}
+              </p>
+              <p className="text-sm text-gray-600">
+                LeetCode:{" "}
+                {leetcodeStats[student._id]?.status === "success" ? (
+                  <span>
+                    {leetcodeStats[student._id]?.totalSolved || 0}
+                    <span className="text-xs text-gray-500">
+                      /{leetcodeStats[student._id]?.totalQuestions || 0}
+                    </span>
+                  </span>
+                ) : (
+                  "N/A"
+                )}
               </p>
             </div>
           </div>
@@ -634,77 +702,217 @@ const StudentAcademicData = ({ userId }) => {
       </div>
 
       {/* Details Modal */}
-      <Modal show={showDetails} onClose={() => setShowDetails(false)} size="xl">
-        <Modal.Header>Student Academic Details</Modal.Header>
+      <Modal
+        show={showDetails}
+        onClose={() => setShowDetails(false)}
+        size="6xl"
+      >
+        <Modal.Header>Student Details</Modal.Header>
         <Modal.Body>
           {selectedStudent && (
-            <div className="space-y-6">
-              {/* Student Info */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-black font-semibold">Name</p>
-                  <p className="font-medium">{selectedStudent.name}</p>
+            <div className="space-y-8">
+              {/* Student Basic Info */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                  <h3 className="text-lg font-semibold mb-4">
+                    Personal Information
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Name:</span>
+                      <span className="font-medium">
+                        {selectedStudent.name}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Roll No:</span>
+                      <span className="font-medium">
+                        {selectedStudent.roll_no}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Register No:</span>
+                      <span className="font-medium">
+                        {selectedStudent.register_no}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Section:</span>
+                      <span className="font-medium">
+                        {selectedStudent.section_name}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Roll Number</p>
-                  <p className="font-medium">{selectedStudent.roll_no}</p>
+
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                  <h3 className="text-lg font-semibold mb-4">
+                    Contact Information
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Email:</span>
+                      <span className="font-medium">
+                        {selectedStudent.email}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Phone:</span>
+                      <span className="font-medium">
+                        {selectedStudent.phone}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Parent Phone:</span>
+                      <span className="font-medium">
+                        {selectedStudent.parent_phone}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Register Number</p>
-                  <p className="font-medium">{selectedStudent.register_no}</p>
+
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                  <h3 className="text-lg font-semibold mb-4">
+                    Professional Links
+                  </h3>
+                  <div className="space-y-3">
+                    {selectedStudent.github_url && (
+                      <a
+                        href={selectedStudent.github_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-blue-600 hover:underline"
+                      >
+                        <FaGithub /> GitHub Profile
+                      </a>
+                    )}
+                    {selectedStudent.linkedin_url && (
+                      <a
+                        href={selectedStudent.linkedin_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-blue-600 hover:underline"
+                      >
+                        <FaLinkedin /> LinkedIn Profile
+                      </a>
+                    )}
+                    {selectedStudent.hackerrank_url && (
+                      <a
+                        href={selectedStudent.hackerrank_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-blue-600 hover:underline"
+                      >
+                        <FaHackerrank /> HackerRank Profile
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
 
               {/* Semester Results */}
-              <div>
-                <h3 className="text-lg font-semibold mb-3">Semester Results</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-4">
+                  Academic Performance
+                </h3>
+                <div className="space-y-3">
                   {Object.entries(selectedStudent.semester_results || {})
                     .sort((a, b) => a[0] - b[0])
                     .map(([semester, data]) => (
                       <div
                         key={semester}
-                        className="bg-gray-50 p-4 rounded-lg space-y-2"
+                        className="border dark:border-gray-700 rounded-lg overflow-hidden"
                       >
-                        <h4 className="font-medium">Semester {semester}</h4>
-                        <div className="space-y-1">
-                          <p className="text-sm">GPA: {data.gpa}</p>
-                          <p className="text-sm">CGPA: {data.cgpa}</p>
-                          <p className="text-sm">
-                            Credits: {data.earnedCredits}/{data.totalCredits}
-                          </p>
-                        </div>
-
-                        {/* Course Details */}
-                        <div className="mt-3">
-                          <p className="text-sm font-medium mb-2">Courses:</p>
-                          <div className="space-y-1">
-                            {data.courses.map((course, idx) => (
-                              <div
-                                key={idx}
-                                className="text-sm grid grid-cols-3 gap-2"
-                              >
-                                <span>{course.course_code}</span>
-                                <span>{course.grade}</span>
-                                <span
-                                  className={
-                                    course.grade === "F" ||
-                                    course.grade === "AB"
-                                      ? "text-red-500"
-                                      : "text-green-500"
-                                  }
+                        <button
+                          onClick={(e) => {
+                            e.currentTarget.nextElementSibling.classList.toggle(
+                              "hidden"
+                            );
+                            e.currentTarget
+                              .querySelector("svg")
+                              .classList.toggle("rotate-180");
+                          }}
+                          className="w-full bg-gray-50 dark:bg-gray-700 p-4 flex items-center justify-between cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200"
+                        >
+                          <div className="flex items-center gap-4">
+                            <h4 className="font-medium text-lg">
+                              Semester {semester}
+                            </h4>
+                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300">
+                              <span className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 rounded">
+                                GPA: {data.gpa}
+                              </span>
+                              <span className="px-2 py-1 bg-green-50 dark:bg-green-900/30 rounded">
+                                CGPA: {data.cgpa}
+                              </span>
+                              <span className="px-2 py-1 bg-purple-50 dark:bg-purple-900/30 rounded">
+                                Credits: {data.earnedCredits}/
+                                {data.totalCredits}
+                              </span>
+                            </div>
+                          </div>
+                          <ChevronDown className="w-5 h-5 transform transition-transform duration-200" />
+                        </button>
+                        <div className="hidden">
+                          <div className="p-4 space-y-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                              {data.courses.map((course, idx) => (
+                                <div
+                                  key={idx}
+                                  className="bg-white dark:bg-gray-700 p-3 rounded-lg shadow-sm border dark:border-gray-600"
                                 >
-                                  {course.grade === "F" || course.grade === "AB"
-                                    ? "FAIL"
-                                    : "PASS"}
-                                </span>
-                              </div>
-                            ))}
+                                  <div className="flex justify-between items-start">
+                                    <div>
+                                      <p className="font-medium">
+                                        {course.course_code}
+                                      </p>
+                                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        {course.course_name}
+                                      </p>
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                      <span
+                                        className={`text-sm font-medium px-2 py-1 rounded ${
+                                          course.grade === "F" ||
+                                          course.grade === "AB"
+                                            ? "bg-red-100 text-red-700 dark:bg-red-900/30"
+                                            : "bg-green-100 text-green-700 dark:bg-green-900/30"
+                                        }`}
+                                      >
+                                        {course.grade}
+                                      </span>
+                                      <span className="text-xs mt-1 text-gray-500">
+                                        {course.credits} Credits
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </div>
                     ))}
                 </div>
+              </div>
+
+              {/* LeetCode Stats */}
+              {selectedStudent.leetcode_url && (
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+                  <LeetStats leetcode_url={selectedStudent.leetcode_url} />
+                </div>
+              )}
+
+              {/* Portfolio and Resume Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {selectedStudent.portfolio_url && (
+                  <PortfolioPage
+                    portfolio_url={selectedStudent.portfolio_url}
+                  />
+                )}
+                {selectedStudent.resume_url && (
+                  <ResumeViewer resume_url={selectedStudent.resume_url} />
+                )}
               </div>
             </div>
           )}

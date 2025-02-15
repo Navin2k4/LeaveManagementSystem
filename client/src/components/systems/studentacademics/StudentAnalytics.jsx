@@ -15,7 +15,7 @@ import { pdf } from "@react-pdf/renderer";
 import GradeSheetPDF from "./GradeSheetPDF";
 import { Award, BookOpen, TrendingUp, Loader2, Save } from "lucide-react";
 
-const SemesterResults = ({ student, department, onResultsSave }) => {
+const StudentAnalytics = ({ student, department, onResultsSave }) => {
   const [courseData, setCourseData] = useState(null);
   const [selectedGrades, setSelectedGrades] = useState({});
   const [results, setResults] = useState({});
@@ -394,7 +394,7 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
         lastUpdated: new Date(),
       };
 
-      const response = await fetch("/api/cgpa/saveSemesterResults", {
+      const response = await fetch("/api/cgpa/saveStudentAnalytics", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -732,4 +732,4 @@ const SemesterResults = ({ student, department, onResultsSave }) => {
   );
 };
 
-export default SemesterResults;
+export default StudentAnalytics;

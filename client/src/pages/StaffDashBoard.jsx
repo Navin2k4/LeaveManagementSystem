@@ -19,7 +19,7 @@ import StaffProfile from "../components/user/StaffProfile";
 import ODRequests from "../components/systems/od/ODRequests";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
 import StudentAcademicData from "../components/systems/studentacademics/StudentAcademicData";
-import RequestCalendar from "../components/systems/calendar/RequestCalendar";
+import AttandanceCalander from "../components/systems/calendar/AttandanceCalander";
 import { Calendar } from "lucide-react";
 
 const StaffDashBoard = () => {
@@ -112,7 +112,7 @@ const StaffDashBoard = () => {
           return <StudentAcademicData userId={currentUser.userId} />;
         case "Calendar":
           return (
-            <RequestCalendar
+            <AttandanceCalander
               leaveRequests={[...mentorRequests, ...classInchargeRequest]}
               odRequests={[...mentorODRequests, ...classInchargeODRequests]}
             />
@@ -148,7 +148,7 @@ const StaffDashBoard = () => {
     {
       id: "Calendar",
       icon: <Calendar size={18} />,
-      label: "Calendar View",
+      label: "Attandance Calendar",
     },
     // {
     //   id: "Leave Reports",

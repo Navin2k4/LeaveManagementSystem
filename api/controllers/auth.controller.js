@@ -248,7 +248,6 @@ export const forgotPassword = async (req, res, next) => {
   const { email } = req.body;
 
   try {
-    // Check in both Student and Staff collections
     let user = await Student.findOne({ email });
     let userType = "Student";
 
@@ -261,17 +260,13 @@ export const forgotPassword = async (req, res, next) => {
       return next(errorHandler(404, "No account found with this email"));
     }
 
-    // Generate a temporary password
     const tempPassword = Math.random().toString(36).slice(-8);
 
-    // Hash the temporary password
     const hashedPassword = await bcryptjs.hash(tempPassword, 10);
 
-    // Update user's password
     user.password = hashedPassword;
     await user.save();
 
-    // Email content with temporary password
     const emailContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
         <h2 style="color: #2c3e50; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px;">Password Reset</h2>
@@ -287,7 +282,6 @@ export const forgotPassword = async (req, res, next) => {
 
     const userEmail = userType === "Student" ? user.email : user.staff_mail;
 
-    // Send email with correct parameter format
     await sendEmail(userEmail, "Password Reset - VCET Connect", emailContent);
 
     res.status(200).json({
