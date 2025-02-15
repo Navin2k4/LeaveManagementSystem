@@ -3,7 +3,7 @@ import { GraduationCap, Lock, User } from "lucide-react";
 import React, { useState } from "react";
 import { MdSupervisorAccount } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   signInFailure,
   signInStart,
@@ -102,7 +102,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-lg w-full space-y-8 flex gap-8">
         {/* Right Section - Sign In Form */}
         <motion.div
@@ -228,6 +228,13 @@ export default function SignIn() {
                 "Sign In"
               )}
             </button>
+            <div className="flex items-center justify-center">  
+              <p className="text-sm text-gray-500">
+                <Link to="/forgotpassword" className="text-blue-500 hover:text-blue-600">
+                  Forgot Password?
+                </Link>
+              </p>
+            </div>
           </form>
         </motion.div>
       </div>

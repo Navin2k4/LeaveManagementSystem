@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import Staff from "../models/staff.model.js";
 import Student from "../models/student.model.js";
 import { errorHandler } from "../utils/error.js";
+import { sendEmail } from "./email.service.js";
 
 dotenv.config();
 
@@ -188,22 +189,31 @@ export const signout = (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
   const { userType, id } = req.params;
-  const { email, phone, portfolio_url, resume_url, linkedin_url, github_url, hackerrank_url, leetcode_url } = req.body;  
+  const {
+    email,
+    phone,
+    portfolio_url,
+    resume_url,
+    linkedin_url,
+    github_url,
+    hackerrank_url,
+    leetcode_url,
+  } = req.body;
   try {
     if (userType === "Staff") {
       const staff = await Staff.findById(id);
       if (email) staff.staff_mail = email;
       if (phone) staff.staff_phone = phone;
       await staff.save();
-      res.status(200).json({ 
+      res.status(200).json({
         message: "Profile updated successfully",
         user: {
           email: staff.staff_mail,
-          phone: staff.staff_phone
-        }
+          phone: staff.staff_phone,
+        },
       });
     } else if (userType === "Student") {
-      const student = await Student.findById({_id:id});
+      const student = await Student.findById({ _id: id });
       if (email) student.email = email;
       if (phone) student.phone = phone;
       if (portfolio_url) student.portfolio_url = portfolio_url;
@@ -213,7 +223,7 @@ export const updateProfile = async (req, res, next) => {
       if (hackerrank_url) student.hackerrank_url = hackerrank_url;
       if (leetcode_url) student.leetcode_url = leetcode_url;
       await student.save();
-      res.status(200).json({ 
+      res.status(200).json({
         message: "Profile updated successfully",
         user: {
           email: student.email,
@@ -224,12 +234,67 @@ export const updateProfile = async (req, res, next) => {
           github_url: student.github_url,
           hackerrank_url: student.hackerrank_url,
           leetcode_url: student.leetcode_url,
-        }
+        },
       });
     } else {
       return next(errorHandler(400, "Invalid User Type"));
     }
   } catch (error) {
     next(error);
+  }
+};
+
+export const forgotPassword = async (req, res, next) => {
+  const { email } = req.body;
+
+  try {
+    // Check in both Student and Staff collections
+    let user = await Student.findOne({ email });
+    let userType = "Student";
+
+    if (!user) {
+      user = await Staff.findOne({ staff_mail: email });
+      userType = "Staff";
+    }
+
+    if (!user) {
+      return next(errorHandler(404, "No account found with this email"));
+    }
+
+    // Generate a temporary password
+    const tempPassword = Math.random().toString(36).slice(-8);
+
+    // Hash the temporary password
+    const hashedPassword = await bcryptjs.hash(tempPassword, 10);
+
+    // Update user's password
+    user.password = hashedPassword;
+    await user.save();
+
+    // Email content with temporary password
+    const emailContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
+        <h2 style="color: #2c3e50; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px;">Password Reset</h2>
+        <p style="color: #34495e; line-height: 1.6;">You requested a password reset for your VCET Connect account.</p>
+        <p style="color: #34495e; line-height: 1.6;">Your temporary password is: <strong style="background-color: #f1f1f1; padding: 5px 10px; border-radius: 4px; color: #e74c3c;">${tempPassword}</strong></p>
+        <p style="color: #34495e; line-height: 1.6;">Please use this temporary password to login and change your password immediately.</p>
+        <p style="color: #e74c3c; font-weight: bold;">If you didn't request this, please contact support immediately.</p>
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #bdc3c7; color: #7f8c8d;">
+          <p style="margin: 0;">Best regards,<br>VCET Connect Team</p>
+        </div>
+      </div>
+    `;
+
+    const userEmail = userType === "Student" ? user.email : user.staff_mail;
+
+    // Send email with correct parameter format
+    await sendEmail(userEmail, "Password Reset - VCET Connect", emailContent);
+
+    res.status(200).json({
+      message: "A temporary password has been sent to your email",
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    next(errorHandler(500, "Error resetting password. Please try again."));
   }
 };

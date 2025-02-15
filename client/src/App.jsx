@@ -19,6 +19,7 @@ import Footer from "./components/general/Footer";
 import MailTiming from "./components/systems/MailTiming";
 import About from "./pages/About";
 import "./utils/devtools-detector.js";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const AppWrapper = () => {
   const location = useLocation();
@@ -116,6 +117,7 @@ const AppWrapper = () => {
         {/* Public Routes */}
         <Route element={<PublicRoute />}>
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
         </Route>
 
         {/* Public Routes without authentication check */}
