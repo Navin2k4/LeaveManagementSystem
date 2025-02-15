@@ -13,9 +13,15 @@ import {
   BookOpen,
   UserPlus,
   GraduationCap,
+  Mail,
+  AlertCircle,
+  Send,
+  UserCheck,
+  MessageSquare,
 } from "lucide-react";
 import DashboardSidebar from "../components/layout/DashboardSidebar";
 import DepartmentCourses from "../components/systems/studentacademics/DepartmentCourses";
+import { toast } from "react-hot-toast";
 
 const SuperAdmin = () => {
   const departments = useFetchDepartments();
@@ -622,40 +628,281 @@ const SuperAdmin = () => {
       case "upload":
         return (
           <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-              <h2 className="text-xl font-semibold mb-6">Data Upload</h2>
-              <div className="flex gap-4 mb-6">
+            <h2 className="text-xl font-semibold mb-6">Data Upload</h2>
+            <div className="flex gap-4 mb-6">
+              <button
+                onClick={() => setUploadType("student")}
+                className={`flex-1 px-4 py-3 rounded-lg transition-colors ${
+                  uploadType === "student"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-100 hover:bg-gray-200"
+                }`}
+              >
+                Student Upload
+              </button>
+              <button
+                onClick={() => setUploadType("staff")}
+                className={`flex-1 px-4 py-3 rounded-lg transition-colors ${
+                  uploadType === "staff"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-100 hover:bg-gray-200"
+                }`}
+              >
+                Staff Upload
+              </button>
+            </div>
+            <UploadExcel type={uploadType} />
+          </div>
+        );
+      case "notifications":
+        return (
+          <div className="space-y-6">
+            {/* Profile Update Reminders */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Profile Update Reminders
+                  </h2>
+                  <p className="text-gray-600 mt-1">
+                    Send reminders to students with incomplete profiles
+                  </p>
+                </div>
                 <button
-                  onClick={() => setUploadType("student")}
-                  className={`flex-1 px-4 py-3 rounded-lg transition-colors ${
-                    uploadType === "student"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-100 hover:bg-gray-200"
-                  }`}
+                  onClick={async () => {
+                    try {
+                      const response = await fetch(
+                        "/api/notification/send-profile-reminder",
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                        }
+                      );
+                      const data = await response.json();
+                      if (response.ok) {
+                        toast.success(
+                          `Sent reminders to ${data.results.successful} students`
+                        );
+                      } else {
+                        toast.error(data.message);
+                      }
+                    } catch (error) {
+                      toast.error("Failed to send reminders");
+                    }
+                  }}
+                  className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
                 >
-                  Student Upload
-                </button>
-                <button
-                  onClick={() => setUploadType("staff")}
-                  className={`flex-1 px-4 py-3 rounded-lg transition-colors ${
-                    uploadType === "staff"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-100 hover:bg-gray-200"
-                  }`}
-                >
-                  Staff Upload
+                  <Send size={18} />
+                  Send Reminders
                 </button>
               </div>
-              <UploadExcel type={uploadType} />
             </div>
-        )
-      case "departments":
-        return (
-          <div
-            className={`grid grid-cols-1 ${
-              isSidebarOpen ? "lg:grid-cols-3" : "lg:grid-cols-4"
-            } gap-6`}
-          >
-            {/* ... Your existing departments content ... */}
+
+            {/* Batch Notifications */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Batch Notifications
+                  </h2>
+                  <p className="text-gray-600 mt-1">
+                    Send notifications to specific batches or departments
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Onboarding Welcome */}
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-blue-500/10 rounded-lg">
+                      <UserCheck className="w-6 h-6 text-blue-500" />
+                    </div>
+                    <h3 className="font-semibold text-gray-800">
+                      Onboarding Welcome
+                    </h3>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Send welcome messages to new students
+                  </p>
+                  <button
+                    onClick={async () => {
+                      if (!selectedBatch) {
+                        toast.error("Please select a batch first");
+                        return;
+                      }
+                      try {
+                        const response = await fetch(
+                          "/api/notification/send-to-all",
+                          {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                              type: "ONBOARDING_WELCOME",
+                              filter: {
+                                batch: selectedBatch._id,
+                              },
+                            }),
+                          }
+                        );
+                        const data = await response.json();
+                        if (response.ok) {
+                          toast.success(
+                            `Sent welcome messages to ${data.results.successful} students`
+                          );
+                        } else {
+                          toast.error(data.message);
+                        }
+                      } catch (error) {
+                        toast.error("Failed to send welcome messages");
+                      }
+                    }}
+                    className="w-full flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                  >
+                    <Send size={16} />
+                    Send to Selected Batch
+                  </button>
+                </div>
+
+                {/* Dashboard Feedback */}
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-purple-500/10 rounded-lg">
+                      <MessageSquare className="w-6 h-6 text-purple-500" />
+                    </div>
+                    <h3 className="font-semibold text-gray-800">
+                      Dashboard Feedback
+                    </h3>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Request feedback on dashboard features
+                  </p>
+                  <button
+                    onClick={async () => {
+                      if (!selectedDepartment) {
+                        toast.error("Please select a department first");
+                        return;
+                      }
+                      try {
+                        const response = await fetch(
+                          "/api/notification/send-to-all",
+                          {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                              type: "DASHBOARD_FEEDBACK",
+                              filter: {
+                                department: selectedDepartment._id,
+                              },
+                            }),
+                          }
+                        );
+                        const data = await response.json();
+                        if (response.ok) {
+                          toast.success(
+                            `Sent feedback requests to ${data.results.successful} students`
+                          );
+                        } else {
+                          toast.error(data.message);
+                        }
+                      } catch (error) {
+                        toast.error("Failed to send feedback requests");
+                      }
+                    }}
+                    className="w-full flex items-center justify-center gap-2 bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors"
+                  >
+                    <Send size={16} />
+                    Send to Department
+                  </button>
+                </div>
+
+                {/* Custom Announcement */}
+                <div className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-green-500/10 rounded-lg">
+                      <AlertCircle className="w-6 h-6 text-green-500" />
+                    </div>
+                    <h3 className="font-semibold text-gray-800">
+                      Custom Announcement
+                    </h3>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Send a custom announcement to selected students
+                  </p>
+                  <button
+                    onClick={() => {
+                      if (!selectedSection) {
+                        toast.error("Please select a section first");
+                        return;
+                      }
+                      // You can implement a modal here to get custom message
+                      const message = prompt(
+                        "Enter your announcement message:"
+                      );
+                      if (!message) return;
+
+                      fetch("/api/notification/send-to-all", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          type: "GENERAL_ANNOUNCEMENT",
+                          customTitle: "Important Announcement",
+                          customMessage: message,
+                          filter: {
+                            section: selectedSection.section_name,
+                          },
+                        }),
+                      })
+                        .then((response) => response.json())
+                        .then((data) => {
+                          if (data.results.successful > 0) {
+                            toast.success(
+                              `Sent announcement to ${data.results.successful} students`
+                            );
+                          } else {
+                            toast.error(data.message);
+                          }
+                        })
+                        .catch(() => {
+                          toast.error("Failed to send announcement");
+                        });
+                    }}
+                    className="w-full flex items-center justify-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                  >
+                    <Send size={16} />
+                    Send to Section
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Notification Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-500/10 rounded-lg">
+                    <Mail className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Total Students</p>
+                    <p className="text-xl font-semibold">
+                      {departments.reduce(
+                        (acc, dept) => acc + (dept.studentCount || 0),
+                        0
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         );
       default:
@@ -679,6 +926,11 @@ const SuperAdmin = () => {
       icon: <BookOpen size={18} />,
       label: "Department Courses",
     },
+    // {
+    //   id: "notifications",
+    //   icon: <Mail size={18} />,
+    //   label: "Notifications",
+    // },
   ];
 
   return (

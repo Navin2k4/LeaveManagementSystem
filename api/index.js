@@ -14,6 +14,7 @@ import dataRoutes from "./routes/data.route.js";
 import mailRoutes from "./routes/mail.route.js";
 import fetchRoutes from "./routes/fetch.route.js";
 import cgpaRoutes from "./routes/cgpa.route.js";
+import notificationRoutes from "./routes/notification.route.js";
 dotenv.config();
 
 // MongoDB connection setup
@@ -46,6 +47,7 @@ app.use("/api/defaulter", defaulterRoutes);
 app.use("/api/data", dataRoutes);
 app.use("/api/fetch", fetchRoutes);
 app.use("/api/mail", mailRoutes);
+app.use("/api/notification", notificationRoutes);
 
 // Serve static files from React build (ensure 'client/dist' exists)
 app.use(express.static(path.join(__dirname, "client", "dist")));

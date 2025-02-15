@@ -35,7 +35,7 @@ export const changeMailSendTiming = (req, res) => {
 export const sendEmail = async (to, subject, htmlContent) => {
   try {
     await transporter.sendMail({
-      from: `"VCET Connect" <${process.env.EMAIL}>`,
+      from: `"VCET CONNECT" <${process.env.EMAIL}>`,
       to,
       subject,
       html: htmlContent,
