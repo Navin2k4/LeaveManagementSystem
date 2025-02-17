@@ -72,11 +72,11 @@ const AppWrapper = () => {
 
     // Clear console periodically
     const clearConsole = () => {
-      // console.clear();
-      // console.log(
-      //   "%c" + warningMessage,
-      //   "color: red; font-size: 30px; font-weight: bold; text-shadow: 2px 2px black;"
-      // );
+      console.clear();
+      console.log(
+        "%c" + warningMessage,
+        "color: red; font-size: 30px; font-weight: bold; text-shadow: 2px 2px black;"
+      );
     };
 
     // Add event listeners

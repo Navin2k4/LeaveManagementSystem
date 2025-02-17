@@ -3,8 +3,6 @@ import { errorHandler } from "../utils/error.js";
 import bcryptjs from "bcryptjs";
 import Staff from "../models/staff.model.js";
 
-
-
 export const updateUser = async (req, res, next) => {
   const {
     roll_no,

@@ -394,7 +394,7 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
         lastUpdated: new Date(),
       };
 
-      const response = await fetch("/api/cgpa/saveStudentAnalytics", {
+      const response = await fetch("/api/cgpa/saveSemesterResults", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
