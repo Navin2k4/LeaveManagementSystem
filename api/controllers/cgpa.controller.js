@@ -344,19 +344,81 @@ export const saveSemesterResults = async (req, res, next) => {
         message: "Student not found",
       });
     }
-    // Update or add the semester results
-    student.semester_results = {
-      ...student.semester_results,
+
+    // Get existing semester results
+    const existingResults = student.semester_results || {};
+
+    // Process each course to handle arrears
+    const processedCourses = results.courses.map((course) => {
+      const courseResult = {
+        course_code: course.course_code,
+        course_name: course.course_name,
+        credits: course.credits,
+        grade: course.grade,
+        vertical_type: course.vertical_type || "Regular",
+        isArrear: false,
+        originalSemester: course.originalSemester || semesterNo,
+        arrearHistory: course.arrearHistory || [],
+      };
+
+      // If this is an arrear attempt (course from previous semester)
+      if (course.originalSemester && course.originalSemester < semesterNo) {
+        // Add this attempt to arrear history
+        courseResult.arrearHistory = [
+          ...(course.arrearHistory || []),
+          {
+            attemptedSemester: semesterNo,
+            grade: course.grade,
+            date: new Date(),
+          },
+        ];
+
+        // If passed now, mark as cleared
+        if (course.grade !== "F" && course.grade !== "AB") {
+          courseResult.arrearCleared = true;
+          courseResult.clearedInSemester = semesterNo;
+        }
+
+        // Update the original semester's record to mark the arrear
+        if (existingResults[course.originalSemester]) {
+          const originalSemCourses = existingResults[
+            course.originalSemester
+          ].courses.map((origCourse) => {
+            if (origCourse.course_code === course.course_code) {
+              return {
+                ...origCourse,
+                hasArrear: true,
+                arrearHistory: courseResult.arrearHistory,
+                arrearCleared: courseResult.arrearCleared,
+                clearedInSemester: courseResult.clearedInSemester,
+              };
+            }
+            return origCourse;
+          });
+          existingResults[course.originalSemester].courses = originalSemCourses;
+        }
+      }
+      // If this is current semester course and got F grade
+      else if (course.grade === "F" || course.grade === "AB") {
+        courseResult.isArrear = true;
+        courseResult.hasArrear = true;
+        courseResult.arrearHistory = [
+          {
+            attemptedSemester: semesterNo,
+            grade: course.grade,
+            date: new Date(),
+          },
+        ];
+      }
+
+      return courseResult;
+    });
+
+    // Update the results for current semester
+    const updatedResults = {
+      ...existingResults,
       [semesterNo]: {
-        courses: results.courses.map((course) => ({
-          course_code: course.course_code,
-          course_name: course.course_name,
-          credits: course.credits,
-          grade: course.grade,
-          vertical_type: course.vertical_type,
-          isArrear: course.isArrear || false,
-          originalSemester: course.originalSemester,
-        })),
+        courses: processedCourses,
         gpa: results.gpa,
         cgpa: results.cgpa,
         totalCredits: results.totalCredits,
@@ -365,6 +427,8 @@ export const saveSemesterResults = async (req, res, next) => {
       },
     };
 
+    // Update student's semester results
+    student.semester_results = updatedResults;
     await student.save();
 
     res.status(200).json({
@@ -374,6 +438,52 @@ export const saveSemesterResults = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error saving semester results:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export const clearSemesterResults = async (req, res, next) => {
+  try {
+    const { studentId, semesterNo } = req.body;
+
+    if (!studentId || !semesterNo) {
+      return res.status(400).json({
+        success: false,
+        message: "Student ID and semester number are required",
+      });
+    }
+
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    // Create a copy of the semester results
+    const updatedResults = { ...student.semester_results };
+
+    // Delete the specified semester's results
+    delete updatedResults[semesterNo];
+
+    // Update the student's semester results
+    student.semester_results = updatedResults;
+
+    // Save the changes
+    await student.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Semester ${semesterNo} results cleared successfully`,
+      data: student.semester_results,
+    });
+  } catch (error) {
+    console.error("Error clearing semester results:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",

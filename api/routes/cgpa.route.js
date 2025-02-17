@@ -9,6 +9,7 @@ import {
   calculateSemesterResults,
   getSemesterResults,
   saveSemesterResults,
+  clearSemesterResults,
   getStudentResultsByClassInchargeId,
 } from "../controllers/cgpa.controller.js";
 
@@ -23,6 +24,7 @@ router.post("/addOpenElectiveCourse", addOpenElectiveCourse);
 router.post("/calculateSemesterResults", calculateSemesterResults);
 router.get("/getSemesterResults", getSemesterResults);
 router.post("/saveSemesterResults", saveSemesterResults);
+router.post("/clearSemesterResults", clearSemesterResults);
 router.get("/getStudentResults", getSemesterResults);
 router.get(
   "/getStudentResultsByClassInchargeId/:userId",

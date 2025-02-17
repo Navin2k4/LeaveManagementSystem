@@ -13,7 +13,14 @@ import {
 } from "recharts";
 import { pdf } from "@react-pdf/renderer";
 import GradeSheetPDF from "./GradeSheetPDF";
-import { Award, BookOpen, TrendingUp, Loader2, Save } from "lucide-react";
+import {
+  Award,
+  BookOpen,
+  TrendingUp,
+  Loader2,
+  Save,
+  Trash2,
+} from "lucide-react";
 
 const StudentAnalytics = ({ student, department, onResultsSave }) => {
   const [courseData, setCourseData] = useState(null);
@@ -24,6 +31,7 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
   const [arrears, setArrears] = useState({});
   const [savedResults, setSavedResults] = useState({});
   const [saving, setSaving] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   const GRADE_POINTS = {
     O: 10,
@@ -204,8 +212,9 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
       if (grade) {
         // Skip NA grades for elective courses
         if (
-          grade === "NA" &&
-          (course.vertical_type === "PE" || course.vertical_type === "OE")
+          grade === "F" ||
+          (grade === "NA" &&
+            (course.vertical_type === "PE" || course.vertical_type === "OE"))
         ) {
           return; // Skip this course in calculation
         }
@@ -608,6 +617,61 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
     }
   };
 
+  const handleClearSemester = async (semester) => {
+    try {
+      setClearing(true);
+
+      // Clear grades for the specific semester
+      const updatedGrades = { ...selectedGrades };
+      const semesterCourses = getCoursesBySemester(semester);
+
+      semesterCourses.forEach((course) => {
+        delete updatedGrades[`${semester}-${course.course_code}`];
+      });
+
+      setSelectedGrades(updatedGrades);
+
+      // Clear results for this semester
+      const updatedResults = { ...results };
+      delete updatedResults[semester];
+      setResults(updatedResults);
+
+      // Clear saved results for this semester
+      const updatedSavedResults = { ...savedResults };
+      delete updatedSavedResults[semester];
+      setSavedResults(updatedSavedResults);
+
+      // Update in the database
+      const response = await fetch("/api/cgpa/clearSemesterResults", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          studentId: student.id,
+          semesterNo: semester,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success(`Semester ${semester} data cleared successfully`);
+        onResultsSave?.(data.data);
+      } else {
+        throw new Error(data.message || "Failed to clear semester data");
+      }
+    } catch (err) {
+      console.error("Error clearing semester data:", err);
+      toast.error(err.message || "Failed to clear semester data");
+    } finally {
+      setClearing(false);
+    }
+  };
+
   return (
     <div className="p-2 md:p-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
@@ -699,9 +763,26 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
                   </div>
                   <div className="flex gap-2 order-1 md:order-2">
                     <Button
-                      className="flex-1 md:flex-none  bg-blue-500 hover:bg-blue-600 transition-all duration-300 text-sm"
+                      className="flex-1 md:flex-none bg-red-500 hover:bg-red-600 transition-all duration-300 text-sm"
+                      onClick={() => handleClearSemester(semester.semester_no)}
+                      disabled={clearing || saving}
+                    >
+                      {clearing ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Clearing...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Trash2 className="w-4 h-4" />
+                          Clear Semester
+                        </div>
+                      )}
+                    </Button>
+                    <Button
+                      className="flex-1 md:flex-none bg-blue-500 hover:bg-blue-600 transition-all duration-300 text-sm"
                       onClick={() => handleSaveResults(semester.semester_no)}
-                      disabled={saving}
+                      disabled={saving || clearing}
                     >
                       {saving ? (
                         <div className="flex items-center gap-2">

@@ -75,7 +75,7 @@ const DashboardSidebar = ({
       {/* Desktop Sidebar */}
       <div className="hidden lg:block transition-all duration-300">
         <div
-          className={`fixed top-0 left-0 h-screen bg-gray-100 shadow-lg 
+          className={`fixed top-0 left-0 h-screen bg-slate-50 shadow-lg 
                      transition-all duration-300 ease-in-out z-40 overflow-x-hidden
                      ${isOpen ? "w-64" : "w-16"}`}
         >

@@ -19,7 +19,6 @@ export const changeMailSendTiming = (req, res) => {
   try {
     const [hours, minutes] = time.split(":");
 
-
     res.status(200).json({
       success: true,
       message: "Time changed successfully",
@@ -498,7 +497,6 @@ const sendHodConsolidatedEmails = async () => {
       .populate("sectionId")
       .lean();
 
-
     // Process for each HOD
     for (const hod of hods) {
       // Filter requests by department
@@ -628,12 +626,10 @@ const sendHodConsolidatedEmails = async () => {
 
       // Send email without Excel attachment
       await sendEmailWithAttachments(
-        hod.staff_mail,
+        "navinkumaran2004@gmail.com",
         `Department Requests Summary`,
         html
       );
-
-     
     }
   } catch (error) {
     console.error("Error sending HOD consolidated emails:", error);
@@ -663,7 +659,6 @@ const sendStaffConsolidatedEmails = async () => {
       .populate("classInchargeId")
       .populate("sectionId")
       .lean();
-
 
     const defaulterRequests = await Defaulter.find()
       .populate("studentId")
