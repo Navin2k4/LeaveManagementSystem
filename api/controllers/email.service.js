@@ -809,7 +809,7 @@ const sendStaffConsolidatedEmails = async () => {
 // sendHodConsolidatedEmails();
 
 export const scheduleEmails = () => {
-  schedule.scheduleJob("10 9 * * *", async () => {
+  schedule.scheduleJob("40 3 * * *", async () => {
     try {
       await sendStaffConsolidatedEmails();
       await sendHodConsolidatedEmails();

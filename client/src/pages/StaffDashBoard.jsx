@@ -99,13 +99,6 @@ const StaffDashBoard = () => {
           );
         case "Defaulter":
           return <MarkDefaulterandLate />;
-        // case "Leave Reports":
-        //   return (
-        //     <LeaveStatsCard
-        //       leaveRequestsAsClassIncharge={classInchargeRequest}
-        //       leaveRequestsAsMentor={mentorRequests}
-        //     />
-        //   );
         case "Mentee List":
           return <MenteeList />;
         case "Student's Academics":
