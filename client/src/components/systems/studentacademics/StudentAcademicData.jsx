@@ -561,7 +561,6 @@ const StudentAcademicData = ({ userId }) => {
       </div>
     );
   };
-  console.log(studentResults);
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">

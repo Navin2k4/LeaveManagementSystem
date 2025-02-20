@@ -62,7 +62,6 @@ const EditProfile = ({ mentor, classIncharge, initialActiveTab }) => {
     leetcode_url: "",
   });
 
-  console.log(currentUser);
   const fetchUserData = async () => {
     try {
       setPageLoading(true);

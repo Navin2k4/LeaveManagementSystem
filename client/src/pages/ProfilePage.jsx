@@ -13,7 +13,8 @@ import EditProfile from "../components/user/EditProfile";
 import DashBoard from "./DashBoard";
 import ODDashBoard from "./ODDashBoard";
 import Academics from "../components/systems/studentacademics/Academics";
-import { FaChalkboardTeacher } from "react-icons/fa";
+import { FaChalkboardTeacher, FaCheckCircle } from "react-icons/fa";
+import BonafiedRequestForm from "../components/systems/bonafieds/BonafiedRequestForm";
 
 const ProfilePage = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -84,6 +85,8 @@ const ProfilePage = () => {
             classIncharge={classIncharge}
           />
         );
+      case "Bonafied":
+        return <BonafiedRequestForm setTab={setTab} />;
       case "Your Leave Requests":
         return <DashBoard setTab={setTab} />;
       case "Your OD Requests":
@@ -106,6 +109,12 @@ const ProfilePage = () => {
       id: "Academics",
       icon: <FaChalkboardTeacher size={20} />,
       label: "Academics",
+      submenu: false,
+    },
+    {
+      id: "Bonafied",
+      icon: <FaCheckCircle size={18} />,
+      label: "Bonafied Application",
       submenu: false,
     },
     {

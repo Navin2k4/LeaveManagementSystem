@@ -20,6 +20,7 @@ import MailTiming from "./components/systems/MailTiming";
 import About from "./pages/About";
 import "./utils/devtools-detector.js";
 import ForgotPassword from "./pages/ForgotPassword";
+import BonafiedRequestForm from "./components/systems/bonafieds/BonafiedRequestForm.jsx";
 
 const AppWrapper = () => {
   const location = useLocation();
@@ -67,16 +68,16 @@ const AppWrapper = () => {
       "This is a protected website. Developer tools are not allowed.";
     console.log(
       "%c" + warningMessage,
-      "color: red; font-size: 30px; font-weight: bold; text-shadow: 2px 2px black;"
+      "color: red; font-size: 20px; font-weight: bold; text-shadow: 2px 2px black;"
     );
 
     // Clear console periodically
     const clearConsole = () => {
-      // console.clear();
-      // console.log(
-      //   "%c" + warningMessage,
-      //   "color: red; font-size: 30px; font-weight: bold; text-shadow: 2px 2px black;"
-      // );
+      console.clear();
+      console.log(
+        "%c" + warningMessage,
+        "color: red; font-size: 30px; font-weight: bold; text-shadow: 2px 2px black;"
+      );
     };
 
     // Add event listeners
@@ -113,37 +114,38 @@ const AppWrapper = () => {
   return (
     <>
       {showNavbar && <Navbar />}
-        <Routes>
-          {/* Public Routes */}
-          <Route element={<PublicRoute />}>
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/forgotpassword" element={<ForgotPassword />} />
-          </Route>
+      <Routes>
+        {/* Public Routes */}
+        <Route element={<PublicRoute />}>
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+        </Route>
 
-          {/* Public Routes without authentication check */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/know-about-us" element={<About />} />
-          <Route path="/hidden/changeMailTiming" element={<MailTiming />} />
-          <Route path="/wardDetails" element={<WardDetails />} />
-          <Route path="/superadmin" element={<SuperAdmin />} />
+        {/* Public Routes without authentication check */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/know-about-us" element={<About />} />
+        <Route path="/hidden/changeMailTiming" element={<MailTiming />} />
+        <Route path="/wardDetails" element={<WardDetails />} />
+        <Route path="/superadmin" element={<SuperAdmin />} />
 
-          {/* Protected Routes */}
-          <Route element={<PrivateRoute />}>
-            <Route path="/studentdashboard" element={<DashBoard />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/leaverequest" element={<LeaveRequestForm />} />
-          </Route>
+        {/* Protected Routes */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/studentdashboard" element={<DashBoard />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/leaverequest" element={<LeaveRequestForm />} />
+          <Route path="/bonafiedrequest" element={<BonafiedRequestForm />} />
+        </Route>
 
-          <Route element={<HodPrivateRoute />}>
-            <Route path="/hoddash" element={<Hoddashboard />} />
-          </Route>
+        <Route element={<HodPrivateRoute />}>
+          <Route path="/hoddash" element={<Hoddashboard />} />
+        </Route>
 
-          <Route element={<StaffPrivateRoute />}>
-            <Route path="/staffdashboard" element={<StaffDashBoard />} />
-          </Route>
+        <Route element={<StaffPrivateRoute />}>
+          <Route path="/staffdashboard" element={<StaffDashBoard />} />
+        </Route>
 
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
       {showFooter && <Footer />}
     </>
   );

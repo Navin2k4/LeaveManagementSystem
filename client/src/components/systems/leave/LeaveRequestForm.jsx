@@ -2,7 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Label, Checkbox } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { ScaleLoader } from "react-spinners";
-import { Calendar, Clock, FileText, AlertCircle } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  FileText,
+  AlertCircle,
+  User,
+  Phone,
+  Mail,
+  BookOpen,
+  Building,
+} from "lucide-react";
 
 export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
   const { currentUser } = useSelector((state) => state.user);
@@ -232,177 +242,197 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      {/* Page Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Leave Request
-          </h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Fill in the details below to submit your leave request
-          </p>
-        </div>
-      </div>
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-        <form className="p-4 space-y-4" onSubmit={handleSubmit}>
-          {/* Date Selection Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                <Calendar size={16} />
-                Date From<span className="text-red-400">*</span>
-              </Label>
-              <input
-                type="date"
-                name="leaveStartDate"
-                value={formData.leaveStartDate}
-                onChange={handleChange}
-                className={`w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm
-                  ${errors.leaveStartDate ? "border-red-500" : ""}`}
-              />
-              {errors.leaveStartDate && (
-                <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
-                  <AlertCircle size={12} />
-                  {errors.leaveStartDate}
-                </p>
-              )}
-            </div>
+    <div className="max-w-4xl mx-auto p-6">
+      {/* Header with Leave Summary */}
 
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                <Calendar size={16} />
-                Date To<span className="text-red-400">*</span>
-              </Label>
-              <input
-                type="date"
-                name="leaveEndDate"
-                value={formData.leaveEndDate}
-                onChange={handleChange}
-                disabled={forOneDay}
-                className={`w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm
-                  ${errors.leaveEndDate ? "border-red-500" : ""}`}
-              />
-              {errors.leaveEndDate && (
-                <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
-                  <AlertCircle size={12} />
-                  {errors.leaveEndDate}
-                </p>
-              )}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Date Selection Section */}
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="inline-flex items-center px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">
+                  <Calendar size={16} className="mr-2" />
+                  Start Date<span className="text-red-400 ml-1">*</span>
+                </Label>
+                <input
+                  type="date"
+                  name="leaveStartDate"
+                  value={formData.leaveStartDate}
+                  onChange={handleChange}
+                  className={`w-full rounded-lg border ${
+                    errors.leaveStartDate
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-gray-600"
+                  } shadow-sm text-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                />
+                {errors.leaveStartDate && (
+                  <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                    <AlertCircle size={12} />
+                    {errors.leaveStartDate}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="inline-flex items-center px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">
+                  <Calendar size={16} className="mr-2" />
+                  End Date<span className="text-red-400 ml-1">*</span>
+                </Label>
+                <input
+                  type="date"
+                  name="leaveEndDate"
+                  value={formData.leaveEndDate}
+                  onChange={handleChange}
+                  disabled={forOneDay}
+                  className={`w-full rounded-lg border ${
+                    errors.leaveEndDate
+                      ? "border-red-500"
+                      : "border-gray-300 dark:border-gray-600"
+                  } shadow-sm text-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    forOneDay ? "bg-gray-100 cursor-not-allowed" : ""
+                  }`}
+                />
+                {errors.leaveEndDate && (
+                  <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                    <AlertCircle size={12} />
+                    {errors.leaveEndDate}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Options Section */}
-          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="forOneDay"
-                checked={forOneDay}
-                onChange={handleForOneDayChange}
-                className="text-[#1f3a6e] rounded"
-              />
-              <Label
-                htmlFor="forOneDay"
-                className="text-sm text-gray-700 dark:text-gray-300"
-              >
-                Apply leave for one day only
-              </Label>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Clock size={16} className="text-gray-500" />
-                <Label className="text-sm text-gray-700 dark:text-gray-300">
-                  Half Day Options:
-                </Label>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="FN"
-                    checked={isHalfDay === "FN"}
-                    onChange={() => handleIsHalfDayChange("FN")}
-                    className="text-[#1f3a6e] rounded"
-                  />
-                  <Label htmlFor="FN" className="text-sm">
-                    FN
-                  </Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="AN"
-                    checked={isHalfDay === "AN"}
-                    onChange={() => handleIsHalfDayChange("AN")}
-                    className="text-[#1f3a6e] rounded"
-                  />
-                  <Label htmlFor="AN" className="text-sm">
-                    AN
-                  </Label>
+          {/* Leave Type Options */}
+          <div className="p-6 bg-gray-50 dark:bg-gray-700/30">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                  Leave Duration
+                </h3>
+                <div className="space-y-3">
+                  <label className="flex items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+                    <Checkbox
+                      id="forOneDay"
+                      checked={forOneDay}
+                      onChange={handleForOneDayChange}
+                      className="text-[#1f3a6e] rounded"
+                    />
+                    <span className="ml-3 text-sm text-gray-700 dark:text-gray-300">
+                      Single Day Leave
+                    </span>
+                  </label>
+                  <label className="flex items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+                    <Checkbox
+                      id="forMedical"
+                      checked={forMedical}
+                      onChange={handleForMedicalChange}
+                      className="text-[#1f3a6e] rounded"
+                    />
+                    <span className="ml-3 text-sm text-gray-700 dark:text-gray-300">
+                      Medical Leave
+                    </span>
+                  </label>
                 </div>
               </div>
-            </div>
 
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="forMedical"
-                checked={forMedical}
-                onChange={handleForMedicalChange}
-                className="text-[#1f3a6e] rounded"
-              />
-              <Label
-                htmlFor="forMedical"
-                className="text-sm text-gray-700 dark:text-gray-300"
-              >
-                Is this for medical reason?
-              </Label>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                  <Clock size={16} className="inline mr-2 text-gray-500" />
+                  Half Day Options
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <label className="flex items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+                    <Checkbox
+                      id="FN"
+                      checked={isHalfDay === "FN"}
+                      onChange={() => handleIsHalfDayChange("FN")}
+                      className="text-[#1f3a6e] rounded"
+                    />
+                    <span className="ml-3 text-sm text-gray-700 dark:text-gray-300">
+                      Forenoon
+                    </span>
+                  </label>
+                  <label className="flex items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+                    <Checkbox
+                      id="AN"
+                      checked={isHalfDay === "AN"}
+                      onChange={() => handleIsHalfDayChange("AN")}
+                      className="text-[#1f3a6e] rounded"
+                    />
+                    <span className="ml-3 text-sm text-gray-700 dark:text-gray-300">
+                      Afternoon
+                    </span>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Reason Section */}
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-              <FileText size={16} />
-              Reason<span className="text-red-400">*</span>
-            </Label>
-            <textarea
-              name="reason"
-              value={formData.reason}
-              onChange={handleChange}
-              rows="3"
-              className={`w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm text-sm
-                ${errors.reason ? "border-red-500" : ""}`}
-              placeholder="Please provide a detailed reason for your leave request..."
-            ></textarea>
-            {errors.reason && (
-              <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
-                <AlertCircle size={12} />
-                {errors.reason}
-              </p>
-            )}
+          <div className="p-6">
+            <div className="space-y-3">
+              <Label className="inline-flex items-center px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">
+                <FileText size={16} className="mr-2" />
+                Reason for Leave<span className="text-red-400 ml-1">*</span>
+              </Label>
+              <textarea
+                name="reason"
+                value={formData.reason}
+                onChange={handleChange}
+                rows="4"
+                className={`w-full rounded-lg border ${
+                  errors.reason
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
+                } shadow-sm text-sm p-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                placeholder="Please provide a detailed reason for your leave request..."
+              ></textarea>
+              {errors.reason && (
+                <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                  <AlertCircle size={12} />
+                  {errors.reason}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Error Message */}
-          {errorMessage && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
-              <AlertCircle size={16} />
-              {errorMessage}
-            </div>
-          )}
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-[#1f3a6e] text-white py-2.5 rounded-lg font-medium hover:bg-[#0b1f44] transition-all duration-300 disabled:opacity-50"
-            disabled={loading}
-          >
-            {loading ? (
-              <div className="flex items-center justify-center">
-                <ScaleLoader color="white" height={15} />
+          {/* Submit Section */}
+          <div className="p-6 bg-gray-50 dark:bg-gray-700/30">
+            {errorMessage && (
+              <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                <AlertCircle size={18} />
+                {errorMessage}
               </div>
-            ) : (
-              "Submit Leave Request"
             )}
-          </button>
+
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
+              disabled={loading}
+            >
+              {loading ? (
+                <ScaleLoader color="white" height={15} />
+              ) : (
+                <>
+                  Request Leave
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    />
+                  </svg>
+                </>
+              )}
+            </button>
+          </div>
         </form>
       </div>
     </div>
