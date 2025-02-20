@@ -113,37 +113,37 @@ const AppWrapper = () => {
   return (
     <>
       {showNavbar && <Navbar />}
-      <Routes>
-        {/* Public Routes */}
-        <Route element={<PublicRoute />}>
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/forgotpassword" element={<ForgotPassword />} />
-        </Route>
+        <Routes>
+          {/* Public Routes */}
+          <Route element={<PublicRoute />}>
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/forgotpassword" element={<ForgotPassword />} />
+          </Route>
 
-        {/* Public Routes without authentication check */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/know-about-us" element={<About />} />
-        <Route path="/hidden/changeMailTiming" element={<MailTiming />} />
-        <Route path="/wardDetails" element={<WardDetails />} />
-        <Route path="/superadmin" element={<SuperAdmin />} />
+          {/* Public Routes without authentication check */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/know-about-us" element={<About />} />
+          <Route path="/hidden/changeMailTiming" element={<MailTiming />} />
+          <Route path="/wardDetails" element={<WardDetails />} />
+          <Route path="/superadmin" element={<SuperAdmin />} />
 
-        {/* Protected Routes */}
-        <Route element={<PrivateRoute />}>
-          <Route path="/studentdashboard" element={<DashBoard />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/leaverequest" element={<LeaveRequestForm />} />
-        </Route>
+          {/* Protected Routes */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/studentdashboard" element={<DashBoard />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/leaverequest" element={<LeaveRequestForm />} />
+          </Route>
 
-        <Route element={<HodPrivateRoute />}>
-          <Route path="/hoddash" element={<Hoddashboard />} />
-        </Route>
+          <Route element={<HodPrivateRoute />}>
+            <Route path="/hoddash" element={<Hoddashboard />} />
+          </Route>
 
-        <Route element={<StaffPrivateRoute />}>
-          <Route path="/staffdashboard" element={<StaffDashBoard />} />
-        </Route>
+          <Route element={<StaffPrivateRoute />}>
+            <Route path="/staffdashboard" element={<StaffDashBoard />} />
+          </Route>
 
-        <Route path="*" element={<PageNotFound />} />
-      </Routes>
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
       {showFooter && <Footer />}
     </>
   );

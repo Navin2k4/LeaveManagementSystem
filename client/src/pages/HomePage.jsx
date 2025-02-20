@@ -243,17 +243,17 @@ function HomePage() {
                 >
                   <Link
                     to={
-                      currentUser.userType === "Staff"
+                      currentUser.isHod
+                        ? "/hoddash"
+                        : currentUser.isStaff
                         ? "/staffdashboard"
-                        : currentUser.userType === "Student"
-                        ? "/profile"
-                        : "/hoddash"
+                        : "/profile"
                     }
                     className="group inline-flex items-center gap-2 px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300"
                   >
-                    {currentUser.userType === "Staff"
+                    {currentUser.isStaff
                       ? "Access Dashboard"
-                      : currentUser.userType === "Student"
+                      : currentUser.isStudent
                       ? "View Profile"
                       : "HOD Dashboard"}
                     <ArrowRight className="group-hover:translate-x-1 transition-transform" />

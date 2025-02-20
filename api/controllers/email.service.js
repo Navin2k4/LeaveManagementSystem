@@ -5,7 +5,9 @@ import transporter from "../utils/transporter.js";
 import ODRequest from "../models/od.model.js";
 import Staff from "../models/staff.model.js";
 import Batch from "../models/batch.model.js";
+import { jsPDF } from "jspdf";
 import Defaulter from "../models/defaulter.model.js";
+import "jspdf-autotable";
 
 export const changeMailSendTiming = (req, res) => {
   const { time } = req.body;
@@ -70,11 +72,12 @@ const sendEmailWithAttachments = async (to, subject, htmlContent) => {
   }
 };
 
-const formatDate = (date) => {
-  const d = new Date(date);
-  const month = d.toLocaleString("default", { month: "short" });
-  const day = d.getDate();
-  return `${day} ${month}`;
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear().toString().slice(-2); // Get last two digits of the year
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Month in two digits
+  const day = date.getDate().toString().padStart(2, "0"); // Day in two digits
+  return `${day}-${month}-${year}`;
 };
 
 const generateRequestsSection = (requests, isOd, isDefaulter) => {
@@ -207,55 +210,111 @@ const generateEmailTemplate = (title, content) => {
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>${title}</title>
+        <style>
+          .request-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+          }
+          .card-header {
+            border-bottom: 1px solid #e0e0e0;
+            background: #f8f9fa;
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          .card-content {
+            padding: 12px;
+          }
+          .status-badge {
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+          }
+          .status-approved { background: #e8f5e9; color: #2e7d32; }
+          .status-pending { background: #fff3e0; color: #f57c00; }
+          .status-rejected { background: #ffebee; color: #c62828; }
+          .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+          }
+          .info-item {
+            display: flex;
+            flex-direction: column;
+          }
+          .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+          }
+          .info-value {
+            font-size: 13px;
+            color: #333;
+          }
+          .section-header {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a237e;
+            margin: 20px 0 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e0e0e0;
+          }
+          .download-link {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #1a237e;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 12px;
+          }
+          .summary-box {
+            background: #f5f5f5;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 12px 0;
+          }
+          .summary-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+          }
+          .summary-count {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a237e;
+          }
+        </style>
       </head>
-      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.4; color: #333; background-color: #f5f5f5; margin: 0; padding: 8px;">
-        <div style="max-width: 800px; margin: 0 auto; background: #f8f9fa; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
-          <!-- Header -->
-          <div style="background: white; padding: 12px; text-align: center; border-bottom: 1px solid #e0e0e0;">
-            <h2 style="color: #1a237e; margin: 0; font-size: 16px;">${title}</h2>
-          </div>
-          
-          <!-- Content -->
-          <div style="padding: 10px; background: white; margin: 8px; border-radius: 4px;">
-            ${content}
-          </div>
-
-          <!-- Footer -->
-          <div style="background: white; padding: 8px; text-align: center; border-top: 1px solid #e0e0e0;">
-            <p style="color: #666; font-size: 11px; margin: 2px 0;">
-              This is an automated summary from VCET Connect
+      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.4; color: #333; background-color: #f5f5f5; margin: 0; padding: 16px;">
+        <div style="max-width: 800px; margin: 0 auto; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+          <div style="background: #1a237e; padding: 16px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 20px;">${title}</h1>
+            <p style="color: #e8eaf6; margin: 6px 0 0; font-size: 13px;">
+              ${new Date().toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
             </p>
-            <p style="color: #666; font-size: 11px; margin: 2px 0;">
-              © ${new Date().getFullYear()} VCET Connect - Leave Management System
-            </p>
+          </div>
+          <div style="padding: 16px;">${content}</div>
+          <div style="background: #f8f9fa; padding: 12px; text-align: center; border-top: 1px solid #e0e0e0;">
+            <p style="color: #666; font-size: 11px; margin: 3px 0;">This is an automated summary from VCET Connect</p>
+            <p style="color: #666; font-size: 11px; margin: 3px 0;">© ${new Date().getFullYear()} VCET Connect - Leave Management System</p>
           </div>
         </div>
       </body>
     </html>
   `;
-};
-
-const generateRequestRow = (request, isOd) => {
-  const row = `
-    <tr>
-      <td>${request.studentName}</td>
-      <td>${new Date(request.fromDate).toLocaleDateString()}</td>
-      <td>${new Date(request.toDate).toLocaleDateString()}</td>
-      <td>${request.noOfDays}</td>
-      <td>${isOd ? request.Type : request.reason}</td>
-      <td>
-        ${
-          isOd
-            ? request.Type === "External"
-              ? `${request.eventName} at ${request.collegeName}`
-              : request.reason
-            : request.reason
-        }
-      </td>
-      <td>${request.status}</td>
-    </tr>
-  `;
-  return row;
 };
 
 const generateEmailContent = (
@@ -456,12 +515,221 @@ const generateRequestsTable = (requests, isOd, isDefaulter) => {
   `;
 };
 
+const generateConsolidatedPDF = async (leaves, ods, defaulters, deptName) => {
+  const doc = new jsPDF();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+
+  // Helper function to add common header
+  const addHeader = () => {
+    doc.setFontSize(18);
+    doc.text(
+      "VELAMMAL COLLEGE OF ENGINEERING AND TECHNOLOGY",
+      pageWidth / 2,
+      20,
+      { align: "center" }
+    );
+
+    doc.setFontSize(12);
+    doc.text("(An Autonomous Institution)", pageWidth / 2, 30, {
+      align: "center",
+    });
+    doc.text("Madurai - 625009", pageWidth / 2, 40, {
+      align: "center",
+    });
+
+    doc.setFontSize(14);
+    doc.text(
+      `Department of Computer Science and Engineering`,
+      pageWidth / 2,
+      50,
+      { align: "center" }
+    );
+    doc.text(
+      `Daily Requests Summary - ${new Date().toLocaleDateString()}`,
+      pageWidth / 2,
+      60,
+      { align: "center" }
+    );
+  };
+
+  // Add first page header
+  addHeader();
+  let startY = 70;
+
+  // Leave Requests Section
+  if (leaves.length > 0) {
+    doc.setFontSize(12);
+    doc.text("Leave Requests", 14, startY);
+
+    const leaveHeaders = [
+      ["S.No", "Name", "Roll No", "Reason", "Duration", "Days", "Status"],
+    ];
+    const leaveData = leaves.map((req, index) => [
+      index + 1,
+      req.name || req.studentName,
+      req.rollNo || req.roll_no,
+      req.reason,
+      `${formatDate(req.fromDate)}${
+        req.toDate && req.fromDate !== req.toDate
+          ? ` to ${formatDate(req.toDate)}`
+          : ""
+      }`,
+      req.noOfDays || "1",
+      req.status || "Pending",
+    ]);
+
+    doc.autoTable({
+      head: leaveHeaders,
+      body: leaveData,
+      startY: startY + 5,
+      theme: "grid",
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [31, 58, 110] },
+      foot: [
+        ["Total Leave Requests", "", "", "", "", "", leaves.length.toString()],
+      ],
+      footStyles: {
+        fillColor: [240, 240, 240],
+        textColor: [0, 0, 0],
+        fontStyle: "bold",
+      },
+    });
+  }
+
+  // Add new page for OD Requests
+  if (ods.length > 0) {
+    doc.addPage();
+    addHeader();
+    startY = 70;
+
+    doc.setFontSize(12);
+    doc.text("OD Requests", 14, startY);
+
+    const odHeaders = [
+      ["S.No", "Name", "Roll No", "Type", "Duration", "Days", "Status"],
+    ];
+    const odData = ods.map((req, index) => [
+      index + 1,
+      req.name || req.studentName,
+      req.rollNo || req.roll_no,
+      req.odType,
+      `${formatDate(req.fromDate)}${
+        req.toDate && req.fromDate !== req.toDate
+          ? ` to ${formatDate(req.toDate)}`
+          : ""
+      }`,
+      req.noOfDays || "1",
+      req.status || "Pending",
+    ]);
+
+    doc.autoTable({
+      head: odHeaders,
+      body: odData,
+      startY: startY + 5,
+      theme: "grid",
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [31, 58, 110] },
+      foot: [["Total OD Requests", "", "", "", "", "", ods.length.toString()]],
+      footStyles: {
+        fillColor: [240, 240, 240],
+        textColor: [0, 0, 0],
+        fontStyle: "bold",
+      },
+    });
+  }
+
+  // Add new page for Defaulter Records
+  if (defaulters.length > 0) {
+    doc.addPage();
+    addHeader();
+    startY = 70;
+
+    doc.setFontSize(12);
+    doc.text("Defaulter Records", 14, startY);
+
+    const defaulterHeaders = [
+      [
+        "S.No",
+        "Name",
+        "Roll No",
+        "Type",
+        "Time In",
+        "Observation",
+        "Entry Date",
+      ],
+    ];
+    const defaulterData = defaulters.map((req, index) => [
+      index + 1,
+      req.name || req.studentName,
+      req.rollNo || req.roll_no,
+      req.defaulterType,
+      req.timeIn || "-",
+      req.observation || "-",
+      formatDate(req.entryDate),
+    ]);
+
+    doc.autoTable({
+      head: defaulterHeaders,
+      body: defaulterData,
+      startY: startY + 5,
+      theme: "grid",
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [31, 58, 110] },
+      foot: [
+        [
+          "Total Defaulter Records",
+          "",
+          "",
+          "",
+          "",
+          "",
+          defaulters.length.toString(),
+        ],
+      ],
+      footStyles: {
+        fillColor: [240, 240, 240],
+        textColor: [0, 0, 0],
+        fontStyle: "bold",
+      },
+    });
+  }
+
+  // Add signature section to the last page
+  const finalY = doc.previousAutoTable.finalY + 40;
+  doc.text("For Office Use Only", pageWidth - 60, finalY);
+  doc.line(pageWidth - 80, finalY + 20, pageWidth - 20, finalY + 20);
+  doc.text("HEAD OF THE DEPARTMENT", pageWidth - 70, finalY + 30);
+
+  // Add page numbers and footer to all pages
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(10);
+    doc.text(`Page ${i} of ${pageCount}`, pageWidth - 20, pageHeight - 10, {
+      align: "right",
+    });
+    doc.text("Generated by VCET Connect", 20, pageHeight - 10);
+  }
+
+  return doc;
+};
+
 const sendHodConsolidatedEmails = async () => {
   try {
+    // Get current date at midnight for comparison
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
     // Find all HODs
     const hods = await Staff.find({ isHod: true }).lean();
-    // Fetch all types of requests
-    const leaveRequests = await LeaveRequest.find()
+    // Fetch all types of requests with date filter
+    const leaveRequests = await LeaveRequest.find({
+      fromDate: {
+        $gte: currentDate,
+        $lt: new Date(currentDate.getTime() + 24 * 60 * 60 * 1000),
+      },
+    })
       .populate({
         path: "userId",
         select: "batchId departmentId",
@@ -473,7 +741,12 @@ const sendHodConsolidatedEmails = async () => {
       .populate("sectionId")
       .lean();
 
-    const odRequests = await ODRequest.find()
+    const odRequests = await ODRequest.find({
+      fromDate: {
+        $gte: currentDate,
+        $lt: new Date(currentDate.getTime() + 24 * 60 * 60 * 1000),
+      },
+    })
       .populate({
         path: "studentId",
         select: "batchId departmentId",
@@ -485,7 +758,12 @@ const sendHodConsolidatedEmails = async () => {
       .populate("sectionId")
       .lean();
 
-    const defaulterRequests = await Defaulter.find()
+    const defaulterRequests = await Defaulter.find({
+      entryDate: {
+        $gte: currentDate,
+        $lt: new Date(currentDate.getTime() + 24 * 60 * 60 * 1000),
+      },
+    })
       .populate({
         path: "studentId",
         select: "batchId departmentId",
@@ -576,10 +854,35 @@ const sendHodConsolidatedEmails = async () => {
       });
 
       // Generate email content
-      let emailContent = `<h2>Dear ${hod.staff_name},</h2>`;
-      emailContent += `<p>Here is the consolidated summary of student requests for your department:</p>`;
+      let emailContent = `
+        <div style="background: #f8f9fa; border-radius: 8px;margin-bottom: 24px; border: 1px solid #e0e0e0;">
+          <div style="font-size: 18px; font-weight: 500; color: #1976D2; margin-bottom: 16px; text-align: center;">Today's Request Summary</div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+            <div style="text-align: center; padding: 12px; background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+              <span style="display: block; font-size: 24px; font-weight: 600; color: #4CAF50; margin-bottom: 4px;">${deptLeaves.length}</span>
+              <span style="color: #666; font-size: 14px;">Leave Requests</span>
+            </div>
+            <div style="text-align: center; padding: 12px; background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+              <span style="display: block; font-size: 24px; font-weight: 600; color: #1E88E5; margin-bottom: 4px;">${deptODs.length}</span>
+              <span style="color: #666; font-size: 14px;">OD Requests</span>
+            </div>
+            <div style="text-align: center; padding: 12px; background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+              <span style="display: block; font-size: 24px; font-weight: 600; color: #F44336; margin-bottom: 4px;">${deptDefaulters.length}</span>
+              <span style="color: #666; font-size: 14px;">Defaulter Records</span>
+            </div>
+          </div>
+        </div>
+      `;
 
-      // Sort and display content
+      // Generate consolidated PDF
+      const consolidatedPDF = await generateConsolidatedPDF(
+        deptLeaves,
+        deptODs,
+        deptDefaulters,
+        hod.staff_name
+      );
+
+      // Sort and display content in email
       const sortedBatches = Object.entries(batchSectionRequests).sort((a, b) =>
         a[1].batchName.localeCompare(b[1].batchName)
       );
@@ -619,17 +922,37 @@ const sendHodConsolidatedEmails = async () => {
         }
       }
 
+      // Add download information
+      emailContent += `
+        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e0e0e0;">
+          <p style="margin: 0; color: #1a237e; font-weight: 500;">📎 Attachments</p>
+          <p style="margin: 8px 0 0; color: #666; font-size: 14px;">
+            A consolidated PDF report containing all requests has been attached to this email for your reference.
+          </p>
+        </div>
+      `;
+
       const html = generateEmailTemplate(
         `Department Requests Summary - ${hod.staff_name}`,
         emailContent
       );
-
-      // Send email without Excel attachment
-      await sendEmailWithAttachments(
-        "navinkumaran2004@gmail.com",
-        `Department Requests Summary`,
-        html
-      );
+      console.log("Sending email to", hod.staff_mail);
+      // Send email with PDF attachment
+      await transporter.sendMail({
+        from: `"VCET Connect" <${process.env.EMAIL}>`,
+        to: hod.staff_mail,
+        subject: `Department Requests Summary`,
+        html: html,
+        attachments: [
+          {
+            filename: `Consolidated_Requests_${
+              currentDate.toISOString().split("T")[0]
+            }.pdf`,
+            content: Buffer.from(consolidatedPDF.output("arraybuffer")),
+            contentType: "application/pdf",
+          },
+        ],
+      });
     }
   } catch (error) {
     console.error("Error sending HOD consolidated emails:", error);
@@ -638,8 +961,17 @@ const sendHodConsolidatedEmails = async () => {
 
 const sendStaffConsolidatedEmails = async () => {
   try {
-    // Fetch all leave requests
-    const leaveRequests = await LeaveRequest.find()
+    // Get current date at midnight for comparison
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    // Fetch all leave requests with date filter
+    const leaveRequests = await LeaveRequest.find({
+      fromDate: {
+        $gte: currentDate,
+        $lt: new Date(currentDate.getTime() + 24 * 60 * 60 * 1000),
+      },
+    })
       .populate({
         path: "userId",
         select: "batchId",
@@ -649,8 +981,13 @@ const sendStaffConsolidatedEmails = async () => {
       .populate("sectionId")
       .lean();
 
-    // Fetch all OD requests
-    const odRequests = await ODRequest.find()
+    // Fetch all OD requests with date filter
+    const odRequests = await ODRequest.find({
+      fromDate: {
+        $gte: currentDate,
+        $lt: new Date(currentDate.getTime() + 24 * 60 * 60 * 1000),
+      },
+    })
       .populate({
         path: "studentId",
         select: "batchId",
@@ -660,7 +997,12 @@ const sendStaffConsolidatedEmails = async () => {
       .populate("sectionId")
       .lean();
 
-    const defaulterRequests = await Defaulter.find()
+    const defaulterRequests = await Defaulter.find({
+      entryDate: {
+        $gte: currentDate,
+        $lt: new Date(currentDate.getTime() + 24 * 60 * 60 * 1000),
+      },
+    })
       .populate("studentId")
       .populate("sectionId")
       .populate("mentorId")
@@ -792,7 +1134,7 @@ const sendStaffConsolidatedEmails = async () => {
         `Daily Request Summary - ${role}`,
         emailContent
       );
-
+      console.log("Sending email to", email);
       // Send email without Excel attachment
       await sendEmailWithAttachments(
         email,
