@@ -10,7 +10,7 @@ import {
 import { saveAs } from "file-saver";
 import { Button, Modal, ModalBody, ModalHeader, Spinner } from "flowbite-react";
 import "jspdf-autotable";
-import { BookOpen, ClipboardList } from "lucide-react";
+import { BookOpen, ClipboardList, Calendar } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { MdOutlineDownloadDone } from "react-icons/md";
 import { RxCrossCircled } from "react-icons/rx";
@@ -276,6 +276,12 @@ const Hoddashboard = () => {
   // Define menu items for the sidebar
   const menuItems = [
     {
+      id: "summary",
+      icon: <Calendar size={18} />,
+      label: "Daily Department Summary",
+      active: !studentRequest && !staffRequest,
+    },
+    {
       id: "student_requests",
       icon: <ClipboardList size={18} />,
       label: "Student's Leave Requests",
@@ -287,6 +293,9 @@ const Hoddashboard = () => {
   const handleTabChange = (tabId) => {
     if (tabId === "student_requests") {
       handleStudentLeaveRequest();
+    } else if (tabId === "summary") {
+      setStudentRequest(false);
+      setStaffRequest(false);
     }
   };
 

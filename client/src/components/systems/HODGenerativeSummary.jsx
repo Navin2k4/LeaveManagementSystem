@@ -98,26 +98,15 @@ const HODGenerativeSummary = ({ currentUser }) => {
   // Filter requests for selected date based on createdAt
   const todayRequests = summaryData.leaveRequests.filter((request) => {
     const { startOfDay, endOfDay } = getDateBounds(selectedDate);
-    const createdAt = new Date(request.createdAt);
-    return createdAt >= startOfDay && createdAt <= endOfDay;
+    const fromDate = new Date(request.fromDate);
+    return fromDate >= startOfDay && fromDate <= endOfDay;
   });
 
   const todayODRequests = summaryData.odRequests.filter((request) => {
     const { startOfDay, endOfDay } = getDateBounds(selectedDate);
-    const createdAt = new Date(request.createdAt);
-
-    return createdAt >= startOfDay && createdAt <= endOfDay;
+    const fromDate = new Date(request.fromDate);
+    return fromDate >= startOfDay && fromDate <= endOfDay;
   });
-
-  // Format time to show in local timezone
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
 
   const formatDisplayDate = (dateString) => {
     const date = new Date(dateString + "T00:00:00");
@@ -179,6 +168,25 @@ const HODGenerativeSummary = ({ currentUser }) => {
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
+            <thead>
+              <tr className="bg-gray-50 dark:bg-gray-700/50">
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
+                  Student
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
+                  Mentor
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
+                  Class Incharge
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/6">
+                  Reason
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
+                  Status
+                </th>
+              </tr>
+            </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {group.requests.map((request, idx) => (
                 <tr
@@ -188,22 +196,24 @@ const HODGenerativeSummary = ({ currentUser }) => {
                   <td className="px-4 py-3">
                     <div className="text-sm font-medium">{request.name}</div>
                     <div className="text-xs text-gray-500">
-                      {request.regNo || request.rollNo}
+                      {request.rollNo}
                     </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    {request.mentorId?.staff_name || "Not Assigned"}
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    {request.classInchargeId?.staff_name || "Not Assigned"}
                   </td>
                   <td className="px-4 py-3">
                     <div className="text-sm">
-                      {type === "leave" ? request.reason : request.purpose}
+                      {request.reason}
                       {type === "leave" && request.forMedical && (
                         <span className="ml-2 text-xs text-red-500">
                           (Medical)
                         </span>
                       )}
                     </div>
-                  </td>
-                  <td className="px-4 py-3 text-sm whitespace-nowrap">
-                    {formatDate(request.fromDate)} -{" "}
-                    {formatDate(request.toDate)}
                   </td>
                   <td className="px-4 py-3">
                     <span
@@ -230,13 +240,27 @@ const HODGenerativeSummary = ({ currentUser }) => {
 
   // Add this function to generate the report
   const downloadDayReport = () => {
-    // Filter approved requests and active defaulters
-    const approvedLeaves = todayRequests.filter(
-      (req) => req.status === "approved"
-    );
-    const approvedOD = todayODRequests.filter(
-      (req) => req.status === "approved"
-    );
+    // Group requests by batch and status
+    const groupRequestsByBatch = (requests) => {
+      return requests.reduce((acc, req) => {
+        const batchName = req.sectionId?.Batch?.batch_name || "Unknown Batch";
+        if (!acc[batchName]) {
+          acc[batchName] = {
+            approved: [],
+            pending: [],
+          };
+        }
+        if (req.status === "approved") {
+          acc[batchName].approved.push(req);
+        } else if (req.status === "pending") {
+          acc[batchName].pending.push(req);
+        }
+        return acc;
+      }, {});
+    };
+
+    const batchWiseLeaves = groupRequestsByBatch(todayRequests);
+    const batchWiseOD = groupRequestsByBatch(todayODRequests);
     const activeDefaulters = summaryData.defaulters.filter(
       (def) => !def.isDone
     );
@@ -244,127 +268,163 @@ const HODGenerativeSummary = ({ currentUser }) => {
     // Create PDF document
     const doc = new jsPDF();
 
-    // Add college header
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
-    doc.text(
-      "VELAMMAL COLLEGE OF ENGINEERING AND TECHNOLOGY",
-      doc.internal.pageSize.width / 2,
-      15,
-      { align: "center" }
+    // Function to add main header (only for first page)
+    const addMainHeader = () => {
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text(
+        "VELAMMAL COLLEGE OF ENGINEERING AND TECHNOLOGY",
+        doc.internal.pageSize.width / 2,
+        15,
+        { align: "center" }
+      );
+      doc.setFontSize(12);
+      doc.text(
+        "An Autonomous Institution",
+        doc.internal.pageSize.width / 2,
+        22,
+        {
+          align: "center",
+        }
+      );
+      doc.setFontSize(11);
+      doc.text(
+        "Madurai - Rameshwaram Highway, Madurai - 625009",
+        doc.internal.pageSize.width / 2,
+        29,
+        { align: "center" }
+      );
+
+      // Add report title
+      doc.setFontSize(12);
+      doc.text(`Computer Science and Engineering Department`, 15, 42);
+      doc.text(`Date: ${formatDisplayDate(selectedDate)}`, 15, 49);
+      doc.text("Daily Department Report", doc.internal.pageSize.width / 2, 56, {
+        align: "center",
+      });
+      return 71; // Return starting Y position after header
+    };
+
+    // Function to add section title
+    const addSectionTitle = (title, startY) => {
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text(title, doc.internal.pageSize.width / 2, startY, {
+        align: "center",
+      });
+      return startY + 15;
+    };
+
+    // Function to add batch-wise table
+    const addBatchTable = (batchName, requests, title, startY) => {
+      if (requests.length > 0) {
+        doc.setFontSize(11);
+        doc.text(`${title} - ${batchName}:`, 15, startY - 5);
+
+        doc.autoTable({
+          startY: startY,
+          head: [
+            [
+              "S.No",
+              "Name",
+              "Roll No",
+              "Sec.",
+              "Mentor",
+              "Class Incharge",
+              "Reason",
+            ],
+          ],
+          body: requests.map((req, index) => [
+            index + 1,
+            req.name,
+            req.rollNo,
+            req.sectionId?.section_name || "Unknown",
+            req.mentorId?.staff_name || "Not Assigned",
+            req.classInchargeId?.staff_name || "Not Assigned",
+            req.reason || req.purpose,
+          ]),
+          theme: "grid",
+          styles: { fontSize: 8, cellPadding: 2 },
+          headStyles: { fillColor: [71, 85, 105] },
+          columnStyles: {
+            0: { cellWidth: 8 }, // S.No
+            1: { cellWidth: 36 }, // Name
+            2: { cellWidth: 20 }, // Roll No
+            3: { cellWidth: 10 }, // Section
+            4: { cellWidth: 30 }, // Mentor
+            5: { cellWidth: 30 }, // Class Incharge
+            6: { cellWidth: "auto" }, // Reason
+          },
+        });
+        return doc.previousAutoTable.finalY + 15;
+      }
+      return startY;
+    };
+
+    // Start with main header on first page
+    let currentY = addMainHeader();
+    let hasContent = false;
+
+    // Add Leave Requests
+    const approvedLeaves = Object.entries(batchWiseLeaves).filter(
+      ([_, { approved }]) => approved.length > 0
     );
-    doc.setFontSize(12);
-    doc.text("An Autonomous Institution", doc.internal.pageSize.width / 2, 22, {
-      align: "center",
-    });
-    doc.setFontSize(11);
-    doc.text(
-      "Madurai - Rameshwaram Highway, Madurai - 625009",
-      doc.internal.pageSize.width / 2,
-      29,
-      { align: "center" }
-    );
 
-    // Add report title
-    doc.setFontSize(12);
-    doc.text(`Computer Science and Engineering Department`, 15, 42);
-    doc.text(`Date: ${formatDisplayDate(selectedDate)}`, 15, 49);
-    doc.text("Daily Department Report", doc.internal.pageSize.width / 2, 56, {
-      align: "center",
-    });
-
-    let currentY = 71;
-
-    // Leave Requests Table
     if (approvedLeaves.length > 0) {
-      doc.setFontSize(11);
-      doc.text("Approved Leave Requests:", 15, currentY - 5);
-
-      doc.autoTable({
-        startY: currentY,
-        head: [
-          [
-            "S.No",
-            "Name",
-            "Register No",
-            "Batch",
-            "Section",
-            "Reason",
-            "Duration",
-            "Type",
-          ],
-        ],
-        body: approvedLeaves.map((req, index) => [
-          index + 1,
-          req.name,
-          req.regNo || req.rollNo,
-          req.sectionId?.Batch?.batch_name || "Unknown",
-          req.sectionId?.section_name || "Unknown",
-          req.reason,
-          `${formatDate(req.fromDate)} - ${formatDate(req.toDate)}`,
-          req.forMedical ? "Medical Leave" : "Regular Leave",
-        ]),
-        theme: "grid",
-        styles: { fontSize: 8, cellPadding: 2 },
-        headStyles: { fillColor: [71, 85, 105] },
+      hasContent = true;
+      currentY = addSectionTitle("Leave Requests Report", currentY);
+      approvedLeaves.forEach(([batchName, { approved }]) => {
+        currentY = addBatchTable(
+          batchName,
+          approved,
+          "Approved Leave Requests",
+          currentY
+        );
+        if (currentY > doc.internal.pageSize.height - 40) {
+          doc.addPage();
+          currentY = 20;
+        }
       });
-      currentY = doc.previousAutoTable.finalY + 15;
     }
 
-    // OD Requests Table
+    // Add OD Requests
+    const approvedOD = Object.entries(batchWiseOD).filter(
+      ([_, { approved }]) => approved.length > 0
+    );
+
     if (approvedOD.length > 0) {
-      doc.setFontSize(11);
-      doc.text("Approved OD Requests:", 15, currentY - 5);
-
-      doc.autoTable({
-        startY: currentY,
-        head: [
-          [
-            "S.No",
-            "Name",
-            "Register No",
-            "Batch",
-            "Section",
-            "Purpose",
-            "Duration",
-            "Type",
-          ],
-        ],
-        body: approvedOD.map((req, index) => [
-          index + 1,
-          req.name,
-          req.regNo || req.rollNo,
-          req.sectionId?.Batch?.batch_name || "Unknown",
-          req.sectionId?.section_name || "Unknown",
-          req.purpose,
-          `${formatDate(req.fromDate)} - ${formatDate(req.toDate)}`,
-          req.odType,
-        ]),
-        theme: "grid",
-        styles: { fontSize: 8, cellPadding: 2 },
-        headStyles: { fillColor: [71, 85, 105] },
+      hasContent = true;
+      if (currentY > doc.internal.pageSize.height - 100) {
+        doc.addPage();
+        currentY = 20;
+      }
+      currentY = addSectionTitle("On-Duty Requests Report", currentY);
+      approvedOD.forEach(([batchName, { approved }]) => {
+        currentY = addBatchTable(
+          batchName,
+          approved,
+          "Approved OD Requests",
+          currentY
+        );
+        if (currentY > doc.internal.pageSize.height - 40) {
+          doc.addPage();
+          currentY = 20;
+        }
       });
-      currentY = doc.previousAutoTable.finalY + 15;
     }
 
-    // Defaulters Table
+    // Add Defaulters List
     if (activeDefaulters.length > 0) {
-      doc.setFontSize(11);
-      doc.text("Active Defaulters:", 15, currentY - 5);
-
+      hasContent = true;
+      if (currentY > doc.internal.pageSize.height - 100) {
+        doc.addPage();
+        currentY = 20;
+      }
+      currentY = addSectionTitle("Defaulters Report", currentY);
       doc.autoTable({
         startY: currentY,
         head: [
-          [
-            "S.No",
-            "Name",
-            "Register No",
-            "Batch",
-            "Section",
-            "Type",
-            "Reason",
-            "Entry Date",
-          ],
+          ["S.No", "Name", "Roll No", "Batch", "Section", "Type", "Remarks"],
         ],
         body: activeDefaulters.map((defaulter, index) => [
           index + 1,
@@ -374,7 +434,6 @@ const HODGenerativeSummary = ({ currentUser }) => {
           defaulter.sectionName || "Unknown",
           defaulter.defaulterType,
           defaulter.remarks || defaulter.observation || "N/A",
-          formatDate(defaulter.entryDate),
         ]),
         theme: "grid",
         styles: { fontSize: 8, cellPadding: 2 },
@@ -383,39 +442,128 @@ const HODGenerativeSummary = ({ currentUser }) => {
       currentY = doc.previousAutoTable.finalY + 15;
     }
 
-    // Add summary
-    doc.setFontSize(10);
-    doc.text(
-      `Total Approved Leave Requests: ${approvedLeaves.length}`,
-      15,
+    // Add Pending Requests
+    const pendingLeaves = Object.values(batchWiseLeaves).flatMap(
+      (batch) => batch.pending
+    );
+    const pendingOD = Object.values(batchWiseOD).flatMap(
+      (batch) => batch.pending
+    );
+
+    if (pendingLeaves.length > 0 || pendingOD.length > 0) {
+      hasContent = true;
+      if (currentY > doc.internal.pageSize.height - 100) {
+        doc.addPage();
+        currentY = 20;
+      }
+      currentY = addSectionTitle("Pending Requests Report", currentY);
+
+      if (pendingLeaves.length > 0) {
+        const pendingLeavesByBatch = pendingLeaves.reduce((acc, req) => {
+          const batchName = req.sectionId?.Batch?.batch_name || "Unknown Batch";
+          if (!acc[batchName]) acc[batchName] = [];
+          acc[batchName].push(req);
+          return acc;
+        }, {});
+
+        Object.entries(pendingLeavesByBatch).forEach(
+          ([batchName, requests]) => {
+            currentY = addBatchTable(
+              batchName,
+              requests,
+              "Pending Leave Requests",
+              currentY
+            );
+            if (currentY > doc.internal.pageSize.height - 40) {
+              doc.addPage();
+              currentY = 20;
+            }
+          }
+        );
+      }
+
+      if (pendingOD.length > 0) {
+        const pendingODByBatch = pendingOD.reduce((acc, req) => {
+          const batchName = req.sectionId?.Batch?.batch_name || "Unknown Batch";
+          if (!acc[batchName]) acc[batchName] = [];
+          acc[batchName].push(req);
+          return acc;
+        }, {});
+
+        Object.entries(pendingODByBatch).forEach(([batchName, requests]) => {
+          currentY = addBatchTable(
+            batchName,
+            requests,
+            "Pending OD Requests",
+            currentY
+          );
+          if (currentY > doc.internal.pageSize.height - 40) {
+            doc.addPage();
+            currentY = 20;
+          }
+        });
+      }
+    }
+
+    if (!hasContent) {
+      currentY = addSectionTitle("No Requests Found", currentY);
+      doc.setFontSize(10);
+      doc.text(
+        "There are no leave requests, OD requests, or defaulters for the selected date.",
+        doc.internal.pageSize.width / 2,
+        currentY + 10,
+        { align: "center" }
+      );
+    }
+
+    // Add signature on the last page
+    if (currentY > doc.internal.pageSize.height - 100) {
+      doc.addPage();
+      currentY = doc.internal.pageSize.height - 80;
+    } else {
+      currentY = doc.internal.pageSize.height - 80;
+    }
+
+    doc.setFontSize(11);
+    doc.text("For Office Use Only", doc.internal.pageSize.width / 2, currentY, {
+      align: "center",
+    });
+    currentY += 20;
+    doc.line(
+      doc.internal.pageSize.width / 2 - 30,
+      currentY,
+      doc.internal.pageSize.width / 2 + 30,
       currentY
     );
+    currentY += 5;
     doc.text(
-      `Total Approved OD Requests: ${approvedOD.length}`,
-      15,
-      currentY + 7
-    );
-    doc.text(
-      `Total Active Defaulters: ${activeDefaulters.length}`,
-      15,
-      currentY + 14
+      "HEAD OF THE DEPARTMENT",
+      doc.internal.pageSize.width / 2,
+      currentY,
+      { align: "center" }
     );
 
-    // Add footer
-    doc.setFontSize(8);
-    doc.text(
-      "Generated on: " + new Date().toLocaleString(),
-      15,
-      doc.internal.pageSize.height - 10
-    );
-    doc.text(
-      "Page 1 of 1",
-      doc.internal.pageSize.width - 25,
-      doc.internal.pageSize.height - 10
-    );
+    // Add footer to all pages
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.text(
+        `Generated on: ${new Date().toLocaleString()}`,
+        15,
+        doc.internal.pageSize.height - 10
+      );
+      doc.text(
+        `Page ${i} of ${pageCount}`,
+        doc.internal.pageSize.width - 25,
+        doc.internal.pageSize.height - 10
+      );
+    }
 
     // Save the PDF
-    doc.save(`department_report_${selectedDate}.pdf`);
+    doc.save(
+      `Computer Science and Engineering_Daily_Report_${selectedDate}.pdf`
+    );
   };
 
   return (
@@ -458,7 +606,7 @@ const HODGenerativeSummary = ({ currentUser }) => {
             </span>
             <button
               onClick={downloadDayReport}
-              className="flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-600 rounded-md hover:bg-green-100 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 bg-blue-400 text-white rounded-md hover:bg-blue-500 transition-colors"
               title="Download approved requests report"
             >
               <Download className="w-4 h-4" />

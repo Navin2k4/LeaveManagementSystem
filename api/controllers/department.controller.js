@@ -338,7 +338,7 @@ export const getLeaveRequests = async (req, res) => {
       batch.sections.map((section) => section._id)
     );
 
-    // Find leave requests for these sections with populated batch and section info
+    // Find leave requests for these sections with populated batch, section, mentor, and class incharge info
     const leaveRequests = await LeaveRequest.find({
       sectionId: { $in: sectionIds },
     })
@@ -350,6 +350,8 @@ export const getLeaveRequests = async (req, res) => {
           select: "batch_name",
         },
       })
+      .populate("mentorId", "staff_name")
+      .populate("classInchargeId", "staff_name")
       .sort({ createdAt: -1 });
 
     res.status(200).json(leaveRequests);
@@ -374,6 +376,8 @@ export const getODRequests = async (req, res) => {
           select: "batch_name",
         },
       })
+      .populate("mentorId", "staff_name")
+      .populate("classInchargeId", "staff_name")
       .sort({ createdAt: -1 });
 
     res.status(200).json(odRequests);
@@ -401,4 +405,3 @@ export const getDefaulters = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
