@@ -141,6 +141,24 @@ const HODGenerativeSummary = ({ currentUser }) => {
   const renderRequestsTable = (requests, type) => {
     const groupedRequests = groupRequestsByBatchAndSection(requests);
 
+    const getApprovalStatus = (approval) => {
+      if (!approval) return null;
+      switch (approval.status) {
+        // case "approved":
+        //   return (
+        //     <span className="text-xs text-green-600 ml-1">(Approved)</span>
+        //   );
+        case "rejected":
+          return <span className="text-xs text-red-600 ml-1">(Rejected)</span>;
+        case "pending":
+          return (
+            <span className="text-xs text-yellow-600 ml-1">(Pending)</span>
+          );
+        default:
+          return null;
+      }
+    };
+
     // Sort groups by batch name and section name
     const sortedGroups = Object.values(groupedRequests).sort((a, b) => {
       if (a.batchName === b.batchName) {
@@ -199,15 +217,21 @@ const HODGenerativeSummary = ({ currentUser }) => {
                       {request.rollNo}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm">
-                    {request.mentorId?.staff_name || "Not Assigned"}
-                  </td>
-                  <td className="px-4 py-3 text-sm">
-                    {request.classInchargeId?.staff_name || "Not Assigned"}
+                  <td className="px-4 py-3">
+                    <div className="text-sm">
+                      {request.mentorId?.staff_name || "Not Assigned"}
+                      {getApprovalStatus(request.approvals?.mentor)}
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <div className="text-sm">
-                      {request.reason}
+                      {request.classInchargeId?.staff_name || "Not Assigned"}
+                      {getApprovalStatus(request.approvals?.classIncharge)}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="text-sm">
+                      {type === "leave" ? request.reason : request.purpose}
                       {type === "leave" && request.forMedical && (
                         <span className="ml-2 text-xs text-red-500">
                           (Medical)
@@ -321,6 +345,14 @@ const HODGenerativeSummary = ({ currentUser }) => {
         doc.setFontSize(11);
         doc.text(`${title} - ${batchName}:`, 15, startY - 5);
 
+        const getStaffStatus = (staff, approval) => {
+          if (!staff) return "Not Assigned";
+          if (!approval || approval.status === "pending") {
+            return `${staff.staff_name} (pending)`;
+          }
+          return staff.staff_name; // Just return staff name if approved/rejected
+        };
+
         doc.autoTable({
           startY: startY,
           head: [
@@ -339,8 +371,8 @@ const HODGenerativeSummary = ({ currentUser }) => {
             req.name,
             req.rollNo,
             req.sectionId?.section_name || "Unknown",
-            req.mentorId?.staff_name || "Not Assigned",
-            req.classInchargeId?.staff_name || "Not Assigned",
+            getStaffStatus(req.mentorId, req.approvals?.mentor),
+            getStaffStatus(req.classInchargeId, req.approvals?.classIncharge),
             req.reason || req.purpose,
           ]),
           theme: "grid",
@@ -348,11 +380,11 @@ const HODGenerativeSummary = ({ currentUser }) => {
           headStyles: { fillColor: [71, 85, 105] },
           columnStyles: {
             0: { cellWidth: 8 }, // S.No
-            1: { cellWidth: 36 }, // Name
+            1: { cellWidth: 35 }, // Name
             2: { cellWidth: 20 }, // Roll No
             3: { cellWidth: 10 }, // Section
-            4: { cellWidth: 30 }, // Mentor
-            5: { cellWidth: 30 }, // Class Incharge
+            4: { cellWidth: 35 }, // Mentor
+            5: { cellWidth: 35 }, // Class Incharge
             6: { cellWidth: "auto" }, // Reason
           },
         });
