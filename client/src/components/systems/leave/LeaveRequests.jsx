@@ -266,7 +266,21 @@ export default function LeaveRequests({
     return getStatusDisplay(request, role);
   };
 
-  // Add this component after the isActionDisabled function
+  // Update the getStatusColor function
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "approved":
+        return "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300";
+      case "rejected":
+        return "bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300";
+      case "pending":
+        return "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300";
+      default:
+        return "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300";
+    }
+  };
+
+  // Update the MobileRequestCard component
   const MobileRequestCard = ({ request, role, onAction }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 

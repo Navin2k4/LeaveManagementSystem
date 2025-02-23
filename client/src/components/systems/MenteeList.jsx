@@ -236,7 +236,7 @@ const MenteeList = () => {
               <tr>
                 {[
                   "Roll No",
-                  "Register No",
+                  "Name",
                   "Email",
                   "Phone",
                   "Parent Phone",
@@ -267,7 +267,7 @@ const MenteeList = () => {
                     {mentee.roll_no}
                   </td>
                   <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
-                    {mentee.register_no}
+                    {mentee.name}
                   </td>
                   <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
                     {mentee.email}

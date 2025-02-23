@@ -2,12 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  scrollbar-width: none; /* hides scrollbar in Firefox */
-  -ms-overflow-style: none; /* hides scrollbar in IE and Edge */
+@layer base {
+  * {
+    @apply transition-colors duration-300;
+  }
 }
 
-body::-webkit-scrollbar {
-  width: 0;
-  background: transparent; /* optional: just to hide scrollbar, might still affect layout */
+html {
+  @apply transition-colors duration-300;
+}
+
+
+/* Add smooth transitions for interactive elements */
+button,
+a,
+input,
+select,
+textarea {
+  @apply transition-all duration-300;
 }

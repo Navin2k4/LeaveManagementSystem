@@ -75,27 +75,23 @@ const DashboardSidebar = ({
       {/* Desktop Sidebar */}
       <div className="hidden lg:block transition-all duration-300">
         <div
-          className={`fixed top-0 left-0 h-screen bg-slate-50 shadow-lg 
+          className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 shadow-lg 
                      transition-all duration-300 ease-in-out z-40 overflow-x-hidden
                      ${isOpen ? "w-64" : "w-16"}`}
         >
-          <div className="flex flex-col h-full text-black">
+          <div className="flex flex-col h-full">
             {/* Toggle Button */}
             <button
               onClick={handleToggle}
-              className="w-full flex items-center justify-center p-4 hover:bg-slate-700/50 hover:text-white transition-colors duration-200"
+              className="w-full flex items-center justify-center p-4 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
             >
-              {isOpen ? (
-                <ChevronLeft size={20} />
-              ) : (
-                <ChevronRight size={20} />
-              )}
+              {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
             </button>
 
             {/* Logo/Header */}
-            <div className="flex mx-3 border-b border-black/10">
+            <div className="flex mx-3 border-b border-gray-200 dark:border-gray-700">
               <Link to="/" className="flex items-center">
-                <div className="w-10 mt-2 h-10 bg-white rounded-full flex items-center justify-center">
+                <div className="w-10 mt-2 h-10 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
                   <img
                     src="/vcet.jpeg"
                     alt="VCET Logo"
@@ -103,7 +99,7 @@ const DashboardSidebar = ({
                   />
                 </div>
                 <span
-                  className={` font-semibold text-sm text-black whitespace-nowrap
+                  className={`font-semibold text-sm text-gray-900 dark:text-white whitespace-nowrap
                            transition-all duration-200 ${
                              isOpen && showText
                                ? "opacity-100 ml-2"
@@ -116,12 +112,12 @@ const DashboardSidebar = ({
             </div>
 
             {/* Common Navigation Links */}
-            <nav className="px-2 py-2 border-b border-black/10">
+            <nav className="px-2 py-2 border-b border-gray-200 dark:border-gray-700">
               {commonNavItems.map((item) => (
                 <Link
                   key={item.id}
                   to={item.path}
-                  className="flex items-center px-3 py-2 rounded-md text-black hover:bg-white/10 transition-colors duration-200"
+                  className="flex items-center px-3 py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                 >
                   <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
                     {item.icon}
@@ -148,8 +144,8 @@ const DashboardSidebar = ({
                     {item.submenu ? (
                       <div className="mb-1">
                         <button
-                          className="w-full flex items-center p-3 text-sm text-black
-                                   hover:bg-white/10 rounded-md transition-colors duration-200"
+                          className="w-full flex items-center p-3 text-sm text-gray-700 dark:text-gray-300
+                                   hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors duration-200"
                         >
                           <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
                             {item.icon}
@@ -165,7 +161,7 @@ const DashboardSidebar = ({
                             {item.label}
                           </span>
                           {isOpen && showText && (
-                            <ChevronRight className="w-4 h-4 ml-auto opacity-80" />
+                            <ChevronRight className="w-4 h-4 ml-auto text-gray-400 dark:text-gray-500" />
                           )}
                         </button>
                         {isOpen && showText && (
@@ -179,8 +175,8 @@ const DashboardSidebar = ({
                                 }}
                                 className={`w-full px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
                                   currentTab === subItem.id
-                                    ? "bg-white/20 text-black"
-                                    : "text-black/80 hover:bg-white/10"
+                                    ? "bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400"
+                                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
                                 }`}
                               >
                                 {subItem.label}
@@ -195,8 +191,8 @@ const DashboardSidebar = ({
                         className={`w-full flex items-center p-3 rounded-md text-sm transition-colors duration-200
                                  ${
                                    currentTab === item.id
-                                     ? "bg-white/20 text-black"
-                                     : "text-black/80 hover:bg-white/10"
+                                     ? "bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400"
+                                     : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
                                  }`}
                       >
                         <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
@@ -213,7 +209,7 @@ const DashboardSidebar = ({
                           {item.label}
                         </span>
                         {item.badge && isOpen && showText && (
-                          <span className="ml-auto flex items-center justify-center w-5 h-5 text-xs font-medium bg-red-500 rounded-full">
+                          <span className="ml-auto flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-red-500 dark:bg-red-600 rounded-full">
                             {item.badge}
                           </span>
                         )}
@@ -225,7 +221,7 @@ const DashboardSidebar = ({
             </div>
 
             {/* Bottom Section */}
-            <div className="flex-shrink-0 border-t border-black/10">
+            <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700">
               <div className="p-4">
                 {isOpen ? (
                   <div
@@ -235,16 +231,16 @@ const DashboardSidebar = ({
                   >
                     <div className="flex items-center justify-between">
                       <div className="truncate mr-2">
-                        <p className="text-sm font-medium text-black truncate">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                           {userInfo?.name}
                         </p>
-                        <p className="text-xs text-black/70 truncate">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                           {userInfo?.email}
                         </p>
                       </div>
                       <button
                         onClick={handleSignout}
-                        className="flex-shrink-0 p-2 text-black/80 hover:bg-white/10 rounded-md transition-colors duration-200"
+                        className="flex-shrink-0 p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors duration-200"
                       >
                         <span className="w-5 h-5 flex items-center justify-center">
                           <LogOut size={18} />
@@ -255,7 +251,7 @@ const DashboardSidebar = ({
                 ) : (
                   <button
                     onClick={handleSignout}
-                    className="w-full flex justify-center p-2 text-black/80 hover:bg-white/10 rounded-md transition-colors duration-200"
+                    className="w-full flex justify-center p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors duration-200"
                   >
                     <span className="w-5 h-5 flex items-center justify-center">
                       <LogOut size={20} />
@@ -271,7 +267,7 @@ const DashboardSidebar = ({
       {/* Mobile Floating Action Button */}
       <button
         onClick={() => setIsMobileMenuOpen(true)}
-        className="fixed right-4 top-4 lg:hidden z-40 p-3 bg-gray-200 text-black rounded-md shadow-lg hover:bg-gray-300 transition-colors duration-300"
+        className="fixed right-4 top-4 lg:hidden z-40 p-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300"
       >
         <Menu className="w-6 h-6" />
       </button>
@@ -281,29 +277,29 @@ const DashboardSidebar = ({
         <>
           {/* Overlay */}
           <div
-            className="fixed inset-0 bg-black/50 z-50 lg:hidden"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 lg:hidden"
             onClick={() => setIsMobileMenuOpen(false)}
           />
 
           {/* Sidebar */}
-          <div className="fixed transition-all duration-300 inset-y-0 right-0 w-[280px] bg-gray-100 shadow-xl z-50 lg:hidden">
+          <div className="fixed transition-all duration-300 inset-y-0 right-0 w-[280px] bg-white dark:bg-gray-900 shadow-xl z-50 lg:hidden">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-black/10">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
                   <img
                     src="/vcet.jpeg"
                     alt="VCET Logo"
                     className="w-6 h-6 rounded-full"
                   />
                 </div>
-                <span className=" text-sm text-black">
+                <span className="text-sm text-gray-900 dark:text-white">
                   VCET Connect
                 </span>
               </div>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-2 rounded-md text-black/80 hover:bg-white/10"
+                className="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -311,23 +307,25 @@ const DashboardSidebar = ({
 
             {/* User Info */}
             {userInfo && (
-              <div className="p-4 border-b border-black/10">
-                <p className="font-medium text-sm text-black">
+              <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <p className="font-medium text-sm text-gray-900 dark:text-white">
                   {userInfo.name}
                 </p>
-                <p className="text-xs text-black/70">{userInfo.email}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {userInfo.email}
+                </p>
               </div>
             )}
 
             {/* Menu */}
             <div className="overflow-y-auto h-[calc(100vh-200px)]">
-              <nav className="px-2 py-4 text-black">
+              <nav className="px-2 py-4">
                 {/* Common Navigation Links */}
                 {commonNavItems.map((item) => (
                   <Link
                     key={item.id}
                     to={item.path}
-                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-black/80 hover:bg-white/10 transition-colors duration-200"
+                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <span className="w-5">{item.icon}</span>
@@ -336,14 +334,14 @@ const DashboardSidebar = ({
                 ))}
 
                 {/* Divider */}
-                <div className="my-2 border-t border-black/10" />
+                <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
 
                 {/* Menu Items */}
                 {menuItems.map((item) => (
                   <div key={item.id}>
                     {item.submenu ? (
                       <div className="mb-1">
-                        <div className="px-3 py-2 text-sm font-medium text-black/80">
+                        <div className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                           {item.label}
                         </div>
                         <div className="ml-4">
@@ -356,8 +354,8 @@ const DashboardSidebar = ({
                               }}
                               className={`w-full px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
                                 currentTab === subItem.id
-                                  ? "bg-white/20 text-black"
-                                  : "text-black/80 hover:bg-white/10"
+                                  ? "bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400"
+                                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
                               }`}
                             >
                               {subItem.label}
@@ -373,8 +371,8 @@ const DashboardSidebar = ({
                         }}
                         className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
                           currentTab === item.id
-                            ? "bg-white/20 text-black"
-                            : "text-black/80 hover:bg-white/10"
+                            ? "bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400"
+                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
                         }`}
                       >
                         <div className="flex items-center space-x-3">
@@ -382,7 +380,7 @@ const DashboardSidebar = ({
                           <span>{item.label}</span>
                         </div>
                         {item.badge && (
-                          <span className="flex items-center justify-center w-5 h-5 text-xs font-medium bg-red-500 rounded-full">
+                          <span className="flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-red-500 dark:bg-red-600 rounded-full">
                             {item.badge}
                           </span>
                         )}
@@ -394,10 +392,10 @@ const DashboardSidebar = ({
             </div>
 
             {/* Logout Button */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-black/10">
+            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={handleSignout}
-                className="w-full px-3 py-2 text-sm text-black hover:bg-white/10 rounded-md transition-colors duration-200"
+                className="w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors duration-200"
               >
                 Logout
               </button>

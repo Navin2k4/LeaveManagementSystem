@@ -595,49 +595,65 @@ const StudentAcademicData = ({ userId }) => {
       <AnalyticsSection students={studentResults} />
 
       {/* Desktop View */}
-      <div className="hidden md:block">
-        <Table hoverable>
-          <Table.Head>
-            <Table.HeadCell>Roll No</Table.HeadCell>
-            <Table.HeadCell>Name</Table.HeadCell>
-            <Table.HeadCell>Register No</Table.HeadCell>
-            <Table.HeadCell>Current CGPA</Table.HeadCell>
-            <Table.HeadCell>LeetCode Problems</Table.HeadCell>
-            <Table.HeadCell>Actions</Table.HeadCell>
-          </Table.Head>
-          <Table.Body className="divide-y">
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full text-left">
+          <thead className="bg-gray-50 dark:bg-gray-800/50">
+            <tr className="border-b border-gray-200 dark:border-gray-700">
+              <th className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                Roll No
+              </th>
+              <th className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                Name
+              </th>
+              <th className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                Register No
+              </th>
+              <th className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                Current CGPA
+              </th>
+              <th className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                LeetCode Problems
+              </th>
+              <th className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y dark:divide-gray-700">
             {studentResults.map((student) => (
-              <Table.Row
+              <tr
                 key={student._id}
-                className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-300"
               >
-                <Table.Cell className="font-semibold">
+                <td className="px-4 py-3 text-gray-900 dark:text-gray-200 font-semibold">
                   {student.roll_no}
-                </Table.Cell>
-                <Table.Cell className="font-semibold">
+                </td>
+                <td className="px-4 py-3 text-gray-900 dark:text-gray-200 font-semibold">
                   {student.name}
-                </Table.Cell>
-                <Table.Cell className="font-semibold">
+                </td>
+                <td className="px-4 py-3 text-gray-900 dark:text-gray-200 font-semibold">
                   {student.register_no}
-                </Table.Cell>
-                <Table.Cell className="font-bold">
+                </td>
+                <td className="px-4 py-3 text-gray-900 dark:text-gray-200 font-bold">
                   {calculateLatestCGPA(student.semester_results)}
-                </Table.Cell>
-                <Table.Cell>
+                </td>
+                <td className="px-4 py-3">
                   {leetcodeStats[student._id]?.status === "success" ? (
                     <div className="flex items-center space-x-1">
-                      <span className="font-medium">
+                      <span className="font-medium text-gray-900 dark:text-gray-200">
                         {leetcodeStats[student._id]?.totalSolved || 0}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
                         /{leetcodeStats[student._id]?.totalQuestions || 0}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-gray-400">N/A</span>
+                    <span className="text-gray-400 dark:text-gray-500">
+                      N/A
+                    </span>
                   )}
-                </Table.Cell>
-                <Table.Cell>
+                </td>
+                <td className="px-4 py-3">
                   <Button
                     size="sm"
                     color="light"
@@ -645,14 +661,15 @@ const StudentAcademicData = ({ userId }) => {
                       setSelectedStudent(student);
                       setShowDetails(true);
                     }}
+                    className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300"
                   >
-                    <Info className="h-4 w-4" />
+                    <Info className="h-4 w-4 text-gray-600 dark:text-gray-400" />
                   </Button>
-                </Table.Cell>
-              </Table.Row>
+                </td>
+              </tr>
             ))}
-          </Table.Body>
-        </Table>
+          </tbody>
+        </table>
       </div>
 
       {/* Mobile View */}
@@ -660,12 +677,16 @@ const StudentAcademicData = ({ userId }) => {
         {studentResults.map((student) => (
           <div
             key={student._id}
-            className="bg-white p-4 rounded-lg shadow space-y-2"
+            className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 space-y-2 transition-colors duration-300"
           >
             <div className="flex justify-between items-start">
               <div>
-                <p className="font-medium">{student.name}</p>
-                <p className="text-sm text-gray-600">{student.roll_no}</p>
+                <p className="font-medium text-gray-900 dark:text-gray-200">
+                  {student.name}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {student.roll_no}
+                </p>
               </div>
               <Button
                 size="sm"
@@ -674,20 +695,21 @@ const StudentAcademicData = ({ userId }) => {
                   setSelectedStudent(student);
                   setShowDetails(true);
                 }}
+                className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300"
               >
-                <Info className="h-4 w-4" />
+                <Info className="h-4 w-4 text-gray-600 dark:text-gray-400" />
               </Button>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 CGPA: {calculateLatestCGPA(student.semester_results)}
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 LeetCode:{" "}
                 {leetcodeStats[student._id]?.status === "success" ? (
                   <span>
                     {leetcodeStats[student._id]?.totalSolved || 0}
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       /{leetcodeStats[student._id]?.totalQuestions || 0}
                     </span>
                   </span>
@@ -706,72 +728,90 @@ const StudentAcademicData = ({ userId }) => {
         onClose={() => setShowDetails(false)}
         size="6xl"
       >
-        <Modal.Header>Student Details</Modal.Header>
-        <Modal.Body>
+        <Modal.Header className="border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Student Details
+          </h3>
+        </Modal.Header>
+        <Modal.Body className="bg-white dark:bg-gray-800">
           {selectedStudent && (
             <div className="space-y-8">
               {/* Student Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <h3 className="text-lg font-semibold mb-4">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                  <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
                     Personal Information
                   </h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Name:</span>
-                      <span className="font-medium">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Name:
+                      </span>
+                      <span className="font-medium text-gray-900 dark:text-white">
                         {selectedStudent.name}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Roll No:</span>
-                      <span className="font-medium">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Roll No:
+                      </span>
+                      <span className="font-medium text-gray-900 dark:text-white">
                         {selectedStudent.roll_no}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Register No:</span>
-                      <span className="font-medium">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Register No:
+                      </span>
+                      <span className="font-medium text-gray-900 dark:text-white">
                         {selectedStudent.register_no}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Section:</span>
-                      <span className="font-medium">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Section:
+                      </span>
+                      <span className="font-medium text-gray-900 dark:text-white">
                         {selectedStudent.section_name}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <h3 className="text-lg font-semibold mb-4">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                  <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
                     Contact Information
                   </h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Email:</span>
-                      <span className="font-medium">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Email:
+                      </span>
+                      <span className="font-medium text-gray-900 dark:text-white">
                         {selectedStudent.email}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Phone:</span>
-                      <span className="font-medium">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Phone:
+                      </span>
+                      <span className="font-medium text-gray-900 dark:text-white">
                         {selectedStudent.phone}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Parent Phone:</span>
-                      <span className="font-medium">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Parent Phone:
+                      </span>
+                      <span className="font-medium text-gray-900 dark:text-white">
                         {selectedStudent.parent_phone}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                  <h3 className="text-lg font-semibold mb-4">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                  <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
                     Professional Links
                   </h3>
                   <div className="space-y-3">
@@ -780,7 +820,7 @@ const StudentAcademicData = ({ userId }) => {
                         href={selectedStudent.github_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-blue-600 hover:underline"
+                        className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-300"
                       >
                         <FaGithub /> GitHub Profile
                       </a>
@@ -790,7 +830,7 @@ const StudentAcademicData = ({ userId }) => {
                         href={selectedStudent.linkedin_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-blue-600 hover:underline"
+                        className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-300"
                       >
                         <FaLinkedin /> LinkedIn Profile
                       </a>
@@ -800,7 +840,7 @@ const StudentAcademicData = ({ userId }) => {
                         href={selectedStudent.hackerrank_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-blue-600 hover:underline"
+                        className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-300"
                       >
                         <FaHackerrank /> HackerRank Profile
                       </a>
@@ -810,8 +850,8 @@ const StudentAcademicData = ({ userId }) => {
               </div>
 
               {/* Semester Results */}
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-4">
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
                   Academic Performance
                 </h3>
                 <div className="space-y-3">
@@ -820,7 +860,7 @@ const StudentAcademicData = ({ userId }) => {
                     .map(([semester, data]) => (
                       <div
                         key={semester}
-                        className="border dark:border-gray-700 rounded-lg overflow-hidden"
+                        className="border dark:border-gray-700 rounded-lg overflow-hidden transition-colors duration-300"
                       >
                         <button
                           onClick={(e) => {
@@ -831,26 +871,26 @@ const StudentAcademicData = ({ userId }) => {
                               .querySelector("svg")
                               .classList.toggle("rotate-180");
                           }}
-                          className="w-full bg-gray-50 dark:bg-gray-700 p-4 flex items-center justify-between cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200"
+                          className="w-full bg-gray-50 dark:bg-gray-700 p-4 flex items-center justify-between cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"
                         >
                           <div className="flex items-center gap-4">
-                            <h4 className="font-medium text-lg">
+                            <h4 className="font-medium text-lg text-gray-900 dark:text-white">
                               Semester {semester}
                             </h4>
-                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300">
-                              <span className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 rounded">
+                            <div className="flex items-center gap-4 text-sm">
+                              <span className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded transition-colors duration-300">
                                 GPA: {data.gpa}
                               </span>
-                              <span className="px-2 py-1 bg-green-50 dark:bg-green-900/30 rounded">
+                              <span className="px-2 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded transition-colors duration-300">
                                 CGPA: {data.cgpa}
                               </span>
-                              <span className="px-2 py-1 bg-purple-50 dark:bg-purple-900/30 rounded">
+                              <span className="px-2 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded transition-colors duration-300">
                                 Credits: {data.earnedCredits}/
                                 {data.totalCredits}
                               </span>
                             </div>
                           </div>
-                          <ChevronDown className="w-5 h-5 transform transition-transform duration-200" />
+                          <ChevronDown className="w-5 h-5 transform transition-transform duration-300 text-gray-500 dark:text-gray-400" />
                         </button>
                         <div className="hidden">
                           <div className="p-4 space-y-3">
@@ -858,11 +898,11 @@ const StudentAcademicData = ({ userId }) => {
                               {data.courses.map((course, idx) => (
                                 <div
                                   key={idx}
-                                  className="bg-white dark:bg-gray-700 p-3 rounded-lg shadow-sm border dark:border-gray-600"
+                                  className="bg-white dark:bg-gray-700 p-3 rounded-lg shadow-sm border dark:border-gray-600 transition-colors duration-300"
                                 >
                                   <div className="flex justify-between items-start">
                                     <div>
-                                      <p className="font-medium">
+                                      <p className="font-medium text-gray-900 dark:text-white">
                                         {course.course_code}
                                       </p>
                                       <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -871,16 +911,16 @@ const StudentAcademicData = ({ userId }) => {
                                     </div>
                                     <div className="flex flex-col items-end">
                                       <span
-                                        className={`text-sm font-medium px-2 py-1 rounded ${
+                                        className={`text-sm font-medium px-2 py-1 rounded transition-colors duration-300 ${
                                           course.grade === "F" ||
                                           course.grade === "AB"
-                                            ? "bg-red-100 text-red-700 dark:bg-red-900/30"
-                                            : "bg-green-100 text-green-700 dark:bg-green-900/30"
+                                            ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                                            : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
                                         }`}
                                       >
                                         {course.grade}
                                       </span>
-                                      <span className="text-xs mt-1 text-gray-500">
+                                      <span className="text-xs mt-1 text-gray-500 dark:text-gray-400">
                                         {course.credits} Credits
                                       </span>
                                     </div>

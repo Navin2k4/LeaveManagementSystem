@@ -60,7 +60,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+    <footer className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 transition-all duration-300">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* College Info */}
@@ -71,7 +71,7 @@ const Footer = () => {
                 alt="VCET Logo"
                 className="w-10 h-10 rounded-full"
               />
-              <h3 className="font-semibold text-xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-[#1f3a6e]">
+              <h3 className="font-semibold text-xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-[#1f3a6e] dark:from-blue-400 dark:to-blue-200">
                 VCET Connect
               </h3>
             </div>

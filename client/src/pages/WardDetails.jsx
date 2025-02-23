@@ -145,7 +145,7 @@ const WardDetails = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 from-blue-50 via-white to-blue-50">
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Header Section */}
         <motion.div
@@ -153,10 +153,10 @@ const WardDetails = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
             Ward Activity Monitor
           </h1>
-          <p className="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="mt-3 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Track your ward's attendance, leaves, and on-duty activities in one
             place
           </p>
@@ -177,7 +177,7 @@ const WardDetails = () => {
                 </div>
                 <input
                   type="text"
-                  className="block w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="block w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors"
                   placeholder="Enter Roll Number (e.g., 22CSEB01)"
                   value={rollNo}
                   onChange={handleChange}
@@ -213,8 +213,10 @@ const WardDetails = () => {
           className="space-y-6"
         >
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-              <p className="text-center text-red-600">{error}</p>
+            <div className="bg-red-50 border border-red-200 dark:border-red-400 rounded-xl p-4">
+              <p className="text-center text-red-600 dark:text-red-400">
+                {error}
+              </p>
             </div>
           )}
 
@@ -222,8 +224,8 @@ const WardDetails = () => {
             !isLoading &&
             wardDetails.length === 0 &&
             !error && (
-              <div className="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
-                <p className="text-gray-600 text-lg">
+              <div className="bg-gray-50 border border-gray-200 dark:border-gray-700 rounded-xl p-8 text-center">
+                <p className="text-gray-600 dark:text-gray-400 text-lg">
                   No records found for Roll Number{" "}
                   <span className="font-semibold">{rollNo}</span>
                 </p>
@@ -254,10 +256,10 @@ const WardDetails = () => {
               </div>
 
               {/* Desktop Table */}
-              <div className="hidden md:block bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+              <div className="hidden md:block bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-50 dark:bg-gray-700">
                       <tr>
                         {[
                           "Name",
@@ -269,20 +271,20 @@ const WardDetails = () => {
                         ].map((header) => (
                           <th
                             key={header}
-                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                           >
                             {header}
                           </th>
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {wardDetails.map((record, index) => (
                         <tr
                           key={index}
-                          className="hover:bg-gray-50 transition-colors"
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors"
                         >
-                          <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap font-medium ">
                             {record.name}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -294,12 +296,12 @@ const WardDetails = () => {
                               {record.type}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
                             {formatDate(record.fromDate)}
                             {record.fromDate !== record.toDate &&
                               ` - ${formatDate(record.toDate)}`}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
                             {record.noOfDays} day(s)
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -312,12 +314,12 @@ const WardDetails = () => {
                               {record.status}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-500">
+                          <td className="px-6 py-4 text-sm ">
                             {record.type === "Defaulter"
                               ? record.defaulterType
                               : record.reason}
                             {record.type === "Defaulter" && record.timeIn && (
-                              <span className="block text-xs text-gray-400">
+                              <span className="block text-xs ">
                                 Time: {record.timeIn}
                               </span>
                             )}
@@ -365,19 +367,19 @@ const SummaryCard = ({ title, count, type }) => {
   const getCardStyle = () => {
     switch (type) {
       case "leave":
-        return "bg-blue-50 border-blue-200 text-blue-700";
+        return "bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/10 dark:border-blue-700/30 dark:text-blue-400";
       case "od":
-        return "bg-purple-50 border-purple-200 text-purple-700";
+        return "bg-purple-50 border-purple-200 text-purple-700 dark:bg-purple-900/10 dark:border-purple-700/30 dark:text-purple-400";
       case "defaulter":
-        return "bg-red-50 border-red-200 text-red-700";
+        return "bg-red-50 border-red-200 text-red-700 dark:bg-red-900/10 dark:border-red-700/30 dark:text-red-400";
       default:
-        return "bg-gray-50 border-gray-200 text-gray-700";
+        return "bg-gray-50 border-gray-200 text-gray-700 dark:bg-gray-900/10 dark:border-gray-700/30 dark:text-gray-400";
     }
   };
 
   return (
     <div
-      className={`p-6 rounded-xl border ${getCardStyle()} transition-all duration-200 hover:shadow-md`}
+      className={`p-6 rounded-xl border ${getCardStyle()} dark:border-gray-700 transition-all duration-200 hover:shadow-md`}
     >
       <h3 className="text-lg font-semibold">{title}</h3>
       <p className="text-3xl font-bold mt-2">{count}</p>

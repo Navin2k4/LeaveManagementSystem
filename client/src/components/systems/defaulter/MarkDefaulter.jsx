@@ -16,7 +16,19 @@ import {
 } from "lucide-react";
 import PTGenerateReport from "./PTGenerateReport";
 import { Modal, Button } from "flowbite-react";
-import { format, startOfWeek, addDays, isSameDay, subWeeks, addWeeks, startOfMonth, endOfMonth, subMonths, addMonths, eachDayOfInterval } from "date-fns";
+import {
+  format,
+  startOfWeek,
+  addDays,
+  isSameDay,
+  subWeeks,
+  addWeeks,
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+  addMonths,
+  eachDayOfInterval,
+} from "date-fns";
 import { useSelector } from "react-redux";
 
 const MarkDefaulterAndLate = () => {
@@ -57,7 +69,7 @@ const MarkDefaulterAndLate = () => {
   const [classDefaulters, setClassDefaulters] = useState([]);
   const [isMentorSectionOpen, setIsMentorSectionOpen] = useState(true);
   const [isClassSectionOpen, setIsClassSectionOpen] = useState(true);
-  const [viewMode, setViewMode] = useState('week'); // 'week' or 'month'
+  const [viewMode, setViewMode] = useState("week"); // 'week' or 'month'
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const fetchDefaulters = async () => {
@@ -259,13 +271,13 @@ const MarkDefaulterAndLate = () => {
   // Tab Components
   const TabNavigation = () => (
     <div className="overflow-x-auto">
-      <div className="flex min-w-max border-b">
+      <div className="flex min-w-max border-b dark:border-gray-700">
         <button
           onClick={() => setActiveTab("list")}
           className={`flex items-center px-4 py-2 text-sm ${
             activeTab === "list"
               ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-500 hover:text-gray-700"
+              : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
           }`}
         >
           <List className="w-4 h-4 mr-2" />
@@ -276,7 +288,7 @@ const MarkDefaulterAndLate = () => {
           className={`flex items-center px-4 py-2 text-sm ${
             activeTab === "add"
               ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-500 hover:text-gray-700"
+              : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
           }`}
         >
           <PlusCircle className="w-4 h-4 mr-2" />
@@ -287,7 +299,7 @@ const MarkDefaulterAndLate = () => {
           className={`flex items-center px-4 py-2 text-sm ${
             activeTab === "generate"
               ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-500 hover:text-gray-700"
+              : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
           }`}
         >
           <FileText className="w-4 h-4 mr-2" />
@@ -362,57 +374,54 @@ const MarkDefaulterAndLate = () => {
           </button>
         </div>
 
-        {isExpanded &&
-          (
-            <div className="space-y-3 pt-3 mt-3 border-t border-gray-200 dark:border-gray-600">
-              <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Date</p>
-                <p className="text-sm text-gray-900 dark:text-gray-200">
-                  {new Date(defaulter.entryDate).toLocaleDateString()}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Mentor
-                </p>
-                <p className="text-sm text-gray-900 dark:text-gray-200">
-                  {defaulter.mentorId.staff_name}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Assigned Work
-                </p>
-                {defaulter.remarks ? (
-                  <p className="text-sm text-gray-900 dark:text-gray-200">
-                    {defaulter.remarks}
-                  </p>
-                ) : (
-                  <p className="text-sm text-gray-400 dark:text-gray-500 italic">
-                    No work assigned
-                  </p>
-                )}
-              </div>
-              <div className="pt-2">
-                {defaulter.isDone ? (
-                  <span className="text-green-500 font-medium text-sm">
-                    Completed
-                  </span>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setSelectedDefaulter(defaulter);
-                      setWorkRemarks(defaulter.remarks || "");
-                      setIsWorkModalOpen(true);
-                    }}
-                    className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
-                  >
-                    {defaulter.remarks ? "Edit Work" : "Assign Work"}
-                  </button>
-                )}
-              </div>
+        {isExpanded && (
+          <div className="space-y-3 pt-3 mt-3 border-t border-gray-200 dark:border-gray-600">
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Date</p>
+              <p className="text-sm text-gray-900 dark:text-gray-200">
+                {new Date(defaulter.entryDate).toLocaleDateString()}
+              </p>
             </div>
-          )}
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Mentor</p>
+              <p className="text-sm text-gray-900 dark:text-gray-200">
+                {defaulter.mentorId.staff_name}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Assigned Work
+              </p>
+              {defaulter.remarks ? (
+                <p className="text-sm text-gray-900 dark:text-gray-200">
+                  {defaulter.remarks}
+                </p>
+              ) : (
+                <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+                  No work assigned
+                </p>
+              )}
+            </div>
+            <div className="pt-2">
+              {defaulter.isDone ? (
+                <span className="text-green-500 font-medium text-sm">
+                  Completed
+                </span>
+              ) : (
+                <button
+                  onClick={() => {
+                    setSelectedDefaulter(defaulter);
+                    setWorkRemarks(defaulter.remarks || "");
+                    setIsWorkModalOpen(true);
+                  }}
+                  className="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
+                >
+                  {defaulter.remarks ? "Edit Work" : "Assign Work"}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -429,9 +438,11 @@ const MarkDefaulterAndLate = () => {
 
     // Get dates based on view mode
     const getDates = () => {
-      if (viewMode === 'week') {
+      if (viewMode === "week") {
         const start = startOfWeek(currentDate, { weekStartsOn: 1 });
-        return Array.from({ length: 7 }).map((_, index) => addDays(start, index));
+        return Array.from({ length: 7 }).map((_, index) =>
+          addDays(start, index)
+        );
       } else {
         const start = startOfMonth(currentDate);
         const end = endOfMonth(currentDate);
@@ -441,18 +452,18 @@ const MarkDefaulterAndLate = () => {
 
     // Navigation handlers
     const handlePrevious = () => {
-      if (viewMode === 'week') {
-        setCurrentDate(prev => subWeeks(prev, 1));
+      if (viewMode === "week") {
+        setCurrentDate((prev) => subWeeks(prev, 1));
       } else {
-        setCurrentDate(prev => subMonths(prev, 1));
+        setCurrentDate((prev) => subMonths(prev, 1));
       }
     };
 
     const handleNext = () => {
-      if (viewMode === 'week') {
-        setCurrentDate(prev => addWeeks(prev, 1));
+      if (viewMode === "week") {
+        setCurrentDate((prev) => addWeeks(prev, 1));
       } else {
-        setCurrentDate(prev => addMonths(prev, 1));
+        setCurrentDate((prev) => addMonths(prev, 1));
       }
     };
 
@@ -464,16 +475,16 @@ const MarkDefaulterAndLate = () => {
     return (
       <div className="space-y-4">
         {/* Date Selection Component */}
-        <div className="bg-white rounded-lg shadow p-4 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
-              <h3 className="text-sm font-medium text-gray-700">
-                {viewMode === 'week' ? 'Week View' : 'Month View'}
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                {viewMode === "week" ? "Week View" : "Month View"}
               </h3>
               <select
                 value={viewMode}
                 onChange={(e) => setViewMode(e.target.value)}
-                className="text-sm border rounded-md px-2 py-1"
+                className="text-sm border rounded-md px-2 py-1 dark:bg-gray-800 dark:text-gray-200"
               >
                 <option value="week">Week</option>
                 <option value="month">Month</option>
@@ -482,19 +493,19 @@ const MarkDefaulterAndLate = () => {
             <div className="flex items-center space-x-2">
               <button
                 onClick={handlePrevious}
-                className="p-2 hover:bg-gray-100 rounded-full"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
               >
                 ←
               </button>
               <button
                 onClick={handleToday}
-                className="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100"
+                className="px-3 py-1 text-sm bg-blue-50 dark:bg-gray-800 text-blue-600 rounded-md hover:bg-blue-100 dark:hover:bg-gray-700"
               >
                 Today
               </button>
               <button
                 onClick={handleNext}
-                className="p-2 hover:bg-gray-100 rounded-full"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
               >
                 →
               </button>
@@ -502,46 +513,65 @@ const MarkDefaulterAndLate = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <div className={`grid ${viewMode === 'week' ? 'grid-cols-7' : 'grid-cols-7'} gap-1 min-w-[500px]`}>
+            <div
+              className={`grid ${
+                viewMode === "week" ? "grid-cols-7" : "grid-cols-7"
+              } gap-1 min-w-[500px]`}
+            >
               {/* Day headers */}
-              {viewMode === 'month' && (
+              {viewMode === "month" && (
                 <>
-                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-                    <div
-                      key={day}
-                      className="text-xs font-medium text-gray-500 text-center py-2"
-                    >
-                      {day}
-                    </div>
-                  ))}
+                  {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+                    (day) => (
+                      <div
+                        key={day}
+                        className="text-xs font-medium text-gray-500 dark:text-gray-400 text-center py-2"
+                      >
+                        {day}
+                      </div>
+                    )
+                  )}
                 </>
               )}
-              
+
               {/* Date cells */}
               {getDates().map((date) => {
                 const isSelected = isSameDay(date, selectedDate);
                 const isToday = isSameDay(date, new Date());
-                const isCurrentMonth = date.getMonth() === currentDate.getMonth();
+                const isCurrentMonth =
+                  date.getMonth() === currentDate.getMonth();
 
                 return (
                   <button
                     key={date.toString()}
                     onClick={() => setSelectedDate(date)}
                     className={`
-                      flex flex-col items-center p-2 rounded-lg transition-colors
-                      ${!isCurrentMonth && viewMode === 'month' ? 'text-gray-400' : 'text-gray-900'}
-                      ${isSelected ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-600' : 'hover:bg-gray-50'}
-                      ${isToday ? 'font-semibold' : ''}
+                      flex flex-col items-center p-2 dark:bg-gray-800 rounded-lg transition-colors
+                      ${
+                        !isCurrentMonth && viewMode === "month"
+                          ? "text-gray-400 dark:text-gray-400"
+                          : "text-gray-900 dark:text-gray-200"
+                      }
+                      ${
+                        isSelected
+                          ? "bg-blue-50 dark:bg-gray-800 text-blue-700 ring-1 ring-blue-600"
+                          : "hover:bg-gray-50 dark:hover:bg-gray-700"
+                      }
+                      ${isToday ? "font-semibold" : ""}
                     `}
-                    disabled={!isCurrentMonth && viewMode === 'month'}
+                    disabled={!isCurrentMonth && viewMode === "month"}
                   >
-                    {viewMode === 'week' && (
+                    {viewMode === "week" && (
                       <span className="text-xs uppercase">
-                        {format(date, 'EEE')}
+                        {format(date, "EEE")}
                       </span>
                     )}
-                    <span className={`${viewMode === 'week' ? 'mt-1' : ''} text-sm ${isToday ? 'text-blue-600' : ''}`}>
-                      {format(date, 'd')}
+                    <span
+                      className={`${
+                        viewMode === "week" ? "mt-1" : ""
+                      } text-sm ${isToday ? "text-blue-600" : ""}`}
+                    >
+                      {format(date, "d")}
                     </span>
                   </button>
                 );
@@ -553,17 +583,17 @@ const MarkDefaulterAndLate = () => {
         {/* Show mentor section if user is mentor */}
         {currentuser.isMentor && (
           <div className="space-y-4">
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
               <div
-                className="p-4 border-b flex justify-between items-center cursor-pointer hover:bg-gray-50"
+                className="p-4 border-b flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
                 onClick={() => setIsMentorSectionOpen(!isMentorSectionOpen)}
               >
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-200">
                     My Mentees Defaulters -{" "}
                     {format(selectedDate, "dd MMM yyyy")}
                   </h3>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     {filteredMentorDefaulters.length} defaulters found
                   </p>
                 </div>
@@ -581,36 +611,36 @@ const MarkDefaulterAndLate = () => {
                   {/* Desktop Table for Mentor's Defaulters */}
                   <div className="hidden md:block">
                     <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead className="bg-gray-50 dark:bg-gray-800">
                           <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                               Roll No
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                               Student Name
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                               Type
                             </th>
-                            <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                               Date
                             </th>
-                            <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                               Mentor
                             </th>
-                            <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                               Assigned Work
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                               Actions
                             </th>
                           </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700">
                           {filteredMentorDefaulters.length > 0 ? (
                             filteredMentorDefaulters.map((defaulter, index) => (
-                              <tr key={index} className="hover:bg-gray-50">
+                              <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <td className="px-4 py-4 whitespace-nowrap text-sm">
                                   {defaulter.roll_no}
                                 </td>
@@ -688,10 +718,10 @@ const MarkDefaulterAndLate = () => {
                               </tr>
                             ))
                           ) : (
-                            <tr>
+                            <tr className="dark:bg-gray-800">
                               <td
                                 colSpan="7"
-                                className="px-4 py-8 text-center text-gray-500"
+                                className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
                               >
                                 No mentee defaulters found for this date
                               </td>
@@ -724,7 +754,7 @@ const MarkDefaulterAndLate = () => {
                             />
                           ))
                         ) : (
-                          <div className="text-center py-6 text-gray-500">
+                          <div className="text-center py-6 text-gray-500 dark:text-gray-400">
                             No mentee defaulters found for this date
                           </div>
                         )}
@@ -740,16 +770,16 @@ const MarkDefaulterAndLate = () => {
         {/* Show class incharge section if user is class incharge */}
         {currentuser.isClassIncharge && (
           <div className="space-y-4">
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
               <div
-                className="p-4 border-b flex justify-between items-center cursor-pointer hover:bg-gray-50"
+                className="p-4 border-b flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
                 onClick={() => setIsClassSectionOpen(!isClassSectionOpen)}
               >
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-200">
                     My Class Defaulters - {format(selectedDate, "dd MMM yyyy")}
                   </h3>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     {filteredClassDefaulters.length} defaulters found
                   </p>
                 </div>
@@ -767,10 +797,10 @@ const MarkDefaulterAndLate = () => {
                   {/* Desktop Table for Class Incharge's Defaulters */}
                   <div className="hidden md:block">
                     <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead className="bg-gray-50 dark:bg-gray-800">
                           <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                               Roll No
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -874,10 +904,10 @@ const MarkDefaulterAndLate = () => {
                               </tr>
                             ))
                           ) : (
-                            <tr>
+                            <tr className="dark:bg-gray-800">
                               <td
                                 colSpan="7"
-                                className="px-4 py-8 text-center text-gray-500"
+                                className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
                               >
                                 No class defaulters found for this date
                               </td>
@@ -892,11 +922,11 @@ const MarkDefaulterAndLate = () => {
                   <div className="md:hidden space-y-4">
                     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                       <div className="p-4 border-b">
-                        <h3 className="text-lg font-medium text-gray-900">
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-200">
                           My Class Defaulters -{" "}
                           {format(selectedDate, "dd MMM yyyy")}
                         </h3>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                           {filteredClassDefaulters.length} defaulters found
                         </p>
                       </div>

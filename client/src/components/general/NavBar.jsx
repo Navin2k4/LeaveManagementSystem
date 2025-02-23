@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import SideMenu from "../general/SideMenu";
+import { BookOpen, Home, LogOut, Menu, User } from "lucide-react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signOutSuccess } from "../../redux/user/userSlice";
-import { motion } from "framer-motion";
-import { Menu, LogOut, Home, User, BookOpen } from "lucide-react";
+import { toggleTheme } from "../../redux/theme/themeSlice";
+import SideMenu from "../general/SideMenu";
+import { FaMoon, FaSun } from "react-icons/fa";
+import { Button } from "flowbite-react";
 
 function Navbar() {
   const [open, setOpen] = useState(false);
@@ -13,6 +15,7 @@ function Navbar() {
   const location = useLocation();
   const { currentUser } = useSelector((state) => state.user);
 
+  const { theme } = useSelector((state) => state.theme);
   const handleSignout = async () => {
     try {
       const res = await fetch("/api/auth/signout", {
@@ -46,7 +49,7 @@ function Navbar() {
   );
 
   return (
-    <nav className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-sm">
+    <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-sm transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo Section */}
@@ -57,7 +60,7 @@ function Navbar() {
                 alt="VCET Logo"
                 className="w-10 h-10 rounded-full"
               />
-              <span className="hidden md:inline font-semibold text-xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-[#1f3a6e]">
+              <span className="hidden md:inline font-semibold text-xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-[#1f3a6e] dark:from-blue-400 dark:to-blue-200">
                 VCET Connect
               </span>
             </Link>
@@ -114,6 +117,21 @@ function Navbar() {
                 </span>
               </NavLink>
             )}
+
+            <Button
+              className="w-12 h-10 flex items-center justify-center border-none ring-none focus:ring-0 focus:ring-offset-0"
+              color="gray"
+              pill
+              onClick={() => dispatch(toggleTheme())}
+              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              {theme === "light" ? (
+                <FaMoon className="w-4 h-4" />
+              ) : (
+                <FaSun className="w-4 h-4" />
+              )}
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}

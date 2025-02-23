@@ -26,8 +26,8 @@ const customTabTheme = {
         default: {
           base: "rounded-t-lg",
           active: {
-            on: "bg-white text-[#1f3a6e] border-b-2 border-[#1f3a6e]",
-            off: "text-gray-500 hover:bg-gray-50 hover:text-gray-600",
+            on: "bg-white dark:bg-gray-800 text-[#1f3a6e] border-b-2 border-[#1f3a6e] dark:text-white",
+            off: "text-gray-500 hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-700 dark:text-gray-400",
           },
         },
       },
@@ -327,8 +327,8 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="startDate"
             value={formData.startDate}
             onChange={handleChange}
-            className={`w-full rounded-lg border ${
-              errors.startDate ? "border-red-500" : "border-gray-300"
+            className={`w-full rounded-lg border dark:bg-gray-800 ${
+              errors.startDate ? "border-red-500" : "border-gray-300 dark:border-gray-600"
             } p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
           />
           <ErrorMessage error={errors.startDate} />
@@ -344,11 +344,11 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="endDate"
             value={formData.endDate}
             onChange={handleChange}
-            className={`w-full rounded-lg border ${
-              errors.endDate ? "border-red-500" : "border-gray-300"
+            className={`w-full rounded-lg border dark:bg-gray-800 ${
+              errors.endDate ? "border-red-500" : "border-gray-300 dark:border-gray-600"
             } p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
           />
-          <ErrorMessage error={errors.endDate} />
+          <ErrorMessage error={errors.endDate} /> 
         </div>
       </div>
 
@@ -363,8 +363,8 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
           value={formData.reason}
           onChange={handleChange}
           rows="4"
-          className={`w-full rounded-lg border ${
-            errors.reason ? "border-red-500" : "border-gray-300"
+          className={`w-full rounded-lg border dark:bg-gray-800 ${
+            errors.reason ? "border-red-500" : "border-gray-300 dark:border-gray-600"
           } p-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none`}
           placeholder="Please provide the reason for internal OD..."
         />
@@ -387,8 +387,8 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="collegeName"
             value={formData.collegeName}
             onChange={handleChange}
-            className={`w-full rounded-lg border ${
-              errors.collegeName ? "border-red-500" : "border-gray-300"
+            className={`w-full rounded-lg border dark:bg-gray-800 ${
+              errors.collegeName ? "border-red-500" : "border-gray-300 dark:border-gray-600"
             } p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             placeholder="Enter college or company name"
           />
@@ -405,8 +405,8 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="city"
             value={formData.city}
             onChange={handleChange}
-            className={`w-full rounded-lg border ${
-              errors.city ? "border-red-500" : "border-gray-300"
+            className={`w-full rounded-lg border dark:bg-gray-800 ${
+              errors.city ? "border-red-500" : "border-gray-300 dark:border-gray-600"
             } p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             placeholder="Enter city name"
           />
@@ -425,8 +425,8 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
           name="eventName"
           value={formData.eventName}
           onChange={handleChange}
-          className={`w-full rounded-lg border ${
-            errors.eventName ? "border-red-500" : "border-gray-300"
+          className={`w-full rounded-lg border dark:bg-gray-800 ${
+            errors.eventName ? "border-red-500" : "border-gray-300 dark:border-gray-600"
           } p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
           placeholder="Enter event name"
         />
@@ -445,8 +445,8 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="startDate"
             value={formData.startDate}
             onChange={handleChange}
-            className={`w-full rounded-lg border ${
-              errors.startDate ? "border-red-500" : "border-gray-300"
+            className={`w-full rounded-lg border dark:bg-gray-800 ${
+              errors.startDate ? "border-red-500" : "border-gray-300 dark:border-gray-600"
             } p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
           />
           <ErrorMessage error={errors.startDate} />
@@ -462,8 +462,8 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
             name="endDate"
             value={formData.endDate}
             onChange={handleChange}
-            className={`w-full rounded-lg border ${
-              errors.endDate ? "border-red-500" : "border-gray-300"
+            className={`w-full rounded-lg border dark:bg-gray-800 ${
+              errors.endDate ? "border-red-500" : "border-gray-300 dark:border-gray-600"
             } p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
           />
           <ErrorMessage error={errors.endDate} />
@@ -513,8 +513,8 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
               name="paperTitle"
               value={formData.paperTitle}
               onChange={handleChange}
-              className={`w-full rounded-lg border ${
-                errors.paperTitle ? "border-red-500" : "border-gray-300"
+              className={`w-full rounded-lg border dark:bg-gray-800 ${
+                errors.paperTitle ? "border-red-500" : "border-gray-300 dark:border-gray-600"
               } p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
               placeholder="Enter paper title"
             />
@@ -533,8 +533,8 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
               name="projectTitle"
               value={formData.projectTitle}
               onChange={handleChange}
-              className={`w-full rounded-lg border ${
-                errors.projectTitle ? "border-red-500" : "border-gray-300"
+              className={`w-full rounded-lg border dark:bg-gray-800 ${
+                errors.projectTitle ? "border-red-500" : "border-gray-300 dark:border-gray-600"
               } p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
               placeholder="Enter project title"
             />
@@ -553,8 +553,8 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
               value={formData.eventDetails}
               onChange={handleChange}
               rows="4"
-              className={`w-full rounded-lg border ${
-                errors.eventDetails ? "border-red-500" : "border-gray-300"
+              className={`w-full rounded-lg border dark:bg-gray-800 ${
+                errors.eventDetails ? "border-red-500" : "border-gray-300 dark:border-gray-600"
               } p-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none`}
               placeholder="Please provide detailed information about the event..."
             />
@@ -594,7 +594,7 @@ export default function ODRequestForm({ setTab, mentor, classIncharge }) {
                 {renderInternalODForm()}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
+                  className="w-full bg-gradient-to-r dark:bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
                   disabled={loading}
                 >
                   {loading ? (

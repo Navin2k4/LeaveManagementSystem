@@ -264,7 +264,7 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
                     errors.leaveStartDate
                       ? "border-red-500"
                       : "border-gray-300 dark:border-gray-600"
-                  } shadow-sm text-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                  } shadow-sm text-sm p-3 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                 />
                 {errors.leaveStartDate && (
                   <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
@@ -285,7 +285,7 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
                   value={formData.leaveEndDate}
                   onChange={handleChange}
                   disabled={forOneDay}
-                  className={`w-full rounded-lg border ${
+                  className={`w-full rounded-lg border dark:bg-gray-800 ${
                     errors.leaveEndDate
                       ? "border-red-500"
                       : "border-gray-300 dark:border-gray-600"
@@ -381,7 +381,7 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
                 value={formData.reason}
                 onChange={handleChange}
                 rows="4"
-                className={`w-full rounded-lg border ${
+                className={`w-full rounded-lg border dark:bg-gray-800 ${
                   errors.reason
                     ? "border-red-500"
                     : "border-gray-300 dark:border-gray-600"

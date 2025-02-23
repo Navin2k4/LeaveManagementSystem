@@ -404,7 +404,7 @@ const EditProfile = ({ mentor, classIncharge, initialActiveTab }) => {
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
               {/* Profile Header */}
               <div className="relative">
-                <div className="h-32 bg-slate-100"></div>
+                <div className="h-32 bg-slate-100 dark:bg-gradient-to-br dark:from-gray-700 dark:via-gray-800 dark:to-gray-900"></div>
                 <div className="absolute -bottom-12 inset-x-0 flex justify-center">
                   <div className="w-24 h-24 bg-white dark:bg-gray-700 rounded-full p-1 shadow-xl">
                     <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">

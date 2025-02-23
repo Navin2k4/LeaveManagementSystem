@@ -277,7 +277,19 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
     }
   };
 
-  // Modify the renderCourseRow function to show saved grades
+  const getTypeColor = (type) => {
+    switch (type) {
+      case "Leave":
+        return "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/30";
+      case "OD":
+        return "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800/30";
+      case "Defaulter":
+        return "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-800/30";
+    }
+  };
+
   const renderCourseRow = (course, semester) => {
     const savedGrade = savedResults[semester]?.courses?.find(
       (c) => c.course_code === course.course_code
@@ -286,20 +298,26 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
     return (
       <tr
         key={`${course.course_code}-${course.isArrear ? "arrear" : "regular"}`}
-        className={`bg-white hover:bg-gray-50 ${
-          course.isArrear ? "bg-red-50" : savedGrade ? "bg-green-50" : ""
+        className={`bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
+          course.isArrear
+            ? "bg-red-50/50 dark:bg-red-900/20"
+            : savedGrade
+            ? "bg-green-50/50 dark:bg-green-900/20"
+            : ""
         }`}
       >
-        <td className="px-4 py-2 font-medium text-gray-900">
+        <td className="px-4 py-2 font-medium text-gray-900 dark:text-white">
           {course.course_code}
           {course.isArrear && (
-            <span className="ml-2 text-xs text-red-600">
+            <span className="ml-2 text-xs text-red-600 dark:text-red-400">
               (Arrear - Sem {course.originalSemester})
             </span>
           )}
         </td>
-        <td className="px-4 py-2">{course.course_name}</td>
-        <td className="hidden md:table-cell px-4 py-2 text-center">
+        <td className="px-4 py-2 text-gray-700 dark:text-gray-300">
+          {course.course_name}
+        </td>
+        <td className="hidden md:table-cell px-4 py-2 text-center text-gray-700 dark:text-gray-300">
           {course.course_credits}
         </td>
         {semester >= 5 && (
@@ -308,10 +326,10 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
               className={`px-2 py-1 text-xs font-medium rounded-full 
                 ${
                   course.vertical_type === "PE"
-                    ? "bg-purple-100 text-purple-800"
+                    ? "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
                     : course.vertical_type === "OE"
-                    ? "bg-blue-100 text-blue-800"
-                    : "bg-gray-100 text-gray-800"
+                    ? "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+                    : "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
                 }`}
             >
               {course.vertical_type || "Regular"}
@@ -321,11 +339,11 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
         <td className="px-4 py-2">
           <Select
             sizing="sm"
-            className={`min-w-[100px] ${
+            className={`min-w-[100px] dark:bg-gray-800 dark:border-gray-700 dark:text-white ${
               course.isArrear
-                ? "border-red-300"
+                ? "border-red-300 dark:border-red-700"
                 : savedGrade
-                ? "border-green-300"
+                ? "border-green-300 dark:border-green-700"
                 : ""
             }`}
             value={selectedGrades[`${semester}-${course.course_code}`] || ""}
@@ -673,13 +691,15 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
   };
 
   return (
-    <div className="p-2 md:p-4">
+    <div className="p-2 md:p-4 dark:bg-gray-900">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-        <h2 className="text-xl font-semibold mb-2 md:mb-0">Semester Results</h2>
+        <h2 className="text-xl font-semibold mb-2 md:mb-0 text-gray-900 dark:text-white">
+          Semester Results
+        </h2>
         <div className="flex items-center gap-4">
           {Object.keys(savedResults).length > 0 && (
             <Button
-              className="bg-blue-500 hover:bg-blue-600 text-white transition-all duration-300"
+              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-all duration-300"
               onClick={handleDownloadReport}
             >
               Download Report
@@ -693,14 +713,14 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
           .sort((a, b) => a.semester_no - b.semester_no)
           .map((semester) => (
             <Accordion.Panel key={semester.semester_no}>
-              <Accordion.Title>
+              <Accordion.Title className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full">
                   <span className="mb-2 md:mb-0">
                     Semester {semester.semester_no}
                   </span>
                   <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
                     {results?.[semester.semester_no] && (
-                      <span className="text-sm text-gray-600 ml-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">
                         GPA: {results[semester.semester_no].gpa} | CGPA:{" "}
                         {results[semester.semester_no].cgpa}
                       </span>
@@ -708,7 +728,7 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
                     {getCoursesBySemester(semester.semester_no).some(
                       (c) => c.isArrear
                     ) && (
-                      <span className="text-xs px-2 py-1 bg-red-100 text-red-800 rounded-full whitespace-nowrap">
+                      <span className="text-xs px-2 py-1 bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400 rounded-full whitespace-nowrap">
                         Arrears:{" "}
                         {
                           getCoursesBySemester(semester.semester_no).filter(
@@ -720,25 +740,31 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
                   </div>
                 </div>
               </Accordion.Title>
-              <Accordion.Content>
+              <Accordion.Content className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
                 <div className="overflow-x-auto -mx-4 md:mx-0">
-                  <table className="w-full text-sm">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                  <table className="w-full text-sm text-gray-900 dark:text-white">
+                    <thead className="text-xs uppercase bg-gray-50 dark:bg-gray-800">
                       <tr>
-                        <th className="px-2 md:px-4 py-2">Code</th>
-                        <th className="px-2 md:px-4 py-2">Course</th>
-                        <th className="hidden md:table-cell px-2 md:px-4 py-2 text-center">
+                        <th className="px-4 py-2 text-gray-700 dark:text-gray-300">
+                          Code
+                        </th>
+                        <th className="px-4 py-2 text-gray-700 dark:text-gray-300">
+                          Course
+                        </th>
+                        <th className="hidden md:table-cell px-4 py-2 text-center text-gray-700 dark:text-gray-300">
                           Credits
                         </th>
                         {semester.semester_no >= 5 && (
-                          <th className="hidden md:table-cell px-2 md:px-4 py-2 text-center">
+                          <th className="hidden md:table-cell px-4 py-2 text-center text-gray-700 dark:text-gray-300">
                             Type
                           </th>
                         )}
-                        <th className="px-2 md:px-4 py-2 text-center">Grade</th>
+                        <th className="px-4 py-2 text-center text-gray-700 dark:text-gray-300">
+                          Grade
+                        </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                       {getCoursesBySemester(semester.semester_no).map(
                         (course) =>
                           renderCourseRow(course, semester.semester_no)
@@ -746,8 +772,8 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
                     </tbody>
                   </table>
                 </div>
-                <div className="flex flex-col md:flex-row justify-between mt-4 gap-3">
-                  <div className="text-sm text-gray-600 order-2 md:order-1">
+                <div className="flex flex-col md:flex-row justify-between mt-4 gap-3 bg-white dark:bg-gray-900">
+                  <div className="text-sm text-gray-600 dark:text-gray-400 order-2 md:order-1">
                     {results?.[semester.semester_no] && (
                       <>
                         <div className="flex flex-col md:flex-row gap-2 md:gap-4">
@@ -763,7 +789,7 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
                   </div>
                   <div className="flex gap-2 order-1 md:order-2">
                     <Button
-                      className="flex-1 md:flex-none bg-red-500 hover:bg-red-600 transition-all duration-300 text-sm"
+                      className="flex-1 md:flex-none bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 text-white transition-all duration-300 text-sm"
                       onClick={() => handleClearSemester(semester.semester_no)}
                       disabled={clearing || saving}
                     >
@@ -780,7 +806,7 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
                       )}
                     </Button>
                     <Button
-                      className="flex-1 md:flex-none bg-blue-500 hover:bg-blue-600 transition-all duration-300 text-sm"
+                      className="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-all duration-300 text-sm"
                       onClick={() => handleSaveResults(semester.semester_no)}
                       disabled={saving || clearing}
                     >
@@ -802,12 +828,16 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
             </Accordion.Panel>
           ))}
       </Accordion>
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
+
+      <div className="flex flex-col md:flex-row gap-4 mt-8">
         {renderProgressChart()}
         {renderOverallSummary()}
       </div>
+
       {error && (
-        <div className="text-red-500 text-center mt-4 text-sm">{error}</div>
+        <div className="text-red-600 dark:text-red-400 text-center mt-4 text-sm bg-red-50 dark:bg-red-900/20 p-4 rounded-xl">
+          {error}
+        </div>
       )}
     </div>
   );

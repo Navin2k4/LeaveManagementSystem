@@ -102,28 +102,28 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-lg w-full space-y-8 flex gap-8">
-        {/* Right Section - Sign In Form */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex-1 bg-white p-8 rounded-2xl shadow-xl space-y-6"
+          className="flex-1 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl space-y-6"
         >
           <div className="text-center items-center flex flex-col gap-4">
-                    {/* <img
+            {/* <img
             src="/vcet.jpeg"
             alt="VCET Logo"
             className="h-20 w-20 rounded-full shadow-lg"
           /> */}
-            <h2 className="text-3xl font-bold text-gray-900">Sign In</h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Sign In
+            </h2>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               Please select your role and enter your credentials
             </p>
           </div>
 
-          {/* Role Selection */}
           <div className="grid grid-cols-2 gap-4">
             {roleOptions.map((role) => (
               <button
@@ -133,42 +133,55 @@ export default function SignIn() {
                 className={`relative p-4 rounded-xl border-2 transition-all duration-200
                   ${
                     selectRole === role.value
-                      ? "border-blue-500 bg-blue-50 text-blue-700 shadow-md"
-                      : "border-gray-200 hover:border-gray-300 text-gray-700 hover:bg-gray-50"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 shadow-md"
+                      : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                   }
                 `}
               >
                 <div className="flex flex-col items-center gap-2">
-                  {role.icon}
+                  <div
+                    className={
+                      selectRole === role.value
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-gray-600 dark:text-gray-400"
+                    }
+                  >
+                    {role.icon}
+                  </div>
                   <span className="font-medium">{role.label}</span>
-                  <p className="text-xs text-gray-500">{role.description}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {role.description}
+                  </p>
                 </div>
               </button>
             ))}
           </div>
 
           {errors.role && (
-            <p className="text-sm text-red-500 text-center">{errors.role}</p>
+            <p className="text-sm text-red-500 dark:text-red-400 text-center">
+              {errors.role}
+            </p>
           )}
 
-          {/* Sign In Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   {selectRole === "student" ? "Roll Number" : "Staff ID"}
                 </label>
                 <div className="mt-1 relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-gray-400" />
+                    <User className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                   </div>
                   <input
                     id="identifier"
                     type="text"
                     onChange={handleChange}
                     className={`block w-full pl-10 pr-3 py-2.5 border ${
-                      errors.identifier ? "border-red-500" : "border-gray-300"
-                    } rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                      errors.identifier
+                        ? "border-red-500 dark:border-red-500"
+                        : "border-gray-300 dark:border-gray-600"
+                    } rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors`}
                     placeholder={
                       selectRole === "student"
                         ? "Enter roll number"
@@ -177,39 +190,43 @@ export default function SignIn() {
                   />
                 </div>
                 {errors.identifier && (
-                  <p className="mt-1 text-sm text-red-500">
+                  <p className="mt-1 text-sm text-red-500 dark:text-red-400">
                     {errors.identifier}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Password
                 </label>
                 <div className="mt-1 relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-gray-400" />
+                    <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                   </div>
                   <input
                     id="password"
                     type="password"
                     onChange={handleChange}
                     className={`block w-full pl-10 pr-3 py-2.5 border ${
-                      errors.password ? "border-red-500" : "border-gray-300"
-                    } rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                      errors.password
+                        ? "border-red-500 dark:border-red-500"
+                        : "border-gray-300 dark:border-gray-600"
+                    } rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors`}
                     placeholder="Enter your password"
                   />
                 </div>
                 {errors.password && (
-                  <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+                  <p className="mt-1 text-sm text-red-500 dark:text-red-400">
+                    {errors.password}
+                  </p>
                 )}
               </div>
             </div>
 
             {errorMessage && (
-              <div className="rounded-xl bg-red-50 p-4">
-                <p className="text-sm text-red-600 text-center">
+              <div className="rounded-xl bg-red-50 dark:bg-red-900/30 p-4">
+                <p className="text-sm text-red-600 dark:text-red-400 text-center">
                   {errorMessage}
                 </p>
               </div>
@@ -218,7 +235,7 @@ export default function SignIn() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="flex items-center justify-center">
@@ -228,9 +245,12 @@ export default function SignIn() {
                 "Sign In"
               )}
             </button>
-            <div className="flex items-center justify-center">  
-              <p className="text-sm text-gray-500">
-                <Link to="/forgotpassword" className="text-blue-500 hover:text-blue-600">
+            <div className="flex items-center justify-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                <Link
+                  to="/forgotpassword"
+                  className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+                >
                   Forgot Password?
                 </Link>
               </p>

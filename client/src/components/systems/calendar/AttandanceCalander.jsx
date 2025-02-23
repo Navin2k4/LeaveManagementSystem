@@ -115,14 +115,42 @@ const AttandanceCalander = ({ leaveRequests, odRequests }) => {
     });
   };
 
+  const getStatusColor = (status, type) => {
+    if (type === "Defaulter")
+      return "bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800/30";
+    switch (status?.toLowerCase()) {
+      case "approved":
+        return "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800/30";
+      case "rejected":
+        return "bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800/30";
+      case "pending":
+        return "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800/30";
+      default:
+        return "bg-gray-100 dark:bg-gray-800/50 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700";
+    }
+  };
+
+  const getTypeColor = (type) => {
+    switch (type) {
+      case "Leave":
+        return "bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800/30";
+      case "OD":
+        return "bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-800/30";
+      case "Defaulter":
+        return "bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800/30";
+      default:
+        return "bg-gray-100 dark:bg-gray-800/50 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700";
+    }
+  };
+
   const DayDetailsModal = ({ date, leaves, ods, onClose }) => (
     <Modal show={true} onClose={onClose} size="md">
       <Modal.Header className="border-b border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Requests for {formatDate(date)}
         </h3>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="bg-white dark:bg-gray-800">
         <Tabs>
           {leaves.length > 0 && (
             <Tabs.Item active title={`Leave Requests (${leaves.length})`}>
@@ -130,24 +158,24 @@ const AttandanceCalander = ({ leaveRequests, odRequests }) => {
                 {leaves.map((req) => (
                   <div
                     key={req._id}
-                    className={`p-3 rounded-lg ${
+                    className={`p-3 rounded-lg transition-colors duration-300 ${
                       req.forMedical
-                        ? "bg-red-50 dark:bg-red-900/20"
-                        : "bg-blue-50 dark:bg-blue-900/20"
+                        ? "bg-red-50 dark:bg-red-900/10 text-red-900 dark:text-red-100"
+                        : "bg-blue-50 dark:bg-blue-900/10 text-blue-900 dark:text-blue-100"
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{req.name}</span>
                       <span
-                        className={`text-xs px-2 py-1 rounded-full ${
+                        className={`text-xs px-2 py-1 rounded-full ${getStatusColor(
                           req.approvals.mentor.status === "approved" &&
-                          req.approvals.classIncharge.status === "approved"
-                            ? "bg-green-100 text-green-700"
+                            req.approvals.classIncharge.status === "approved"
+                            ? "approved"
                             : req.approvals.mentor.status === "rejected" ||
                               req.approvals.classIncharge.status === "rejected"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-yellow-100 text-yellow-700"
-                        }`}
+                            ? "rejected"
+                            : "pending"
+                        )}`}
                       >
                         {req.approvals.mentor.status === "approved" &&
                         req.approvals.classIncharge.status === "approved"
@@ -158,7 +186,9 @@ const AttandanceCalander = ({ leaveRequests, odRequests }) => {
                           : "Pending"}
                       </span>
                     </div>
-                    <p className="text-sm mt-1">{req.reason}</p>
+                    <p className="text-sm mt-1 text-gray-700 dark:text-gray-300">
+                      {req.reason}
+                    </p>
                     <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                       <div>From: {formatDate(req.fromDate)}</div>
                       <div>To: {formatDate(req.toDate)}</div>
@@ -174,20 +204,20 @@ const AttandanceCalander = ({ leaveRequests, odRequests }) => {
                 {ods.map((req) => (
                   <div
                     key={req._id}
-                    className="p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20"
+                    className="p-3 rounded-lg bg-purple-50 dark:bg-purple-900/10 text-purple-900 dark:text-purple-100 transition-colors duration-300"
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{req.name}</span>
                       <span
-                        className={`text-xs px-2 py-1 rounded-full ${
+                        className={`text-xs px-2 py-1 rounded-full ${getStatusColor(
                           req.approvals.mentor.status === "approved" &&
-                          req.approvals.classIncharge.status === "approved"
-                            ? "bg-green-100 text-green-700"
+                            req.approvals.classIncharge.status === "approved"
+                            ? "approved"
                             : req.approvals.mentor.status === "rejected" ||
                               req.approvals.classIncharge.status === "rejected"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-yellow-100 text-yellow-700"
-                        }`}
+                            ? "rejected"
+                            : "pending"
+                        )}`}
                       >
                         {req.approvals.mentor.status === "approved" &&
                         req.approvals.classIncharge.status === "approved"
@@ -198,7 +228,9 @@ const AttandanceCalander = ({ leaveRequests, odRequests }) => {
                           : "Pending"}
                       </span>
                     </div>
-                    <p className="text-sm mt-1">{req.reason}</p>
+                    <p className="text-sm mt-1 text-gray-700 dark:text-gray-300">
+                      {req.reason}
+                    </p>
                     <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                       <div>From: {formatDate(req.fromDate)}</div>
                       <div>To: {formatDate(req.toDate)}</div>
@@ -209,7 +241,7 @@ const AttandanceCalander = ({ leaveRequests, odRequests }) => {
             </Tabs.Item>
           )}
           {leaves.length === 0 && ods.length === 0 && (
-            <div className="text-center py-4 text-gray-500">
+            <div className="text-center py-4 text-gray-500 dark:text-gray-400">
               No requests for this date
             </div>
           )}
@@ -631,23 +663,20 @@ const AttandanceCalander = ({ leaveRequests, odRequests }) => {
                     setShowModal(true);
                   }}
                   className={`
-                  relative min-h-[90px] p-1 border rounded-lg transition-colors cursor-pointer
-                  ${
-                    day.isToday
-                      ? "bg-blue-50/50 dark:bg-blue-900/20 border-blue-200"
-                      : ""
-                  }
-                  ${
-                    !day.isCurrentMonth
-                      ? "bg-gray-50/50 dark:bg-gray-800/50"
-                      : ""
-                  }
-                  ${
-                    day.isCurrentMonth
-                      ? "hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                      : ""
-                  }
-                `}
+                    relative min-h-[90px] p-1 border rounded-lg transition-colors duration-300 cursor-pointer
+                    ${
+                      day.isToday
+                        ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800/30"
+                        : day.isCurrentMonth
+                        ? "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                        : "bg-gray-50/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700"
+                    }
+                    ${
+                      day.isCurrentMonth
+                        ? "hover:bg-gray-50 dark:hover:bg-gray-700"
+                        : "cursor-not-allowed"
+                    }
+                  `}
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span

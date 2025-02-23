@@ -319,11 +319,11 @@ const SuperAdmin = () => {
                   isSidebarOpen ? "lg:col-span-1" : "lg:col-span-1"
                 }`}
               >
-                <div className="bg-white rounded-xl shadow-sm p-6 sticky top-6">
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 sticky top-6">
                   <div className="flex flex-col gap-4">
                     {/* Add Department Form */}
                     <div className="flex flex-col gap-2">
-                      <h2 className="text-xl font-semibold text-gray-800">
+                      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
                         Departments
                       </h2>
                       <div className="flex gap-2">
@@ -332,7 +332,7 @@ const SuperAdmin = () => {
                           value={newDepartment}
                           onChange={(e) => setNewDepartment(e.target.value)}
                           placeholder="New Department"
-                          className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                          className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm dark:bg-gray-800 dark:text-gray-200 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         />
                         <button
                           onClick={handleAddDepartment}
@@ -363,8 +363,8 @@ const SuperAdmin = () => {
                           onClick={() => handleDepartmentSelect(dept)}
                           className={`flex items-center justify-between p-4 rounded-lg cursor-pointer transition-all duration-200 ${
                             selectedDepartment === dept
-                              ? "bg-blue-50 border-l-4 border-blue-500 shadow-md"
-                              : "bg-gray-50 hover:bg-gray-100 hover:shadow-md"
+                              ? "bg-blue-50 border-l-4 border-blue-500 shadow-md dark:bg-gray-800 dark:border-blue-500"
+                              : "bg-gray-50 hover:bg-gray-100 hover:shadow-md dark:bg-gray-800 dark:hover:bg-gray-700"
                           }`}
                         >
                           <div className="flex items-center gap-3">
@@ -390,7 +390,7 @@ const SuperAdmin = () => {
                                   handleDeleteDepartment(dept._id);
                                 }
                               }}
-                              className="p-1 hover:bg-red-100 rounded-full text-red-500 transition-colors"
+                              className="p-1 hover:bg-red-100 rounded-full text-red-500 transition-colors dark:hover:bg-red-900 dark:text-red-400"
                             >
                               <Trash2 size={16} />
                             </button>
@@ -399,11 +399,13 @@ const SuperAdmin = () => {
                       ))}
                     </div>
                     <div className="grid grid-cols-1 gap-6 mb-8">
-                      <div className="bg-white rounded-lg shadow-md p-6">
+                      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-gray-500">Total Departments</p>
-                            <h3 className="text-2xl font-bold">
+                            <p className="text-gray-500 dark:text-gray-400">
+                              Total Departments
+                            </p>
+                            <h3 className="text-2xl font-bold dark:text-gray-200">
                               {departments.length}
                             </h3>
                           </div>
@@ -411,11 +413,13 @@ const SuperAdmin = () => {
                         </div>
                       </div>
 
-                      <div className="bg-white rounded-lg shadow-md p-6">
+                      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-gray-500">Total Batches</p>
-                            <h3 className="text-2xl font-bold">
+                            <p className="text-gray-500 dark:text-gray-400">
+                              Total Batches
+                            </p>
+                            <h3 className="text-2xl font-bold dark:text-gray-200">
                               {batches.length}
                             </h3>
                           </div>
@@ -423,11 +427,13 @@ const SuperAdmin = () => {
                         </div>
                       </div>
 
-                      <div className="bg-white rounded-lg shadow-md p-6">
+                      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-gray-500">Total Sections</p>
-                            <h3 className="text-2xl font-bold">
+                            <p className="text-gray-500 dark:text-gray-400">
+                              Total Sections
+                            </p>
+                            <h3 className="text-2xl font-bold dark:text-gray-200">
                               {sections.length}
                             </h3>
                           </div>
@@ -445,9 +451,9 @@ const SuperAdmin = () => {
                 }`}
               >
                 {selectedDepartment && (
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl font-semibold text-gray-800">
+                      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
                         {selectedDepartment.dept_name} Management
                       </h2>
                     </div>
@@ -455,7 +461,7 @@ const SuperAdmin = () => {
                     <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6`}>
                       <div className="space-y-4">
                         <div className="flex justify-between items-center">
-                          <h3 className="text-lg font-medium text-gray-700">
+                          <h3 className="text-lg font-medium text-gray-700 dark:text-gray-200">
                             Batches
                           </h3>
                           <div className="flex gap-3">
@@ -464,11 +470,11 @@ const SuperAdmin = () => {
                               value={newBatchName}
                               onChange={(e) => setNewBatchName(e.target.value)}
                               placeholder="New Batch"
-                              className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                              className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-200 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             />
                             <button
                               onClick={handleAddBatch}
-                              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors dark:bg-green-600 dark:hover:bg-green-700"
                             >
                               Add
                             </button>
@@ -481,8 +487,8 @@ const SuperAdmin = () => {
                               onClick={() => handleBatchSelect(batch)}
                               className={`flex items-center justify-between p-4 rounded-lg cursor-pointer transition-colors ${
                                 selectedBatch === batch
-                                  ? "bg-green-50 border-l-4 border-green-500"
-                                  : "bg-gray-50 hover:bg-gray-100"
+                                  ? "bg-green-50 border-l-4 border-green-500 dark:bg-gray-800 dark:border-green-500"
+                                  : "bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
                               }`}
                             >
                               <span className="font-medium">
@@ -493,7 +499,7 @@ const SuperAdmin = () => {
                                   e.stopPropagation();
                                   handleDeleteBatch(batch._id);
                                 }}
-                                className="text-red-500 hover:text-red-600"
+                                className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-500"
                               >
                                 <Trash2 size={18} />
                               </button>
@@ -505,7 +511,7 @@ const SuperAdmin = () => {
                       {selectedBatch && (
                         <div className="space-y-4">
                           <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-medium text-gray-700">
+                            <h3 className="text-lg font-medium text-gray-700 dark:text-gray-200">
                               Sections
                             </h3>
                             <div className="flex gap-3">
@@ -514,11 +520,11 @@ const SuperAdmin = () => {
                                 value={newSection}
                                 onChange={(e) => setNewSection(e.target.value)}
                                 placeholder="New Section"
-                                className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-200 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                               />
                               <button
                                 onClick={handleAddSection}
-                                className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors"
+                                className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors dark:bg-purple-600 dark:hover:bg-purple-700"
                               >
                                 Add
                               </button>
@@ -528,14 +534,14 @@ const SuperAdmin = () => {
                             {sections.map((section) => (
                               <div
                                 key={section._id}
-                                className={`bg-gray-50 rounded-lg p-4 ${
+                                className={`bg-gray-50 rounded-lg p-4 dark:bg-gray-800 ${
                                   selectedSection === section
-                                    ? "border-l-4 border-purple-500"
+                                    ? "border-l-4 border-purple-500 dark:border-purple-500"
                                     : ""
                                 }`}
                               >
                                 <div className="flex items-center justify-between mb-2">
-                                  <h3 className="font-semibold">
+                                  <h3 className="font-semibold dark:text-gray-200">
                                     Section {section.section_name}
                                   </h3>
                                   <div className="flex gap-2">
@@ -543,7 +549,7 @@ const SuperAdmin = () => {
                                       onClick={() =>
                                         handleSectionSelect(section)
                                       }
-                                      className="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-colors"
+                                      className="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition-colors dark:bg-blue-600 dark:hover:bg-blue-700"
                                     >
                                       View Details
                                     </button>
@@ -551,7 +557,7 @@ const SuperAdmin = () => {
                                       onClick={() =>
                                         handleDeleteClass(section._id)
                                       }
-                                      className="text-red-500 hover:text-red-600"
+                                      className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-500"
                                     >
                                       <Trash2 size={18} />
                                     </button>
@@ -567,24 +573,28 @@ const SuperAdmin = () => {
                 )}
 
                 {selectedSection && (
-                  <div className="mt-6 bg-white rounded-xl shadow-sm p-6">
+                  <div className="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
                     <div
                       className={`grid grid-cols-1 ${
                         isSidebarOpen ? "lg:grid-cols-1" : "lg:grid-cols-2"
                       } gap-6`}
                     >
                       <div>
-                        <h3 className="text-lg font-semibold mb-4">Mentors</h3>
+                        <h3 className="text-lg font-semibold mb-4 dark:text-gray-200">
+                          Mentors
+                        </h3>
                         <div className="space-y-2">
                           {classDetails.mentors.map((mentor) => (
                             <div
                               key={mentor._id}
-                              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg dark:bg-gray-800"
                             >
                               <span>{mentor.staff_name}</span>
                               <button
-                                onClick={() => handleDeleteMentor(mentor._id)}
-                                className="text-red-500 hover:text-red-600"
+                                onClick={() =>
+                                  handleDeleteMentor(mentor._id)
+                                }
+                                className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-500"
                               >
                                 <Trash2 size={18} />
                               </button>
@@ -594,14 +604,14 @@ const SuperAdmin = () => {
                       </div>
 
                       <div>
-                        <h3 className="text-lg font-semibold mb-4">
+                        <h3 className="text-lg font-semibold mb-4 dark:text-gray-200">
                           Class Incharges
                         </h3>
                         <div className="space-y-2">
                           {classDetails.classIncharges.map((incharge) => (
                             <div
                               key={incharge._id}
-                              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg dark:bg-gray-800"
                             >
                               <span>{incharge.staff_name}</span>
                               <button
@@ -934,7 +944,7 @@ const SuperAdmin = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f3f4f6]">
+    <div className="min-h-screen bg-[#f3f4f6] dark:bg-gray-900">
       <DashboardSidebar
         menuItems={menuItems}
         currentTab={activeTab}

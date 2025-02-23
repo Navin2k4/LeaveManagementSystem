@@ -208,12 +208,12 @@ export default function PTGenerateReport() {
   return (
     <div className="space-y-6 pt-5">
       {/* Header Section */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-4 border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <FileText className="h-6 w-6 text-gray-600" />
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
                 Generate Defaulters Report
               </h2>
             </div>
@@ -227,7 +227,7 @@ export default function PTGenerateReport() {
               <div>
                 <label
                   htmlFor="defaulterType"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
                 >
                   Defaulters Type
                 </label>
@@ -236,7 +236,7 @@ export default function PTGenerateReport() {
                   value={defaulterType}
                   onChange={(e) => setDefaulterType(e.target.value)}
                   required
-                  className="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 >
                   <option value="">Select Type</option>
                   <option value="Discipline and Dresscode">
@@ -251,7 +251,7 @@ export default function PTGenerateReport() {
               <div>
                 <label
                   htmlFor="fromDate"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
                 >
                   From Date
                 </label>
@@ -261,14 +261,14 @@ export default function PTGenerateReport() {
                   value={fromDate}
                   onChange={(e) => setFromDate(e.target.value)}
                   required
-                  className="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="toDate"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
                 >
                   To Date
                 </label>
@@ -278,7 +278,7 @@ export default function PTGenerateReport() {
                   value={toDate}
                   onChange={(e) => setToDate(e.target.value)}
                   required
-                  className="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full rounded-lg border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 />
               </div>
             </div>

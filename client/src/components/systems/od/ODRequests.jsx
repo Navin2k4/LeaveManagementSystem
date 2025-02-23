@@ -164,9 +164,9 @@ export default function ODRequests({
         // 2. Approved requests without completion proof that are not past due
         return (
           (!isPastDue && request.approvals[role].status === "pending") ||
-          (!isPastDue && 
-           request.approvals[role].status === "approved" &&
-           request.completionProof === "")
+          (!isPastDue &&
+            request.approvals[role].status === "approved" &&
+            request.completionProof === "")
         );
       } else {
         // For other tabs, show:
@@ -176,8 +176,8 @@ export default function ODRequests({
         return (
           request.approvals[role].status === "rejected" ||
           isPastDue ||
-          (request.approvals[role].status === "approved" && 
-           request.completionProof !== "")
+          (request.approvals[role].status === "approved" &&
+            request.completionProof !== "")
         );
       }
     });
@@ -192,24 +192,24 @@ export default function ODRequests({
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
-      <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+      <div className="space-y-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-300">
         <div className="flex justify-between items-start">
           <div>
             <div className="flex items-center gap-2">
-              <p className="font-medium text-gray-900 dark:text-gray-200">
+              <p className="font-medium text-gray-900 dark:text-white transition-colors duration-300">
                 {request.name}
               </p>
               <span
-                className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                className={`px-2 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
                   request.odType === "Internal"
-                    ? "bg-blue-50 text-blue-600 border border-blue-200"
-                    : "bg-purple-50 text-purple-600 border border-purple-200"
+                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800/30"
+                    : "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-300 border border-purple-200 dark:border-purple-800/30"
                 }`}
               >
                 {request.odType}
               </span>
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">
               {request.noOfDays} day(s) • {formatDate(request.fromDate)}
               {request.fromDate !== request.toDate &&
                 ` to ${formatDate(request.toDate)}`}
@@ -217,78 +217,25 @@ export default function ODRequests({
           </div>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all duration-300"
           >
             <ChevronRight
               size={20}
-              className={`transform transition-transform ${
+              className={`transform transition-transform duration-300 text-gray-500 dark:text-gray-400 ${
                 isExpanded ? "rotate-90" : ""
               }`}
             />
           </button>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <StatusDot
-              status={request.approvals.mentor.status}
-              showLine={true}
-              by="M"
-            />
-            <StatusDot
-              status={request.approvals.classIncharge.status}
-              showLine={false}
-              by="CI"
-            />
-          </div>
-          {request.approvals[role].status === "pending" ? (
-            <div className="flex gap-2">
-              <button
-                onClick={() => onAction("approved", request._id)}
-                className="bg-green-400 hover:bg-green-500 text-white p-1.5 rounded-full transition-all duration-300"
-              >
-                <TiTick size={20} />
-              </button>
-              <button
-                onClick={() => onAction("rejected", request._id)}
-                className="bg-red-400 hover:bg-red-500 text-white p-1.5 rounded-full transition-all duration-300"
-              >
-                <RxCross2 size={20} />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span
-                className={`px-3 py-1 rounded-full text-xs ${
-                  request.approvals[role].status === "approved"
-                    ? "bg-green-100 text-green-600"
-                    : "bg-red-100 text-red-600"
-                }`}
-              >
-                {request.approvals[role].status === "approved"
-                  ? "Approved"
-                  : "Rejected"}
-              </span>
-              {request.approvals[role].status === "approved" && request.completionProof && (
-                <button
-                  onClick={() => window.open(request.completionProof, '_blank')}
-                  className="text-blue-500 hover:text-blue-700"
-                >
-                  <Eye size={20} />
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-
         {isExpanded && (
-          <div className="space-y-3 pt-2 border-t border-gray-200 dark:border-gray-600">
+          <div className="space-y-3 pt-2 border-t border-gray-200 dark:border-gray-700 transition-colors duration-300">
             {request.odType === "Internal" ? (
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Reason
                 </p>
-                <p className="text-sm text-gray-900 dark:text-gray-200">
+                <p className="text-sm text-gray-900 dark:text-white">
                   {request.reason}
                 </p>
               </div>
@@ -298,7 +245,7 @@ export default function ODRequests({
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     College/Company
                   </p>
-                  <p className="text-sm text-gray-900 dark:text-gray-200">
+                  <p className="text-sm text-gray-900 dark:text-white">
                     {request.collegeName}, {request.city}
                   </p>
                 </div>
@@ -306,7 +253,7 @@ export default function ODRequests({
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     Event Name
                   </p>
-                  <p className="text-sm text-gray-900 dark:text-gray-200">
+                  <p className="text-sm text-gray-900 dark:text-white">
                     {request.eventName}
                   </p>
                 </div>
@@ -319,7 +266,7 @@ export default function ODRequests({
                       {request.eventTypes.map((type) => (
                         <span
                           key={type}
-                          className="px-2 py-0.5 bg-gray-100 dark:bg-gray-600 rounded-full text-xs"
+                          className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs transition-colors duration-300"
                         >
                           {type}
                         </span>
@@ -328,26 +275,6 @@ export default function ODRequests({
                   </div>
                 )}
               </>
-            )}
-            <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Contact
-              </p>
-              <p className="text-sm text-gray-900 dark:text-gray-200">
-                {request.parent_phone}
-              </p>
-            </div>
-            {(request.mentorcomment !== "No Comments" ||
-              request.classInchargeComment !== "No Comments") && (
-              <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Comments
-                </p>
-                <CommentsCell
-                  mentorComment={request.mentorcomment}
-                  classInchargeComment={request.classInchargeComment}
-                />
-              </div>
             )}
           </div>
         )}
@@ -511,7 +438,9 @@ export default function ODRequests({
                           </button>
                           {status === "approved" && req.completionProof && (
                             <button
-                              onClick={() => window.open(req.completionProof, '_blank')}
+                              onClick={() =>
+                                window.open(req.completionProof, "_blank")
+                              }
                               className="text-blue-500 hover:text-blue-700"
                             >
                               <Eye size={20} />
@@ -831,14 +760,22 @@ const CommentsCell = ({ mentorComment, classInchargeComment }) => (
   <div className="flex flex-col gap-1 max-w-xs">
     {mentorComment !== "No Comments" && (
       <div className="text-xs">
-        <span className="font-medium text-gray-700">Mentor:</span>{" "}
-        <span className="text-gray-600">{mentorComment}</span>
+        <span className="font-medium text-gray-700 dark:text-gray-300">
+          Mentor:
+        </span>{" "}
+        <span className="text-gray-600 dark:text-gray-400">
+          {mentorComment}
+        </span>
       </div>
     )}
     {classInchargeComment !== "No Comments" && (
       <div className="text-xs">
-        <span className="font-medium text-gray-700">CI:</span>{" "}
-        <span className="text-gray-600">{classInchargeComment}</span>
+        <span className="font-medium text-gray-700 dark:text-gray-300">
+          CI:
+        </span>{" "}
+        <span className="text-gray-600 dark:text-gray-400">
+          {classInchargeComment}
+        </span>
       </div>
     )}
   </div>
@@ -846,10 +783,13 @@ const CommentsCell = ({ mentorComment, classInchargeComment }) => (
 
 const DetailsModal = ({ isOpen, onClose, request }) => (
   <Modal show={isOpen} onClose={onClose} size="lg">
-    <Modal.Header>Request Details</Modal.Header>
-    <Modal.Body>
+    <Modal.Header className="border-b border-gray-200 dark:border-gray-700">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        Request Details
+      </h3>
+    </Modal.Header>
+    <Modal.Body className="bg-white dark:bg-gray-800">
       <div className="space-y-4">
-        {/* Basic Info */}
         <div className="grid grid-cols-2 gap-4">
           <DetailItem label="Student Name" value={request.name} />
           <DetailItem label="Section" value={request.section_name} />
@@ -867,15 +807,18 @@ const DetailsModal = ({ isOpen, onClose, request }) => (
 
         <hr className="border-gray-200 dark:border-gray-700" />
 
-        {/* OD Type Specific Details */}
         {request.odType === "Internal" ? (
           <div>
-            <h3 className="font-medium mb-2">Internal OD Details</h3>
+            <h3 className="font-medium mb-2 text-gray-900 dark:text-white">
+              Internal OD Details
+            </h3>
             <DetailItem label="Reason" value={request.reason} />
           </div>
         ) : (
           <div className="space-y-3">
-            <h3 className="font-medium mb-2">External OD Details</h3>
+            <h3 className="font-medium mb-2 text-gray-900 dark:text-white">
+              External OD Details
+            </h3>
             <DetailItem label="College/Company" value={request.collegeName} />
             <DetailItem label="City" value={request.city} />
             <DetailItem label="Event Name" value={request.eventName} />
@@ -890,12 +833,14 @@ const DetailsModal = ({ isOpen, onClose, request }) => (
             )}
             {request.eventTypes?.length > 0 && (
               <div>
-                <p className="text-sm text-gray-600 mb-1">Event Types:</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  Event Types:
+                </p>
                 <div className="flex gap-2 flex-wrap">
                   {request.eventTypes.map((type) => (
                     <span
                       key={type}
-                      className="px-2 py-1 bg-gray-100 rounded-full text-xs font-medium"
+                      className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium transition-colors duration-300"
                     >
                       {type}
                     </span>
@@ -907,7 +852,7 @@ const DetailsModal = ({ isOpen, onClose, request }) => (
         )}
       </div>
     </Modal.Body>
-    <Modal.Footer>
+    <Modal.Footer className="border-t border-gray-200 dark:border-gray-700">
       <Button color="gray" onClick={onClose}>
         Close
       </Button>
@@ -917,7 +862,9 @@ const DetailsModal = ({ isOpen, onClose, request }) => (
 
 const DetailItem = ({ label, value }) => (
   <div>
-    <p className="text-sm text-gray-500">{label}</p>
-    <p className="font-medium">{value || "Not provided"}</p>
+    <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
+    <p className="font-medium text-gray-900 dark:text-white transition-colors duration-300">
+      {value || "Not provided"}
+    </p>
   </div>
 );
