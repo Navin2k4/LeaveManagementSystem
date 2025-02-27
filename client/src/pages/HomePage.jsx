@@ -251,11 +251,7 @@ function HomePage() {
                     }
                     className="group inline-flex items-center gap-2 px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300"
                   >
-                    {currentUser.isStaff
-                      ? "Access Dashboard"
-                      : currentUser.isStudent
-                      ? "View Profile"
-                      : "HOD Dashboard"}
+                    Dashboard
                     <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </motion.div>

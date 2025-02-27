@@ -83,9 +83,11 @@ const DashboardSidebar = ({
             {/* Toggle Button */}
             <button
               onClick={handleToggle}
-              className="w-full flex items-center justify-center p-4 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+              className="w-full flex items-center justify-center p-4 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
             >
-              {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+              <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+                <ChevronRight size={20} />
+              </div>
             </button>
 
             {/* Logo/Header */}
@@ -112,7 +114,7 @@ const DashboardSidebar = ({
             </div>
 
             {/* Common Navigation Links */}
-            <nav className="px-2 py-2 border-b border-gray-200 dark:border-gray-700">
+            {/* <nav className="px-2 py-2 border-b border-gray-200 dark:border-gray-700">
               {commonNavItems.map((item) => (
                 <Link
                   key={item.id}
@@ -134,7 +136,7 @@ const DashboardSidebar = ({
                   </span>
                 </Link>
               ))}
-            </nav>
+            </nav> */}
 
             {/* Scrollable Menu Section */}
             <div className="flex-1 overflow-y-auto overflow-x-hidden sidebar-scroll">

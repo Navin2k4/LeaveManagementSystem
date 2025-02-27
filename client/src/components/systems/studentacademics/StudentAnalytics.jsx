@@ -207,7 +207,13 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
     let totalCredits = 0;
     let earnedCredits = 0;
 
+    // For GPA calculation - only consider regular courses of current semester
     semesterCourses.forEach((course) => {
+      // Skip arrear courses for GPA calculation
+      if (course.isArrear) {
+        return;
+      }
+
       const grade = selectedGrades[`${semester}-${course.course_code}`];
       if (grade) {
         // Skip NA grades for elective courses
@@ -216,15 +222,16 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
           (grade === "NA" &&
             (course.vertical_type === "PE" || course.vertical_type === "OE"))
         ) {
-          return; // Skip this course in calculation
+          return;
         }
 
         const gradePoint = GRADE_POINTS[grade];
         if (gradePoint !== null) {
-          // Check for non-NA grades
           totalGradePoints += gradePoint * course.course_credits;
           totalCredits += course.course_credits;
-          if (gradePoint > 0) earnedCredits += course.course_credits;
+          if (gradePoint > 0) {
+            earnedCredits += course.course_credits;
+          }
         }
       }
     });
@@ -232,19 +239,45 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
     const gpa =
       totalCredits > 0 ? (totalGradePoints / totalCredits).toFixed(2) : 0;
 
-    // Calculate CGPA including current semester
-    let cumulativePoints = totalGradePoints;
-    let cumulativeCredits = totalCredits;
+    // For CGPA calculation
+    let cumulativePoints = 0;
+    let cumulativeCredits = 0;
+    const processedCourses = new Set();
 
-    // Add points from previous semesters (including verticals and open electives)
-    for (let prevSemester = 1; prevSemester < semester; prevSemester++) {
-      const prevCourses = getCoursesBySemester(prevSemester);
-      prevCourses.forEach((course) => {
-        const grade = selectedGrades[`${prevSemester}-${course.course_code}`];
-        if (grade) {
-          const gradePoint = GRADE_POINTS[grade];
-          cumulativePoints += gradePoint * course.course_credits;
-          cumulativeCredits += course.course_credits;
+    // Process all semesters up to current semester
+    for (let sem = 1; sem <= semester; sem++) {
+      const courses = getCoursesBySemester(sem);
+      courses.forEach((course) => {
+        // Skip if already processed this course
+        if (processedCourses.has(course.course_code)) {
+          return;
+        }
+
+        // Find the latest grade for this course (including cleared arrears)
+        let latestGrade = null;
+        let latestSem = null;
+
+        // Check all semesters for the latest valid grade
+        for (
+          let checkSem = course.originalSemester || sem;
+          checkSem <= semester;
+          checkSem++
+        ) {
+          const grade = selectedGrades[`${checkSem}-${course.course_code}`];
+          if (grade && grade !== "NA" && grade !== "F" && grade !== "AB") {
+            latestGrade = grade;
+            latestSem = checkSem;
+          }
+        }
+
+        // If we found a valid grade, use it for CGPA
+        if (latestGrade) {
+          const gradePoint = GRADE_POINTS[latestGrade];
+          if (gradePoint !== null) {
+            cumulativePoints += gradePoint * course.course_credits;
+            cumulativeCredits += course.course_credits;
+            processedCourses.add(course.course_code);
+          }
         }
       });
     }
@@ -694,7 +727,7 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
     <div className="p-2 md:p-4 dark:bg-gray-900">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
         <h2 className="text-xl font-semibold mb-2 md:mb-0 text-gray-900 dark:text-white">
-          Semester Results
+          Calculate Your Grade Points
         </h2>
         <div className="flex items-center gap-4">
           {Object.keys(savedResults).length > 0 && (
@@ -708,7 +741,7 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
         </div>
       </div>
 
-      <Accordion collapseAll>
+      <Accordion collapseAll={false}>
         {courseData?.regular_courses
           .sort((a, b) => a.semester_no - b.semester_no)
           .map((semester) => (

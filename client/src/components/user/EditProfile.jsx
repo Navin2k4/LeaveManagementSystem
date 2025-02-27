@@ -98,7 +98,7 @@ const EditProfile = ({ mentor, classIncharge, initialActiveTab }) => {
       console.error("Error fetching user data:", error);
     } finally {
       setPageLoading(false);
-    } 
+    }
   };
 
   useEffect(() => {
@@ -779,11 +779,10 @@ const EditProfile = ({ mentor, classIncharge, initialActiveTab }) => {
 };
 
 const StatBox = ({ icon, label, value, isText }) => (
-  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
+  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
     <div className="flex items-center gap-3 mb-2">
       {icon}
       <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
-    </div>
     <p
       className={`font-semibold ${
         isText ? "text-sm" : "text-2xl"
@@ -791,6 +790,7 @@ const StatBox = ({ icon, label, value, isText }) => (
     >
       {value}
     </p>
+    </div>
   </div>
 );
 

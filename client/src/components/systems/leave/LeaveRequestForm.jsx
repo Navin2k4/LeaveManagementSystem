@@ -240,6 +240,27 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
       setLoading(false);
     }
   };
+  const isWithinTimeRangeToApply = () => {
+    const currentTime = new Date();
+    const ISTOffset = 330; // IST is UTC+5:30 (330 minutes)
+    const localOffset = currentTime.getTimezoneOffset();
+    const totalOffsetMinutes = ISTOffset + localOffset;
+    const totalOffsetMs = totalOffsetMinutes * 60 * 1000;
+    const localTimeInIST = new Date(currentTime.getTime() + totalOffsetMs);
+    const todayInIST = new Date(localTimeInIST);
+    
+    const startTime = new Date(todayInIST);
+    startTime.setHours(8, 15, 0, 0); // 8:15 AM
+    
+    const endTime = new Date(todayInIST);
+    endTime.setHours(18, 0, 0, 0); // 6:00 PM
+    
+    const isWithinRange = localTimeInIST >= startTime && localTimeInIST <= endTime;
+
+    return isWithinRange;
+  };
+
+  console.log(isWithinTimeRangeToApply());
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -408,27 +429,40 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
-              disabled={loading}
+              className={`w-full ${
+                !isWithinTimeRangeToApply()
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+              } text-white py-3 rounded-lg font-medium transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg`}
+              disabled={loading || !isWithinTimeRangeToApply()}
             >
               {loading ? (
                 <ScaleLoader color="white" height={15} />
               ) : (
                 <>
-                  Request Leave
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M14 5l7 7m0 0l-7 7m7-7H3"
-                    />
-                  </svg>
+                  {!isWithinTimeRangeToApply() ? (
+                    <span>
+                      Leave requests can only be submitted between 8:15 AM and 6:00 PM. 
+                      Contact Class Incharge for further queries.
+                    </span>
+                  ) : (
+                    <>
+                      <span>Request Leave</span>
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M14 5l7 7m0 0l-7 7m7-7H3"
+                        />
+                      </svg>
+                    </>
+                  )}
                 </>
               )}
             </button>

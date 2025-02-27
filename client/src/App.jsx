@@ -65,10 +65,10 @@ const AppWrapper = () => {
 
     // Add console warning
     const warningMessage =
-      "This is a protected website. Developer tools are not allowed.";
+      "Opps! Nothings Here.";
     console.log(
       "%c" + warningMessage,
-      "color: red; font-size: 20px; font-weight: bold; text-shadow: 2px 2px black;"
+      "color: red; font-size: 18px; font-weight: bold; "
     );
 
     // Clear console periodically
@@ -76,7 +76,7 @@ const AppWrapper = () => {
       console.clear();
       console.log(
         "%c" + warningMessage,
-        "color: red; font-size: 30px; font-weight: bold; text-shadow: 2px 2px black;"
+        "color: red; font-size: 30px; font-weight: bold;"
       );
     };
 
@@ -85,7 +85,7 @@ const AppWrapper = () => {
     document.addEventListener("keydown", handleKeyDown);
 
     // Clear console periodically
-    const consoleInterval = setInterval(clearConsole, 3000);
+    // const consoleInterval = setInterval(clearConsole, 3000);
 
     // Cleanup function
     return () => {

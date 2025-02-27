@@ -49,7 +49,7 @@ function Navbar() {
   );
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-sm transition-all duration-300">
+    <nav className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo Section */}
@@ -60,7 +60,7 @@ function Navbar() {
                 alt="VCET Logo"
                 className="w-10 h-10 rounded-full"
               />
-              <span className="hidden md:inline font-semibold text-xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-[#1f3a6e] dark:from-blue-400 dark:to-blue-200">
+              <span className="hidden md:inline font-semibold text-xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-[#1f3a6e]">
                 VCET Connect
               </span>
             </Link>
