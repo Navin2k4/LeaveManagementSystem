@@ -20,7 +20,9 @@ import {
   Loader2,
   Save,
   Trash2,
+  SeparatorHorizontal,
 } from "lucide-react";
+import { BsQuestion, BsQuestionCircle } from "react-icons/bs";
 
 const StudentAnalytics = ({ student, department, onResultsSave }) => {
   const [courseData, setCourseData] = useState(null);
@@ -334,8 +336,6 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
         className={`bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
           course.isArrear
             ? "bg-red-50/50 dark:bg-red-900/20"
-            : savedGrade
-            ? "bg-green-50/50 dark:bg-green-900/20"
             : ""
         }`}
       >
@@ -348,7 +348,10 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
           )}
         </td>
         <td className="px-4 py-2 text-gray-700 dark:text-gray-300">
-          {course.course_name}
+          {course.course_name}{" "}
+          <span className="bg-blue-200 text-black text-xs px-1 rounded-full">
+            {course.course_credits}
+          </span>
         </td>
         <td className="hidden md:table-cell px-4 py-2 text-center text-gray-700 dark:text-gray-300">
           {course.course_credits}
@@ -395,7 +398,7 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
               )
               .map((grade) => (
                 <option key={grade.value} value={grade.value}>
-                  {grade.value}
+                  {grade.value} ({GRADE_POINTS[grade.value] ?? "N/A"})
                 </option>
               ))}
           </Select>
@@ -595,7 +598,7 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
     const latestResults = savedResults[latestSemester];
 
     return (
-      <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-2xl shadow-lg w-full md:w-1/3">
+      <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800 p-6 rounded-2xl shadow-lg w-full md:w-1/3">
         <h3 className="text-xl font-semibold mb-6 text-white flex items-center gap-2">
           <BookOpen className="w-5 h-5" />
           Academic Summary
@@ -725,7 +728,50 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
 
   return (
     <div className="p-2 md:p-4 dark:bg-gray-900">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+      <div className="bg-gray-300 dark:bg-gray-800 p-4 rounded-lg">
+        <h1 className="text-md font-medium flex items-center justify-between text-black dark:text-white">
+          Grading System
+          <BsQuestion className="text-lg text-gray-500 dark:text-gray-300" />
+        </h1>
+        <div className="grid grid-cols-9 gap-1 mt-3">
+          {Object.entries(GRADE_POINTS).map(([grade, point]) => (
+            <div
+              key={grade}
+              className="bg-white dark:bg-gray-700 px-2 py-1 rounded-md shadow-sm text-center"
+            >
+              <p className="text-sm font-semibold text-gray-800 dark:text-white">
+                {grade}
+              </p>
+              <p className="text-xs text-gray-600 dark:text-gray-300">
+                {point ?? "N/A"}
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 mt-3 gap-2 text-sm text-gray-700 dark:text-gray-300">
+          <div className="bg-white dark:bg-gray-700 p-3 rounded-md shadow-sm">
+            <p className="font-semibold">GPA Formula</p>
+            <span className="text-xs">
+              GPA ={" "}
+              <span className="font-mono">
+                ∑ (Course Credit × Course Grade Pooint) / ∑ Credits
+              </span>
+            </span>
+          </div>
+
+          <div className="bg-white dark:bg-gray-700 p-3 rounded-md shadow-sm">
+            <p className="font-semibold">CGPA Formula</p>
+            <span className="text-xs">
+              CGPA ={" "}
+              <span className="font-mono">
+                ∑ (Semester GPA × Semester Credits) / ∑ Total Credits
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex mt-4 justify-between items-start md:items-center mb-4">
         <h2 className="text-xl font-semibold mb-2 md:mb-0 text-gray-900 dark:text-white">
           Calculate Your Grade Points
         </h2>
