@@ -155,7 +155,16 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
 
   const validateForm = () => {
     const newErrors = {};
-    const currentDate = new Date().toISOString().split("T")[0];
+    const currentDate = new Date();
+    const currentDateStr = currentDate.toISOString().split("T")[0];
+
+    // Check if trying to apply leave for today after 8 AM
+    if (formData.leaveStartDate === currentDateStr) {
+      const currentHour = currentDate.getHours();
+      if (currentHour >= 8) {
+        newErrors.leaveStartDate = "Cannot apply leave for today after 8:00 AM";
+      }
+    }
 
     if (!formData.departmentId) {
       newErrors.departmentId = "Department must be selected";
@@ -163,13 +172,16 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
 
     if (!formData.leaveStartDate) {
       newErrors.leaveStartDate = "Date from must be selected";
-    } else if (formData.leaveStartDate < currentDate) {
+    } else if (formData.leaveStartDate < currentDateStr) {
       newErrors.leaveStartDate = "Date from must not be in the past";
     }
 
     if (!forOneDay && !isHalfDay && !formData.leaveEndDate) {
       newErrors.leaveEndDate = "Date to must be selected";
-    } else if (formData.leaveEndDate && formData.leaveEndDate < currentDate) {
+    } else if (
+      formData.leaveEndDate &&
+      formData.leaveEndDate < currentDateStr
+    ) {
       newErrors.leaveEndDate = "Date to must not be in the past";
     } else if (
       !forOneDay &&
@@ -240,27 +252,6 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
       setLoading(false);
     }
   };
-  const isWithinTimeRangeToApply = () => {
-    const currentTime = new Date();
-    const ISTOffset = 330; // IST is UTC+5:30 (330 minutes)
-    const localOffset = currentTime.getTimezoneOffset();
-    const totalOffsetMinutes = ISTOffset + localOffset;
-    const totalOffsetMs = totalOffsetMinutes * 60 * 1000;
-    const localTimeInIST = new Date(currentTime.getTime() + totalOffsetMs);
-    const todayInIST = new Date(localTimeInIST);
-    
-    const startTime = new Date(todayInIST);
-    startTime.setHours(8, 15, 0, 0); // 8:15 AM
-    
-    const endTime = new Date(todayInIST);
-    endTime.setHours(18, 0, 0, 0); // 6:00 PM
-    
-    const isWithinRange = localTimeInIST >= startTime && localTimeInIST <= endTime;
-
-    return isWithinRange;
-  };
-
-  console.log(isWithinTimeRangeToApply());
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -430,39 +421,30 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
             <button
               type="submit"
               className={`w-full ${
-                !isWithinTimeRangeToApply()
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                loading || Object.keys(errors).length > 0
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
               } text-white py-3 rounded-lg font-medium transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg`}
-              disabled={loading || !isWithinTimeRangeToApply()}
+              disabled={loading || Object.keys(errors).length > 0}
             >
               {loading ? (
                 <ScaleLoader color="white" height={15} />
               ) : (
                 <>
-                  {!isWithinTimeRangeToApply() ? (
-                    <span>
-                      Leave requests can only be submitted between 8:15 AM and 6:00 PM. 
-                      Contact Class Incharge for further queries.
-                    </span>
-                  ) : (
-                    <>
-                      <span>Request Leave</span>
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M14 5l7 7m0 0l-7 7m7-7H3"
-                        />
-                      </svg>
-                    </>
-                  )}
+                  <span>Request Leave</span>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    />
+                  </svg>
                 </>
               )}
             </button>
