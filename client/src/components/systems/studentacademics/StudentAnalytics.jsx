@@ -334,9 +334,7 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
       <tr
         key={`${course.course_code}-${course.isArrear ? "arrear" : "regular"}`}
         className={`bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
-          course.isArrear
-            ? "bg-red-50/50 dark:bg-red-900/20"
-            : ""
+          course.isArrear ? "bg-red-50/50 dark:bg-red-900/20" : ""
         }`}
       >
         <td className="px-4 py-2 font-medium text-gray-900 dark:text-white">
@@ -728,62 +726,53 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
 
   return (
     <div className="p-2 md:p-4 dark:bg-gray-900">
-      <div className="bg-gray-300 dark:bg-gray-800 p-4 rounded-lg">
-        <h1 className="text-md font-medium flex items-center justify-between text-black dark:text-white">
-          Grading System
-          <BsQuestion className="text-lg text-gray-500 dark:text-gray-300" />
-        </h1>
-        <div className="grid grid-cols-9 gap-1 mt-3">
-          {Object.entries(GRADE_POINTS).map(([grade, point]) => (
-            <div
-              key={grade}
-              className="bg-white dark:bg-gray-700 px-2 py-1 rounded-md shadow-sm text-center"
-            >
-              <p className="text-sm font-semibold text-gray-800 dark:text-white">
-                {grade}
-              </p>
-              <p className="text-xs text-gray-600 dark:text-gray-300">
-                {point ?? "N/A"}
-              </p>
-            </div>
-          ))}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 mt-3 gap-2 text-sm text-gray-700 dark:text-gray-300">
-          <div className="bg-white dark:bg-gray-700 p-3 rounded-md shadow-sm">
-            <p className="font-semibold">GPA Formula</p>
-            <span className="text-xs">
-              GPA ={" "}
-              <span className="font-mono">
-                ∑ (Course Credit × Course Grade Pooint) / ∑ Credits
-              </span>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 gap-4">
+          <div className="flex items-center gap-2">
+            <BsQuestionCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span className="text-sm font-medium text-gray-900 dark:text-white">
+              Grading Note
             </span>
           </div>
-
-          <div className="bg-white dark:bg-gray-700 p-3 rounded-md shadow-sm">
-            <p className="font-semibold">CGPA Formula</p>
-            <span className="text-xs">
-              CGPA ={" "}
-              <span className="font-mono">
-                ∑ (Semester GPA × Semester Credits) / ∑ Total Credits
-              </span>
-            </span>
+          <div className="flex flex-wrap items-center gap-2">
+            {Object.entries(GRADE_POINTS).map(([grade, point]) => (
+              <div
+                key={grade}
+                className="px-2 py-0.5 text-xs bg-gray-50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 rounded flex items-center gap-1"
+              >
+                <span className="font-medium">{grade}</span>
+                <span className="text-gray-500">({point ?? "N/A"})</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="p-3 text-xs text-gray-600 dark:text-gray-400 flex flex-col sm:flex-row items-start sm:items-center sm:justify-end gap-4">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <span>GPA = ∑(Credit × Point) / ∑Credits</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <SeparatorHorizontal className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <span>CGPA = ∑(GPA × Credits) / ∑Credits</span>
           </div>
         </div>
       </div>
 
-      <div className="flex mt-4 justify-between items-start md:items-center mb-4">
-        <h2 className="text-xl font-semibold mb-2 md:mb-0 text-gray-900 dark:text-white">
-          Calculate Your Grade Points
-        </h2>
-        <div className="flex items-center gap-4">
-          {Object.keys(savedResults).length > 0 && (
-            <Button
-              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-all duration-300"
-              onClick={handleDownloadReport}
-            >
-              Download Report
-            </Button>
-          )}
+      <div className="grid gap-4 md:grid-cols-2 p-2 md:p-4 dark:bg-gray-900">
+        <div className="flex justify-between items-start md:items-center mb-4 md:col-span-2">
+          <h2 className="text-xl font-semibold mb-2 md:mb-0 text-gray-900 dark:text-white">
+            Calculate Your Grade Points
+          </h2>
+          <div className="flex items-center gap-4">
+            {Object.keys(savedResults).length > 0 && (
+              <Button
+                className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-all duration-300"
+                onClick={handleDownloadReport}
+              >
+                Download Report
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
