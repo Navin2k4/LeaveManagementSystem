@@ -85,7 +85,11 @@ const DashboardSidebar = ({
               onClick={handleToggle}
               className="w-full flex items-center justify-center p-4 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
             >
-              <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+              <div
+                className={`transform transition-transform duration-300 ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+              >
                 <ChevronRight size={20} />
               </div>
             </button>
@@ -269,142 +273,149 @@ const DashboardSidebar = ({
       {/* Mobile Floating Action Button */}
       <button
         onClick={() => setIsMobileMenuOpen(true)}
-        className="fixed right-4 top-4 lg:hidden z-40 p-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300"
+        className="fixed right-4 top-4 lg:hidden z-40 p-2.5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+        aria-label="Open Menu"
       >
-        <Menu className="w-6 h-6" />
+        <Menu className="w-5 h-5 stroke-[2]" />
       </button>
 
       {/* Mobile Slide-out Menu */}
-      {isMobileMenuOpen && (
-        <>
-          {/* Overlay */}
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 lg:hidden"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
+      <>
+        {/* Overlay */}
+        <div
+          className={`fixed inset-0 bg-black/20 backdrop-blur-sm z-50 lg:hidden transition-opacity duration-300
+            ${
+              isMobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
 
-          {/* Sidebar */}
-          <div className="fixed transition-all duration-300 inset-y-0 right-0 w-[280px] bg-white dark:bg-gray-900 shadow-xl z-50 lg:hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
-                  <img
-                    src="/vcet.jpeg"
-                    alt="VCET Logo"
-                    className="w-6 h-6 rounded-full"
-                  />
-                </div>
-                <span className="text-sm text-gray-900 dark:text-white">
-                  VCET Connect
-                </span>
+        {/* Sidebar */}
+        <div
+          className={`fixed inset-y-0 right-0 w-[280px] bg-white dark:bg-gray-900 shadow-xl z-50 lg:hidden
+            transform transition-transform duration-300 ease-in-out
+            ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
+                <img
+                  src="/vcet.jpeg"
+                  alt="VCET Logo"
+                  className="w-6 h-6 rounded-full"
+                />
               </div>
-              <button
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <span className="text-sm text-gray-900 dark:text-white">
+                VCET Connect
+              </span>
             </div>
-
-            {/* User Info */}
-            {userInfo && (
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                <p className="font-medium text-sm text-gray-900 dark:text-white">
-                  {userInfo.name}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {userInfo.email}
-                </p>
-              </div>
-            )}
-
-            {/* Menu */}
-            <div className="overflow-y-auto h-[calc(100vh-200px)]">
-              <nav className="px-2 py-4">
-                {/* Common Navigation Links */}
-                {commonNavItems.map((item) => (
-                  <Link
-                    key={item.id}
-                    to={item.path}
-                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <span className="w-5">{item.icon}</span>
-                    <span className="text-sm">{item.label}</span>
-                  </Link>
-                ))}
-
-                {/* Divider */}
-                <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
-
-                {/* Menu Items */}
-                {menuItems.map((item) => (
-                  <div key={item.id}>
-                    {item.submenu ? (
-                      <div className="mb-1">
-                        <div className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                          {item.label}
-                        </div>
-                        <div className="ml-4">
-                          {item.submenuItems.map((subItem) => (
-                            <button
-                              key={subItem.id}
-                              onClick={() => {
-                                onTabChange(subItem.id);
-                                setIsMobileMenuOpen(false);
-                              }}
-                              className={`w-full px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
-                                currentTab === subItem.id
-                                  ? "bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400"
-                                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                              }`}
-                            >
-                              {subItem.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          onTabChange(item.id);
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
-                          currentTab === item.id
-                            ? "bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400"
-                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                        }`}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <span className="w-5">{item.icon}</span>
-                          <span>{item.label}</span>
-                        </div>
-                        {item.badge && (
-                          <span className="flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-red-500 dark:bg-red-600 rounded-full">
-                            {item.badge}
-                          </span>
-                        )}
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </nav>
-            </div>
-
-            {/* Logout Button */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
-              <button
-                onClick={handleSignout}
-                className="w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors duration-200"
-              >
-                Logout
-              </button>
-            </div>
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
-        </>
-      )}
+
+          {/* User Info */}
+          {userInfo && (
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+              <p className="font-medium text-sm text-gray-900 dark:text-white">
+                {userInfo.name}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {userInfo.email}
+              </p>
+            </div>
+          )}
+
+          {/* Menu */}
+          <div className="overflow-y-auto h-[calc(100vh-200px)]">
+            <nav className="px-2 py-4">
+              {/* Common Navigation Links */}
+              {commonNavItems.map((item) => (
+                <Link
+                  key={item.id}
+                  to={item.path}
+                  className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <span className="w-5">{item.icon}</span>
+                  <span className="text-sm">{item.label}</span>
+                </Link>
+              ))}
+
+              {/* Divider */}
+              <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
+
+              {/* Menu Items */}
+              {menuItems.map((item) => (
+                <div key={item.id}>
+                  {item.submenu ? (
+                    <div className="mb-1">
+                      <div className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {item.label}
+                      </div>
+                      <div className="ml-4">
+                        {item.submenuItems.map((subItem) => (
+                          <button
+                            key={subItem.id}
+                            onClick={() => {
+                              onTabChange(subItem.id);
+                              setIsMobileMenuOpen(false);
+                            }}
+                            className={`w-full px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
+                              currentTab === subItem.id
+                                ? "bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400"
+                                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                            }`}
+                          >
+                            {subItem.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        onTabChange(item.id);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
+                        currentTab === item.id
+                          ? "bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400"
+                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <span className="w-5">{item.icon}</span>
+                        <span>{item.label}</span>
+                      </div>
+                      {item.badge && (
+                        <span className="flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-red-500 dark:bg-red-600 rounded-full">
+                          {item.badge}
+                        </span>
+                      )}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </nav>
+          </div>
+
+          {/* Logout Button */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
+            <button
+              onClick={handleSignout}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors duration-200"
+            >
+              <LogOut size={18} />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </>
     </>
   );
 };

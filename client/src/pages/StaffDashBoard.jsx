@@ -8,7 +8,7 @@ import {
   useFetchODRequestForMentor,
   useFetchODRequestForClassIncharge,
 } from "../../hooks/useFetchData";
-import { ChevronDown, User, UserRoundPlus } from "lucide-react";
+import { ChevronDown, Info, User, UserRoundPlus } from "lucide-react";
 import { ClipboardList, FileBarChart, UserCheck, FileText } from "lucide-react";
 import LeaveStatsCard from "../components/systems/leave/LeaveStatsCard";
 import LeaveRequests from "../components/systems/leave/LeaveRequests";
@@ -182,6 +182,16 @@ const StaffDashBoard = () => {
           isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
         }`}
       >
+        <div className="text-sm bg-yellow-100 dark:bg-yellow-800 py-2 px-4 text-center">
+          <h2 className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+            <Info className="h-4 w-4 text-yellow-600 dark:text-yellow-300 shrink-0" />
+            <span className="font-medium text-yellow-700 dark:text-yellow-200 text-xs sm:text-sm">
+              Kindly note that from 1st March 2025, Leave Requests Should be
+              approved or rejected before or within 7:30 AM - 8:00 AM for the current day
+              request.
+            </span>
+          </h2>
+        </div>
         <div className="p-4">{renderComponent()}</div>
       </div>
     </div>

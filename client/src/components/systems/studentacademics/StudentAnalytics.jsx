@@ -20,7 +20,9 @@ import {
   Loader2,
   Save,
   Trash2,
+  SeparatorHorizontal,
 } from "lucide-react";
+import { BsQuestion, BsQuestionCircle } from "react-icons/bs";
 
 const StudentAnalytics = ({ student, department, onResultsSave }) => {
   const [courseData, setCourseData] = useState(null);
@@ -332,11 +334,7 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
       <tr
         key={`${course.course_code}-${course.isArrear ? "arrear" : "regular"}`}
         className={`bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
-          course.isArrear
-            ? "bg-red-50/50 dark:bg-red-900/20"
-            : savedGrade
-            ? "bg-green-50/50 dark:bg-green-900/20"
-            : ""
+          course.isArrear ? "bg-red-50/50 dark:bg-red-900/20" : ""
         }`}
       >
         <td className="px-4 py-2 font-medium text-gray-900 dark:text-white">
@@ -348,7 +346,10 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
           )}
         </td>
         <td className="px-4 py-2 text-gray-700 dark:text-gray-300">
-          {course.course_name}
+          {course.course_name}{" "}
+          <span className="bg-blue-200 text-black text-xs px-1 rounded-full">
+            {course.course_credits}
+          </span>
         </td>
         <td className="hidden md:table-cell px-4 py-2 text-center text-gray-700 dark:text-gray-300">
           {course.course_credits}
@@ -395,7 +396,7 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
               )
               .map((grade) => (
                 <option key={grade.value} value={grade.value}>
-                  {grade.value}
+                  {grade.value} ({GRADE_POINTS[grade.value] ?? "N/A"})
                 </option>
               ))}
           </Select>
@@ -595,7 +596,7 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
     const latestResults = savedResults[latestSemester];
 
     return (
-      <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-2xl shadow-lg w-full md:w-1/3">
+      <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-800 p-6 rounded-2xl shadow-lg w-full md:w-1/3">
         <h3 className="text-xl font-semibold mb-6 text-white flex items-center gap-2">
           <BookOpen className="w-5 h-5" />
           Academic Summary
@@ -725,19 +726,53 @@ const StudentAnalytics = ({ student, department, onResultsSave }) => {
 
   return (
     <div className="p-2 md:p-4 dark:bg-gray-900">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-        <h2 className="text-xl font-semibold mb-2 md:mb-0 text-gray-900 dark:text-white">
-          Calculate Your Grade Points
-        </h2>
-        <div className="flex items-center gap-4">
-          {Object.keys(savedResults).length > 0 && (
-            <Button
-              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-all duration-300"
-              onClick={handleDownloadReport}
-            >
-              Download Report
-            </Button>
-          )}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 gap-4">
+          <div className="flex items-center gap-2">
+            <BsQuestionCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span className="text-sm font-medium text-gray-900 dark:text-white">
+              Grading Note
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {Object.entries(GRADE_POINTS).map(([grade, point]) => (
+              <div
+                key={grade}
+                className="px-2 py-0.5 text-xs bg-gray-50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 rounded flex items-center gap-1"
+              >
+                <span className="font-medium">{grade}</span>
+                <span className="text-gray-500">({point ?? "N/A"})</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="p-3 text-xs text-gray-600 dark:text-gray-400 flex flex-col sm:flex-row items-start sm:items-center sm:justify-end gap-4">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <span>GPA = ∑(Credit × Point) / ∑Credits</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <SeparatorHorizontal className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <span>CGPA = ∑(GPA × Credits) / ∑Credits</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 p-2 md:p-4 dark:bg-gray-900">
+        <div className="flex justify-between items-start md:items-center mb-4 md:col-span-2">
+          <h2 className="text-xl font-semibold mb-2 md:mb-0 text-gray-900 dark:text-white">
+            Calculate Your Grade Points
+          </h2>
+          <div className="flex items-center gap-4">
+            {Object.keys(savedResults).length > 0 && (
+              <Button
+                className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-all duration-300"
+                onClick={handleDownloadReport}
+              >
+                Download Report
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 

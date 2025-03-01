@@ -15,6 +15,7 @@ import ODDashBoard from "./ODDashBoard";
 import Academics from "../components/systems/studentacademics/Academics";
 import { FaChalkboardTeacher, FaCheckCircle } from "react-icons/fa";
 import BonafiedRequestForm from "../components/systems/bonafieds/BonafiedRequestForm";
+import { Info } from "lucide-react";
 
 const ProfilePage = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -147,6 +148,7 @@ const ProfilePage = () => {
   ];
 
   return (
+    <>
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <DashboardSidebar
         menuItems={menuItems}
@@ -155,7 +157,7 @@ const ProfilePage = () => {
         userInfo={currentUser}
         title="Profile"
         onSidebarToggle={setIsSidebarOpen}
-      />
+        />
 
       {/* Main Content */}
       <div
@@ -163,9 +165,18 @@ const ProfilePage = () => {
           isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
         }`}
       >
+      <div className="text-sm bg-yellow-100 dark:bg-yellow-800 py-2 px-4 text-center">
+        <h2 className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+          <Info className="h-4 w-4 text-yellow-600 dark:text-yellow-300 shrink-0" />
+          <span className="font-medium text-yellow-700 dark:text-yellow-200 text-xs sm:text-sm">
+            From 1st March 2025, Leave Requests Should be submitted before or within 7:30 AM.
+          </span>
+        </h2>
+      </div>
         <div className="p-4">{renderComponent()}</div>
       </div>
     </div>
+          </>
   );
 };
 
