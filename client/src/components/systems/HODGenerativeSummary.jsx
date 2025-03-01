@@ -95,17 +95,26 @@ const HODGenerativeSummary = ({ currentUser }) => {
     return { startOfDay, endOfDay };
   };
 
-  // Filter requests for selected date based on createdAt
+  // Update the filtering logic for todayRequests
   const todayRequests = summaryData.leaveRequests.filter((request) => {
     const { startOfDay, endOfDay } = getDateBounds(selectedDate);
+    const selectedDateTime = new Date(selectedDate);
     const fromDate = new Date(request.fromDate);
-    return fromDate >= startOfDay && fromDate <= endOfDay;
+    const toDate = new Date(request.toDate || request.fromDate); // Handle single day leaves
+
+    // Check if the selected date falls within the leave period
+    return selectedDateTime >= fromDate && selectedDateTime <= toDate;
   });
 
+  // Update the filtering logic for todayODRequests
   const todayODRequests = summaryData.odRequests.filter((request) => {
     const { startOfDay, endOfDay } = getDateBounds(selectedDate);
+    const selectedDateTime = new Date(selectedDate);
     const fromDate = new Date(request.fromDate);
-    return fromDate >= startOfDay && fromDate <= endOfDay;
+    const toDate = new Date(request.toDate || request.fromDate); // Handle single day OD
+
+    // Check if the selected date falls within the OD period
+    return selectedDateTime >= fromDate && selectedDateTime <= toDate;
   });
 
   const formatDisplayDate = (dateString) => {
