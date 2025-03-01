@@ -80,32 +80,24 @@ const HODGenerativeSummary = ({ currentUser }) => {
     );
   }
 
-  // Helper function to get start and end of day in UTC
-  const getDateBounds = (dateString) => {
-    const date = new Date(dateString + "T00:00:00");
-
-    // Start of day - set to midnight (00:00:00)
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-
-    // End of day - set to last millisecond of the day (23:59:59.999)
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    return { startOfDay, endOfDay };
-  };
-
   // Filter requests for selected date based on createdAt
   const todayRequests = summaryData.leaveRequests.filter((request) => {
-    const { startOfDay, endOfDay } = getDateBounds(selectedDate);
+    const selectedDateTime = new Date(selectedDate);
     const fromDate = new Date(request.fromDate);
-    return fromDate >= startOfDay && fromDate <= endOfDay;
+    const toDate = new Date(request.toDate || request.fromDate); // Handle single day leaves
+
+    // Check if the selected date falls within the leave period
+    return selectedDateTime >= fromDate && selectedDateTime <= toDate;
   });
 
+  // Update the filtering logic for todayODRequests
   const todayODRequests = summaryData.odRequests.filter((request) => {
-    const { startOfDay, endOfDay } = getDateBounds(selectedDate);
+    const selectedDateTime = new Date(selectedDate);
     const fromDate = new Date(request.fromDate);
-    return fromDate >= startOfDay && fromDate <= endOfDay;
+    const toDate = new Date(request.toDate || request.fromDate); // Handle single day OD
+
+    // Check if the selected date falls within the OD period
+    return selectedDateTime >= fromDate && selectedDateTime <= toDate;
   });
 
   const formatDisplayDate = (dateString) => {
@@ -159,12 +151,14 @@ const HODGenerativeSummary = ({ currentUser }) => {
       }
     };
 
-    // Sort groups by batch name and section name
+    // Sort groups by batch name (descending) and section name
     const sortedGroups = Object.values(groupedRequests).sort((a, b) => {
-      if (a.batchName === b.batchName) {
-        return a.sectionName.localeCompare(b.sectionName);
+      // First sort by batch name in descending order
+      if (a.batchName !== b.batchName) {
+        return b.batchName.localeCompare(a.batchName); // Reversed comparison for descending
       }
-      return a.batchName.localeCompare(b.batchName);
+      // Then sort by section name in ascending order
+      return a.sectionName.localeCompare(b.sectionName);
     });
 
     return sortedGroups.map((group, index) => (
@@ -206,55 +200,62 @@ const HODGenerativeSummary = ({ currentUser }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {group.requests.map((request, idx) => (
-                <tr
-                  key={idx}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                >
-                  <td className="px-4 py-3">
-                    <div className="text-sm font-medium">{request.name}</div>
-                    <div className="text-xs text-gray-500">
-                      {request.rollNo}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="text-sm">
-                      {request.mentorId?.staff_name || "Not Assigned"}
-                      {getApprovalStatus(request.approvals?.mentor)}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="text-sm">
-                      {request.classInchargeId?.staff_name || "Not Assigned"}
-                      {getApprovalStatus(request.approvals?.classIncharge)}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="text-sm">
-                      {type === "leave" ? request.reason : request.purpose}
-                      {type === "leave" && request.forMedical && (
-                        <span className="ml-2 text-xs text-red-500">
-                          (Medical)
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full ${
-                        request.status === "approved"
-                          ? "bg-green-100 text-green-800"
-                          : request.status === "rejected"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {request.status?.charAt(0).toUpperCase() +
-                        request.status?.slice(1)}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              {group.requests
+                .sort((a, b) => {
+                  // Sort requests by section name within each group
+                  const sectionA = a.sectionId?.section_name || "";
+                  const sectionB = b.sectionId?.section_name || "";
+                  return sectionA.localeCompare(sectionB);
+                })
+                .map((request, idx) => (
+                  <tr
+                    key={idx}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                  >
+                    <td className="px-4 py-3">
+                      <div className="text-sm font-medium">{request.name}</div>
+                      <div className="text-xs text-gray-500">
+                        {request.rollNo}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="text-sm">
+                        {request.mentorId?.staff_name || "Not Assigned"}
+                        {getApprovalStatus(request.approvals?.mentor)}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="text-sm">
+                        {request.classInchargeId?.staff_name || "Not Assigned"}
+                        {getApprovalStatus(request.approvals?.classIncharge)}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="text-sm">
+                        {type === "leave" ? request.reason : request.purpose}
+                        {type === "leave" && request.forMedical && (
+                          <span className="ml-2 text-xs text-red-500">
+                            (Medical)
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${
+                          request.status === "approved"
+                            ? "bg-green-100 text-green-800"
+                            : request.status === "rejected"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
+                        {request.status?.charAt(0).toUpperCase() +
+                          request.status?.slice(1)}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -266,7 +267,7 @@ const HODGenerativeSummary = ({ currentUser }) => {
   const downloadDayReport = () => {
     // Group requests by batch and status
     const groupRequestsByBatch = (requests) => {
-      return requests.reduce((acc, req) => {
+      const grouped = requests.reduce((acc, req) => {
         const batchName = req.sectionId?.Batch?.batch_name || "Unknown Batch";
         if (!acc[batchName]) {
           acc[batchName] = {
@@ -281,6 +282,11 @@ const HODGenerativeSummary = ({ currentUser }) => {
         }
         return acc;
       }, {});
+
+      // Sort batches in descending order
+      return Object.fromEntries(
+        Object.entries(grouped).sort((a, b) => b[0].localeCompare(a[0]))
+      );
     };
 
     const batchWiseLeaves = groupRequestsByBatch(todayRequests);
@@ -288,6 +294,19 @@ const HODGenerativeSummary = ({ currentUser }) => {
     const activeDefaulters = summaryData.defaulters.filter(
       (def) => !def.isDone
     );
+
+    // Sort defaulters by batch in descending order
+    const sortedDefaulters = activeDefaulters.sort((a, b) => {
+      const batchA = a.batchName || "Unknown";
+      const batchB = b.batchName || "Unknown";
+      if (batchA !== batchB) {
+        return batchB.localeCompare(batchA);
+      }
+      // If batches are same, sort by section
+      const sectionA = a.sectionName || "Unknown";
+      const sectionB = b.sectionName || "Unknown";
+      return sectionA.localeCompare(sectionB);
+    });
 
     // Create PDF document
     const doc = new jsPDF();
@@ -353,6 +372,13 @@ const HODGenerativeSummary = ({ currentUser }) => {
           return staff.staff_name; // Just return staff name if approved/rejected
         };
 
+        // Sort requests by section name
+        const sortedRequests = requests.sort((a, b) => {
+          const sectionA = a.sectionId?.section_name || "";
+          const sectionB = b.sectionId?.section_name || "";
+          return sectionA.localeCompare(sectionB);
+        });
+
         doc.autoTable({
           startY: startY,
           head: [
@@ -366,7 +392,7 @@ const HODGenerativeSummary = ({ currentUser }) => {
               "Reason",
             ],
           ],
-          body: requests.map((req, index) => [
+          body: sortedRequests.map((req, index) => [
             index + 1,
             req.name,
             req.rollNo,
@@ -458,7 +484,7 @@ const HODGenerativeSummary = ({ currentUser }) => {
         head: [
           ["S.No", "Name", "Roll No", "Batch", "Section", "Type", "Remarks"],
         ],
-        body: activeDefaulters.map((defaulter, index) => [
+        body: sortedDefaulters.map((defaulter, index) => [
           index + 1,
           defaulter.name,
           defaulter.roll_no,
@@ -498,20 +524,23 @@ const HODGenerativeSummary = ({ currentUser }) => {
           return acc;
         }, {});
 
-        Object.entries(pendingLeavesByBatch).forEach(
-          ([batchName, requests]) => {
-            currentY = addBatchTable(
-              batchName,
-              requests,
-              "Pending Leave Requests",
-              currentY
-            );
-            if (currentY > doc.internal.pageSize.height - 40) {
-              doc.addPage();
-              currentY = 20;
-            }
-          }
+        // Sort batches in descending order
+        const sortedBatches = Object.entries(pendingLeavesByBatch).sort(
+          (a, b) => b[0].localeCompare(a[0])
         );
+
+        for (const [batchName, requests] of sortedBatches) {
+          currentY = addBatchTable(
+            batchName,
+            requests,
+            "Pending Leave Requests",
+            currentY
+          );
+          if (currentY > doc.internal.pageSize.height - 40) {
+            doc.addPage();
+            currentY = 20;
+          }
+        }
       }
 
       if (pendingOD.length > 0) {
@@ -522,7 +551,12 @@ const HODGenerativeSummary = ({ currentUser }) => {
           return acc;
         }, {});
 
-        Object.entries(pendingODByBatch).forEach(([batchName, requests]) => {
+        // Sort batches in descending order
+        const sortedBatches = Object.entries(pendingODByBatch).sort((a, b) =>
+          b[0].localeCompare(a[0])
+        );
+
+        for (const [batchName, requests] of sortedBatches) {
           currentY = addBatchTable(
             batchName,
             requests,
@@ -533,7 +567,7 @@ const HODGenerativeSummary = ({ currentUser }) => {
             doc.addPage();
             currentY = 20;
           }
-        });
+        }
       }
     }
 

@@ -16,7 +16,7 @@ export default function SignIn() {
   const { loading, error: errorMessage } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [selectRole, setSelectRole] = useState("");
+  const [selectRole, setSelectRole] = useState("student");
 
   const roleOptions = [
     {

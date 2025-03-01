@@ -180,3 +180,4 @@ leaveRequestSchema.pre("save", function (next) {
 const LeaveRequest = model("LeaveRequest", leaveRequestSchema);
 
 export default LeaveRequest;
+

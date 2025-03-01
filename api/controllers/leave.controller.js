@@ -70,6 +70,7 @@ export const createLeaveRequest = async (req, res) => {
       isHalfDay,
       isStaff: false,
     });
+    console.log("Student Leave Request in Server : ", studentLeaveRequest);
     await studentLeaveRequest.save();
     res.status(201).json({
       success: true,
@@ -130,7 +131,7 @@ export const getleaverequestbyclassinchargeid = async (req, res, next) => {
     // Only fetch requests where mentor has taken action (approved or rejected)
     const data = await LeaveRequest.find({
       classInchargeId: id,
-      'approvals.mentor.status': { $ne: 'pending' }  // Show when mentor has taken action
+      "approvals.mentor.status": { $ne: "pending" }, // Show when mentor has taken action
     }).sort({
       createdAt: -1,
     });
@@ -324,7 +325,6 @@ export const updateLeaveRequestStatusByHODId = async (req, res, next) => {
 };
 
 export const getleaverequestsbySectionId = async (req, res, next) => {
-
   try {
     const { id } = req.params;
     const data = await LeaveRequest.find({ sectionId: id }).sort({
@@ -339,8 +339,8 @@ export const getleaverequestsbySectionId = async (req, res, next) => {
 };
 
 export const mentors = async (req, res) => {
-  const { ids } = req.query; 
-  const sectionIDs = ids.split(","); 
+  const { ids } = req.query;
+  const sectionIDs = ids.split(",");
   try {
     const response = await Staff.find({
       staff_handle_section: { $in: sectionIDs },
@@ -352,7 +352,11 @@ export const mentors = async (req, res) => {
   }
 };
 
-export const updateLeaveRequestStatusByMentorIdForBothRoles = async (req, res, next) => {
+export const updateLeaveRequestStatusByMentorIdForBothRoles = async (
+  req,
+  res,
+  next
+) => {
   try {
     const { requestId } = req.params;
     const { status, mentorcomment, isStaffBothRoles } = req.body;
@@ -367,7 +371,7 @@ export const updateLeaveRequestStatusByMentorIdForBothRoles = async (req, res, n
 
     const updateData = {
       "approvals.mentor.status": status,
-      "mentorcomment": mentorcomment || "No Comments",
+      mentorcomment: mentorcomment || "No Comments",
     };
 
     // If staff has both roles, update both statuses
@@ -410,7 +414,6 @@ export const updateLeaveRequestStatusByMentorIdForBothRoles = async (req, res, n
       message: `Leave request ${status} successfully`,
       leaveRequest: updatedRequest,
     });
-
   } catch (error) {
     console.error("Error updating leave request status:", error);
     const customError = errorHandler(500, "Internal Server Error");

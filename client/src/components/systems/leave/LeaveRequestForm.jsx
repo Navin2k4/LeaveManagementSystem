@@ -132,37 +132,36 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
     calculateDays();
   }, [formData.leaveStartDate, formData.leaveEndDate, forOneDay]);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const getISTTime = () => {
+    const now = new Date();
+    // Convert to IST (UTC+5:30)
+    const istTime = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
+    return {
+      hours: istTime.getUTCHours(),
+      minutes: istTime.getUTCMinutes(),
+      date: istTime.toISOString().split("T")[0],
+      timestamp: istTime.getTime(),
+    };
   };
 
-  const handleForOneDayChange = (e) => {
-    setForOneDay(e.target.checked);
-    if (e.target.checked) {
-      setFormData({ ...formData, leaveEndDate: formData.leaveStartDate });
-    }
-  };
-
-  const handleIsHalfDayChange = (selectedOption) => {
-    setIsHalfDay((prevIsHalfDay) =>
-      prevIsHalfDay === selectedOption ? null : selectedOption
-    );
-    setFormData({
-      ...formData,
-      isHalfDay: isHalfDay === selectedOption ? null : selectedOption,
-    });
+  const isAfterCutoffTime = () => {
+    const { hours, minutes } = getISTTime();
+    // Convert current time to minutes for easier comparison
+    const currentTimeInMinutes = hours * 60 + minutes;
+    // 8:00 AM in minutes = 8 * 60 = 480 minutes
+    return currentTimeInMinutes >= 480;
   };
 
   const validateForm = () => {
     const newErrors = {};
-    const currentDate = new Date();
-    const currentDateStr = currentDate.toISOString().split("T")[0];
+    const { date: currentDateStr } = getISTTime();
+    const isAfter8AM = isAfterCutoffTime();
 
-    // Check if trying to apply leave for today after 8 AM
+    // Check if trying to apply leave for today
     if (formData.leaveStartDate === currentDateStr) {
-      const currentHour = currentDate.getHours();
-      if (currentHour >= 8) {
-        newErrors.leaveStartDate = "Cannot apply leave for today after 8:00 AM";
+      if (isAfter8AM && !isHalfDay) {
+        newErrors.leaveStartDate =
+          "Cannot apply full-day leave after 8:00 AM IST for today";
       }
     }
 
@@ -190,13 +189,79 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
     ) {
       newErrors.leaveEndDate = "Date to must be greater than Date from";
     }
+
     if (!formData.reason) {
       newErrors.reason = "Reason must be given";
-    } else if (formData.reason.length > 200) {
-      newErrors.reason = "Reason must be less than 200 characters";
+    } else if (formData.reason.length > 50) {
+      newErrors.reason = "Reason must be less than 50 characters";
     }
 
     return newErrors;
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Validate dates immediately when they are selected
+    if (
+      e.target.name === "leaveStartDate" ||
+      e.target.name === "leaveEndDate"
+    ) {
+      const { date: currentDateStr } = getISTTime();
+      const isAfter8AM = isAfterCutoffTime();
+      const newErrors = { ...errors };
+
+      // Clear previous date-related errors
+      delete newErrors.leaveStartDate;
+      delete newErrors.leaveEndDate;
+
+      if (e.target.name === "leaveStartDate") {
+        if (e.target.value === currentDateStr && isAfter8AM && !isHalfDay) {
+          newErrors.leaveStartDate =
+            "Cannot apply full-day leave after 8:00 AM IST for today";
+        } else if (e.target.value < currentDateStr) {
+          newErrors.leaveStartDate = "Date from must not be in the past";
+        }
+      }
+
+      if (e.target.name === "leaveEndDate") {
+        if (e.target.value < currentDateStr) {
+          newErrors.leaveEndDate = "Date to must not be in the past";
+        } else if (e.target.value < formData.leaveStartDate) {
+          newErrors.leaveEndDate = "Date to must be greater than Date from";
+        }
+      }
+
+      setErrors(newErrors);
+    }
+  };
+
+  const handleForOneDayChange = (e) => {
+    setForOneDay(e.target.checked);
+    if (e.target.checked) {
+      setFormData({ ...formData, leaveEndDate: formData.leaveStartDate });
+    }
+  };
+
+  const handleIsHalfDayChange = (selectedOption) => {
+    const newIsHalfDay = isHalfDay === selectedOption ? null : selectedOption;
+    setIsHalfDay(newIsHalfDay);
+
+    // Clear any time-related errors when half-day is selected
+    if (newIsHalfDay) {
+      const newErrors = { ...errors };
+      if (
+        newErrors.leaveStartDate &&
+        newErrors.leaveStartDate.includes("8:00 AM")
+      ) {
+        delete newErrors.leaveStartDate;
+      }
+      setErrors(newErrors);
+    }
+
+    setFormData({
+      ...formData,
+      isHalfDay: newIsHalfDay,
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -417,37 +482,56 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
                 {errorMessage}
               </div>
             )}
-
-            <button
-              type="submit"
-              className={`w-full ${
-                loading || Object.keys(errors).length > 0
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-              } text-white py-3 rounded-lg font-medium transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg`}
-              disabled={loading || Object.keys(errors).length > 0}
-            >
-              {loading ? (
-                <ScaleLoader color="white" height={15} />
-              ) : (
-                <>
-                  <span>Request Leave</span>
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M14 5l7 7m0 0l-7 7m7-7H3"
-                    />
-                  </svg>
-                </>
-              )}
-            </button>
+            {isAfterCutoffTime() &&
+            !isHalfDay &&
+            formData.leaveStartDate === getISTTime().date ? (
+              <div className="mb-4 bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                <AlertCircle size={18} />
+                You cannot apply for a full-day leave after 8:00 AM IST for
+                today. Please select a half-day option if needed.
+              </div>
+            ) : (
+              <button
+                type="submit"
+                className={`w-full ${
+                  loading ||
+                  Object.keys(errors).length > 0 ||
+                  (isAfterCutoffTime() &&
+                    formData.leaveStartDate === getISTTime().date &&
+                    !isHalfDay)
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                } text-white py-3 rounded-lg font-medium transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg`}
+                disabled={
+                  loading ||
+                  Object.keys(errors).length > 0 ||
+                  (isAfterCutoffTime() &&
+                    formData.leaveStartDate === getISTTime().date &&
+                    !isHalfDay)
+                }
+              >
+                {loading ? (
+                  <ScaleLoader color="white" height={15} />
+                ) : (
+                  <>
+                    <span>Request Leave</span>
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M14 5l7 7m0 0l-7 7m7-7H3"
+                      />
+                    </svg>
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </form>
       </div>
