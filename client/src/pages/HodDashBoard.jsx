@@ -734,7 +734,7 @@ const Hoddashboard = () => {
           {studentRequest && (
             <>
               {/* Add Generate PDF button */}
-              <div className="mb-6">
+              {/* <div className="mb-6">
                 <button
                   onClick={generatePDF}
                   disabled={loading}
@@ -763,7 +763,7 @@ const Hoddashboard = () => {
                     </>
                   )}
                 </button>
-              </div>
+              </div> */}
 
               {/* Batch Selection Section */}
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">

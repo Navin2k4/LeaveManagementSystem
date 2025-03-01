@@ -91,12 +91,11 @@ const HODGenerativeSummary = ({ currentUser }) => {
   });
 
   // Update the filtering logic for todayODRequests
+  // Update the filtering logic for todayODRequests
   const todayODRequests = summaryData.odRequests.filter((request) => {
     const selectedDateTime = new Date(selectedDate);
     const fromDate = new Date(request.fromDate);
     const toDate = new Date(request.toDate || request.fromDate); // Handle single day OD
-
-    // Check if the selected date falls within the OD period
     return selectedDateTime >= fromDate && selectedDateTime <= toDate;
   });
 
