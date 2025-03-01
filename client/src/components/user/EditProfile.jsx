@@ -420,6 +420,7 @@ const EditProfile = ({ mentor, classIncharge, initialActiveTab }) => {
                   <h2 className="text-2xl  text-gray-900 dark:text-white mb-2">
                     {userData?.name || userData?.staff_name}
                   </h2>
+                  
                   <Button
                     onClick={toggleModal}
                     size="sm"
