@@ -21,6 +21,7 @@ import DashboardSidebar from "../components/layout/DashboardSidebar";
 import StudentAcademicData from "../components/systems/studentacademics/StudentAcademicData";
 import AttandanceCalander from "../components/systems/calendar/AttandanceCalander";
 import { Calendar } from "lucide-react";
+import LeaveRequestFormByStaff from "../components/systems/leave/LeaveRequestFormByStaff";
 
 const StaffDashBoard = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -110,8 +111,8 @@ const StaffDashBoard = () => {
               odRequests={[...mentorODRequests, ...classInchargeODRequests]}
             />
           );
-        default:
-          return <LeaveRequestForm />;
+        case "Student Leave by Staff":
+          return <LeaveRequestFormByStaff/>;
       }
     }
   };
@@ -162,6 +163,11 @@ const StaffDashBoard = () => {
       id: "Profile",
       icon: <User size={18} />,
       label: "Profile",
+    },
+    {
+      id: "Student Leave by Staff",
+      icon: <UserRoundPlus size={18} />,
+      label: "Emergency Student Leave",
     },
   ];
 

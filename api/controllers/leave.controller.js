@@ -3,6 +3,7 @@ import { errorHandler } from "../utils/error.js";
 import { notifyLeaveRequestStatus } from "./email.service.js";
 
 export const createLeaveRequest = async (req, res) => {
+  console.log("Hello Request Body:", req.body);
   try {
     const {
       name,
@@ -70,7 +71,6 @@ export const createLeaveRequest = async (req, res) => {
       isHalfDay,
       isStaff: false,
     });
-    console.log("Student Leave Request in Server : ", studentLeaveRequest);
     await studentLeaveRequest.save();
     res.status(201).json({
       success: true,
@@ -418,5 +418,124 @@ export const updateLeaveRequestStatusByMentorIdForBothRoles = async (
     console.error("Error updating leave request status:", error);
     const customError = errorHandler(500, "Internal Server Error");
     next(customError);
+  }
+};
+
+export const createLeaveRequestWithStatus = async (req, res) => {
+  console.log("Creating leave request with status:", req.body);
+  try {
+    const {
+      name,
+      parent_phone,
+      email,
+      userId,
+      userType,
+      rollNo,
+      regNo,
+      forMedical,
+      batchId,
+      sectionId,
+      section_name,
+      departmentId,
+      reason,
+      classInchargeId,
+      mentorId,
+      leaveStartDate,
+      leaveEndDate,
+      noOfDays,
+      isHalfDay,
+      typeOfLeave,
+      approvals,
+      status
+    } = req.body;
+
+    // Validate required fields
+    if (!userId || !name || !leaveStartDate || !leaveEndDate || !reason || !mentorId || !classInchargeId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields"
+      });
+    }
+
+    const existingLeave = await LeaveRequest.findOne({
+      userId,
+      $or: [
+        {
+          fromDate: { $lte: leaveEndDate },
+          toDate: { $gte: leaveStartDate },
+        },
+        {
+          fromDate: { $gte: leaveStartDate },
+          toDate: { $lte: leaveEndDate },
+        },
+      ],
+    });
+
+    if (existingLeave) {
+      return res.status(400).json({
+        success: false,
+        message: "You already have a leave request for this period",
+      });
+    }
+
+    const leaveRequest = new LeaveRequest({
+      name,
+      parent_phone,
+      email,
+      userId,
+      userType,
+      rollNo,
+      regNo,
+      forMedical,
+      batchId,
+      sectionId,
+      section_name,
+      departmentId,
+      reason,
+      classInchargeId,
+      mentorId,
+      fromDate: leaveStartDate,
+      toDate: leaveEndDate,
+      noOfDays,
+      isHalfDay,
+      isStaff: false,
+      approvals: {
+        mentor: {
+          status: "approved",
+          date: new Date()
+        },
+        classIncharge: {
+          status: "approved",
+          date: new Date()
+        }
+      },
+      status: "approved"
+    });
+
+    await leaveRequest.save();
+
+    // Send email notification since both approvals are approved
+    await notifyLeaveRequestStatus(
+      email,
+      name,
+      "approved",
+      leaveStartDate,
+      leaveEndDate,
+      "Approved by staff",
+      "Staff"
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Leave request created successfully with specified status",
+      leaveRequest
+    });
+  } catch (error) {
+    console.error("Error creating leave request with status:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while creating the leave request",
+      error: error.message
+    });
   }
 };

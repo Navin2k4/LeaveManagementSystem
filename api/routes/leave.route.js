@@ -11,11 +11,13 @@ import {
   updateLeaveRequestStatusByHODId,
   deleteleavebyId,
   updateLeaveRequestStatusByMentorIdForBothRoles,
+  createLeaveRequestWithStatus,
 } from "../controllers/leave.controller.js";
 
 const router = express.Router();
 
 router.post("/leave-request", createLeaveRequest);
+router.post("/leave-request-staff", createLeaveRequestWithStatus);
 router.get("/getleaverequest/:id", getleaverequestbyUserId);
 router.delete("/deleteleave/:id", deleteleavebyId);
 router.get("/getleaverequestbymentorid/:id", getleaverequestbyMentorId);
