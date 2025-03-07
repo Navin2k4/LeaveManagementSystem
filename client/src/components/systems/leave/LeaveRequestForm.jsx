@@ -47,6 +47,7 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
     noOfDays: 0,
     typeOfLeave: "",
   });
+
   const handleForMedicalChange = (e) => {
     setForMedical(e.target.checked);
     setFormData({ ...formData, forMedical: e.target.checked });
@@ -274,7 +275,10 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
     try {
       setLoading(true);
       setErrorMessage(null);
-      const { classInchargeId, mentorId } = formData;
+      console.log("Initial Form when ", formData);
+      console.log(formData);
+
+      return;
       const res = await fetch("/api/leave-request", {
         method: "POST",
         headers: {
@@ -284,7 +288,6 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
           ...formData,
           toDate: forOneDay ? formData.leaveStartDate : formData.leaveEndDate,
           forMedical: forMedical ? true : false,
-          mentorId: classInchargeId === mentorId ? mentorId : mentorId,
         }),
       });
 

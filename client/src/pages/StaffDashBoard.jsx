@@ -188,7 +188,7 @@ const StaffDashBoard = () => {
           isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
         }`}
       >
-        <div className="text-sm bg-yellow-100 dark:bg-yellow-800 py-2 px-4 text-center">
+        {/* <div className="text-sm bg-yellow-100 dark:bg-yellow-800 py-2 px-4 text-center">
           <h2 className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
             <Info className="h-4 w-4 text-yellow-600 dark:text-yellow-300 shrink-0" />
             <span className="font-medium text-yellow-700 dark:text-yellow-200 text-xs sm:text-sm">
@@ -197,7 +197,7 @@ const StaffDashBoard = () => {
               request.
             </span>
           </h2>
-        </div>
+        </div> */}
         <div className="p-4">{renderComponent()}</div>
       </div>
     </div>

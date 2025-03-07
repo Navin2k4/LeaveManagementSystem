@@ -37,12 +37,16 @@ export default function ODRequests({
   };
 
   useEffect(() => {
-    fetchODRequestsMentor();
-  }, []);
+    if (currentUser.isMentor) {
+      fetchODRequestsMentor();
+    }
+  }, [currentUser.isMentor]);
 
   useEffect(() => {
-    fetchODRequestsClassIncharge();
-  }, []);
+    if (currentUser.isClassIncharge) {
+      fetchODRequestsClassIncharge();
+    }
+  }, [currentUser.isClassIncharge]);
 
   const handleRequest = (type, id) => {
     setMentorModalType(type);
@@ -111,6 +115,7 @@ export default function ODRequests({
 
       if (response.ok) {
         await fetchODRequestsMentor();
+        await fetchODRequestsClassIncharge();
       } else {
         alert(`Failed to ${mentormodalType} request`);
       }
@@ -120,6 +125,7 @@ export default function ODRequests({
     } finally {
       setLoading(false);
       handleClose();
+      setmentorComment("");
     }
   };
 
@@ -140,6 +146,7 @@ export default function ODRequests({
 
       if (response.ok) {
         await fetchODRequestsClassIncharge();
+        await fetchODRequestsMentor();
       } else {
         alert(`Failed to ${classInchargemodalType} request`);
       }
@@ -149,11 +156,13 @@ export default function ODRequests({
     } finally {
       setLoading(false);
       handleCloseClassIncharge();
+      setclassInchargeComment("");
     }
   };
 
   const filterRequestsByStatus = (requests, role) => {
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
     return requests.filter((request) => {
       const toDate = new Date(request.toDate);
       const isPastDue = toDate < today;
@@ -192,15 +201,15 @@ export default function ODRequests({
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
-      <div className="space-y-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+      <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
         <div className="flex justify-between items-start">
           <div>
             <div className="flex items-center gap-2">
-              <p className="font-medium text-gray-900 dark:text-white transition-colors duration-300">
+              <p className="font-medium text-gray-900 dark:text-gray-200">
                 {request.name}
               </p>
               <span
-                className={`px-2 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
+                className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                   request.odType === "Internal"
                     ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800/30"
                     : "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-300 border border-purple-200 dark:border-purple-800/30"
@@ -209,7 +218,7 @@ export default function ODRequests({
                 {request.odType}
               </span>
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               {request.noOfDays} day(s) • {formatDate(request.fromDate)}
               {request.fromDate !== request.toDate &&
                 ` to ${formatDate(request.toDate)}`}
@@ -217,11 +226,11 @@ export default function ODRequests({
           </div>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all duration-300"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors"
           >
             <ChevronRight
               size={20}
-              className={`transform transition-transform duration-300 text-gray-500 dark:text-gray-400 ${
+              className={`transform transition-transform ${
                 isExpanded ? "rotate-90" : ""
               }`}
             />
@@ -229,13 +238,13 @@ export default function ODRequests({
         </div>
 
         {isExpanded && (
-          <div className="space-y-3 pt-2 border-t border-gray-200 dark:border-gray-700 transition-colors duration-300">
+          <div className="space-y-3 pt-2 border-t border-gray-200 dark:border-gray-600">
             {request.odType === "Internal" ? (
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Reason
                 </p>
-                <p className="text-sm text-gray-900 dark:text-white">
+                <p className="text-sm text-gray-900 dark:text-gray-200">
                   {request.reason}
                 </p>
               </div>
@@ -245,7 +254,7 @@ export default function ODRequests({
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     College/Company
                   </p>
-                  <p className="text-sm text-gray-900 dark:text-white">
+                  <p className="text-sm text-gray-900 dark:text-gray-200">
                     {request.collegeName}, {request.city}
                   </p>
                 </div>
@@ -253,29 +262,59 @@ export default function ODRequests({
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     Event Name
                   </p>
-                  <p className="text-sm text-gray-900 dark:text-white">
+                  <p className="text-sm text-gray-900 dark:text-gray-200">
                     {request.eventName}
                   </p>
                 </div>
-                {request.eventTypes?.length > 0 && (
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                      Event Types
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {request.eventTypes.map((type) => (
-                        <span
-                          key={type}
-                          className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs transition-colors duration-300"
-                        >
-                          {type}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </>
             )}
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Contact
+              </p>
+              <p className="text-sm text-gray-900 dark:text-gray-200">
+                {request.parent_phone}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Comments
+              </p>
+              <CommentsCell
+                mentorComment={request.mentorcomment}
+                classInchargeComment={request.classInchargeComment}
+              />
+            </div>
+            <div className="flex justify-between items-center pt-2">
+              <div className="flex items-center gap-2">
+                <StatusDot
+                  status={request.approvals.mentor.status}
+                  showLine={true}
+                  by="M"
+                />
+                <StatusDot
+                  status={request.approvals.classIncharge.status}
+                  showLine={false}
+                  by="CI"
+                />
+              </div>
+              {request.approvals[role].status === "pending" && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => onAction("approved", request._id)}
+                    className="bg-green-400 hover:bg-green-600 text-white p-1 rounded-full transition-all duration-300"
+                  >
+                    <TiTick size={24} />
+                  </button>
+                  <button
+                    onClick={() => onAction("rejected", request._id)}
+                    className="bg-red-400 hover:bg-red-600 text-white p-1 rounded-full transition-all duration-300"
+                  >
+                    <RxCross2 size={24} />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -289,16 +328,14 @@ export default function ODRequests({
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-gray-50 dark:bg-gray-700/50">
-              <tr>
-                <th className="px-4 py-3">Student</th>
-                <th className="px-4 py-3">Parent Phone</th>
-                <th className="px-4 py-3">OD Type</th>
-                <th className="px-4 py-3">Details</th>
-                <th className="px-4 py-3">Dates</th>
-                <th className="px-4 py-3 text-center">Days</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Comments</th>
-                <th className="px-4 py-3">Actions</th>
+              <tr className="text-center">
+                <th className="px-6 py-4 w-[18%]">Student</th>
+                <th className="px-6 py-4 w-[18%]">Details</th>
+                <th className="px-6 py-4 w-[10%]">Phone</th>
+                <th className="px-6 py-4 w-[15%]">Dates</th>
+                <th className="px-6 py-4 w-[12%]">Status</th>
+                <th className="px-6 py-4 w-[15%]">Comments</th>
+                <th className="px-6 py-4 w-[10%]">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y dark:divide-gray-700">
@@ -309,38 +346,22 @@ export default function ODRequests({
                     key={req._id}
                     className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
                   >
-                    <td className="px-4 py-3 text-gray-900 dark:text-gray-200">
+                    <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
                       {req.name}
                     </td>
-                    <td className="px-4 py-3 text-center text-gray-600 dark:text-gray-300">
-                      {req.parent_phone}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          req.odType === "Internal"
-                            ? "bg-blue-50 text-blue-600 border border-blue-200"
-                            : "bg-purple-50 text-purple-600 border border-purple-200"
-                        }`}
-                      >
-                        {req.odType}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        {req.odType === "Internal" ? (
-                          <div className="max-w-xs text-sm font-medium capitalize">
-                            {req.reason}
-                          </div>
-                        ) : (
-                          <div className="space-y-1 max-w-xs">
-                            <div className="flex gap-2 items-center">
-                              <p className="text-sm font-medium">
-                                {req.collegeName}, {req.city}
-                              </p>
-                            </div>
-                          </div>
-                        )}
+                        <div className="text-gray-600 dark:text-gray-300 line-clamp-2 capitalize">
+                          {req.odType === "Internal" ? (
+                            req.reason
+                          ) : (
+                            <>
+                              {req.collegeName}, {req.city}
+                              <br />
+                              {req.eventName}
+                            </>
+                          )}
+                        </div>
                         <button
                           onClick={() => {
                             setSelectedRequest(req);
@@ -355,17 +376,26 @@ export default function ODRequests({
                         </button>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
-                      <div className="flex flex-col items-center min-w-max justify-center gap-2">
-                        <div>{formatDate(req.fromDate)}</div>
-                        <div>{formatDate(req.toDate)}</div>
+                    <td className="px-6 py-4 text-center text-gray-600 dark:text-gray-300">
+                      {req.parent_phone}
+                    </td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
+                      <div className="flex items-center min-w-max justify-center gap-2">
+                        <span className="bg-blue-200 px-1 rounded-full text-xs">
+                          {req.noOfDays}
+                        </span>
+                        {req.fromDate === req.toDate ? (
+                          <div>{formatDate(req.fromDate)}</div>
+                        ) : (
+                          <div className="flex gap-2">
+                            <div>{formatDate(req.fromDate)}</div>
+                            <div>{formatDate(req.toDate)}</div>
+                          </div>
+                        )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-center text-gray-600 dark:text-gray-300">
-                      {req.noOfDays}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex">
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex items-center justify-center">
                         <StatusDot
                           status={req.approvals.mentor.status}
                           showLine={true}
@@ -378,13 +408,13 @@ export default function ODRequests({
                         />
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <CommentsCell
                         mentorComment={req.mentorcomment}
                         classInchargeComment={req.classInchargeComment}
                       />
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4 text-center">
                       {status === "pending" ? (
                         <div className="flex items-center justify-center gap-2">
                           <button
@@ -436,16 +466,6 @@ export default function ODRequests({
                               ? "Rejected"
                               : "Taken"}
                           </button>
-                          {status === "approved" && req.completionProof && (
-                            <button
-                              onClick={() =>
-                                window.open(req.completionProof, "_blank")
-                              }
-                              className="text-blue-500 hover:text-blue-700"
-                            >
-                              <Eye size={20} />
-                            </button>
-                          )}
                         </div>
                       )}
                     </td>
