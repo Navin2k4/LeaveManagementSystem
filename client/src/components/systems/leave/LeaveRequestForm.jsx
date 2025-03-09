@@ -275,10 +275,6 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
     try {
       setLoading(true);
       setErrorMessage(null);
-      console.log("Initial Form when ", formData);
-      console.log(formData);
-
-      return;
       const res = await fetch("/api/leave-request", {
         method: "POST",
         headers: {
