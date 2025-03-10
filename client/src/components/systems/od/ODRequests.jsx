@@ -540,7 +540,7 @@ export default function ODRequests({
           </div>
           {filterRequestsByStatus(odRequestsAsMentor, "mentor").length > 0 ? (
             renderRequestTable(
-              filterRequestsByStatus(odRequestsAsMentor, "mentor"),
+              filterRequestsByStatus(menteeRequests, "mentor"),
               "mentor",
               handleRequest
             )
@@ -566,7 +566,7 @@ export default function ODRequests({
             .length > 0 ? (
             renderRequestTable(
               filterRequestsByStatus(
-                odRequestsAsClassIncharge,
+                classInchargeRequests,
                 "classIncharge"
               ),
               "classIncharge",
