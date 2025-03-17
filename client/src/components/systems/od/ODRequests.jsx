@@ -27,7 +27,7 @@ export default function ODRequests({
   const [showDetails, setShowDetails] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
-
+  console.log(odRequestsAsClassIncharge);
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear().toString().slice(-2); // Get last two digits of the year
@@ -331,11 +331,12 @@ export default function ODRequests({
               <tr className="text-center">
                 <th className="px-6 py-4 w-[18%]">Student</th>
                 <th className="px-6 py-4 w-[18%]">Details</th>
-                <th className="px-6 py-4 w-[10%]">Phone</th>
+                <th className="px-6 py-4 w-[6%]">Phone</th>
                 <th className="px-6 py-4 w-[15%]">Dates</th>
-                <th className="px-6 py-4 w-[12%]">Status</th>
+                <th className="px-6 py-4 w-[8%]">Status</th>
                 <th className="px-6 py-4 w-[15%]">Comments</th>
-                <th className="px-6 py-4 w-[10%]">Actions</th>
+                <th className="px-6 py-4 w-[8%]">Actions</th>
+                <th className="px-6 py-4 w-[10%]">Proof</th>
               </tr>
             </thead>
             <tbody className="divide-y dark:divide-gray-700">
@@ -469,6 +470,23 @@ export default function ODRequests({
                         </div>
                       )}
                     </td>
+                    <td className="text-center flex items-center justify-center mt-3">
+                      {req.completionProof ? (
+                        <a
+                          href={req.completionProof}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={req.completionProof}
+                            alt="Proof"
+                            className="h-16 w-28 object-cover rounded-md shadow-md border border-gray-300 cursor-pointer"
+                          />
+                        </a>
+                      ) : (
+                        "Yet to Upload"
+                      )}
+                    </td>
                   </tr>
                 );
               })}
@@ -565,10 +583,7 @@ export default function ODRequests({
           {filterRequestsByStatus(odRequestsAsClassIncharge, "classIncharge")
             .length > 0 ? (
             renderRequestTable(
-              filterRequestsByStatus(
-                classInchargeRequests,
-                "classIncharge"
-              ),
+              filterRequestsByStatus(classInchargeRequests, "classIncharge"),
               "classIncharge",
               handleRequestClassIncharge
             )

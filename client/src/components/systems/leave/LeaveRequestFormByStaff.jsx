@@ -37,26 +37,6 @@ export default function LeaveRequestFormByStaff() {
     typeOfLeave: "casual",
   });
 
-  const getISTTime = () => {
-    const now = new Date();
-    // Convert to IST (UTC+5:30)
-    const istTime = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
-    return {
-      hours: istTime.getUTCHours(),
-      minutes: istTime.getUTCMinutes(),
-      date: istTime.toISOString().split("T")[0],
-      timestamp: istTime.getTime(),
-    };
-  };
-
-  const isAfterCutoffTime = () => {
-    const { hours, minutes } = getISTTime();
-    // Convert current time to minutes for easier comparison
-    const currentTimeInMinutes = hours * 60 + minutes;
-    // 8:00 AM in minutes = 8 * 60 = 480 minutes
-    return currentTimeInMinutes >= 480;
-  };
-
   const handleIsHalfDayChange = (selectedOption) => {
     const newIsHalfDay = isHalfDay === selectedOption ? null : selectedOption;
     setIsHalfDay(newIsHalfDay);
@@ -183,8 +163,6 @@ export default function LeaveRequestFormByStaff() {
     }
 
     // Validate dates
-    const { date: currentDateStr } = getISTTime();
-    const isAfter8AM = isAfterCutoffTime();
     const startDate = new Date(formData.leaveStartDate);
     const endDate = new Date(formData.leaveEndDate);
 
@@ -196,17 +174,6 @@ export default function LeaveRequestFormByStaff() {
 
     if (startDate < new Date(currentDateStr)) {
       setErrorMessage("Cannot apply leave for past dates");
-      return;
-    }
-
-    if (
-      formData.leaveStartDate === currentDateStr &&
-      isAfter8AM &&
-      !isHalfDay
-    ) {
-      setErrorMessage(
-        "Cannot apply full-day leave after 8:00 AM IST for today"
-      );
       return;
     }
 
@@ -520,31 +487,15 @@ export default function LeaveRequestFormByStaff() {
 
           {/* Submit Button */}
           <div className="p-6 bg-gray-50 dark:bg-gray-700/30">
-            {isAfterCutoffTime() &&
-              !isHalfDay &&
-              formData.leaveStartDate === getISTTime().date && (
-                <div className="mb-4 bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
-                  <AlertCircle size={18} />
-                  You cannot apply for a full-day leave after 8:00 AM IST for
-                  today. Please select a half-day option if needed.
-                </div>
-              )}
             <button
               type="submit"
               disabled={
                 loading ||
-                !studentDetails ||
-                (isAfterCutoffTime() &&
-                  formData.leaveStartDate === getISTTime().date &&
-                  !isHalfDay)
+                !studentDetails
               }
               className={`w-full ${
                 loading ||
-                !studentDetails ||
-                (isAfterCutoffTime() &&
-                  formData.leaveStartDate === getISTTime().date &&
-                  !isHalfDay)
-                  ? "bg-gray-400 cursor-not-allowed"
+                !studentDetails ? "bg-gray-400 cursor-not-allowed"
                   : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
               } text-white py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2`}
             >

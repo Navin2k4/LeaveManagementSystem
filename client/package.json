@@ -34,6 +34,7 @@
     "motion": "^11.17.0",
     "node-schedule": "^2.1.1",
     "otp-input-react": "^0.3.0",
+    "posthog-js": "^1.230.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.7",
     "react-circular-progressbar": "^2.1.0",

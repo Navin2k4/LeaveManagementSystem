@@ -91,7 +91,7 @@ const AppWrapper = () => {
     return () => {
       document.removeEventListener("contextmenu", handleContextMenu);
       document.removeEventListener("keydown", handleKeyDown);
-      clearInterval(consoleInterval);
+      // clearInterval(consoleInterval);
     };
   }, []);
 
