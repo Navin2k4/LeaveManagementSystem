@@ -163,34 +163,29 @@ export default function ODRequests({
   const filterRequestsByStatus = (requests, role) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+  
     return requests.filter((request) => {
       const toDate = new Date(request.toDate);
       const isPastDue = toDate < today;
-
+  
       if (activeTab === "pending") {
-        // For pending tab, show:
-        // 1. Pending requests that are not past due
-        // 2. Approved requests without completion proof that are not past due
-        return (
-          (!isPastDue && request.approvals[role].status === "pending") ||
-          (!isPastDue &&
-            request.approvals[role].status === "approved" &&
-            request.completionProof === "")
-        );
+        // For the pending tab, show:
+        // 1. Requests that are pending and not past due
+        return !isPastDue && request.approvals[role].status === "pending";
       } else {
         // For other tabs, show:
         // 1. Rejected requests
         // 2. Past due requests
-        // 3. Approved requests with completion proof
+        // 3. Approved requests
         return (
           request.approvals[role].status === "rejected" ||
           isPastDue ||
-          (request.approvals[role].status === "approved" &&
-            request.completionProof !== "")
+          request.approvals[role].status === "approved"
         );
       }
     });
   };
+  
 
   const filteredMenteeRequests = menteeRequests.filter(
     (menteeReq) =>

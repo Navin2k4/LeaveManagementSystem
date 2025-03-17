@@ -89,25 +89,22 @@ const ODStatus = ({ ODRequests }) => {
 
   const pendingRequests = filteredRequests.filter((request) => {
     return (
-      ((request.approvals.mentor.status === "pending" ||
+      (request.approvals.mentor.status === "pending" ||
         request.approvals.classIncharge.status === "pending") &&
-        request.approvals.mentor.status !== "rejected" &&
-        request.approvals.classIncharge.status !== "rejected") ||
-      (request.approvals.mentor.status === "approved" &&
-        request.approvals.classIncharge.status === "approved" &&
-        request.completionProof === "")
+      request.approvals.mentor.status !== "rejected" &&
+      request.approvals.classIncharge.status !== "rejected"
     );
   });
-
+  
   const approvedRequests = filteredRequests.filter((request) => {
     return (
       request.approvals.mentor.status === "rejected" ||
       request.approvals.classIncharge.status === "rejected" ||
       (request.approvals.mentor.status === "approved" &&
-        request.approvals.classIncharge.status === "approved" &&
-        request.completionProof !== "")
+        request.approvals.classIncharge.status === "approved")
     );
   });
+  
 
   const handleDeleteOD = async (id) => {
     setDeletingOD(true);
