@@ -27,7 +27,6 @@ export const createLeaveRequest = async (req, res) => {
       isHalfDay,
       typeOfLeave,
     } = req.body;
-
     const existingLeave = await LeaveRequest.findOne({
       userId,
       $or: [
@@ -71,6 +70,7 @@ export const createLeaveRequest = async (req, res) => {
       isHalfDay,
       isStaff: false,
     });
+    // console.log("Student Leave Request:", studentLeaveRequest);
     await studentLeaveRequest.save();
     res.status(201).json({
       success: true,
@@ -446,14 +446,22 @@ export const createLeaveRequestWithStatus = async (req, res) => {
       isHalfDay,
       typeOfLeave,
       approvals,
-      status
+      status,
     } = req.body;
 
     // Validate required fields
-    if (!userId || !name || !leaveStartDate || !leaveEndDate || !reason || !mentorId || !classInchargeId) {
+    if (
+      !userId ||
+      !name ||
+      !leaveStartDate ||
+      !leaveEndDate ||
+      !reason ||
+      !mentorId ||
+      !classInchargeId
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields"
+        message: "Missing required fields",
       });
     }
 
@@ -502,14 +510,14 @@ export const createLeaveRequestWithStatus = async (req, res) => {
       approvals: {
         mentor: {
           status: "approved",
-          date: new Date()
+          date: new Date(),
         },
         classIncharge: {
           status: "approved",
-          date: new Date()
-        }
+          date: new Date(),
+        },
       },
-      status: "approved"
+      status: "approved",
     });
 
     await leaveRequest.save();
@@ -528,14 +536,14 @@ export const createLeaveRequestWithStatus = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Leave request created successfully with specified status",
-      leaveRequest
+      leaveRequest,
     });
   } catch (error) {
     console.error("Error creating leave request with status:", error);
     res.status(500).json({
       success: false,
       message: "An error occurred while creating the leave request",
-      error: error.message
+      error: error.message,
     });
   }
 };

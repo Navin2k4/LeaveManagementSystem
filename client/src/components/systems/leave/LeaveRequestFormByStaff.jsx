@@ -6,6 +6,7 @@ import { ScaleLoader } from "react-spinners";
 export default function LeaveRequestFormByStaff() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const [studentDetails, setStudentDetails] = useState(null);
   const [isHalfDay, setIsHalfDay] = useState(null);
   const [forOneDay, setForOneDay] = useState(false);
@@ -17,9 +18,7 @@ export default function LeaveRequestFormByStaff() {
     userId: "",
     email: "",
     regNo: "",
-    academicYear: "",
     batchId: "",
-    semester: "",
     year: "",
     department: "",
     departmentId: "",
@@ -40,15 +39,6 @@ export default function LeaveRequestFormByStaff() {
   const handleIsHalfDayChange = (selectedOption) => {
     const newIsHalfDay = isHalfDay === selectedOption ? null : selectedOption;
     setIsHalfDay(newIsHalfDay);
-
-    // Clear any time-related errors when half-day is selected
-    if (newIsHalfDay) {
-      const newErrors = { ...errorMessage };
-      if (newErrors && newErrors.includes("8:00 AM")) {
-        setErrorMessage(null);
-      }
-    }
-
     setFormData({
       ...formData,
       isHalfDay: newIsHalfDay,
@@ -93,11 +83,8 @@ export default function LeaveRequestFormByStaff() {
               userId: completeDetails._id || null,
               email: completeDetails.email || "",
               regNo: completeDetails.register_no || "",
-              academicYear: completeDetails.batch_name || "",
               batchId: completeDetails.batchId || null,
-              semester: completeDetails.semester || "",
               year: completeDetails.year || "",
-              department: completeDetails.department_name || "",
               departmentId: completeDetails.departmentId || null,
               sectionName: completeDetails.section_name || "",
               sectionId: completeDetails.sectionId || null,
@@ -119,11 +106,8 @@ export default function LeaveRequestFormByStaff() {
             userId: null,
             email: "",
             regNo: "",
-            academicYear: "",
             batchId: null,
-            semester: "",
             year: "",
-            department: "",
             departmentId: null,
             sectionName: "",
             sectionId: null,
@@ -144,8 +128,8 @@ export default function LeaveRequestFormByStaff() {
   };
 
   const handleSubmit = async (e) => {
-    console.log("Student Details:", studentDetails);
     e.preventDefault();
+    setSuccessMessage(null);
     if (!studentDetails || !studentDetails._id) {
       setErrorMessage("Please enter a valid roll number");
       return;
@@ -172,7 +156,7 @@ export default function LeaveRequestFormByStaff() {
       return;
     }
 
-    if (startDate < new Date(currentDateStr)) {
+    if (startDate < new Date().setHours(0, 0, 0, 0)) {
       setErrorMessage("Cannot apply leave for past dates");
       return;
     }
@@ -180,8 +164,9 @@ export default function LeaveRequestFormByStaff() {
     // Calculate number of days
     const noOfDays =
       Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
-
+    console.log(formData);
     setLoading(true);
+
     try {
       const response = await fetch("/api/leave-request-staff", {
         method: "POST",
@@ -210,7 +195,6 @@ export default function LeaveRequestFormByStaff() {
           noOfDays: noOfDays,
           forMedical: formData.forMedical,
           isHalfDay: formData.isHalfDay,
-          typeOfLeave: formData.typeOfLeave,
           approvals: {
             mentor: {
               status: "approved",
@@ -224,7 +208,6 @@ export default function LeaveRequestFormByStaff() {
           status: "approved",
         }),
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to create leave request");
@@ -238,11 +221,8 @@ export default function LeaveRequestFormByStaff() {
         userId: "",
         email: "",
         regNo: "",
-        academicYear: "",
         batchId: "",
-        semester: "",
         year: "",
-        department: "",
         departmentId: "",
         sectionName: "",
         sectionId: "",
@@ -261,7 +241,7 @@ export default function LeaveRequestFormByStaff() {
       setIsHalfDay(null);
       setForOneDay(false);
       setErrorMessage(null);
-      alert("Leave request created successfully!");
+      setSuccessMessage("Leave request created successfully!");
     } catch (error) {
       console.error("Error creating leave request:", error);
       setErrorMessage(error.message || "Failed to create leave request");
@@ -294,24 +274,12 @@ export default function LeaveRequestFormByStaff() {
               {/* Student Details Grid */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="block mb-2">Student Name</Label>
-                  <input
-                    type="text"
-                    value={formData.studentName}
-                    readOnly
-                    className="w-full rounded-lg border border-gray-300 bg-gray-50 dark:border-gray-600 shadow-sm text-sm p-3"
-                  />
+                  <Label className="block mb-2">Student Name : {formData.studentName}</Label>
                 </div>
                 <div>
-                  <Label className="block mb-2">Parent Phone</Label>
-                  <input
-                    type="text"
-                    value={formData.parent_phone}
-                    readOnly
-                    className="w-full rounded-lg border border-gray-300 bg-gray-50 dark:border-gray-600 shadow-sm text-sm p-3"
-                  />
+                  <Label className="block mb-2">Parent Phone : {formData.parent_phone}</Label>
                 </div>
-                <div>
+                {/* <div>
                   <Label className="block mb-2">Section</Label>
                   <input
                     type="text"
@@ -319,28 +287,16 @@ export default function LeaveRequestFormByStaff() {
                     readOnly
                     className="w-full rounded-lg border border-gray-300 bg-gray-50 dark:border-gray-600 shadow-sm text-sm p-3"
                   />
+                </div> */}
+                <div>
+                  <Label className="block mb-2">Mentor : {formData.mentorName}</Label>
                 </div>
                 <div>
-                  <Label className="block mb-2">Mentor</Label>
-                  <input
-                    type="text"
-                    value={formData.mentorName}
-                    readOnly
-                    className="w-full rounded-lg border border-gray-300 bg-gray-50 dark:border-gray-600 shadow-sm text-sm p-3"
-                  />
-                </div>
-                <div>
-                  <Label className="block mb-2">Class Incharge</Label>
-                  <input
-                    type="text"
-                    value={formData.classInchargeName}
-                    readOnly
-                    className="w-full rounded-lg border border-gray-300 bg-gray-50 dark:border-gray-600 shadow-sm text-sm p-3"
-                  />
+                  <p className="block mb-2">Class Incharge : {formData.classInchargeName}</p>
                 </div>
               </div>
 
-              <div className="p-6">
+              <div className="">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label className="inline-flex items-center mb-2">
@@ -385,9 +341,9 @@ export default function LeaveRequestFormByStaff() {
               </div>
 
               {/* Leave Type Options */}
-              <div className="p-6 bg-gray-50 dark:bg-gray-700/30">
+              <div className="dark:bg-gray-700/30">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg">
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
                       Leave Duration
                     </h3>
@@ -422,7 +378,7 @@ export default function LeaveRequestFormByStaff() {
                     </div>
                   </div>
 
-                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg">
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
                       <Clock size={16} className="inline mr-2 text-gray-500" />
                       Half Day Options
@@ -485,17 +441,23 @@ export default function LeaveRequestFormByStaff() {
             </div>
           )}
 
+          {successMessage && (
+            <div className="px-6">
+              <div className="bg-green-100 border border-green-200 text-black-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                <AlertCircle size={18} />
+                {successMessage}
+              </div>
+            </div>
+          )}
+
           {/* Submit Button */}
           <div className="p-6 bg-gray-50 dark:bg-gray-700/30">
             <button
               type="submit"
-              disabled={
-                loading ||
-                !studentDetails
-              }
+              disabled={loading || !studentDetails}
               className={`w-full ${
-                loading ||
-                !studentDetails ? "bg-gray-400 cursor-not-allowed"
+                loading || !studentDetails
+                  ? "bg-gray-400 cursor-not-allowed"
                   : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
               } text-white py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2`}
             >
