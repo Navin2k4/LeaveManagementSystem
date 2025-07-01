@@ -82,19 +82,45 @@ async function processStudentExcelFile(filePath) {
         });
 
         if (existingStudent) {
-          results.duplicates.push({
-            roll_no,
-            register_no,
-            name,
-            email,
-            duplicateField:
-              existingStudent.roll_no === roll_no
-                ? "Roll No"
-                : existingStudent.register_no === register_no
-                ? "Register No"
-                : "Email",
+          // Check if mentor is different
+          const mentorDoc = await Staff.findOne({
+            staff_id: mentor,
+            isMentor: true,
           });
-          results.summary.duplicates++;
+
+          if (!mentorDoc) {
+            throw new Error(`Mentor not found: ${mentor}`);
+          }
+
+          if (!existingStudent.mentorId.equals(mentorDoc._id)) {
+            existingStudent.mentorId = mentorDoc._id;
+            await existingStudent.save();
+
+            results.success.push({
+              roll_no,
+              name,
+              department,
+              batch,
+              section,
+              updatedField: "Mentor",
+            });
+            results.summary.successful++;
+          } else {
+            results.duplicates.push({
+              roll_no,
+              register_no,
+              name,
+              email,
+              duplicateField:
+                existingStudent.roll_no === roll_no
+                  ? "Roll No"
+                  : existingStudent.register_no === register_no
+                  ? "Register No"
+                  : "Email",
+            });
+            results.summary.duplicates++;
+          }
+
           continue;
         }
 
