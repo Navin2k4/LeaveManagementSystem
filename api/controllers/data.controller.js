@@ -239,11 +239,13 @@ async function processStaffExcelFile(filePath) {
 
     const results = {
       success: [],
+      updated: [],
       duplicates: [],
       errors: [],
       summary: {
         total: 0,
         successful: 0,
+        updated: 0,
         duplicates: 0,
         errors: 0,
       },
@@ -268,7 +270,6 @@ async function processStaffExcelFile(filePath) {
           isHOD,
         ] = row;
 
-        // Validate essential data
         if (!staff_id || !staff_name) {
           results.errors.push({
             staff_id: staff_id || "N/A",
@@ -279,24 +280,7 @@ async function processStaffExcelFile(filePath) {
           continue;
         }
 
-        // Check for existing staff
-        const existingStaff = await Staff.findOne({
-          $or: [{ staff_id }, { staff_mail: staff_mail || "" }],
-        });
-
-        if (existingStaff) {
-          results.duplicates.push({
-            staff_id,
-            staff_name,
-            staff_mail,
-            duplicateField:
-              existingStaff.staff_id === staff_id ? "Staff ID" : "Email",
-          });
-          results.summary.duplicates++;
-          continue;
-        }
-
-        // Find department
+        // Lookup Department first
         const departmentDoc = await Department.findOne({
           dept_acronym: department,
         });
@@ -304,38 +288,112 @@ async function processStaffExcelFile(filePath) {
           throw new Error(`Department not found: ${department}`);
         }
 
+        // Prepare for Batch/Section resolution
         let batchDoc = null;
         let sectionDoc = null;
+        let resolvedSectionName = section || "Pending Assignment";
 
-        // Only validate batch and section if not HOD
         if (isHOD?.toUpperCase() !== "YES") {
-          // Find batch
           if (batch) {
             batchDoc = await Batch.findOne({
               department: departmentDoc._id,
               batch_name: batch,
             });
             if (!batchDoc) {
-              throw new Error(`Batch not found: ${batch}`);
+              results.errors.push({
+                staff_id,
+                staff_name,
+                error: `Batch not found: ${batch}`,
+              });
+              results.summary.errors++;
+              continue;
             }
 
-            // Find section
             if (section) {
               sectionDoc = await Section.findOne({
                 Batch: batchDoc._id,
                 section_name: section,
               });
               if (!sectionDoc) {
-                throw new Error(`Section not found: ${section}`);
+                results.errors.push({
+                  staff_id,
+                  staff_name,
+                  error: `Section not found: ${section}`,
+                });
+                results.summary.errors++;
+                continue;
               }
             }
           }
+        } else {
+          resolvedSectionName = null; // HODs don't need section_name
         }
 
-        // Hash password
+        // Check for existing staff
+        const existingStaff = await Staff.findOne({
+          $or: [{ staff_id }, { staff_mail: staff_mail || "" }],
+        });
+
+        if (existingStaff) {
+          const isSameData =
+            existingStaff.staff_name === staff_name &&
+            existingStaff.staff_mail === staff_mail &&
+            existingStaff.staff_phone === staff_phone &&
+            existingStaff.staff_handle_dept?.toString() ===
+              departmentDoc._id.toString() &&
+            existingStaff.staff_handle_batch?.toString() ===
+              (batchDoc?._id?.toString() || "") &&
+            existingStaff.staff_handle_section?.toString() ===
+              (sectionDoc?._id?.toString() || "") &&
+            existingStaff.section_name === resolvedSectionName &&
+            existingStaff.isClassIncharge ===
+              (isClassIncharge?.toUpperCase() === "YES") &&
+            existingStaff.isMentor === (isMentor?.toUpperCase() === "YES") &&
+            existingStaff.isHod === (isHOD?.toUpperCase() === "YES");
+
+          if (isSameData) {
+            results.duplicates.push({
+              staff_id,
+              staff_name,
+              staff_mail,
+              note: "Already exists with identical data",
+            });
+            results.summary.duplicates++;
+            continue;
+          }
+
+          const updatedData = {
+            staff_name,
+            staff_mail,
+            staff_phone,
+            staff_handle_dept: departmentDoc._id,
+            staff_handle_batch: batchDoc?._id || null,
+            staff_handle_section: sectionDoc?._id || null,
+            section_name: resolvedSectionName,
+            isClassIncharge: isClassIncharge?.toUpperCase() === "YES",
+            isMentor: isMentor?.toUpperCase() === "YES",
+            isHod: isHOD?.toUpperCase() === "YES",
+            staff_role: isHOD?.toUpperCase() === "YES" ? "HOD" : "Staff",
+          };
+
+          await Staff.updateOne(
+            { _id: existingStaff._id },
+            { $set: updatedData }
+          );
+
+          results.updated.push({
+            staff_id,
+            staff_name,
+            note: "Data updated for existing staff",
+          });
+          results.summary.updated++;
+          continue;
+        }
+
+        // Hash password for new staff
         const hashedPassword = await bcrypt.hash(staff_id.toString(), 10);
 
-        // Create staff record
+        // Prepare new staff data
         const staffData = {
           staff_id,
           staff_name,
@@ -344,7 +402,7 @@ async function processStaffExcelFile(filePath) {
           staff_handle_dept: departmentDoc._id,
           staff_handle_batch: batchDoc?._id || null,
           staff_handle_section: sectionDoc?._id || null,
-          section_name: section || null,
+          section_name: resolvedSectionName,
           isClassIncharge: isClassIncharge?.toUpperCase() === "YES",
           isMentor: isMentor?.toUpperCase() === "YES",
           isHod: isHOD?.toUpperCase() === "YES",
@@ -354,12 +412,13 @@ async function processStaffExcelFile(filePath) {
         };
 
         await Staff.create(staffData);
+
         results.success.push({
           staff_id,
           staff_name,
           department,
-          batch: batch || "N/A",
-          section: section || "N/A",
+          batch: batch || "Pending Assignment",
+          section: resolvedSectionName || "Pending Assignment",
           roles: [
             isClassIncharge?.toUpperCase() === "YES" ? "Class Incharge" : "",
             isMentor?.toUpperCase() === "YES" ? "Mentor" : "",
@@ -384,6 +443,7 @@ async function processStaffExcelFile(filePath) {
       summary: results.summary,
       details: {
         successful: results.success,
+        updated: results.updated,
         duplicates: results.duplicates,
         errors: results.errors,
       },
