@@ -19,6 +19,9 @@ import { Info, Loader2 } from "lucide-react";
 
 const ProfilePage = () => {
   const { currentUser } = useSelector((state) => state.user);
+
+  console.warn("Current User" , currentUser);
+
   const [mentor, setMentor] = useState({});
   const [classIncharge, setClassIncharge] = useState({});
   const [tab, setTab] = useState("EditProfile");

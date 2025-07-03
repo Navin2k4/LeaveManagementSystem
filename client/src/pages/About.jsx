@@ -10,6 +10,7 @@ import {
   Computer,
 } from "lucide-react";
 import { Carousel } from "flowbite-react";
+import { useEffect } from "react";
 
 const systems = [
   {
@@ -67,6 +68,10 @@ const About = () => {
   const { scrollYProgress } = useScroll();
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
+  
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">

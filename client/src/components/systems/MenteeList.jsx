@@ -14,6 +14,7 @@ const MenteeList = () => {
   });
   const [leaveStats, setLeaveStats] = useState({});
   const [expandedRow, setExpandedRow] = useState(null);
+  const SEMESTER_START_DATE = new Date("2025-07-01T00:00:00.000Z");
 
   useEffect(() => {
     const fetchMenteesAndLeaves = async () => {
@@ -33,21 +34,24 @@ const MenteeList = () => {
           );
           if (leaveResponse.ok) {
             const leaveData = await leaveResponse.json();
+            const filteredLeaves = leaveData.filter(
+              (leave) => new Date(leave.createdAt) >= SEMESTER_START_DATE
+            );
             leaveStatsObj[mentee.roll_no] = {
-              totalLeaves: leaveData.length,
-              totalDays: leaveData.reduce(
+              totalLeaves: filteredLeaves.length,
+              totalDays: filteredLeaves.reduce(
                 (acc, leave) => acc + leave.noOfDays,
                 0
               ),
-              medicalLeaves: leaveData.filter((leave) => leave.forMedical)
+              medicalLeaves: filteredLeaves.filter((leave) => leave.forMedical)
                 .length,
-              approvedLeaves: leaveData.filter(
+              approvedLeaves: filteredLeaves.filter(
                 (leave) => leave.status === "approved"
               ).length,
-              rejectedLeaves: leaveData.filter(
+              rejectedLeaves: filteredLeaves.filter(
                 (leave) => leave.status === "rejected"
               ).length,
-              pendingLeaves: leaveData.filter(
+              pendingLeaves: filteredLeaves.filter(
                 (leave) => leave.status === "pending"
               ).length,
             };
@@ -99,7 +103,10 @@ const MenteeList = () => {
       <div className="flex justify-between items-start">
         <div>
           <p className="font-medium text-gray-900 dark:text-gray-200">
-            {mentee.name} <span className="text-gray-500 dark:text-gray-400">({mentee.roll_no})</span>
+            {mentee.name}{" "}
+            <span className="text-gray-500 dark:text-gray-400">
+              ({mentee.roll_no})
+            </span>
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {mentee.register_no}
@@ -282,8 +289,8 @@ const MenteeList = () => {
                     {leaveStats[mentee.roll_no] ? (
                       <div className="space-y-1">
                         <p className="text-sm text-gray-600 dark:text-gray-300">
-                          Total Leaves :{" "}
-                          {leaveStats[mentee.roll_no].totalDays} days
+                          Total Leaves : {leaveStats[mentee.roll_no].totalDays}{" "}
+                          days
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
                           Medical: {leaveStats[mentee.roll_no].medicalLeaves} |

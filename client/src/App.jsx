@@ -1,26 +1,26 @@
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import SuperAdmin from "./pages/SuperAdmin";
-import PageNotFound from "./pages/PageNotFound";
-import StaffDashBoard from "./pages/StaffDashBoard";
-import HomePage from "./pages/HomePage";
-import Navbar from "./components/general/NavBar";
-import PrivateRoute from "./components/auth/PrivateRoute";
-import StaffPrivateRoute from "./components/auth/StaffPrivateRoute";
-import PublicRoute from "./components/auth/PublicRoute";
-import ProfilePage from "./pages/ProfilePage";
-import LeaveRequestForm from "./components/systems/leave/LeaveRequestForm";
-import DashBoard from "./pages/DashBoard";
-import Hoddashboard from "./pages/HodDashBoard";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import HodPrivateRoute from "./components/auth/HodPrivateRoute";
-import WardDetails from "./pages/WardDetails";
+import PrivateRoute from "./components/auth/PrivateRoute";
+import PublicRoute from "./components/auth/PublicRoute";
 import SignIn from "./components/auth/SignIn";
+import StaffPrivateRoute from "./components/auth/StaffPrivateRoute";
 import Footer from "./components/general/Footer";
+import Navbar from "./components/general/NavBar";
+import BonafiedRequestForm from "./components/systems/bonafieds/BonafiedRequestForm.jsx";
+import LeaveRequestForm from "./components/systems/leave/LeaveRequestForm";
 import MailTiming from "./components/systems/MailTiming";
 import About from "./pages/About";
-import "./utils/devtools-detector.js";
+import DashBoard from "./pages/DashBoard";
 import ForgotPassword from "./pages/ForgotPassword";
-import BonafiedRequestForm from "./components/systems/bonafieds/BonafiedRequestForm.jsx";
+import Hoddashboard from "./pages/HodDashBoard";
+import HomePage from "./pages/HomePage";
+import PageNotFound from "./pages/PageNotFound";
+import ProfilePage from "./pages/ProfilePage";
+import StaffDashBoard from "./pages/StaffDashBoard";
+import SuperAdmin from "./pages/SuperAdmin";
+import WardDetails from "./pages/WardDetails";
+import "./utils/devtools-detector.js";
 
 const AppWrapper = () => {
   const location = useLocation();
@@ -64,8 +64,7 @@ const AppWrapper = () => {
     };
 
     // Add console warning
-    const warningMessage =
-      "Opps! Nothings Here.";
+    const warningMessage = "Opps! Nothings Here.";
     console.log(
       "%c" + warningMessage,
       "color: red; font-size: 18px; font-weight: bold; "
@@ -107,6 +106,7 @@ const AppWrapper = () => {
     "/studentsignup",
     "/staffsignup",
     "/signin",
+    "/know-about-us",
     "/wardDetails",
     "*",
   ].includes(location.pathname);
@@ -126,7 +126,6 @@ const AppWrapper = () => {
         <Route path="/know-about-us" element={<About />} />
         <Route path="/hidden/changeMailTiming" element={<MailTiming />} />
         <Route path="/wardDetails" element={<WardDetails />} />
-        <Route path="/superadmin" element={<SuperAdmin />} />
 
         {/* Protected Routes */}
         <Route element={<PrivateRoute />}>
@@ -138,6 +137,7 @@ const AppWrapper = () => {
 
         <Route element={<HodPrivateRoute />}>
           <Route path="/hoddash" element={<Hoddashboard />} />
+          <Route path="/superadmin" element={<SuperAdmin />} />
         </Route>
 
         <Route element={<StaffPrivateRoute />}>

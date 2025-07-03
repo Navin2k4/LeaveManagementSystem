@@ -12,6 +12,7 @@ import {
   Mail,
   BookOpen,
   Building,
+  ArrowRightIcon,
 } from "lucide-react";
 
 export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
@@ -318,12 +319,51 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto ">
       {/* Header with Leave Summary */}
 
+      {/* Control flow secion */}
+      <div className="flex flex-col sm:flex-row items-center justify-center m-6 space-y-2 sm:space-y-0 sm:space-x-2 text-center">
+        <h1 className="text-sm sm:text-md font-semibold">Approval By :</h1>
+
+        {mentor._id === classIncharge._id ? (
+          <div className="bg-blue-500 px-4 py-1 rounded-full text-white text-sm font-medium">
+            {mentor.staff_name}
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-2">
+            <div className="bg-blue-500 px-4 py-1 rounded-full text-white text-sm font-medium">
+              {mentor.staff_name}
+            </div>
+            <ArrowRightIcon className="w-5 h-5 text-blue-600" />
+            <div className="bg-blue-500 px-4 py-1 rounded-full text-white text-sm font-medium">
+              {classIncharge.staff_name}
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Date Selection Section */}
+        <form onSubmit={handleSubmit} className="">
+          {/* Persisting Issue Resolving */}
+          {mentor._id === classIncharge._id ? (
+            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-t-md p-2">
+              <p>
+                The <strong>mentor</strong> and <strong>class incharge</strong>{" "}
+                appear to be the same person. Please double-check if the class
+                incharge is correctly assigned to you.
+              </p>
+            </div>
+          ) : (
+            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800  rounded-t-md p-2">
+              <p>
+                If the approval flow (from mentor to class incharge) is not
+                assigned properly for your updated mentor/classincharge, try
+                signing out and signing in again. If the issue persists, please
+                contact the staff for assistance.
+              </p>
+            </div>
+          )}
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
@@ -446,7 +486,7 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
           </div>
 
           {/* Reason Section */}
-          <div className="p-6">
+          <div className="px-6">
             <div className="space-y-3">
               <Label className="inline-flex items-center px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">
                 <FileText size={16} className="mr-2" />
@@ -473,7 +513,6 @@ export default function LeaveRequestForm({ setTab, mentor, classIncharge }) {
             </div>
           </div>
 
-          {/* Submit Section */}
           <div className="p-6 bg-gray-50 dark:bg-gray-700/30">
             {errorMessage && (
               <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">

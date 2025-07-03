@@ -52,6 +52,8 @@ export const studentsignin = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // console.log(student);
+
     const isMatch = await bcryptjs.compare(password, student.password);
 
     if (!isMatch) {
@@ -83,6 +85,9 @@ export const studentsignin = async (req, res, next) => {
       .status(200)
       .cookie("access_token", token, {
         httpOnly: true,
+        maxAge: 30 * 60 * 1000,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production",
       })
       .json({
         token,
@@ -116,7 +121,7 @@ export const staffsignin = async (req, res, next) => {
     identifier = identifier.toUpperCase();
 
     const staff = await Staff.findOne({ staff_id: identifier });
-
+    // console.log(staff);
     if (!staff) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -282,7 +287,7 @@ export const forgotPassword = async (req, res, next) => {
 
     const userEmail = userType === "Student" ? user.email : user.staff_mail;
 
-    await sendEmail(userEmail, "Password Reset - VCET Connect", emailContent);
+    // await sendEmail(userEmail, "Password Reset - VCET Connect", emailContent);
 
     res.status(200).json({
       message: "A temporary password has been sent to your email",

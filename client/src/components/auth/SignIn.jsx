@@ -9,7 +9,7 @@ import {
   signInStart,
   signInSuccess,
 } from "../../redux/user/userSlice";
-
+import { Lightbulb, Target, BookOpenCheck } from "lucide-react";
 export default function SignIn() {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
@@ -64,6 +64,11 @@ export default function SignIn() {
     return isValid;
   };
 
+  const isFormFilled =
+    formData.identifier?.trim() &&
+    formData.password?.trim() &&
+    selectRole?.trim();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -102,13 +107,107 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[70vh] flex flex-col-reverse md:flex-row gap-2 items-center justify-evenly bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl w-full space-y-8 flex gap-8">
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex-1 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-md space-y-6"
+        >
+          <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-4">
+            Department of Computer Science and Engineering
+          </h2>
+
+          <div className="flex items-start gap-4">
+            {/* <Lightbulb className="text-blue-600 dark:text-blue-400 w-6 h-6 mt-1" /> */}
+            <div>
+              <h3 className="text-xl text-blue-600 font-semibold mb-1">
+                Vision of the Department
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300">
+                To become a Center of Excellence in the field of Computer
+                Science and Engineering upholding social values.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4">
+            {/* <Target className="text-green-600 dark:text-green-400 w-6 h-6 mt-1" /> */}
+            <div>
+              <h3 className="text-xl text-blue-600 font-semibold mb-2">
+                Mission of the Department
+              </h3>
+              <ul className="space-y-2 text-gray-700 dark:text-gray-300">
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-500 mt-1">•</span>
+                  <span>
+                    Heightening the knowledge of the faculty in recent trends
+                    through continuous development programmes.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-500 mt-1">•</span>
+                  <span>
+                    Transforming the students into globally competent and
+                    technically well-equipped Computer Professionals with strong
+                    theoretical and practical knowledge.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-500 mt-1">•</span>
+                  <span>
+                    Cultivating the spirit of social and ethical values for the
+                    cause of development of our Nation.
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4">
+            {/* <BookOpenCheck className="text-purple-600 dark:text-purple-400 w-6 h-6 mt-1" /> */}
+            <div>
+              <h3 className="text-xl text-blue-600 font-semibold mb-2">
+                Program Educational Objectives (PEOs)
+              </h3>
+              <ul className="space-y-2 text-gray-700 dark:text-gray-300">
+                <li className="flex items-start gap-2">
+                  <span className="text-purple-500 mt-1">1.</span>
+                  <span>
+                    Graduates work productively as successful employees with
+                    problem-solving skills, core computing skills, professional
+                    ethics and soft skills with social awareness.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-purple-500 mt-1">2.</span>
+                  <span>
+                    Graduates participate in lifelong learning through
+                    successful completion of higher education with Research and
+                    Development.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-purple-500 mt-1">3.</span>
+                  <span>
+                    Graduates become successful entrepreneurs with
+                    determination, self-reliance, leadership, and moral values
+                    to enhance employability and innovation.
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
       <div className="max-w-lg w-full space-y-8 flex gap-8">
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex-1 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl space-y-6"
+          className="flex-1 bg-white dark:bg-gray-800 p-8 md:p-12 rounded-2xl shadow-md space-y-6"
         >
           <div className="text-center items-center flex flex-col gap-4">
             {/* <img
@@ -234,7 +333,7 @@ export default function SignIn() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !isFormFilled}
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (

@@ -1,15 +1,12 @@
 import { motion } from "framer-motion";
 import {
-  ArrowDown,
   ArrowRight,
   Award,
   BarChart,
   Bell,
   Calendar,
-  CheckCircle,
   ClipboardCheck,
-  UserCheck,
-  Link as LinkIcon,
+  UserCheck
 } from "lucide-react";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -115,21 +112,6 @@ function ConstellationNetwork() {
   );
 }
 
-// Add this new component for the background SVG
-function BackgroundDecoration() {
-  return (
-    <>
-      {/* Large Link Icon */}
-      <div className="absolute -bottom-20 -right-20 opacity-[0.03] transform scale-[6] rotate-[315deg] text-blue-600">
-        <LinkIcon size={400} />
-      </div>
-      {/* Additional decorative elements */}
-      <div className="absolute top-20 left-20 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-20 w-64 h-64 bg-indigo-400/10 rounded-full blur-3xl" />
-    </>
-  );
-}
-
 function HomePage() {
   const { currentUser } = useSelector((state) => state.user);
 
@@ -189,7 +171,7 @@ function HomePage() {
       <section className="relative min-h-[85vh] flex items-center">
         {/* Hero Content */}
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 mt-2 md:mt-10 gap-12 items-center">
             {/* Left Content */}
             <motion.div
               className="text-left lg:pr-12"
@@ -197,17 +179,7 @@ function HomePage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <motion.div
-                className="inline-block px-4 py-2 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-6"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-              >
-                <span className="text-blue-600 dark:text-blue-400 font-semibold text-sm">
-                  Welcome to the VCET LMS
-                </span>
-              </motion.div>
-
+              
               <motion.h1
                 className="text-7xl font-bold mb-6"
                 initial={{ opacity: 0, y: -20 }}
@@ -222,17 +194,12 @@ function HomePage() {
                   Connect
                 </span>
               </motion.h1>
-
-              <motion.p
-                className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-8 max-w-xl"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.8 }}
-              >
-                A comprehensive academic management platform designed for VCET's
-                ecosystem. Streamline administrative processes, enhance
-                communication, and maintain transparency across all departments.
-              </motion.p>
+              <div className="m-3 mb-4">
+                <p className="text-xl">
+                  Managing leaves, od, academics, and notifications in one
+                  unified platform
+                </p>
+              </div>
 
               {currentUser ? (
                 <motion.div
@@ -269,20 +236,13 @@ function HomePage() {
                     Get Started
                     <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                   </Link>
-                  {/* <Link
-                    to="/know-about-us"
-                    className="group inline-flex items-center gap-2 px-8 py-4 text-lg font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                  >
-                    Learn More
-                    <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-                  </Link> */}
+              
                 </motion.div>
               )}
             </motion.div>
 
-            {/* Right Content */}
             <motion.div
-              className="hidden lg:block relative"
+              className="relative"
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
@@ -290,60 +250,58 @@ function HomePage() {
               <div className="relative">
                 {/* Decorative elements */}
                 <div className="absolute -top-20 -right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-
                 {/* Main Card */}
                 <motion.div
                   className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl"
                   whileHover={{ y: -5 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  {/* Illustration or Visual Element */}
-                  <div className="relative h-64 mb-8">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-2xl">
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <div className="relative">
-                          {/* Central Icon */}
-                          <div className="bg-white dark:bg-gray-800 rounded-full p-6 shadow-lg">
-                            <Calendar className="w-12 h-12 text-blue-600 dark:text-blue-400" />
-                          </div>
-                          {/* Orbiting Elements */}
-                          <div className="absolute -top-12 -right-8 bg-blue-100 dark:bg-blue-900/50 rounded-full p-3">
-                            <UserCheck className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                          </div>
-                          <div className="absolute -bottom-8 -right-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-full p-3">
-                            <Bell className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-                          </div>
-                          <div className="absolute -bottom-12 left-0 bg-purple-100 dark:bg-purple-900/50 rounded-full p-3">
-                            <Award className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                          </div>
-                        </div>
+                  <div className="max-w-3xl mx-auto text-gray-800 dark:text-gray-200 px-4 py-8">
+                    <h3 className="text-3xl font-bold text-center mb-8">
+                      Vision and Mission of Velammal
+                    </h3>
+
+                    {/* Vision */}
+                    <div className="flex items-start gap-4 mb-6">
+                      <div>
+                        <h4 className="text-xl text-blue-600 font-semibold mb-1">Vision</h4>
+                        <p className="text-base leading-relaxed">
+                          To emerge and sustain as a Center of Excellence for
+                          Technical and Managerial Education upholding social
+                          values.
+                        </p>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Text Content */}
-                  <div className="text-center">
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                      Streamline Your Academic Journey
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Experience seamless management of leaves, od, academics, and
-                      notifications in one unified platform
-                    </p>
-                  </div>
-                </motion.div>
-
-                {/* Trust Badge */}
-                <motion.div
-                  className="absolute -bottom-5 -right-7 bg-blue-500/90 text-white dark:bg-gray-800/90 backdrop-blur-lg rounded-xl px-4 py-3 shadow-2xl"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 }}
-                >
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="text-blue-200 w-5 h-5" />
-                    <div className="text-sm font-medium text-white">
-                      VCET Official Platform
+                    {/* Mission */}
+                    <div className="flex items-start gap-4 mb-4">
+                      <div>
+                        <h4 className="text-xl text-blue-600 font-semibold mb-2">Missions</h4>
+                        <ul className="space-y-3">
+                          <li className="flex items-start gap-3">
+                            <span className="text-blue-500 mt-1">•</span>
+                            <span>
+                              Imparted with comprehensive, innovative and
+                              value-based education.
+                            </span>
+                          </li>
+                          <li className="flex items-start gap-3">
+                            <span className="text-blue-500 mt-1">•</span>
+                            <span>
+                              Exposed to technical, managerial and soft skill
+                              resources with emphasis on research, and
+                              professionalism.
+                            </span>
+                          </li>
+                          <li className="flex items-start gap-3">
+                            <span className="text-blue-500 mt-1">•</span>
+                            <span>
+                              Inculcated with the need for a disciplined, happy,
+                              married and peaceful life.
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -352,15 +310,7 @@ function HomePage() {
           </div>
         </div>
 
-        {!currentUser && (
-          <motion.div
-            className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.5 }}
-          >
-            <ArrowDown className="text-blue-600 dark:text-blue-400 w-6 h-6" />
-          </motion.div>
-        )}
+        
       </section>
 
       {/* Features Section */}
@@ -421,27 +371,6 @@ function HomePage() {
       {/* Image Section */}
       <section className="py-20 relative overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <motion.h2
-              className="text-3xl font-bold text-gray-900 dark:text-white mb-4"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              Empowering Education Through Technology
-            </motion.h2>
-            <motion.p
-              className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-            >
-              Building the future of academic management at VCET
-            </motion.p>
-          </div>
-
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}

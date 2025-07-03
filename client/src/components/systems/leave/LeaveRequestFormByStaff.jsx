@@ -64,7 +64,6 @@ export default function LeaveRequestFormByStaff() {
           `/api/defaulter/getStudentDetailsByRollforDefaulters/${rollNo}`
         );
         const studentData = await studentResponse.json();
-        console.log("Initial Student Data:", studentData);
 
         if (studentResponse.ok && studentData && studentData.studentId) {
           // Then fetch complete student details using the ID
@@ -72,7 +71,6 @@ export default function LeaveRequestFormByStaff() {
             `/api/user/student/${studentData.studentId}`
           );
           const completeDetails = await detailsResponse.json();
-          console.log("Complete Student Details:", completeDetails);
 
           if (detailsResponse.ok && completeDetails) {
             setStudentDetails(completeDetails);
@@ -164,7 +162,6 @@ export default function LeaveRequestFormByStaff() {
     // Calculate number of days
     const noOfDays =
       Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
-    console.log(formData);
     setLoading(true);
 
     try {

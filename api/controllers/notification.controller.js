@@ -135,7 +135,6 @@ export const sendNotificationToAllStudents = async (req, res) => {
 
 // Send notification to students with incomplete profiles
 export const sendProfileUpdateReminder = async (req, res) => {
-  console.log("Sending profile update reminder");
   try {
     const incompleteProfiles = await Student.find({
       $or: [

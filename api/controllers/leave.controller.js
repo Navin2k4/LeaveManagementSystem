@@ -2,8 +2,9 @@ import LeaveRequest from "../models/leave.model.js";
 import { errorHandler } from "../utils/error.js";
 import { notifyLeaveRequestStatus } from "./email.service.js";
 
+const SEMESTER_START_DATE = new Date("2025-07-01T00:00:00.000Z");
+
 export const createLeaveRequest = async (req, res) => {
-  console.log("Hello Request Body:", req.body);
   try {
     const {
       name,
@@ -114,7 +115,10 @@ export const getleaverequestbyUserId = async (req, res, next) => {
 export const getleaverequestbyMentorId = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const data = await LeaveRequest.find({ mentorId: id }).sort({
+    const data = await LeaveRequest.find({
+      mentorId: id,
+      createdAt: { $gte: SEMESTER_START_DATE },
+    }).sort({
       createdAt: -1,
     });
     res.status(200).json(data);
@@ -132,6 +136,7 @@ export const getleaverequestbyclassinchargeid = async (req, res, next) => {
     const data = await LeaveRequest.find({
       classInchargeId: id,
       "approvals.mentor.status": { $ne: "pending" }, // Show when mentor has taken action
+      createdAt: { $gte: SEMESTER_START_DATE },
     }).sort({
       createdAt: -1,
     });
@@ -422,7 +427,6 @@ export const updateLeaveRequestStatusByMentorIdForBothRoles = async (
 };
 
 export const createLeaveRequestWithStatus = async (req, res) => {
-  console.log("Creating leave request with status:", req.body);
   try {
     const {
       name,

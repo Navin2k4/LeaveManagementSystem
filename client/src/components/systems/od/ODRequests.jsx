@@ -27,7 +27,6 @@ export default function ODRequests({
   const [showDetails, setShowDetails] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
-  console.log(odRequestsAsClassIncharge);
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear().toString().slice(-2); // Get last two digits of the year

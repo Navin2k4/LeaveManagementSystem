@@ -5,6 +5,8 @@ import Department from "../models/department.model.js";
 import Batch from "../models/batch.model.js";
 import Section from "../models/section.model.js";
 
+const SEMESTER_START_DATE = new Date("2025-07-01T00:00:00.000Z");
+
 export const createOdRequest = async (req, res) => {
   try {
     const {
@@ -138,7 +140,10 @@ export const getodrequestbyUserId = async (req, res, next) => {
 export const getodrequestbyMentorId = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const data = await OdRequest.find({ mentorId: id }).sort({
+    const data = await OdRequest.find({
+      mentorId: id,
+      createdAt: { $gte: SEMESTER_START_DATE },
+    }).sort({
       createdAt: -1,
     });
     res.status(200).json(data);
@@ -154,6 +159,7 @@ export const getodrequestbyclassinchargeid = async (req, res, next) => {
     const { id } = req.params;
     const data = await OdRequest.find({
       classInchargeId: id,
+      createdAt: { $gte: SEMESTER_START_DATE },
       "approvals.mentor.status": "approved",
     }).sort({
       createdAt: -1,
@@ -388,11 +394,10 @@ export const getFolderPath = async (req, res) => {
       Section.findById(sectionId).select("section_name"),
     ]);
 
-
     if (!department || !batch || !section) {
       return res.status(404).json({
         error: "Could not find all required information",
-        details: { department, batch, section }
+        details: { department, batch, section },
       });
     }
 
@@ -406,7 +411,7 @@ export const getFolderPath = async (req, res) => {
     console.error("Error in getFolderPath:", error);
     res.status(500).json({
       error: "Failed to generate folder path",
-      details: error.message
+      details: error.message,
     });
   }
 };
