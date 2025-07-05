@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src=".client/public/vcet.jpeg" alt="Logo" width="80" height="80">
+    <img src="./client/public/vcet.jpeg" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">VCET Connect</h3>
@@ -40,7 +40,6 @@
 ## About The Project
 <div>VCET Connect is a centralized web application designed to digitize and streamline core academic workflows such as Leave Management, On Duty (OD) Requests, and Defaulter Monitoring. Built for both students and faculty, the platform enables seamless submission, approval, and tracking of leave and OD applications.Students can calculate their CGPA through an in-built tool, while mentors can efficiently monitor and support the academic progress of their mentees. With an intuitive interface and role-based access, VCET Connect enhances transparency, reduces paperwork, and improves overall institutional efficiency.
 </div>
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
