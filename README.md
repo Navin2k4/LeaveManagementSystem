@@ -25,8 +25,6 @@
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
-      <div>VCET Connect is a centralized web application designed to digitize and streamline core academic workflows such as Leave Management, On Duty (OD) Requests, and Defaulter Monitoring. Built for both students and faculty, the platform enables seamless submission, approval, and tracking of leave and OD applications.Students can calculate their CGPA through an in-built tool, while mentors can efficiently monitor and support the academic progress of their mentees. With an intuitive interface and role-based access, VCET Connect enhances transparency, reduces paperwork, and improves overall institutional efficiency.
-      </div>
       <ul>
         <li><a href="#built-with">Built With</a></li>
       </ul>
@@ -40,7 +38,8 @@
 <!-- ABOUT THE PROJECT -->
 
 ## About The Project
-
+<div>VCET Connect is a centralized web application designed to digitize and streamline core academic workflows such as Leave Management, On Duty (OD) Requests, and Defaulter Monitoring. Built for both students and faculty, the platform enables seamless submission, approval, and tracking of leave and OD applications.Students can calculate their CGPA through an in-built tool, while mentors can efficiently monitor and support the academic progress of their mentees. With an intuitive interface and role-based access, VCET Connect enhances transparency, reduces paperwork, and improves overall institutional efficiency.
+</div>
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
