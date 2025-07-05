@@ -1,33 +1,42 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Mail, Loader2 } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
+  const emailRef = useRef();
+  const regnoRef = useRef();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
+    const email = emailRef.current.value.trim();
+    const regno = regnoRef.current.value.trim();
+    setSubmittedEmail(email);
+
+    if (regno.length !== 12) {
+      setError("Register number must be 12 characters long");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, regno }),
       });
 
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.message || "Something went wrong");
-      }
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
 
       setSuccess(true);
     } catch (error) {
@@ -74,14 +83,16 @@ const ForgotPassword = () => {
             </h3>
             <p className="text-sm text-gray-600">
               We've sent a password reset link to <br />
-              <span className="font-medium text-gray-900">{email}</span>
+              <span className="font-medium text-gray-900">
+                {submittedEmail}
+              </span>
             </p>
             <p className="text-xs text-gray-500 mt-4">
               Didn't receive the email? Check your spam folder or{" "}
               <button
                 onClick={() => {
                   setSuccess(false);
-                  setEmail("");
+                  setFormData((prev) => ({ ...prev, email: "", regno: "" }));
                 }}
                 className="text-blue-600 hover:text-blue-700"
               >
@@ -100,16 +111,32 @@ const ForgotPassword = () => {
               </label>
               <div className="relative">
                 <input
+                  ref={emailRef}
                   id="email"
                   name="email"
                   type="email"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="appearance-none my-2 relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter your email"
                 />
                 <Mail className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
+              </div>
+              <label
+                htmlFor="regno"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Register Number
+              </label>
+              <div className="relative">
+                <input
+                  ref={regnoRef}
+                  id="regno"
+                  name="regno"
+                  type="text"
+                  required
+                  className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter your Register Number"
+                />
               </div>
             </div>
 

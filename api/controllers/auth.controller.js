@@ -250,18 +250,17 @@ export const updateProfile = async (req, res, next) => {
 };
 
 export const forgotPassword = async (req, res, next) => {
-  const { email } = req.body;
-
+  const { email, regno } = req.body;
   try {
-    let user = await Student.findOne({ email });
-    let userType = "Student";
+    let user = await Student.findOne({ email, register_no: regno });
 
     if (!user) {
-      user = await Staff.findOne({ staff_mail: email });
-      userType = "Staff";
-    }
-
-    if (!user) {
+      const staff = await Staff.findOne({ staff_mail: email });
+      if (staff) {
+        return res.status(403).json({
+          message: "Unauthorized to Perform",
+        });
+      }
       return next(errorHandler(404, "No account found with this email"));
     }
 
@@ -285,9 +284,7 @@ export const forgotPassword = async (req, res, next) => {
       </div>
     `;
 
-    const userEmail = userType === "Student" ? user.email : user.staff_mail;
-
-    // await sendEmail(userEmail, "Password Reset - VCET Connect", emailContent);
+    await sendEmail(user.email, "Password Reset - VCET Connect", emailContent);
 
     res.status(200).json({
       message: "A temporary password has been sent to your email",
