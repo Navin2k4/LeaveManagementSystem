@@ -19,8 +19,6 @@
   </p>
 </div>
 
-
-
 <!-- ABOUT THE PROJECT -->
 
 ## About the Project
@@ -42,6 +40,117 @@ Designed for both **students** and **faculty**, the platform ensures easy and tr
 This system drastically reduces paperwork, enhances transparency, and improves institutional productivity.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+### Preview
+
+<section id="preview" style="background-color: white; padding: 40px 20px;">
+  <h2 style="text-align: center; margin-bottom: 40px;">Preview</h2>
+
+  <!-- Full-width images -->
+  <div style="max-width: 900px; margin: 0 auto 60px auto; text-align: center;">
+    <strong>Home Page</strong><br />
+    <img 
+      src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/homepage.png?raw=true" 
+      alt="Home Page" 
+      style="width: 100%; height: auto; margin-top: 10px; border-radius: 6px;" 
+    />
+  </div>
+
+  <div style="max-width: 900px; margin: 0 auto 60px auto; text-align: center;">
+    <strong>About Us</strong><br />
+    <img 
+      src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/aboutus.png?raw=true" 
+      alt="About Us" 
+      style="width: 100%; height: auto; margin-top: 10px; border-radius: 6px;" 
+    />
+  </div>
+
+  <!-- 2-column layout starts -->
+  <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+    <tr>
+      <td style="padding: 20px; text-align: center;">
+        <strong>Ward Details</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/warddetails.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+      <td style="padding: 20px; text-align: center;">
+        <strong>Sign In</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/signin.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 20px; text-align: center;">
+        <strong>Profile</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/profile.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+      <td style="padding: 20px; text-align: center;">
+        <strong>Academics</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/academics.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 20px; text-align: center;">
+        <strong>Leave Request</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/leaverequest.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+      <td style="padding: 20px; text-align: center;">
+        <strong>Leave Request Overview</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/leaverequestoverview.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 20px; text-align: center;">
+        <strong>OD Request</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/odrequest.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+      <td style="padding: 20px; text-align: center;">
+        <strong>OD Request Overview</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/odrequestoverview.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 20px; text-align: center;">
+        <strong>Leave Request Summary</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/leaverequestsummary.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+      <td style="padding: 20px; text-align: center;">
+        <strong>OD Request Summary</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/odequestsummary.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 20px; text-align: center;">
+        <strong>Attendance Summary</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/attandancesummary.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+      <td style="padding: 20px; text-align: center;">
+        <strong>Class Academic Stats</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/classacademicstats.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 20px; text-align: center;">
+        <strong>Student Academic Stats</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/studentacademicstats.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+      <td style="padding: 20px; text-align: center;">
+        <strong>Mentee List</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/menteelist.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 20px; text-align: center;">
+        <strong>Mark Defaulter</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/markdefaulter.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+      <td style="padding: 20px; text-align: center;">
+        <strong>Overall Department Summary</strong><br />
+        <img src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/overalldepartmentsummary.png?raw=true" style="width: 100%; max-width: 500px;" />
+      </td>
+    </tr>
+  </table>
+</section>
+
 
 ### Built With
 
