@@ -45,8 +45,6 @@ This system drastically reduces paperwork, enhances transparency, and improves i
 ### Preview
 
 <section id="preview" style="background-color: white; padding: 40px 20px;">
-  <h2 style="text-align: center; margin-bottom: 40px;">Preview</h2>
-
   <!-- Full-width images -->
   <div style="max-width: 900px; margin: 0 auto 60px auto; text-align: center;">
     <strong>Home Page</strong><br />
