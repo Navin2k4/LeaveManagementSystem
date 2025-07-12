@@ -19,33 +19,29 @@
   </p>
 </div>
 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
+
 
 <!-- ABOUT THE PROJECT -->
 
-## About The Project
-<div>VCET Connect is a centralized web application designed to digitize and streamline core academic workflows such as Leave Management, On Duty (OD) Requests, and Defaulter Monitoring. Built for both students and faculty, the platform enables seamless submission, approval, and tracking of leave and OD applications.Students can calculate their CGPA through an in-built tool, while mentors can efficiently monitor and support the academic progress of their mentees. With an intuitive interface and role-based access, VCET Connect enhances transparency, reduces paperwork, and improves overall institutional efficiency.
-</div>
+## About the Project
+
+**VCET Connect** is a centralized web application built to modernize and streamline academic workflows like:
+
+- Leave Applications  
+- On-Duty (OD) Requests  
+- Defaulter Monitoring
+
+Designed for both **students** and **faculty**, the platform ensures easy and transparent submission, tracking, and approval of applications. Key features include:
+
+- Role-based login access
+- Integrated CGPA calculator for students
+- Mentor dashboard to track mentees
+- Intuitive, responsive interface
+- Email OTP and notification system
+
+This system drastically reduces paperwork, enhances transparency, and improves institutional productivity.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-### Built With
-
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
 ### Built With
 
@@ -65,21 +61,14 @@ This section should list any major frameworks/libraries used to bootstrap your p
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- LICENSE -->
-
-## License
-
-Vcet.ac.in
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 <!-- CONTACT -->
 
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
-
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+- Navin Kumarn O H - navinkumaran2004@gmail.com
+- Vinoth Kumar K B - vinothkumar05kb@gmail.com
+- Dinesh Kumar K K - dineshkumar12a106.2122@gmail.com
+- Udhaya Chandra Pandiyan S - udhayacpandian33@gmail.com
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -135,9 +124,6 @@ The development of this Leave Management System was made possible thanks to the 
 - [Shields.io](https://shields.io) – For generating beautiful status badges for GitHub README files.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/
