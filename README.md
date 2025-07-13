@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="./client/public/vcet.jpeg" alt="Logo" width="80" height="80">
+    <img src="./client/public/vcet.jpeg" alt="Logo" width="80" height="80" style="border-radius: 100%;" />
   </a>
 
   <h3 align="center">VCET Connect</h3>
@@ -41,6 +41,14 @@ This system drastically reduces paperwork, enhances transparency, and improves i
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### System Flow
+<div style="max-width: 900px; margin: 0 auto 60px auto; text-align: center;">
+    <img 
+      src="https://github.com/Navin2k4/LeaveManagementSystem/blob/main/websitepreview/VCET%20Connect%20Flowchart.png?raw=true" 
+      alt="VCET Connect System" 
+      style="width: 100%; height: auto; margin-top: 10px; border-radius: 6px;" 
+    />
+  </div>
 
 ### Preview
 
